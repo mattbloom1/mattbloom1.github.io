@@ -1,0 +1,52 @@
+body {
+    max-width: 100vw;
+    background-image: url(../img/c_b.webp);
+    background-repeat: no-repeat;
+    background-size: cover;
+    font: 14px/1.4 "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.overlays {
+    position: absolute;
+}
+
+/* Updated CSS for the top left overlay */
+.TL_overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200px; /* Adjust the width as needed */
+    height: 200px;
+    background-color: #316b44; /* Red background color */
+    text-align: center;
+    color: #b9b6b6; /* White font color */
+    font-size: 20px; /* Adjust the font size as needed */
+    line-height: 50px; /* Center the text vertically */
+    border-radius: 15px 50px 30px;
+    opacity: 0.8;
+}
+
+
+
+.BotMid_overlay {
+    position: absolute;
+    top: 550px;
+    left: 500px;
+    width: 400px;
+    height: 100px;
+    background: linear-gradient(to right, #86BBD8, #F6AE2D); /* Gradient background */
+    text-align: center;
+    filter: alpha(opacity=50);
+    border-radius: 25px;
+    border: 2px solid #F6AE2D;
+    padding: 20px;
+    line-height: 10px;    
+}
+  
+.BotMid_overlay .left-image {
+    float: left; /* Align the image to the left */
+    margin-right: 10px; /* Add some spacing between image and text */
+    transform: translateY(-25%); /* Center the image vertically */
+    width: 100px;
+  }
+  
