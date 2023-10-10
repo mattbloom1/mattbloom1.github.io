@@ -1,0 +1,50 @@
+body {
+    background-color: green;
+}
+
+div {
+    background-color: cadetblue;
+    font-family: 'gill sans', 'gill sans mt', 'calibri', 'trebuchet ms', 'sans-serif';
+    font-size: 5vw;
+    
+    color: #000000;
+    padding: 5vw;
+    margin: 2.5vw;
+    border: 5px solid black;
+    border-radius: 10px;
+}
+
+.div-wrapper {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    background-color: goldenrod;
+    grid-template-rows: 1fr 1fr;
+}
+
+@media screen and (max-width: 900px) {
+    body {
+        background-color: goldenrod;
+    }
+    .div-wrapper {
+        display: flex;
+        flex-direction: column;
+        background-color: rgb(218, 113, 32);
+    }
+    div {
+        font-size: 3vw;
+    }
+}
+
+/*
+.div1 {
+
+}
+
+.div2 {
+
+}
+
+.div3 {
+
+}
+*/
