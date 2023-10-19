@@ -1,0 +1,75 @@
+body{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #786d27;
+    font-family: 'courier new' , 'sans-serif' , 'arial';
+}
+nav{
+    height: 50vh;
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height:20px;
+    background-color: moccasin;
+    border-radius: 3px;
+}
+nav a{
+    width:10vw;
+    text-align: center;
+    text-decoration: none;
+    color:darkslategray;
+}
+nav a:hover{
+    color: white;
+    background-color: darkslategray;
+    text-decoration: underline;
+    border-radius: 3px;
+    transition: all 0.5s ease-in-out;
+}
+
+
+img{
+    width: 30vw;
+    height: 30vw;
+}
+
+#red-ball{
+    background-image: url(/img/babyblue2.png);
+    background-size: cover;
+    width: 200px;
+    height:200px;
+    border-radius: 50%;
+    position: absolute;
+    left:5vw;
+    top:0;
+    animation: 5s infinite linear red-ball-move;
+}
+
+@keyframes red-ball-move {
+    0% {
+        left: 5vw;
+        top: 0;
+        transform: rotate(0deg);
+    }
+    25% {
+        left: 75vw;
+        top: 0;
+        transform: rotate(90deg);
+    }
+    50% {
+        left: 75vw;
+        top: 60vh;
+        transform: rotate(180deg);
+    }
+    75% {
+        left: 5vw;
+        top: 60vh;
+        transform: rotate(270deg);
+    }
+    100% {
+        left: 5vw;
+        top: 0;
+        transform: rotate(360deg);
+    }
+}
