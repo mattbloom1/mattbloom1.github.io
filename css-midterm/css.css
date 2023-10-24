@@ -1,5 +1,5 @@
 body {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Tilt Neon', sans-serif;
     font-size: 16px;
     margin: 0;
     background-image: url(/img/backgroundcss.jpg);
@@ -9,16 +9,18 @@ body {
 }
 
 #title {
-    position: fixed;
+    position: sticky;
+    top: 0px;
     width: 100%;
     color: rgb(81, 81, 81); /* Text color */
     display: flex;
     align-items: center;
     justify-content: space-around;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Tilt Neon', sans-serif;
     font-size: 16px;
     background-image: linear-gradient(120deg, #a6c0fe 0%, #f68084 100%);
-    margin-bottom: 2vw;
+    z-index: 99999;
+    
 }
 
 .topImg{
@@ -44,9 +46,8 @@ body {
     flex-direction: column;
     margin-left: 5vw;
     margin-right: 5vw;
-    margin-top: 8vw;
+    margin-top: 1vw;
     padding: 1vw;
-    background-color: rgba(193, 193, 193, 0.709);
     border-top: solid #ccc;
     border-bottom: solid #ccc;
 }
@@ -65,6 +66,24 @@ body {
     border-bottom: solid #ccc;
     font-family: 'Sanchez', 'serif';
     justify-content: space-between;
+    position: relative;
+}
+
+.event-tickets {
+    position: absolute;
+    bottom: 10px;
+    right: 10px; 
+    background-color: darkslategray;
+    color: white;
+    padding: 10px 10px;
+    margin: 5px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.event-tickets:hover {
+    background-color: rgb(0, 72, 0);
 }
 
 
@@ -105,3 +124,9 @@ body {
     margin-top: 0;
 }
 
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px;
+}
