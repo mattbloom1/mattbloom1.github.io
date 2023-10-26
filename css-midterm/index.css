@@ -20,7 +20,6 @@ body {
     font-size: 16px;
     background-image: linear-gradient(120deg, #a6c0fe 0%, #f68084 100%);
     z-index: 99999;
-    
 }
 
 .topImg{
@@ -129,4 +128,26 @@ footer {
     color: white;
     text-align: center;
     padding: 10px;
+}
+
+@media query and (max-width: 600px) {
+    #title {
+        position: sticky;
+        top: 0px;
+        width: 100%;
+        color: rgb(178, 36, 36); /* Text color */
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        font-family: 'Tilt Neon', sans-serif;
+        font-size: 16px;
+        background-image: linear-gradient(120deg, #a6c0fe 0%, #f68084 100%);
+        z-index: 99999;
+    }
+    .event-column {
+        flex-direction: column;
+    }
+    .event{
+        flex-wrap: wrap;
+    }
 }
