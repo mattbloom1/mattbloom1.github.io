@@ -2,23 +2,24 @@ body {
     font-family: 'Tilt Neon', sans-serif;
     font-size: 14px;
     margin: 0;
-    background-image: url(/img/backgroundcss.jpg);
+    background-image: url(/img/colosymph.jpg);
     background-repeat: no-repeat;
     background-size: cover;
     width: 100%;
+    
 }
 
-#title {
+#header {
     position: sticky;
     top: 0px;
     width: 100%;
-    color: rgb(81, 81, 81); /* Text color */
+    color: #302f30;
     display: flex;
     align-items: center;
     justify-content: space-around;
     font-family: 'Tilt Neon', sans-serif;
     font-size: 1em;
-    background-image: linear-gradient(120deg, #a6c0fe 0%, #f68084 100%);
+    background-color:#f59361;
     z-index: 99999;
 }
 
@@ -30,7 +31,7 @@ body {
 #body-text{
     display: flex;
     color: white;
-    font-size: 1.25em;
+    font-size: 1em;
     justify-content: left;
     flex-direction: column;
     align-items: center;
@@ -47,15 +48,20 @@ body {
     margin-right: 5vw;
     margin-top: 1vw;
     padding: 1vw;
-    border-top: solid #ccc;
-    border-bottom: solid #ccc;
+    background-color: #fcefd9d2;
+    margin-bottom: 500px;
+    border-radius: 3px;
+}
+.label{
+    display: flex;
+    font-size: 1.5em;
 }
 /* ALL event*/
 .event {
     display: flex;
     flex-direction: column;
     color: white;
-    font-size: 1.25em;
+    font-size: 1em;
     margin: 1vw;
     margin-left: 15vw;
     margin-right: 15vw;
@@ -87,7 +93,7 @@ body {
 
 
 .event strong {
-    font-size: 1.4em;
+    font-size: 1.25em;
 }
 
 .event em {
@@ -134,8 +140,11 @@ footer {
     body {
         font-size: 10px;
     }
-    #title {
-        flex-direction: row;
+    #header {
+        flex-direction: column;
+        align-items: left;
+        justify-content: flex-start;
+        
     }
     .event-column {
         flex-direction: column;
@@ -143,7 +152,19 @@ footer {
         justify-content: space-evenly;
     }
     .event{
+        flex-direction: column;
         flex-wrap: wrap;
     }
-    
+    .event-tickets {
+        position: absolute;
+        bottom: 2px;
+        right: 2px; 
+        background-color: darkslategray;
+        color: white;
+        padding: 5px 5px;
+        margin: 5px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: bold;
+    }
 }
