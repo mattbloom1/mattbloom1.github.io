@@ -1,0 +1,30 @@
+body{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #786d27;
+    font-family: 'courier new' , 'sans-serif' , 'arial';
+    font-size: 32px;
+}
+html {
+    width: 100%;
+    height: inherit;
+  }
+
+canvas {
+    display: block;
+  }
+
+body {
+    margin: 0;
+  }
+
+button {
+    position: absolute;
+    align-self: center;
+    margin-top: 300px;
+    width: 150px;
+    height: 100px;
+    font-family: 'courier new' , 'sans-serif' , 'arial';
+    font-size: 32px;
+}
