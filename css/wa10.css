@@ -1,0 +1,51 @@
+body {
+/*font-family: 'Coustard', serif;
+font-family: 'DM Sans', sans-serif;
+font-family: 'Sanchez', serif;
+font-family: 'Tilt Neon', sans-serif;*/
+    font-family: 'DM Sans', sans-serif;
+    width: 350px;
+    background-color: #5C5D8D;
+    background: radial-gradient(circle, transparent 20%, #5C5D8D 20%, #5C5D8D 80%, transparent 80%, transparent), radial-gradient(circle, transparent 20%, #5C5D8D 20%, #5C5D8D 80%, transparent 80%, transparent) 57.5px 57.5px, linear-gradient(#A8C69F 4.6000000000000005px, transparent 4.6000000000000005px) 0 -2.3000000000000003px, linear-gradient(90deg, #A8C69F 4.6000000000000005px, #5C5D8D 4.6000000000000005px) -2.3000000000000003px 0;
+    background-size: 115px 115px, 115px 115px, 57.5px 57.5px, 57.5px 57.5px;  
+    align-items: center;
+    text-align: center;
+    margin: 0 auto;
+}
+
+  label {
+    font-weight: bold;
+    color: #654F6F;
+    }
+
+  div {
+    padding-bottom: 20px;
+    
+  }
+
+  input[type="text"] {
+    padding: 5px;
+    width: 150px;
+  }
+
+  p {
+    background: #A8C69F;
+    color: #654F6F;
+    padding: 10px;
+    visibility: hidden;
+}
+
+.story{
+    background: #CCE2A3;
+    color: #654F6F;
+    border-radius: 2px;
+    border: #A8C69F 3px solid;
+}
+#notStory{
+    display: flex;
+    border-radius: 2px;
+    border: #A8C69F 3px solid;
+    background: #CCE2A3;
+    padding: 10px;
+    align-items: center;
+}
