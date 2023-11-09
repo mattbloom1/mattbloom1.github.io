@@ -1,16 +1,23 @@
 h1 {
-  font-family: helvetica, arial, sans-serif;
+  font-family: 'Trebuchet MS', Helvetica, sans-serif;
   text-align: center;
 }
 
 body {
   width: 640px;
   margin: 0 auto;
+  background-color: blanchedalmond;
 }
 
 .full-img {
   position: relative;
   display: block;
+  width: 640px;
+  height: 480px;
+}
+.displayed-img {
+  display: block;
+  margin: 0 auto;
   width: 640px;
   height: 480px;
 }
@@ -26,8 +33,8 @@ body {
 
 button {
   border: 0;
-  background: rgba(150,150,150,0.6);
-  text-shadow: 1px 1px 1px white;
+  background: limegreen;
+  text-shadow: 1px 1px 1px darkgray;
   border: 1px solid #999;
   position: absolute;
   cursor: pointer;
