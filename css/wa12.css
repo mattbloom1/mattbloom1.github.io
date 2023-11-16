@@ -1,0 +1,140 @@
+body {
+    font-family: 'Tilt Neon', sans-serif;
+    font-size: 14px;
+    margin: 0;
+    background-color: #616161;
+    width: 100%;
+}
+
+header {
+    position: sticky;
+    top: 0px;
+    width: 100%;
+    color: #302f30;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    font-family: 'Tilt Neon', sans-serif;
+    font-size: 2em;
+    background-color:#f59361;
+    z-index: 99999;
+}
+section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Tilt Neon', sans-serif;
+    font-size: 2em;
+    padding: 10px;
+    margin: 10px;
+}
+p {
+    display: flex;
+    color: white;
+    font-size: 1em;
+    justify-content: left;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 3px;
+    font-family: 'Sanchez', 'serif';
+}
+
+.quotes{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 5px;
+}
+.quote-text{
+    font-family: 'Sanchez', 'serif';
+    font-size: 1em;
+    color: #fff;
+    background-color: #302f30;
+    border-radius: 3px;
+    margin: 5px;
+    padding: 5px;
+}
+button {
+    background-color: #f59361;
+    color: white;
+    border: none;
+    padding: 10px;
+    margin: 10px;
+    font-size: 1em;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    width: 140px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 150%;
+    left: 50%;
+    margin-left: -75px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  
+  .tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+  }
+  
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+  }
+
+@media only screen and (max-width: 600px) {
+    body {
+        font-size: 10px;
+    }
+    #header {
+        flex-direction: column;
+        align-items: left;
+        justify-content: flex-start;
+    }
+    .event-column {
+        flex-direction: column;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+    }
+    .event{
+        flex-direction: column;
+        flex-wrap: wrap;
+    }
+    .event-tickets {
+        position: absolute;
+        bottom: 2px;
+        right: 2px; 
+        background-color: darkslategray;
+        color: white;
+        padding: 5px 5px;
+        margin: 5px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: bold;
+    }
+}
