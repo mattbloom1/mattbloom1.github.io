@@ -1,7 +1,6 @@
 const newQuoteButton = document.querySelector("#js-new-quote");
 
 const copyQuoteButton = document.querySelector("#js-copy-text");
-
 newQuoteButton.addEventListener("click", getQuote);
 copyQuoteButton.addEventListener("click", myFunction);
 
