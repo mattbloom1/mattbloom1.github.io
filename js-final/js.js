@@ -9,15 +9,18 @@ btnClear.addEventListener("click", clearPhoneNumber);
 
 const result = document.getElementById("result");
 const winNum = document.getElementById("winNum");
-
+const spinsLeft = document.getElementById("spinsLeft");
 
 var allNumbers = [];
 var number = [];
 var count = 0;
 var winNumb = 0;
 
+
+var spins = 15;
+
 function roll() {
-    if(number.length < 10){
+    if(number.length < 10 && count < spins){
         var randomNum = Number((Math.random() * 100).toFixed(2));
         var firstDigit = Number(Math.floor((randomNum) / 10 - 5));
         var win = firstDigit;
@@ -36,6 +39,7 @@ function roll() {
         allNumbers.push(Math.floor(randomNum/10));
         winNumb = Math.floor(randomNum/10);
         count++;
+        spinsLeft.innerText = "Spins Left - " + (spins - count);
         displayWinningNumber();
 
     }
@@ -59,6 +63,11 @@ function displayWinningNumber() {
 }
 function clearPhoneNumber() {
     number = [];
+    allNumbers = [];
+    count = 0;
+    spins = 15;
+    winNum.innerText = "Number to be added - ?";
+    spinsLeft.innerText = "Spins Left - " + (spins - count);
     displayPhoneNumber();
 }
 function displayPhoneNumber() {
