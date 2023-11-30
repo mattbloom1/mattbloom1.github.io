@@ -7,6 +7,9 @@ btnAdd.addEventListener("click", conPhoneNum);
 const btnClear = document.getElementById("clearNum");
 btnClear.addEventListener("click", clearPhoneNumber);
 
+const btnSubmit = document.getElementById("submit");
+btnSubmit.addEventListener("click", submitPhoneNumber);
+
 const result = document.getElementById("result");
 const winNum = document.getElementById("winNum");
 const spinsLeft = document.getElementById("spinsLeft");
@@ -40,7 +43,6 @@ function roll() {
         winNumb = Math.floor(randomNum/10);
         count++;
         spinsLeft.innerText = "Spins Left - " + (spins - count);
-        displayWinningNumber();
 
     }
     else{
@@ -65,13 +67,33 @@ function clearPhoneNumber() {
     number = [];
     allNumbers = [];
     count = 0;
-    spins = 15;
-    winNum.innerText = "Number to be added - ?";
+    spins = 30;
     spinsLeft.innerText = "Spins Left - " + (spins - count);
     displayPhoneNumber();
 }
 function displayPhoneNumber() {
     var phoneNumber = number.join("");
     var formattedPhoneNumber = phoneNumber.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3");
+    
+    if (phoneNumber.length >= 4 && phoneNumber.length < 7) {
+        formattedPhoneNumber = phoneNumber.replace(/(\d{3})(\d{1})/, "$1-$2");
+    } else if (phoneNumber.length >= 7) {
+        formattedPhoneNumber = phoneNumber.replace(/(\d{3})(\d{3})(\d{1})/, "$1-$2-$3");
+    }
+    else if(phoneNumber.length === 10)
+    {
+        formattedPhoneNumber = phoneNumber.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3");
+    }
+    
     result.innerText = formattedPhoneNumber;
+}
+
+function submitPhoneNumber() {
+    alert("Your phone number has been submitted." + "\n" + result.innerText);
+    number = [];
+    allNumbers = [];
+    count = 0;
+    spins = 30;
+    spinsLeft.innerText = "Spins Left - " + (spins - count);
+    displayPhoneNumber();
 }
