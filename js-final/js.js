@@ -17,7 +17,7 @@ var count = 0;
 var winNumb = 0;
 
 
-var spins = 15;
+var spins = 30;
 
 function roll() {
     if(number.length < 10 && count < spins){
