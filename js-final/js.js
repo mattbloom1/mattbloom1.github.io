@@ -20,7 +20,7 @@ var count = 0;
 var winNumb = 0;
 
 
-var spins = 30;
+var spins = 99;
 
 function roll() {
     if(number.length < 10 && count < spins){
@@ -67,7 +67,7 @@ function clearPhoneNumber() {
     number = [];
     allNumbers = [];
     count = 0;
-    spins = 30;
+    spins = 99;
     spinsLeft.innerText = "Spins Left - " + (spins - count);
     displayPhoneNumber();
 }
@@ -93,7 +93,7 @@ function submitPhoneNumber() {
     number = [];
     allNumbers = [];
     count = 0;
-    spins = 30;
+    spins = 99;
     spinsLeft.innerText = "Spins Left - " + (spins - count);
     displayPhoneNumber();
 }
