@@ -21,11 +21,18 @@ var winNumb = 0;
 
 
 var spins = 99;
+var lastNumber = null;
 
 function roll() {
     if(number.length < 10 && count < spins){
-        var randomNum = Number((Math.random() * 100).toFixed(2));
-        var firstDigit = Number(Math.floor((randomNum) / 10 - 5));
+        var randomNum;
+        var firstDigit;
+        do {
+            randomNum = Number((Math.random() * 100).toFixed(2));
+            firstDigit = Number(Math.floor((randomNum) / 10 - 5));
+        } while (firstDigit === lastNumber);
+        lastNumber = firstDigit;
+
         var win = firstDigit;
         if (win > 4) {
             var rollm = win * 40 - 40 * 15;
@@ -97,3 +104,22 @@ function submitPhoneNumber() {
     spinsLeft.innerText = "Spins Left - " + (spins - count);
     displayPhoneNumber();
 }
+
+var submitButton = document.getElementById('submit');
+
+submitButton.addEventListener('mouseover', function() {
+    if (number.length < 10) {
+        var vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+        var vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+
+        var buttonWidth = submitButton.offsetWidth;
+        var buttonHeight = submitButton.offsetHeight;
+
+        var randomLeft = Math.floor(Math.random() * (vw - buttonWidth)) + 'px';
+        var randomTop = Math.floor(Math.random() * (vh - buttonHeight)) + 'px';
+
+        submitButton.style.position = 'absolute';
+        submitButton.style.left = randomLeft;
+        submitButton.style.top = randomTop;
+    }
+});
