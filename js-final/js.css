@@ -1,6 +1,8 @@
+
+
 body {
     background-color: darkslategray;
-
+    font-family: 'Ubuntu', sans-serif;
 }
 
 #roll {
@@ -81,6 +83,7 @@ button {
     text-align: center;
     font-weight: 700;
     margin: 5px;
+    font-family: 'Ubuntu', sans-serif;
 }
 
 #spin {
@@ -92,7 +95,8 @@ button {
 
 #spinsLeft {
     text-align: left;
-    font-size: 20px;
+    font-size: 26px;
+    font-weight: 500;
     margin: 5px;
     padding-top: 75px;
 
