@@ -18,48 +18,55 @@ var allNumbers = [];
 var number = [];
 var count = 0;
 var winNumb = 0;
+var numUsed = false;
 
 
 var spins = 99;
 var lastNumber = null;
 
 function roll() {
+    numUsed = false;
     if(number.length < 10 && count < spins){
-        var randomNum;
-        var firstDigit;
-        do {
-            randomNum = Number((Math.random() * 100).toFixed(2));
-            firstDigit = Number(Math.floor((randomNum) / 10 - 5));
-        } while (firstDigit === lastNumber);
-        lastNumber = firstDigit;
+        document.getElementById("roll").style.marginTop = "-360px";
+        
+        setTimeout(function() {
+            var randomNum;
+            var firstDigit;
+            do {
+                randomNum = Number((Math.random() * 100).toFixed(2));
+                firstDigit = Number(Math.floor((randomNum) / 10 - 5));
+            } while (firstDigit === lastNumber);
+            lastNumber = firstDigit;
 
-        var win = firstDigit;
-        if (win > 4) {
-            var rollm = win * 40 - 40 * 15;
-            document.getElementById("roll").style.marginTop = rollm + "px";
-        }
-        if (win < 4) {
-            var rollm = 180 - 40 * win - 380;
-            document.getElementById("roll").style.marginTop = rollm + "px";
-        }
-        if (win == 4) {
-            var rollm = 360;
-            document.getElementById("roll").style.marginTop = "-" + rollm + "px";
-        }
-        allNumbers.push(Math.floor(randomNum/10));
-        winNumb = Math.floor(randomNum/10);
-        count++;
-        spinsLeft.innerText = "Spins Left - " + (spins - count);
-
+            var win = firstDigit;
+            if (win > 4) {
+                var rollm = win * 40 - 40 * 15;
+                document.getElementById("roll").style.marginTop = rollm + "px";
+            }
+            if (win < 4) {
+                var rollm = 180 - 40 * win - 380;
+                document.getElementById("roll").style.marginTop = rollm + "px";
+            }
+            if (win == 4) {
+                var rollm = 360;
+                document.getElementById("roll").style.marginTop = "-" + rollm + "px";
+            }
+            allNumbers.push(Math.floor(randomNum/10));
+            winNumb = Math.floor(randomNum/10);
+            count++;
+        }, 500); // Delay for the full spin animation
     }
     else{
         alert("You have reached the maximum number of spins.");
     }
 }
-
 function conPhoneNum(){
-    if(number.length < 10){
+    if(number.length < 10 && numUsed === false){
     number.push(allNumbers[count-1]);
+    numUsed = true;
+    }
+    else if (number.length < 10 && numUsed === true) {
+        alert("You have already used this number. Spin again.");
     }
     else{
         alert("You have reached the maximum number of digits.");
@@ -75,7 +82,6 @@ function clearPhoneNumber() {
     allNumbers = [];
     count = 0;
     spins = 99;
-    spinsLeft.innerText = "Spins Left - " + (spins - count);
     displayPhoneNumber();
 }
 function displayPhoneNumber() {
@@ -101,7 +107,6 @@ function submitPhoneNumber() {
     allNumbers = [];
     count = 0;
     spins = 99;
-    spinsLeft.innerText = "Spins Left - " + (spins - count);
     displayPhoneNumber();
 }
 
