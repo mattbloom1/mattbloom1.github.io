@@ -694,6 +694,13 @@ git add assets/img && git commit -m "feat: homepage tile assets (photo, icon str
 
 Note: `tile-casa.webp` / `tile-lereve.webp` don't exist until Task 9 — the two website tiles will show broken images at this step; that's expected and resolved next task.
 
+**As-built notes (code review):**
+- Case-study tile `<img>` elements (`tile-casa.webp`, `tile-lereve.webp`) use `alt=""` — the surrounding `<a>` links are self-labeling via their visible caption text, so a descriptive alt would double-announce and pollute the accessible name; it also avoids ugly broken-image label text until Task 9 ships the webps.
+- The ↗ arrow glyph in the GitHub tile caption is wrapped in `<span aria-hidden="true">` — without this, screen readers announce "north east arrow" as part of the link name.
+- `<h1 class="visually-hidden">Matt Bloomfield — Portfolio</h1>` added as first child of `<main class="page">` — the page had zero heading landmarks, which fails WCAG 2.4.6 (Headings and Labels). A `.visually-hidden` clip-pattern utility was added to `base.css` after the type utilities block.
+- `loading=lazy` + `fetchpriority` hints on tile images deferred to Task 9 (depends on webps existing first).
+- `og:` meta tags deferred to Task 12 (deploy step, where the canonical URL is known).
+
 - [ ] **Step 2: Verify**
 
 Open `http://localhost:8080/`. Pass:
