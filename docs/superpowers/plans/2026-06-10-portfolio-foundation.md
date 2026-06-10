@@ -184,7 +184,8 @@ h1,h2,h3{font-weight:300;font-family:var(--serif);letter-spacing:-0.02em}
 }
 .t-mono{
   font-family:var(--mono);font-size:11px;
-  letter-spacing:0.1em;text-transform:uppercase;color:var(--cyan);
+  letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-soft);
+  /* --cyan fails AA on paper (2.6:1); components recolor .t-mono to --sky on navy */
 }
 
 /* ---------- masthead (injected by chrome.js) ---------- */
