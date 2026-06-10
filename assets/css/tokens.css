@@ -5,11 +5,11 @@
   --paper: #EFEDE8;
   --paper-2: #E7E4DC;
   --ink: #00273A;        /* GVC Navy — all text on paper */
-  --sky: #53C7DC;        /* hairlines, hovers, active states. Never body text */
-  --cyan: #00A1C4;       /* mono meta text, links. Sparingly */
+  --sky: #53C7DC;        /* hairlines, hovers, active states (1.7:1 on paper). Never text on paper */
+  --cyan: #00A1C4;       /* accents & meta text ON NAVY (5:1). On paper: decorative only, never text */
   --bone: #E5E5E5;       /* text/elements on navy */
   --rule: #D3D4D0;       /* hairline borders */
-  --ink-soft: #33525F;   /* secondary text on paper (ink at ~80%) */
+  --ink-soft: #33525F;   /* secondary text on paper (7.1:1, passes AA) */
 
   /* type */
   --serif: 'Fraunces', Georgia, serif;
