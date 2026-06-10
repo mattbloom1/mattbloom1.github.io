@@ -62,11 +62,12 @@
         e.target.style.transform = "";
         /* Clean up inline styles after the transition completes so CSS transforms
            (e.g. hover effects) aren't permanently blocked by inline overrides. */
-        e.target.addEventListener("transitionend", function cleanup() {
+        e.target.addEventListener("transitionend", function cleanup(ev) {
+          if (ev.target !== e.target || ev.propertyName !== "opacity") return;
+          e.target.removeEventListener("transitionend", cleanup);
           e.target.style.transition = "";
           e.target.style.opacity = "";
-          e.target.removeEventListener("transitionend", cleanup);
-        }, { once: true });
+        });
         io.unobserve(e.target);
       });
     /* threshold: 0 + rootMargin -10% bottom fires when the element top enters
