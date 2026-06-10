@@ -465,6 +465,13 @@ Pages load GSAP from CDN *before* this file. All initial hidden states are set f
 
 > **Race note:** chrome.js can dispatch `monogram-ready` before motion.js runs (the SVG fetch may resolve while the parser is still blocked fetching motion.js). In addition to `document.addEventListener("monogram-ready", drawMonogram)`, check whether the SVG is already inlined — `if (document.querySelector("#mast-monogram svg")) drawMonogram();` — so the draw still happens when the event has already fired.
 
+**As-built notes (code review):**
+- `sessionStorage` access wrapped in `sget`/`sset` try/catch helpers — prevents SecurityError from killing the module when storage is blocked (cookie-blocking, some webviews).
+- `addEventListener("monogram-ready", …)` uses `{ once: true }`; comment corrected to state the two trigger paths are mutually exclusive because chrome.js dispatches synchronously.
+- Reveal transition uses `var(--dur-2)` (360ms, the "reveals" token) instead of hardcoded `.5s`; inline `transition`/`opacity` styles are cleared on a one-shot `transitionend` listener so hover transforms aren't permanently blocked.
+- IntersectionObserver uses `{ threshold: 0, rootMargin: "0px 0px -10% 0px" }` instead of `{ threshold: 0.15 }` — avoids the threshold-never-fires bug for elements taller than ~6.7 viewports.
+- `window.addEventListener("beforeprint", …)` snaps all `[data-reveal]` elements visible so below-fold sections don't print blank.
+
 ```js
 /* Motion helpers. Everything no-ops under prefers-reduced-motion. */
 (function () {

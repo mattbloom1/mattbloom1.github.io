@@ -3,11 +3,16 @@
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const gsapOk = typeof gsap !== "undefined";
 
+  /* sessionStorage helpers — blocked storage (cookie-blocking, some webviews)
+     would otherwise throw SecurityError and kill the whole module. */
+  const sget = k => { try { return sessionStorage.getItem(k); } catch { return null; } };
+  const sset = (k, v) => { try { sessionStorage.setItem(k, v); } catch {} };
+
   /* 1 — Monogram self-draw, once per session.
      The GVC mark is fill-based, so: stroke the paths, dash-animate, fade fill in. */
   function drawMonogram() {
     if (reduced || !gsapOk) return;
-    if (sessionStorage.getItem("monogram-drawn")) return;
+    if (sget("monogram-drawn")) return;
     const svg = document.querySelector("#mast-monogram svg");
     if (!svg) return;
     const paths = svg.querySelectorAll("path");
@@ -20,16 +25,17 @@
       p.style.strokeDashoffset = len;
     });
     const tl = gsap.timeline({
-      onComplete: () => sessionStorage.setItem("monogram-drawn", "1"),
+      onComplete: () => sset("monogram-drawn", "1"),
     });
     tl.to(paths, { strokeDashoffset: 0, duration: 1.1, ease: "power2.inOut", stagger: 0.08 })
       .to(paths, { fillOpacity: 1, strokeWidth: 0, duration: 0.4 }, "-=0.3");
   }
 
-  /* Race-note fix: chrome.js's SVG fetch may have already resolved before this
-     listener registers. Check immediately; if the SVG is already inlined, run now.
-     drawMonogram's guards (svg null-check + sessionStorage flag) make this safe. */
-  document.addEventListener("monogram-ready", drawMonogram);
+  /* Race-note: chrome.js dispatches "monogram-ready" synchronously right after
+     inlining the SVG. If motion.js loads after that dispatch the listener below
+     won't fire, but the immediate querySelector check will. The two paths are
+     mutually exclusive — { once: true } is belt-and-suspenders. */
+  document.addEventListener("monogram-ready", drawMonogram, { once: true });
   if (document.querySelector("#mast-monogram svg")) drawMonogram();
 
   /* 2 — Staggered entrance for elements marked data-enter (used by the bento). */
@@ -50,12 +56,23 @@
     const io = new IntersectionObserver(entries => {
       entries.forEach(e => {
         if (!e.isIntersecting) return;
-        e.target.style.transition = "opacity .5s var(--ease), transform .5s var(--ease)";
+        e.target.style.transition =
+          "opacity var(--dur-2) var(--ease), transform var(--dur-2) var(--ease)";
         e.target.style.opacity = "1";
-        e.target.style.transform = "none";
+        e.target.style.transform = "";
+        /* Clean up inline styles after the transition completes so CSS transforms
+           (e.g. hover effects) aren't permanently blocked by inline overrides. */
+        e.target.addEventListener("transitionend", function cleanup() {
+          e.target.style.transition = "";
+          e.target.style.opacity = "";
+          e.target.removeEventListener("transitionend", cleanup);
+        }, { once: true });
         io.unobserve(e.target);
       });
-    }, { threshold: 0.15 });
+    /* threshold: 0 + rootMargin -10% bottom fires when the element top enters
+       the bottom 90% of the viewport; avoids the threshold-never-fires bug for
+       elements taller than ~6.7 viewports. */
+    }, { threshold: 0, rootMargin: "0px 0px -10% 0px" });
     els.forEach(el => io.observe(el));
   }
 
@@ -73,6 +90,16 @@
       tile.addEventListener("mouseleave", () => { img.style.transform = ""; });
     });
   }
+
+  /* 5 — Print: snap all [data-reveal] elements visible so below-fold sections
+     don't print blank (they may still have inline opacity:0 / translateY). */
+  window.addEventListener("beforeprint", () => {
+    document.querySelectorAll("[data-reveal]").forEach(el => {
+      el.style.opacity = "";
+      el.style.transform = "";
+      el.style.transition = "";
+    });
+  });
 
   document.addEventListener("DOMContentLoaded", () => { entrances(); reveals(); parallax(); });
 })();
