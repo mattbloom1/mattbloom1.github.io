@@ -463,6 +463,8 @@ git add assets/js/chrome.js && git commit -m "feat: shared chrome injection"
 
 Pages load GSAP from CDN *before* this file. All initial hidden states are set from JS so no-JS users see full content.
 
+> **Race note:** chrome.js can dispatch `monogram-ready` before motion.js runs (the SVG fetch may resolve while the parser is still blocked fetching motion.js). In addition to `document.addEventListener("monogram-ready", drawMonogram)`, check whether the SVG is already inlined — `if (document.querySelector("#mast-monogram svg")) drawMonogram();` — so the draw still happens when the event has already fired.
+
 ```js
 /* Motion helpers. Everything no-ops under prefers-reduced-motion. */
 (function () {

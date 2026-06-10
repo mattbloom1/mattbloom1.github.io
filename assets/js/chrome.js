@@ -1,5 +1,7 @@
-/* Injects shared masthead + footer. NAV grows as sections ship (Plans 2-6). */
+/* Injects shared masthead + footer. NAV grows as sections ship (Plans 2-6).
+   Dereferences document.body at execution — load as a classic script at the end of <body>. */
 (function () {
+  if (document.querySelector(".masthead")) return;
   const root = document.body.dataset.root || "";
   const active = document.body.dataset.nav || "";
 
@@ -23,17 +25,17 @@
         <span class="for">for The GVC Team</span>
       </span>
     </a>
-    <nav class="mast-nav">${navLinks}</nav>`;
+    <nav class="mast-nav" aria-label="Primary">${navLinks}</nav>`;
   document.body.prepend(mast);
 
   // Inline the monogram SVG so motion.js can animate its paths.
   fetch(root + "assets/logos/monogram.svg")
-    .then(r => r.text())
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
     .then(svg => {
       const slot = document.getElementById("mast-monogram");
       if (slot) { slot.innerHTML = svg; document.dispatchEvent(new Event("monogram-ready")); }
     })
-    .catch(() => {}); // masthead works without the mark
+    .catch(err => console.warn("monogram failed to load", err)); // masthead works without the mark
 
   const foot = document.createElement("footer");
   foot.className = "site-foot";
