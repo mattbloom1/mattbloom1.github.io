@@ -1,0 +1,89 @@
+/* ---------- bento ---------- */
+.bento{
+  display:grid;gap:14px;
+  grid-template-columns:repeat(4,1fr);
+  grid-auto-rows:190px;
+  grid-auto-flow:dense;
+  padding:32px 0 0;
+}
+.tile{
+  position:relative;overflow:hidden;border-radius:8px;
+  background:var(--paper-2);border:1px solid var(--rule);
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:18px;cursor:pointer;
+  transition:transform var(--dur-1) var(--ease), box-shadow var(--dur-1) var(--ease);
+}
+.tile:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,39,58,0.10)}
+.tile:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+.tile.w2{grid-column:span 2}
+.tile.h2{grid-row:span 2}
+
+/* navy color-block tile (fallback + websites) — the GVC color-block accent */
+.tile.navy{background:var(--ink);border:none;color:var(--bone)}
+.tile.navy::before{
+  content:"";position:absolute;left:0;top:18px;bottom:18px;width:3px;background:var(--sky);
+}
+.tile.navy .t-mono{color:var(--sky)}
+
+.tile .tile-img{
+  position:absolute;inset:0;z-index:0;
+}
+.tile .tile-img img{
+  width:100%;height:100%;object-fit:cover;
+  transform:scale(1.04);            /* headroom for pointer parallax */
+  transition:transform var(--dur-2) var(--ease);
+}
+.tile .tile-cap{
+  position:relative;z-index:1;
+  display:flex;flex-direction:column;gap:4px;
+}
+.tile.has-img .tile-cap{
+  background:linear-gradient(transparent, rgba(0,39,58,0.78) 30%);
+  margin:-18px;padding:34px 18px 16px;color:var(--bone);
+}
+.tile.has-img .tile-cap .t-mono{color:var(--sky)}
+.tile .tile-name{font-family:var(--serif);font-size:22px;line-height:1.1}
+.tile.h2 .tile-name{font-size:30px}
+
+/* icon strip inside the Icon Library tile */
+.tile .icon-strip{
+  position:relative;z-index:1;flex:1;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;align-content:center;
+}
+.tile .icon-strip img{width:34px;height:34px;opacity:0.9}
+
+@media (max-width:980px){ .bento{grid-template-columns:repeat(2,1fr)} }
+@media (max-width:560px){
+  .bento{grid-template-columns:1fr;grid-auto-rows:150px}
+  .tile.w2,.tile.h2{grid-column:span 1;grid-row:span 1}
+  .tile.h2.feature{grid-row:span 2}
+}
+
+/* ---------- buttons ---------- */
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--sans-display);font-weight:800;font-size:11px;
+  letter-spacing:0.18em;text-transform:uppercase;
+  border:1px solid var(--ink);border-radius:999px;
+  padding:10px 20px;transition:background var(--dur-1),color var(--dur-1);
+}
+.btn:hover{background:var(--ink);color:var(--bone)}
+.btn:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+.btn.on-navy{border-color:var(--bone)}
+.btn.on-navy:hover{background:var(--bone);color:var(--ink)}
+
+/* ---------- case study ---------- */
+.case-hero{margin:32px 0 0;border:1px solid var(--rule);border-radius:8px;overflow:hidden}
+.case-hero img{width:100%;height:auto}
+.case-grid{
+  display:grid;grid-template-columns:2fr 1fr;gap:48px;padding:40px 0;
+}
+.case-grid .body p{max-width:62ch;margin-bottom:1em;font-weight:400}
+.case-meta{display:flex;flex-direction:column;gap:20px}
+.case-meta h3{font-family:var(--sans-display);font-weight:800;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;margin-bottom:8px}
+.case-meta ul{list-style:none}
+.case-meta li{font-family:var(--mono);font-size:11px;letter-spacing:0.06em;color:var(--ink-soft);padding:6px 0;border-bottom:1px solid var(--rule)}
+@media (max-width:780px){ .case-grid{grid-template-columns:1fr;gap:28px} }
+
+/* reveal-on-scroll initial state is set by motion.js (not CSS) so content
+   is visible when JS is disabled */
