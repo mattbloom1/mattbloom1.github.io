@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matt Bloomfield — Portfolio</title>
+<meta name="description" content="Design tools, photo galleries, and property websites built for The GVC Team at Douglas Elliman.">
+<link rel="icon" href="assets/logos/monogram.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Nunito+Sans:wght@800;900&family=Raleway:wght@300;400;500&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/components.css">
+</head>
+<body data-root="" data-nav="home">
+<main class="page">
+  <section class="bento" aria-label="Projects">
+
+    <!-- Photo Editing: 2×2 feature tile -->
+    <div class="tile h2 w2 has-img feature" data-enter>
+      <div class="tile-img"><img src="assets/img/tile-photo.jpg" alt="Edited interior photo, 120 East 75th"></div>
+      <div class="tile-cap">
+        <span class="t-mono">13 property galleries</span>
+        <span class="tile-name">Photo Editing</span>
+      </div>
+    </div>
+
+    <!-- Icon Library: 1×2 (w2) -->
+    <div class="tile w2" data-enter>
+      <div class="icon-strip">
+        <img src="assets/img/icon-strip/automobile.svg" alt="">
+        <img src="assets/img/icon-strip/coffee-cup.svg" alt="">
+        <img src="assets/img/icon-strip/evergreen-tree.svg" alt="">
+        <img src="assets/img/icon-strip/gas-pump.svg" alt="">
+        <img src="assets/img/icon-strip/sailboat.svg" alt="">
+        <img src="assets/img/icon-strip/steam-locomotive.svg" alt="">
+        <img src="assets/img/icon-strip/teapot.svg" alt="">
+        <img src="assets/img/icon-strip/wine-glass.svg" alt="">
+      </div>
+      <div class="tile-cap">
+        <span class="t-mono">8 custom icons</span>
+        <span class="tile-name">Icon Library</span>
+      </div>
+    </div>
+
+    <!-- Map Studio: 1×2 (w2), navy fallback -->
+    <div class="tile navy w2" data-enter>
+      <div class="tile-cap">
+        <span class="t-mono">Address list → 3D map → export</span>
+        <span class="tile-name">Map Studio</span>
+      </div>
+    </div>
+
+    <!-- Showsheet Generator: 1×1, navy fallback -->
+    <div class="tile navy" data-enter>
+      <div class="tile-cap">
+        <span class="t-mono">Tool</span>
+        <span class="tile-name">Showsheet Generator</span>
+      </div>
+    </div>
+
+    <!-- Floorplan Converter: 1×1, navy fallback -->
+    <div class="tile navy" data-enter>
+      <div class="tile-cap">
+        <span class="t-mono">Tool</span>
+        <span class="tile-name">Floorplan Converter</span>
+      </div>
+    </div>
+
+    <!-- Feet & Inches Calculator: 1×1, navy fallback -->
+    <div class="tile navy" data-enter>
+      <div class="tile-cap">
+        <span class="t-mono">Tool</span>
+        <span class="tile-name">Feet &amp; Inches Calculator</span>
+      </div>
+    </div>
+
+    <!-- GitHub: 1×1, live link -->
+    <a class="tile" href="https://github.com/mattbloom1" target="_blank" rel="noopener" data-enter>
+      <div class="tile-cap">
+        <span class="t-mono">github.com/mattbloom1 ↗</span>
+        <span class="tile-name">Source</span>
+      </div>
+    </a>
+
+    <!-- Casa Avenida: 1×2 (w2), live link -->
+    <a class="tile has-img w2" href="projects/casa-avenida/" data-enter>
+      <div class="tile-img"><img src="assets/img/tile-casa.webp" alt="Casa Avenida website"></div>
+      <div class="tile-cap">
+        <span class="t-mono">Website</span>
+        <span class="tile-name">Casa Avenida</span>
+      </div>
+    </a>
+
+    <!-- Le Rêve: 1×2 (w2), live link -->
+    <a class="tile has-img w2" href="projects/le-reve/" data-enter>
+      <div class="tile-img"><img src="assets/img/tile-lereve.webp" alt="Le Rêve website"></div>
+      <div class="tile-cap">
+        <span class="t-mono">Website</span>
+        <span class="tile-name">Le Rêve</span>
+      </div>
+    </a>
+
+  </section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="assets/js/chrome.js"></script>
+<script src="assets/js/motion.js"></script>
+</body>
+</html>
