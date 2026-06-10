@@ -1,0 +1,32 @@
+/* GVC Editorial design tokens — single source of truth.
+   Brand: GVC Brand Guideline FINAL JAN 2025. */
+:root {
+  /* color */
+  --paper: #EFEDE8;
+  --paper-2: #E7E4DC;
+  --ink: #00273A;        /* GVC Navy — all text on paper */
+  --sky: #53C7DC;        /* hairlines, hovers, active states. Never body text */
+  --cyan: #00A1C4;       /* mono meta text, links. Sparingly */
+  --bone: #E5E5E5;       /* text/elements on navy */
+  --rule: #D3D4D0;       /* hairline borders */
+  --ink-soft: #33525F;   /* secondary text on paper (ink at ~80%) */
+
+  /* type */
+  --serif: 'Fraunces', Georgia, serif;
+  --sans-display: 'Nunito Sans', system-ui, sans-serif; /* 800/900, caps, tracked */
+  --sans-body: 'Raleway', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* motion */
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-1: 180ms;   /* hovers */
+  --dur-2: 360ms;   /* reveals */
+  --dur-3: 700ms;   /* entrances */
+
+  /* layout */
+  --pad-x: 40px;
+  --mast-h: 64px;
+}
+@media (max-width: 640px) {
+  :root { --pad-x: 16px; }
+}
