@@ -54,12 +54,18 @@ h1,h2,h3{font-weight:300;font-family:var(--serif);letter-spacing:-0.02em}
 }
 .mast-nav a:hover{border-color:var(--sky)}
 .mast-nav a:focus-visible{border-color:var(--sky);outline:none}
+.mast-lockup:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
 .mast-nav a[aria-current="page"]{border-color:var(--sky)}
 @media (max-width:640px){
   .mast-lockup .who{font-size:14px}
   .mast-lockup .for{display:none}
   .mast-nav{gap:14px}
   .mast-nav a{font-size:10px;letter-spacing:0.12em}
+  /* ≥40px tap targets: invisible hit-area extension, no visual shift */
+  .mast-lockup,.mast-nav a,.site-foot .right a{position:relative}
+  .mast-lockup::after,.mast-nav a::after,.site-foot .right a::after{
+    content:"";position:absolute;left:-6px;right:-6px;top:50%;height:40px;transform:translateY(-50%)
+  }
 }
 
 /* ---------- footer (injected by chrome.js) ---------- */
@@ -69,10 +75,15 @@ h1,h2,h3{font-weight:300;font-family:var(--serif);letter-spacing:-0.02em}
   display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:12px;
 }
 .site-foot .left{font-family:var(--serif);font-size:14px}
-.site-foot .right{display:flex;gap:18px}
+.site-foot .right{display:flex;gap:18px;flex-wrap:wrap}
 .site-foot .right a{font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-soft);border-bottom:1px solid transparent;transition:border-color var(--dur-1)}
 .site-foot .right a:hover{border-color:var(--ink)}
 .site-foot .right a:focus-visible{border-color:var(--ink);outline:none}
+@media (max-width:640px){
+  /* after the gap shorthand above so row-gap survives; keeps the expanded
+     tap targets from overlapping across wrapped rows */
+  .site-foot .right{row-gap:24px}
+}
 
 /* ---------- page scaffold ---------- */
 .page{padding:0 var(--pad-x)}

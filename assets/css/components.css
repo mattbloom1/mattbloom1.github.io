@@ -34,6 +34,7 @@ a.tile,button.tile{cursor:pointer}
   transform:scale(1.04);            /* headroom for pointer parallax */
   transition:transform var(--dur-2) var(--ease);
 }
+.tile.crop-top .tile-img img{object-position:top} /* website tiles: keep the site wordmark (top of screenshot) in frame */
 .tile .tile-cap{
   position:relative;z-index:1;
   display:flex;flex-direction:column;gap:4px;
@@ -81,7 +82,7 @@ a.tile,button.tile{cursor:pointer}
 }
 .case-grid .body p{max-width:62ch;margin-bottom:1em;font-weight:400}
 .case-meta{display:flex;flex-direction:column;gap:20px}
-.case-meta h3{font-family:var(--sans-display);font-weight:800;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;margin-bottom:8px}
+.case-meta h2,.case-meta h3{font-family:var(--sans-display);font-weight:800;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;margin-bottom:8px}
 .case-meta ul{list-style:none}
 .case-meta li{font-family:var(--mono);font-size:11px;letter-spacing:0.06em;color:var(--ink-soft);padding:6px 0;border-bottom:1px solid var(--rule)}
 @media (max-width:780px){ .case-grid{grid-template-columns:1fr;gap:28px} }

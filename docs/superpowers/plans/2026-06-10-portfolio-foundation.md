@@ -939,6 +939,20 @@ git add -A && git commit -m "fix: verification pass findings"
 
 (Skip the commit if nothing was found.)
 
+**As-built notes (Task 11):**
+- Walked all 3 pages at 375/768/1280. 768 and 1280 passed everything as-is; 375 failed h-scroll on all pages (footer) — fixed below. Fraunces confirmed loaded and rendering on every page; tab order is masthead → content links → footer everywhere; all focus-visible rules verified live in the CSSOM.
+- Footer overflow at 375 (all pages): added `flex-wrap:wrap` to `.site-foot .right` in base.css. Layout viewport was blowing out to 658px; now scrollWidth = 375 on all three pages.
+- Tap targets <40px on mobile (new finding): mast-nav links were 21px tall, footer links 16px, lockup 34px. Added invisible `::after` hit-area extensions (40px tall, ±6px wide) at ≤640px plus `row-gap:24px` on the wrapped footer so the expanded areas don't overlap across rows. The row-gap override lives *after* the `.site-foot .right{gap:18px}` shorthand in source order — the shorthand resets row-gap, so order matters. Verified via elementFromPoint probes at ±10px.
+- `.mast-lockup` had no focus-visible style (new finding, minor): added the sky outline to match the rest of the chrome.
+- Case pages h1→h3 skip: both `<h3>` → `<h2>`, selector widened to `.case-meta h2,.case-meta h3`.
+- List semantics: `role="list"` on all four case-page `<ul>` (components.css strips list-style, which drops list semantics in Safari/VoiceOver).
+- Hero alts: now "Screenshot of the Casa Avenida website homepage" / "Screenshot of the Le Rêve website homepage".
+- Number style: Casa "8 townhome residences" → "eight townhome residences" (meta description + body copy), matching Le Rêve's "five".
+- Tile crop (judgment call): center-crop clipped both website wordmarks entirely (Casa's "CASA AVENIDA" sits at 10–26% of image height, Le Rêve's header at 3–12%; center-crop shows 24–76%). The Le Rêve tile was anonymous waves. A/B'd top-crop in the browser — clear improvement — so added `.tile.crop-top .tile-img img{object-position:top}` and the `crop-top` class on the two website tiles only.
+- Reduced-motion: verified by code inspection + CSSOM (true media emulation not available in the preview tooling): motion.js gates all four motion features on the `reduced` matchMedia check, and the base.css reduced-motion block (scroll-behavior, body animation, 0.01ms transition/animation caps) is present in the parsed CSSOM.
+- No-JS: raw HTML of all three pages contains full content (headings, copy, tiles); reveal initial states are set by JS, not CSS, so nothing is hidden without JS. Masthead/footer are JS-injected (accepted per plan).
+- Server note: the preview server serves the repo root at `http://localhost:8080/` (not `/Portfolio/`), so the subdirectory claim was verified by inspection instead: every URL in the site is relative and chrome.js builds paths off `data-root`.
+
 ---
 
 ### Task 12: Deploy to GitHub Pages
