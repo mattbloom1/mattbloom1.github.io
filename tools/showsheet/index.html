@@ -11,7 +11,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=JetBrains+Mono&family=Nunito+Sans:opsz,wght@6..12,200..1000&family=Playfair+Display:ital,wght@0,400..800;1,400..800&family=Raleway:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/css/tokens.css">
 <link rel="stylesheet" href="../../assets/css/base.css">
-<link rel="stylesheet" href="../../assets/css/components.css">
 <script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
 <style>
@@ -34,7 +33,7 @@ body{font-family:var(--body);color:var(--navy);}
 
 /* ================= EDITOR (screen only) ================= */
 /* sidebar runs the full height at left; the quick bar sits beside it, above the preview */
-#app{display:grid;grid-template-columns:430px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;height:calc(100vh - var(--mast-h));overflow:hidden;}
+#app{display:grid;grid-template-columns:430px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;height:calc(100vh - var(--mast-h, 64px));overflow:hidden;line-height:normal;}
 #main{display:contents;}
 #editor{grid-column:1;grid-row:1 / 4;width:430px;min-width:430px;min-height:0;overflow-y:auto;background:#fff;border-right:1px solid #dde4e9;display:flex;flex-direction:column;}
 .ed-body{flex:1;}

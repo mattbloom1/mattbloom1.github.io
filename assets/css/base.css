@@ -33,6 +33,9 @@ h1,h2,h3{font-weight:300;font-family:var(--serif);letter-spacing:-0.02em}
 }
 .visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 
+/* tool pages redefine --serif for their own canvases; the chrome re-asserts its own */
+.masthead,.site-foot{--serif:'Fraunces',Georgia,serif}
+
 /* ---------- masthead (injected by chrome.js) ---------- */
 .masthead{
   position:sticky;top:0;z-index:50;
