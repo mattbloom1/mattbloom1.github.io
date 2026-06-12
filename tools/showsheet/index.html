@@ -3,10 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GVC Showsheet Studio — The Gasdaska Verdiglione Conlon Team</title>
+<title>Showsheet Generator — Matt Bloomfield</title>
+<meta name="description" content="Print-ready A5 listing showsheets for The GVC Team: drop a listing doc, photo, and floorplan; data is extracted and laid out for two-sided print.">
+<link rel="icon" href="../../assets/logos/monogram.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,200..1000&family=Raleway:ital,wght@0,300..800;1,300..800&family=Playfair+Display:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=JetBrains+Mono&family=Nunito+Sans:opsz,wght@6..12,200..1000&family=Playfair+Display:ital,wght@0,400..800;1,400..800&family=Raleway:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/tokens.css">
+<link rel="stylesheet" href="../../assets/css/base.css">
+<link rel="stylesheet" href="../../assets/css/components.css">
 <script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
 <style>
@@ -29,7 +34,7 @@ body{font-family:var(--body);color:var(--navy);}
 
 /* ================= EDITOR (screen only) ================= */
 /* sidebar runs the full height at left; the quick bar sits beside it, above the preview */
-#app{display:grid;grid-template-columns:430px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;height:100vh;overflow:hidden;}
+#app{display:grid;grid-template-columns:430px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;height:calc(100vh - var(--mast-h));overflow:hidden;}
 #main{display:contents;}
 #editor{grid-column:1;grid-row:1 / 4;width:430px;min-width:430px;min-height:0;overflow-y:auto;background:#fff;border-right:1px solid #dde4e9;display:flex;flex-direction:column;}
 .ed-body{flex:1;}
@@ -314,7 +319,7 @@ body.bleed .crop{display:block;}
   html,body{background:#fff !important;margin:0 !important;padding:0 !important;height:auto !important;overflow:visible !important;}
   #app{display:block;height:auto;overflow:visible;}
   #main{display:block;height:auto;}
-  #quickBar,#editor,#stageBar,#toasts,#warnOverlay,.pg-tag{display:none !important;}
+  #quickBar,#editor,#stageBar,#toasts,#warnOverlay,.pg-tag,.masthead,.site-foot,.tool-about{display:none !important;}
   #stage{height:auto;overflow:visible;}
   #sheets{padding:0 !important;display:block !important;}
   .pg-col{display:block;}
@@ -326,7 +331,9 @@ body.bleed .crop{display:block;}
 </style>
 <style id="pagesize">@page{size:210mm 148mm;margin:0;}</style>
 </head>
-<body>
+<body data-root="../../" data-nav="tools">
+<main>
+<h1 class="visually-hidden">Showsheet Generator</h1>
 <div id="app">
 <!-- ======================= EVERY LISTING — quick bar ======================= -->
 <header id="quickBar">
@@ -489,6 +496,7 @@ body.bleed .crop{display:block;}
   </div>
 </div>
 <div id="toasts"></div>
+</main>
 <script id="unit-data" type="application/json"></script>
 <script>
 'use strict';
@@ -1401,5 +1409,8 @@ window.__test = {
   }
 };
 </script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="../../assets/js/chrome.js"></script>
+<script src="../../assets/js/motion.js"></script>
 </body>
 </html>

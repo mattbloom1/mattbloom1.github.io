@@ -59,7 +59,7 @@ h1,h2,h3{font-weight:300;font-family:var(--serif);letter-spacing:-0.02em}
 @media (max-width:640px){
   .mast-lockup .who{font-size:14px}
   .mast-lockup .for{display:none}
-  .mast-nav{gap:14px}
+  .mast-nav{gap:14px;row-gap:24px}
   .mast-nav a{font-size:10px;letter-spacing:0.12em}
   /* ≥40px tap targets: invisible hit-area extension, no visual shift */
   .mast-lockup,.mast-nav a,.site-foot .right a{position:relative}
