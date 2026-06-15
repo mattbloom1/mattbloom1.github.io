@@ -676,7 +676,9 @@ function renderFront(){
   const b = state.building;
   const scale = [b.stories, b.residences].some(v=>!blankish(v))
     ? [!blankish(b.stories)? `${b.stories} stories`:null, !blankish(b.residences)? `${b.residences} residences`:null].filter(Boolean).join(' · ') : '';
-  const bSpecs = specRow('Built', b.builtYear) + specRow('Architect', b.architect) + specRow('Scale', scale) +
+  // Built shares its row with stories/residences so the facts below get more space
+  const built = [b.builtYear, scale].filter(v=>!blankish(v)).map(v=>String(v).trim()).join(' · ');
+  const bSpecs = specRow('Built', built) + specRow('Architect', b.architect) +
                  specRow('Service', b.service) + specRow('Policies', b.policy);
   const amen = (b.amenities||[]).filter(s=>s.trim());
   const amenHtml = amen.length ? `<div class="amen-run">${amen.map(a=>esc(a)).join('<span class="adot">·</span>')}</div>` : '';
