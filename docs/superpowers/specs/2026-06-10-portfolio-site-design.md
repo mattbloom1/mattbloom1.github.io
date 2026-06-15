@@ -46,7 +46,7 @@ One site that is equally:
 ### Shared chrome (`assets/js/chrome.js`)
 
 - Injects masthead + footer into every page from one definition
-- Masthead: lockup left (Fraunces "Matt Bloomfield", mono "for The GVC Team", GVC monogram SVG), nav right (Tools · Photos · Icons · Projects), mono caps, sky hover underline
+- Masthead: lockup centered (Fraunces "Matt Bloomfield", mono "for The GVC Team", GVC monogram SVG), nav right (Tools · Photos · Icons · Projects), mono caps, sky hover underline
 - Footer: contact, GitHub links (both accounts), GVC attribution. Real info only
 - Logos copied from `Showsheet Generator/GVC_SVG_LOGO COLLECTION/` into `/assets/logos/`
 
