@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Map Studio — Matt Bloomfield</title>
+<meta name="description" content="Paste a list of addresses, place numbered pins on a 3D map, and export a labeled property-locations image. Built for The GVC Team." />
+<meta property="og:title" content="Map Studio — Matt Bloomfield" />
+<meta property="og:description" content="Address list → 3D map → exported labeled image." />
+<meta property="og:url" content="https://mattbloom1.github.io/tools/map-studio/" />
+<meta property="og:type" content="website" />
+<link rel="icon" href="../../assets/logos/monogram.svg" type="image/svg+xml" />
+<link rel="icon" type="image/png" sizes="32x32" href="../../assets/logos/monogram-32.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="../../assets/logos/apple-touch-icon-180.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Nunito+Sans:wght@800;900&family=Raleway:wght@300;400;500;600&family=JetBrains+Mono&display=swap" rel="stylesheet" />
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.css" rel="stylesheet" />
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.js"></script>
+<link rel="stylesheet" href="../../assets/css/tokens.css" />
+<link rel="stylesheet" href="../../assets/css/base.css" />
+<link rel="stylesheet" href="../../assets/css/components.css" />
+<style>
+  /* Tool palette + full-screen layout, scoped to .mapstudio so the tool's
+     --ink/--danger don't override the shared GVC tokens used by the masthead. */
+  .mapstudio{
+    --ink:#011a27;
+    --panel:#00273a;
+    --panel-2:#0a3346;
+    --line:#114a63;
+    --teal:#00a1c4;
+    --teal-dim:#007a96;
+    --gold:#53c7dc;
+    --gold-bright:#7ad8ea;
+    --cream:#e5e5e5;
+    --muted:#7fa8b8;
+    --danger:#e0a96d;
+    font-family:'Raleway',sans-serif;
+    background:
+      radial-gradient(1200px 600px at 85% -10%, #073549 0%, transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, #042334 0%, transparent 55%),
+      var(--ink);
+    color:var(--cream);
+    display:flex;
+    flex:0 0 auto;
+    height:calc(100dvh - var(--mast-h));
+    overflow:hidden;
+  }
+  .sidebar{
+    width:430px;
+    min-width:430px;
+    height:100%;
+    background:linear-gradient(180deg,var(--panel) 0%, #021824 100%);
+    border-right:1px solid var(--line);
+    display:flex;
+    flex-direction:column;
+    box-shadow:24px 0 60px -30px rgba(0,0,0,.8);
+    z-index:2;
+  }
+  .brand{
+    padding:26px 28px 18px;
+    border-bottom:1px solid var(--line);
+  }
+  .brand .kicker{
+    font-size:11px;letter-spacing:.32em;text-transform:uppercase;
+    color:var(--gold);font-weight:500;
+  }
+  .brand h1{
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    font-size:30px;
+    margin:6px 0 0;
+    line-height:1.05;
+    color:var(--cream);
+  }
+  .brand p{margin:6px 0 0;color:var(--muted);font-size:12.5px;font-weight:300;letter-spacing:.02em;}
+  .scroll{flex:1;overflow-y:auto;padding:22px 28px 30px;}
+  .scroll::-webkit-scrollbar{width:9px;}
+  .scroll::-webkit-scrollbar-thumb{background:var(--line);border-radius:9px;}
+  label.field{display:block;margin-bottom:20px;}
+  .field-label{
+    font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--teal);font-weight:500;margin-bottom:8px;display:flex;align-items:center;gap:8px;
+  }
+  .field-label a{color:var(--gold);text-decoration:none;border-bottom:1px dotted #2f7e92;font-size:10.5px;letter-spacing:.04em;text-transform:none;}
+  .field-label a:hover{color:var(--gold-bright);}
+  input[type=text],input[type=password],textarea,select{
+    width:100%;background:var(--ink);border:1px solid var(--line);
+    color:var(--cream);border-radius:10px;padding:11px 13px;
+    font-family:'Raleway',sans-serif;font-size:13.5px;outline:none;transition:border-color .2s,box-shadow .2s;
+  }
+  input:focus,textarea:focus,select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,161,196,.18);}
+  textarea{min-height:190px;resize:vertical;line-height:1.5;font-size:13px;white-space:pre;}
+  .row{display:flex;gap:12px;}
+  .row .field{flex:1;}
+  select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 18px) 18px,calc(100% - 13px) 18px;background-size:5px 5px,5px 5px;background-repeat:no-repeat;}
+  select:disabled,input:disabled{opacity:.38;cursor:not-allowed;}
+  .toggle:has(input:disabled){opacity:.38;}
+  .modnote{font-size:10.5px;color:var(--muted);margin-top:7px;line-height:1.45;font-weight:300;}
+  .controls-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:6px;}
+  .controls-grid .span2{grid-column:1 / -1;}
+  .slider-field span.val{color:var(--gold-bright);font-weight:500;}
+  input[type=range]{width:100%;accent-color:var(--teal);margin-top:6px;}
+  .detail-block{display:flex;flex-direction:column;gap:11px;margin:4px 0 6px;}
+  .detail-block .field-label{margin:14px 0 2px;}
+  .toggle{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--cream);cursor:pointer;font-weight:300;}
+  .toggle input{width:16px;height:16px;accent-color:var(--gold);flex:0 0 16px;}
+  .btn{
+    width:100%;border:none;border-radius:11px;padding:14px;font-family:'Raleway',sans-serif;
+    font-weight:500;font-size:13.5px;letter-spacing:.04em;cursor:pointer;transition:transform .12s,filter .2s,opacity .2s;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn-primary{background:linear-gradient(180deg,var(--teal) 0%,var(--teal-dim) 100%);color:#04222b;font-weight:600;box-shadow:0 8px 22px -10px rgba(0,161,196,.7);}
+  .btn-primary:hover{filter:brightness(1.08);}
+  .btn-gold{background:linear-gradient(180deg,var(--gold-bright) 0%,var(--gold) 100%);color:#022a3d;font-weight:600;box-shadow:0 8px 22px -10px rgba(83,199,220,.6);margin-top:10px;}
+  .btn-gold:hover{filter:brightness(1.06);}
+  .btn:disabled{opacity:.4;cursor:not-allowed;filter:none;box-shadow:none;}
+  .divider{height:1px;background:var(--line);margin:24px 0;}
+  .status{font-size:12px;color:var(--muted);margin-top:12px;min-height:16px;line-height:1.5;font-weight:300;}
+  .status.err{color:var(--danger);}
+  .legend-list{margin-top:18px;border-top:1px solid var(--line);padding-top:16px;}
+  .legend-list h3{font-family:'Fraunces',serif;font-size:18px;font-weight:600;margin:0 0 4px;color:var(--cream);}
+  .legend-list .sub{font-size:11px;color:var(--muted);margin-bottom:12px;letter-spacing:.02em;}
+  .leg-item{display:flex;gap:11px;align-items:flex-start;padding:8px 0;border-bottom:1px solid rgba(17,74,99,.5);}
+  .leg-num{flex:0 0 24px;height:24px;border-radius:50%;background:#00a1c4;color:#e5e5e5;font-weight:600;font-size:12px;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+  .leg-num.out{background:#53c7dc;color:#00273a;}
+  .leg-body{font-size:12.5px;line-height:1.35;}
+  .leg-body .addr{color:var(--cream);font-weight:400;}
+  .leg-body .units{color:var(--muted);font-size:11px;font-weight:300;}
+  .leg-body .flag{color:#53c7dc;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;}
+  .map-wrap{flex:1;position:relative;}
+  #map{position:absolute;inset:0;}
+  .map-hint{
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    text-align:center;color:var(--muted);max-width:380px;pointer-events:none;
+  }
+  .map-hint .ico{font-size:42px;opacity:.5;margin-bottom:14px;}
+  .map-hint h2{font-family:'Fraunces',serif;font-weight:600;font-size:26px;color:var(--cream);margin:0 0 8px;}
+  .map-hint p{font-size:13px;font-weight:300;line-height:1.6;margin:0;}
+  .map-badge{position:absolute;left:18px;bottom:18px;background:rgba(1,26,39,.8);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:10px;padding:8px 14px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-weight:500;display:none;}
+  .map-reset{
+    position:absolute;left:18px;top:18px;display:none;align-items:center;gap:7px;
+    background:rgba(1,26,39,.82);backdrop-filter:blur(6px);
+    border:1px solid var(--line);border-radius:10px;color:var(--gold);
+    font-family:'Raleway',sans-serif;font-size:12px;font-weight:500;letter-spacing:.03em;
+    padding:9px 13px;cursor:pointer;transition:background .2s,border-color .2s,color .2s,transform .12s;
+  }
+  .map-reset:hover{background:rgba(10,51,70,.95);border-color:var(--teal);color:var(--gold-bright);}
+  .map-reset:active{transform:translateY(1px);}
+  .map-reset .ico{font-size:14px;line-height:1;}
+  @media (prefers-reduced-motion:reduce){.map-reset{transition:none;}}
+  .mapboxgl-ctrl-group{background:var(--panel)!important;}
+  .mapboxgl-ctrl-scale{background:rgba(1,26,39,.78)!important;border-color:var(--line)!important;color:var(--cream)!important;border-radius:0 0 6px 0;font-family:'Raleway',sans-serif;}
+  /* Phones: stack the fixed-width sidebar above a tall map instead of overflowing. */
+  @media (max-width:760px){
+    .mapstudio{flex-direction:column;height:auto;min-height:calc(100dvh - var(--mast-h));overflow:visible;}
+    .sidebar{width:100%;min-width:0;height:auto;box-shadow:none;border-right:0;border-bottom:1px solid var(--line);}
+    .scroll{overflow:visible;}
+    .map-wrap{height:72vh;min-height:420px;flex:0 0 auto;}
+  }
+</style>
+</head>
+<body data-root="../../" data-nav="tools">
+<main class="mapstudio">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="kicker">GVC Real Estate · Tool</div>
+      <h1>Map Studio</h1>
+      <p>Paste a list → place pins on a tilted 3D map → export a labeled static image.</p>
+    </div>
+    <div class="scroll">
+      <label class="field">
+        <span class="field-label">Mapbox access token
+          <a href="https://account.mapbox.com/access-tokens/" target="_blank" rel="noopener">get a free one ↗</a>
+        </span>
+        <input id="token" type="password" placeholder="pk.eyJ1Ijoi…" autocomplete="off" spellcheck="false" />
+      </label>
+
+      <label class="field">
+        <span class="field-label">Addresses</span>
+        <textarea id="addresses" spellcheck="false" placeholder="1050&#10;Fifth Avenue&#10;15C&#10;New York&#10;345&#10;East 81st Street&#10;15G&#10;New York&#10;…"></textarea>
+      </label>
+
+      <label class="field" style="margin-bottom:14px;">
+        <span class="field-label">Base map</span>
+        <select id="style">
+          <option value="mapbox://styles/mapbox/standard">Standard · 3D buildings</option>
+          <option value="mapbox://styles/mapbox/standard-satellite">Satellite · 3D imagery</option>
+          <option value="mapbox://styles/mapbox/satellite-streets-v12">Satellite · aerial (flat)</option>
+        </select>
+        <div id="modNote" class="modnote">Lighting, theme &amp; detail toggles apply to the two 3D styles.</div>
+      </label>
+
+      <div class="row">
+        <label class="field" style="margin-bottom:14px;">
+          <span class="field-label">Lighting</span>
+          <select id="lighting">
+            <option value="day" selected>Day</option>
+            <option value="dusk">Dusk</option>
+            <option value="dawn">Dawn</option>
+            <option value="night">Night</option>
+          </select>
+        </label>
+        <label class="field" style="margin-bottom:14px;">
+          <span class="field-label">Theme</span>
+          <select id="theme">
+            <option value="default">Default</option>
+            <option value="faded">Faded</option>
+            <option value="monochrome">Monochrome</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="controls-grid">
+        <div class="slider-field">
+          <span class="field-label">Tilt <span class="val" id="pitchVal">58°</span></span>
+          <input id="pitch" type="range" min="0" max="80" value="58" />
+        </div>
+        <div class="slider-field">
+          <span class="field-label">Rotation <span class="val" id="bearingVal">-18°</span></span>
+          <input id="bearing" type="range" min="-180" max="180" value="-18" />
+        </div>
+        <div class="slider-field span2">
+          <span class="field-label">Pin size <span class="val" id="pinSizeVal">0.80×</span></span>
+          <input id="pinSize" type="range" min="0.5" max="1.6" step="0.05" value="0.8" />
+        </div>
+      </div>
+
+      <div class="detail-block">
+        <span class="field-label">Map detail</span>
+        <label class="toggle"><input id="poi" type="checkbox" /> Points of interest (stores, schools, etc.)</label>
+        <label class="toggle"><input id="transit" type="checkbox" /> Transit lines &amp; stations</label>
+        <label class="toggle"><input id="place" type="checkbox" checked /> Place &amp; neighborhood labels</label>
+        <label class="toggle"><input id="road" type="checkbox" checked /> Street names</label>
+        <label class="toggle"><input id="objects" type="checkbox" checked /> 3D buildings &amp; landmarks</label>
+        <label class="toggle"><input id="keepBuildings" type="checkbox" checked /> Keep 3D buildings visible when zoomed out</label>
+        <label class="toggle"><input id="showLabels" type="checkbox" checked /> Address text under pins</label>
+        <label class="toggle"><input id="includeOutliers" type="checkbox" /> Show distant outliers (off = auto-hide)</label>
+        <label class="toggle"><input id="spin" type="checkbox" /> Auto-rotate (slow orbit)</label>
+      </div>
+
+      <div class="divider"></div>
+
+      <button id="build" class="btn btn-primary">Place pins on map</button>
+      <label class="field" style="margin:14px 0 0;">
+        <span class="field-label">Export proportions</span>
+        <select id="exportShape">
+          <option value="view">Match current view</option>
+          <option value="0.8">Portrait · 4:5</option>
+          <option value="0.6667">Tall · 2:3</option>
+          <option value="0.5625">Extra tall · 9:16</option>
+          <option value="0.5" selected>Super tall · 1:2</option>
+          <option value="0.4">Skyscraper · 2:5</option>
+        </select>
+        <div class="modnote">Re-renders the map taller, adding more map above &amp; below your pins. The legend stays on the right.</div>
+      </label>
+      <button id="export" class="btn btn-gold" disabled>⬇ Export static image (PNG)</button>
+      <div id="status" class="status"></div>
+
+      <div id="legendList"></div>
+    </div>
+  </aside>
+
+  <div class="map-wrap">
+    <div id="map"></div>
+    <div class="map-hint" id="hint">
+      <div class="ico">⌖</div>
+      <h2>Your map appears here</h2>
+      <p>Add your Mapbox token and address list, then press <em>Place pins</em>. Drag to orbit the 3D view, frame your shot, and export a labeled image.</p>
+    </div>
+    <div class="map-badge" id="badge">GVC Real Estate</div>
+    <button id="resetView" class="map-reset" title="Reset tilt, rotation &amp; zoom to frame every pin">
+      <span class="ico">⟲</span> Reset view
+    </button>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" integrity="sha384-HOvlOYPIs/zjoIkWUGXkVmXsjr8GuZLV+Q+rcPwmJOVZVpvTSXQChiN4t9Euv9Vc" crossorigin="anonymous"></script>
+<script src="../../assets/js/chrome.js"></script>
+<script src="../../assets/js/motion.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+let map = null;
+let buildings = [];     // {number,street,city,units:[],lng,lat,ok,outlier,idx}
+let pendingFit = null;  // points to fit on the next style.load (initial build only)
+
+/* ---------- parsing ---------- */
+function parseAddresses(raw){
+  const lines = raw.split(/\r?\n/).map(s=>s.trim()).filter(s=>s.length);
+  const cityRe = /^new\s+york(\s*,?\s*ny)?$/i;
+  const records = [];
+  let buf = [];
+  const flush = (cityLine)=>{
+    if(!buf.length) return;
+    const number = buf[0] || '';
+    const street = buf[1] || '';
+    const unit = buf.slice(2).join(' ').trim();
+    records.push({ number, street, city: cityLine || 'New York', unit });
+    buf = [];
+  };
+  for(const line of lines){
+    if(cityRe.test(line)){ flush(line); } else { buf.push(line); }
+  }
+  flush('New York');
+  return records.filter(r=>r.number && r.street);
+}
+
+function dedupe(records){
+  const m = new Map();
+  for(const r of records){
+    const key = (r.number+' '+r.street).toLowerCase().replace(/\s+/g,' ').trim();
+    if(!m.has(key)) m.set(key,{ number:r.number, street:r.street, city:r.city, units:[] });
+    if(r.unit) m.get(key).units.push(r.unit);
+  }
+  return [...m.values()];
+}
+
+/* ---------- geocoding ---------- */
+async function geocode(b, token){
+  const q = `${b.number} ${b.street}, New York, NY`;
+  const url = `https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(q)}`
+    + `&access_token=${encodeURIComponent(token)}&limit=1&country=us&proximity=-73.962,40.773`;
+  const res = await fetch(url);
+  if(!res.ok) throw new Error('Geocoding failed ('+res.status+')');
+  const data = await res.json();
+  const f = data.features && data.features[0];
+  if(f && f.geometry && f.geometry.coordinates){
+    return { lng:f.geometry.coordinates[0], lat:f.geometry.coordinates[1], ok:true };
+  }
+  return { lng:null, lat:null, ok:false };
+}
+
+function median(arr){
+  const s=[...arr].sort((a,b)=>a-b); const m=Math.floor(s.length/2);
+  return s.length%2 ? s[m] : (s[m-1]+s[m])/2;
+}
+function haversineKm(a,b){
+  const R=6371,toR=x=>x*Math.PI/180;
+  const dLat=toR(b.lat-a.lat),dLng=toR(b.lng-a.lng);
+  const h=Math.sin(dLat/2)**2+Math.cos(toR(a.lat))*Math.cos(toR(b.lat))*Math.sin(dLng/2)**2;
+  return 2*R*Math.asin(Math.sqrt(h));
+}
+function flagOutliers(list){
+  const ok=list.filter(b=>b.ok);
+  if(ok.length<3){ list.forEach(b=>b.outlier=false); return; }
+  const c={lng:median(ok.map(b=>b.lng)),lat:median(ok.map(b=>b.lat))};
+  list.forEach(b=>{ b.outlier = b.ok && haversineKm(c,b) > 6; });
+}
+
+/* ---------- teardrop pin icon (GVC brand) ----------
+   Geometry + colors live in these three objects. Tune them in pin-studio.html,
+   then paste the copied block over the three constants below — buildPin() reads
+   the same fields, so the studio preview matches the map exactly. */
+const PIN = { r:16.5, tipLen:42, ringW:2, numSize:15, highlight:0, shadowBlur:0, shadowY:0, numOutline:false, innerRing:true, dpr:2 };
+const PIN_NORM = { top:'#1cb6d6', bot:'#0090b4', ring:'#eaf7fe', text:'#ffffff' };
+const PIN_OUT  = { top:'#0c3b52', bot:'#00273a', ring:'#7ad8ea', text:'#d3eff7' };
+
+/* Draws a classic map marker — round head over a pointed tip — with the building
+   number baked into the head. Rendered at `dpr`× for crisp retina pins; the tip
+   sits at the icon's bottom so it points exactly at the coordinate. */
+function buildPin(num, spec, geo){
+  geo = geo || PIN;
+  const R = geo.dpr || 2;
+  const r = geo.r;
+  const d = Math.max(geo.tipLen, r + 2);          // head-center → tip (guard d>r)
+  const pad = Math.ceil(geo.ringW + Math.max(geo.shadowBlur + geo.shadowY, 4) + 2);
+  const w = Math.ceil(2 * (r + pad));
+  const headCy = geo.ringW + (geo.shadowBlur > 0 ? 3 : 1) + r;
+  const tipY = headCy + d;
+  const h = Math.ceil(tipY + geo.ringW + geo.shadowBlur * 0.4 + 4);
+  const cx = w / 2;
+
+  const c = document.createElement('canvas');
+  c.width = w * R; c.height = h * R;
+  const x = c.getContext('2d'); x.scale(R, R);
+
+  const alpha = Math.acos(Math.min(r / d, 0.999));
+  const aR = Math.PI/2 - alpha, aL = Math.PI/2 + alpha;
+  const teardrop = () => {
+    x.beginPath();
+    x.moveTo(cx, tipY);
+    x.lineTo(cx + r*Math.cos(aR), headCy + r*Math.sin(aR));
+    x.arc(cx, headCy, r, aR, aL, true);
+    x.closePath();
+  };
+
+  // soft ground shadow + gradient fill
+  x.save();
+  if(geo.shadowBlur > 0){ x.shadowColor='rgba(1,12,18,.5)'; x.shadowBlur=geo.shadowBlur; x.shadowOffsetY=geo.shadowY; }
+  teardrop();
+  const grad = x.createLinearGradient(0, headCy - r, 0, tipY);
+  grad.addColorStop(0, spec.top); grad.addColorStop(1, spec.bot);
+  x.fillStyle = grad; x.fill();
+  x.restore();
+
+  // outer ring
+  if(geo.ringW > 0){ teardrop(); x.lineWidth = geo.ringW; x.lineJoin='round'; x.strokeStyle = spec.ring; x.stroke(); }
+
+  // inner hairline on the head for depth
+  if(geo.innerRing){
+    x.beginPath(); x.arc(cx, headCy, r - 2.4, 0, Math.PI*2);
+    x.lineWidth = 1; x.strokeStyle = 'rgba(1,39,58,.45)'; x.stroke();
+  }
+
+  // glossy highlight
+  if(geo.highlight > 0){
+    x.beginPath(); x.ellipse(cx, headCy - r*0.42, r*0.6, r*0.32, 0, 0, Math.PI*2);
+    x.fillStyle = `rgba(255,255,255,${geo.highlight})`; x.fill();
+  }
+
+  // number (auto-shrinks for 3+ digits), with optional dark outline for legibility
+  const fs = num.length > 2 ? geo.numSize * 0.72 : geo.numSize;
+  x.font = `600 ${fs}px Raleway, "Segoe UI", sans-serif`;
+  x.textAlign = 'center'; x.textBaseline = 'middle';
+  if(geo.numOutline){
+    x.lineWidth = Math.max(2, fs*0.14); x.lineJoin='round'; x.strokeStyle = 'rgba(1,30,45,.6)';
+    x.strokeText(num, cx, headCy + 0.5);
+  }
+  x.fillStyle = spec.text; x.fillText(num, cx, headCy + 0.5);
+
+  return { data: x.getImageData(0, 0, c.width, c.height), pixelRatio: R };
+}
+
+/* ---------- map render ---------- */
+function renderMap(token, styleUrl){
+  mapboxgl.accessToken = token;
+  const ok = buildings.filter(b=>b.ok && (includeOutliers() || !b.outlier));
+  const framePts = ok.length ? ok : buildings.filter(b=>b.ok);
+  const feats = buildings.filter(b=>b.ok).map(b=>({
+    type:'Feature',
+    geometry:{type:'Point',coordinates:[b.lng,b.lat]},
+    properties:{ img:(b.outlier?'pinout-':'pin-')+b.idx, label:`${b.number} ${shortStreet(b.street)}`, outlier: !!b.outlier }
+  }));
+  const geojson={type:'FeatureCollection',features:feats};
+
+  if(map){ map.remove(); map=null; }
+  map = new mapboxgl.Map({
+    container:'map', style:styleUrl,
+    center:[framePts[0].lng,framePts[0].lat], zoom:15,
+    pitch:Number($('pitch').value), bearing:Number($('bearing').value),
+    preserveDrawingBuffer:true, antialias:true, attributionControl:true
+  });
+  pendingFit = framePts;
+  map.addControl(new mapboxgl.NavigationControl({visualizePitch:true}),'top-right');
+  map.addControl(new mapboxgl.FullscreenControl(),'top-right');
+  map.addControl(new mapboxgl.ScaleControl({maxWidth:110,unit:'imperial'}),'bottom-right');
+  map.on('dragstart', stopSpin);
+
+  map.on('style.load',()=>{
+    // one numbered teardrop image per building (re-added after any style swap)
+    buildings.filter(b=>b.ok).forEach(b=>{
+      const name=(b.outlier?'pinout-':'pin-')+b.idx;
+      if(!map.hasImage(name)){
+        const p=buildPin(String(b.idx), b.outlier?PIN_OUT:PIN_NORM);
+        map.addImage(name, p.data, {pixelRatio:p.pixelRatio});
+      }
+    });
+
+    if(map.getSource('homes')) map.getSource('homes').setData(geojson);
+    else map.addSource('homes',{type:'geojson',data:geojson});
+
+    if(!map.getLayer('home-pins')){
+      map.addLayer({ id:'home-pins', type:'symbol', source:'homes',
+        layout:{ 'icon-image':['get','img'],'icon-anchor':'bottom',
+          'icon-size':Number($('pinSize').value),
+          'icon-allow-overlap':true,'icon-ignore-placement':true } });
+    }
+    if(!map.getLayer('home-labels')){
+      map.addLayer({ id:'home-labels', type:'symbol', source:'homes',
+        layout:{ 'text-field':['get','label'],'text-font':['DIN Pro Medium','Arial Unicode MS Regular'],
+          'text-size':12,'text-offset':[0,0.8],'text-anchor':'top','text-allow-overlap':false,
+          'visibility': $('showLabels').checked ? 'visible':'none' },
+        paint:{ 'text-color':'#e5e5e5','text-halo-color':'#00273a','text-halo-width':1.8 } });
+    }
+
+    applyBasemapConfig();
+    applyOutlierVisibility();
+    if(pendingFit){ fitToPoints(pendingFit); pendingFit=null; }
+    else applyKeepBuildings();
+    $('badge').style.display='block';
+    $('resetView').style.display='inline-flex';
+  });
+}
+
+/* apply Standard-style configuration (lighting / theme / detail layers) */
+function applyBasemapConfig(){
+  if(!map) return;
+  const set=(k,v)=>{ try{ map.setConfigProperty('basemap',k,v); }catch(e){} };
+  set('lightPreset', $('lighting').value);
+  set('theme', $('theme').value);
+  set('showPointOfInterestLabels', $('poi').checked);
+  set('showTransitLabels', $('transit').checked);
+  set('showPlaceLabels', $('place').checked);
+  set('showRoadLabels', $('road').checked);
+  set('show3dObjects', $('objects').checked);
+}
+
+function updateModifierState(){
+  const std = $('style').value.includes('standard');
+  ['lighting','theme','poi','transit','place','road','objects'].forEach(id=>{ $(id).disabled=!std; });
+  $('modNote').style.display = std ? 'none' : 'block';
+}
+
+function fitToPoints(pts){
+  if(!pts.length) return;
+  // Release the zoom-lock so every pin can fit, then re-lock once the camera
+  // settles (only if we ended up close enough that buildings exist).
+  map.setMinZoom(null);
+  map.once('moveend', applyKeepBuildings);
+  if(pts.length===1){
+    map.easeTo({center:[pts[0].lng,pts[0].lat],zoom:16.4,
+      pitch:Number($('pitch').value),bearing:Number($('bearing').value)});
+    return;
+  }
+  const b=new mapboxgl.LngLatBounds();
+  pts.forEach(p=>b.extend([p.lng,p.lat]));
+  map.fitBounds(b,{padding:90,maxZoom:16.6,pitch:Number($('pitch').value),
+    bearing:Number($('bearing').value),duration:800});
+}
+
+/* #1 — keep 3D buildings on screen. Building footprint/height data only exists
+   in Mapbox tiles from ~zoom 14–15 up, so the honest way to keep buildings
+   "always visible" is to stop the camera zooming out past that floor. */
+const BUILDING_ZOOM_FLOOR = 14;
+function applyKeepBuildings(){
+  if(!map) return;
+  if($('keepBuildings').checked && map.getZoom() >= BUILDING_ZOOM_FLOOR){
+    map.setMinZoom(BUILDING_ZOOM_FLOOR);
+  } else {
+    map.setMinZoom(null);
+  }
+}
+
+/* Auto-hide distant outliers: by default their pins + labels are filtered out so a
+   stray geocode can't clutter the map or blow out the framing. The "Show distant
+   outliers" toggle brings them back (and frames them). */
+function applyOutlierVisibility(){
+  if(!map) return;
+  const filt = includeOutliers() ? null : ['!', ['get','outlier']];
+  ['home-pins','home-labels'].forEach(id=>{ if(map.getLayer(id)) map.setFilter(id, filt); });
+}
+
+function shortStreet(s){
+  return s.replace(/\bAvenue\b/i,'Ave').replace(/\bStreet\b/i,'St')
+          .replace(/\bBoulevard\b/i,'Blvd').replace(/\bPlace\b/i,'Pl');
+}
+function includeOutliers(){ return $('includeOutliers').checked; }
+
+/* ---------- legend (sidebar) ---------- */
+function renderLegend(){
+  const ok=buildings.filter(b=>b.ok);
+  const failed=buildings.filter(b=>!b.ok);
+  let html=`<div class="legend-list"><h3>Buildings</h3>
+    <div class="sub">${ok.length} located · ${buildings.reduce((n,b)=>n+Math.max(b.units.length,1),0)} units total${failed.length?` · ${failed.length} not found`:''}</div>`;
+  buildings.forEach(b=>{
+    if(!b.ok) return;
+    const u=b.units.length?`${b.units.length} unit${b.units.length>1?'s':''} · ${b.units.join(', ')}`:'whole building / no unit listed';
+    html+=`<div class="leg-item">
+      <div class="leg-num ${b.outlier?'out':''}">${b.idx}</div>
+      <div class="leg-body"><span class="addr">${b.number} ${b.street}</span><br>
+      <span class="units">${u}</span>${b.outlier?'<br><span class="flag">⚠ distant outlier</span>':''}</div></div>`;
+  });
+  if(failed.length){
+    html+=`<div class="sub" style="margin-top:12px;color:var(--danger)">Could not locate: ${failed.map(b=>b.number+' '+b.street).join('; ')}</div>`;
+  }
+  html+='</div>';
+  $('legendList').innerHTML=html;
+}
+
+/* ---------- export composite PNG ---------- */
+async function exportImage(){
+  if(!map){ return; }
+  const btn=$('export');
+  const shapeVal=$('exportShape').value;
+  const mapEl=map.getContainer();
+  const cssW=mapEl.clientWidth;
+  const savedStyle=mapEl.getAttribute('style');
+  let resized=false;
+
+  // Extend the map's vertical bounds for a tall export: re-render the map taller
+  // (off-screen, same center & zoom) so more map shows above AND below the pins.
+  if(shapeVal!=='view'){
+    const ratio=Number(shapeVal);                        // width / height
+    const targetH=Math.max(cssW, Math.round(cssW/ratio));
+    btn.disabled=true;
+    setStatus('Rendering tall export — extending the map north & south…');
+    mapEl.style.position='fixed';
+    mapEl.style.top='0'; mapEl.style.left='-100000px';
+    mapEl.style.right='auto'; mapEl.style.bottom='auto';
+    mapEl.style.width=cssW+'px'; mapEl.style.height=targetH+'px';
+    map.resize();
+    await new Promise(res=>{ let done=false; const fin=()=>{ if(!done){done=true;res();} };
+      map.once('idle',fin); setTimeout(fin,4000); });
+    resized=true;
+  }
+
+  try{
+  const mc=map.getCanvas();
+  const mw=mc.width, mh=mc.height;
+  const scale=mw/cssW;
+  const entries=buildings.filter(b=>b.ok);
+
+  const pad=24*scale;
+  const legW=Math.round(Math.max(360*scale, mw*0.34));
+  const cols=entries.length>16?2:1;
+  const colGap=18*scale;
+  const colW=(legW-pad*2-colGap*(cols-1))/cols;
+  const fNum=13*scale, fAddr=14.5*scale, fUnit=11.5*scale, fTitle=26*scale, fSub=12*scale;
+  const lineH=fAddr*1.18, unitH=fUnit*1.2, itemGap=10*scale;
+  const headerH=fTitle+fSub+30*scale;
+
+  const meas=document.createElement('canvas').getContext('2d');
+  function unitText(b){ return b.units.length?`${b.units.length} unit${b.units.length>1?'s':''} · ${b.units.join(', ')}`:'whole building'; }
+  function itemHeight(b){
+    meas.font=`400 ${fUnit}px Raleway, sans-serif`;
+    const lines=wrap(meas,unitText(b),colW-34*scale);
+    return Math.max(28*scale, lineH + lines.length*unitH) + itemGap;
+  }
+  const perCol=Math.ceil(entries.length/cols);
+  let maxColH=0;
+  for(let c=0;c<cols;c++){
+    let h=0;
+    for(let i=c*perCol;i<Math.min((c+1)*perCol,entries.length);i++) h+=itemHeight(entries[i]);
+    maxColH=Math.max(maxColH,h);
+  }
+  const legContentH=headerH+maxColH+pad;
+  const outH=Math.max(mh,legContentH);
+  const outW=mw+legW;
+
+  const out=document.createElement('canvas'); out.width=outW; out.height=outH;
+  const g=out.getContext('2d');
+  g.fillStyle='#00273a'; g.fillRect(0,0,outW,outH);
+  g.drawImage(mc,0,0);
+  g.fillStyle='#00273a'; g.fillRect(mw,0,legW,outH);
+  g.fillStyle='#114a63'; g.fillRect(mw,0,2*scale,outH);
+
+  let x=mw+pad;
+  g.fillStyle='#53c7dc'; g.font=`600 ${11*scale}px Raleway, sans-serif`;
+  g.fillText('GVC REAL ESTATE'.split('').join('\u200a'), x, pad+12*scale);
+  g.fillStyle='#e5e5e5'; g.font=`700 ${fTitle}px 'Fraunces', serif`;
+  g.fillText('Property Locations', x, pad+fTitle+16*scale);
+  g.fillStyle='#7fa8b8'; g.font=`400 ${fSub}px Raleway, sans-serif`;
+  g.fillText(`${entries.length} buildings · ${buildings.reduce((n,b)=>n+Math.max(b.units.length,1),0)} units`, x, pad+fTitle+16*scale+fSub+6*scale);
+
+  for(let c=0;c<cols;c++){
+    let cy=headerH+pad*0.4;
+    const cx=mw+pad+c*(colW+colGap);
+    for(let i=c*perCol;i<Math.min((c+1)*perCol,entries.length);i++){
+      const b=entries[i];
+      const r=11*scale;
+      g.beginPath(); g.arc(cx+r,cy+r,r,0,Math.PI*2);
+      g.fillStyle=b.outlier?'#53c7dc':'#00a1c4'; g.fill();
+      g.fillStyle=b.outlier?'#00273a':'#e5e5e5'; g.font=`600 ${fNum}px Raleway, sans-serif`;
+      g.textAlign='center'; g.textBaseline='middle';
+      g.fillText(String(b.idx),cx+r,cy+r+0.5*scale);
+      g.textAlign='left'; g.textBaseline='alphabetic';
+      g.fillStyle='#e5e5e5'; g.font=`500 ${fAddr}px Raleway, sans-serif`;
+      g.fillText(`${b.number} ${b.street}`, cx+r*2+10*scale, cy+fAddr);
+      g.fillStyle='#7fa8b8'; g.font=`400 ${fUnit}px Raleway, sans-serif`;
+      const lines=wrap(g,unitText(b),colW-(r*2+10*scale));
+      let ly=cy+fAddr+unitH;
+      lines.forEach(ln=>{ g.fillText(ln, cx+r*2+10*scale, ly); ly+=unitH; });
+      cy+=itemHeight(b);
+    }
+  }
+
+  const a=document.createElement('a');
+  a.download='gvc-3d-property-map.png';
+  a.href=out.toDataURL('image/png');
+  a.click();
+  } finally {
+    if(resized){
+      if(savedStyle===null) mapEl.removeAttribute('style'); else mapEl.setAttribute('style',savedStyle);
+      map.resize();
+      btn.disabled=false;
+      setStatus('Exported a tall PNG. Reframe and export again anytime.');
+    }
+  }
+}
+
+function wrap(ctx,text,maxW){
+  const words=text.split(' '); const lines=[]; let line='';
+  for(const w of words){
+    const t=line?line+' '+w:w;
+    if(ctx.measureText(t).width>maxW && line){ lines.push(line); line=w; }
+    else line=t;
+  }
+  if(line) lines.push(line);
+  return lines.slice(0,3);
+}
+
+/* ---------- orchestration ---------- */
+async function build(){
+  const token=$('token').value.trim();
+  const raw=$('addresses').value;
+  if(!token){ setStatus('Add your Mapbox access token first.',true); return; }
+  if(!raw.trim()){ setStatus('Paste your address list first.',true); return; }
+
+  const records=parseAddresses(raw);
+  if(!records.length){ setStatus('No addresses parsed — expecting number / street / unit / "New York" per record.',true); return; }
+  buildings=dedupe(records).map((b,i)=>({...b,lng:null,lat:null,ok:false,outlier:false,idx:i+1}));
+
+  $('build').disabled=true; $('export').disabled=true;
+  let done=0;
+  for(const b of buildings){
+    setStatus(`Geocoding ${++done}/${buildings.length}: ${b.number} ${b.street}…`);
+    try{ Object.assign(b, await geocode(b,token)); }
+    catch(err){
+      const blocked = err && (err.name==='TypeError' || /failed to fetch|networkerror/i.test(err.message||''));
+      setStatus(blocked
+        ? 'Map request was blocked by the sandbox. Download this file and open it directly in your browser (double-click it) — the in-app preview can\u2019t reach outside map services.'
+        : err.message, true);
+      $('build').disabled=false; return;
+    }
+    await new Promise(r=>setTimeout(r,90));
+  }
+  let n=1; buildings.forEach(b=>{ if(b.ok) b.idx=n++; });
+  flagOutliers(buildings);
+
+  const okCount=buildings.filter(b=>b.ok).length;
+  if(!okCount){ setStatus('None of the addresses could be located. Double-check the token and the list format.',true); $('build').disabled=false; return; }
+
+  $('hint').style.display='none';
+  renderMap(token,$('style').value);
+  renderLegend();
+  updateModifierState();
+  setStatus(`Placed ${okCount} building${okCount>1?'s':''}. Drag to frame your 3D shot, then export.`);
+  $('build').disabled=false; $('export').disabled=false;
+}
+
+function setStatus(msg,err){ const s=$('status'); s.textContent=msg; s.className='status'+(err?' err':''); }
+
+/* #4 — auto-rotate / slow orbit */
+let spinRAF=null;
+function spinStep(){ if(!map){ spinRAF=null; return; } map.setBearing(map.getBearing()+0.16); spinRAF=requestAnimationFrame(spinStep); }
+function stopSpin(){ if(spinRAF){ cancelAnimationFrame(spinRAF); spinRAF=null; } if($('spin').checked) $('spin').checked=false; }
+$('spin').onchange=e=>{ if(e.target.checked){ if(!spinRAF) spinStep(); } else if(spinRAF){ cancelAnimationFrame(spinRAF); spinRAF=null; } };
+
+/* live controls */
+$('pitch').oninput=e=>{ $('pitchVal').textContent=e.target.value+'°'; if(map) map.setPitch(Number(e.target.value)); };
+$('bearing').oninput=e=>{ $('bearingVal').textContent=e.target.value+'°'; if(map) map.setBearing(Number(e.target.value)); };
+$('pinSize').oninput=e=>{ const v=Number(e.target.value); $('pinSizeVal').textContent=v.toFixed(2)+'×'; if(map&&map.getLayer('home-pins')) map.setLayoutProperty('home-pins','icon-size',v); };
+$('showLabels').onchange=e=>{ if(map&&map.getLayer('home-labels')) map.setLayoutProperty('home-labels','visibility',e.target.checked?'visible':'none'); };
+$('includeOutliers').onchange=()=>{ if(map){ applyOutlierVisibility(); const pts=buildings.filter(b=>b.ok&&(includeOutliers()||!b.outlier)); fitToPoints(pts.length?pts:buildings.filter(b=>b.ok)); } };
+$('keepBuildings').onchange=()=>{
+  if(!map) return;
+  if($('keepBuildings').checked){
+    if(map.getZoom()<BUILDING_ZOOM_FLOOR) map.easeTo({zoom:BUILDING_ZOOM_FLOOR});
+    map.setMinZoom(BUILDING_ZOOM_FLOOR);
+  } else map.setMinZoom(null);
+};
+['lighting','theme','poi','transit','place','road','objects'].forEach(id=>{
+  $(id).addEventListener('change', applyBasemapConfig);
+});
+$('style').onchange=()=>{ updateModifierState(); if(map){ pendingFit=null; map.setStyle($('style').value); } };
+$('resetView').onclick=()=>{
+  if(!map) return;
+  stopSpin();
+  $('pitch').value=58;  $('pitchVal').textContent='58°';
+  $('bearing').value=-18; $('bearingVal').textContent='-18°';
+  map.setPitch(58); map.setBearing(-18);
+  const pts=buildings.filter(b=>b.ok&&(includeOutliers()||!b.outlier));
+  fitToPoints(pts.length?pts:buildings.filter(b=>b.ok));
+};
+$('build').onclick=build;
+$('export').onclick=exportImage;
+updateModifierState();
+</script>
+</body>
+</html>
