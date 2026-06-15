@@ -55,7 +55,7 @@ Pages link assets with **relative paths** (`assets/...` from root pages, `../../
 **Files:**
 - Create: `.nojekyll`, `README.md`
 
-- [ ] **Step 1: Create files**
+- [x] **Step 1: Create files**
 
 `.nojekyll` — empty file.
 
@@ -88,7 +88,7 @@ Push to `main`. GitHub Pages serves the repo root.
 - Plans: `docs/superpowers/plans/`
 ```
 
-- [ ] **Step 2: Verify and commit**
+- [x] **Step 2: Verify and commit**
 
 Run from `C:\Users\Matthew Bloomdield\Desktop\Portfolio` (all later commands too):
 
@@ -103,7 +103,7 @@ git add .nojekyll README.md && git commit -m "chore: scaffold repo"
 **Files:**
 - Create: `assets/css/tokens.css`
 
-- [ ] **Step 1: Write tokens.css**
+- [x] **Step 1: Write tokens.css**
 
 ```css
 /* GVC Editorial design tokens — single source of truth.
@@ -140,7 +140,7 @@ git add .nojekyll README.md && git commit -m "chore: scaffold repo"
 }
 ```
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 git add assets/css/tokens.css && git commit -m "feat: design tokens"
@@ -153,7 +153,7 @@ git add assets/css/tokens.css && git commit -m "feat: design tokens"
 **Files:**
 - Create: `assets/css/base.css`
 
-- [ ] **Step 1: Write base.css**
+- [x] **Step 1: Write base.css**
 
 ```css
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -240,7 +240,7 @@ h1,h2,h3{font-weight:300;font-family:var(--serif);letter-spacing:-0.02em}
 }
 ```
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 git add assets/css/base.css && git commit -m "feat: base styles and shared chrome CSS"
@@ -253,7 +253,7 @@ git add assets/css/base.css && git commit -m "feat: base styles and shared chrom
 **Files:**
 - Create: `assets/logos/monogram.svg`, `assets/logos/monogram-white.svg`, `assets/logos/lockup.svg`, `assets/css/components.css`
 
-- [ ] **Step 1: Copy logos**
+- [x] **Step 1: Copy logos**
 
 ```bash
 mkdir -p assets/logos
@@ -262,7 +262,7 @@ cp "/c/Users/Matthew Bloomdield/Desktop/Showsheet Generator/GVC_SVG_LOGO COLLECT
 cp "/c/Users/Matthew Bloomdield/Desktop/Showsheet Generator/GVC_SVG_LOGO COLLECTION/Name and Logo Dark Blue.svg" assets/logos/lockup.svg
 ```
 
-- [ ] **Step 2: Write components.css**
+- [x] **Step 2: Write components.css**
 
 ```css
 /* ---------- bento ---------- */
@@ -355,7 +355,7 @@ cp "/c/Users/Matthew Bloomdield/Desktop/Showsheet Generator/GVC_SVG_LOGO COLLECT
    is visible when JS is disabled */
 ```
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add assets/logos assets/css/components.css && git commit -m "feat: logos and component styles"
@@ -368,7 +368,7 @@ git add assets/logos assets/css/components.css && git commit -m "feat: logos and
 **Files:**
 - Create: `assets/js/chrome.js`
 
-- [ ] **Step 1: Write chrome.js**
+- [x] **Step 1: Write chrome.js**
 
 Every page sets `<body data-root="">` (root pages) or `data-root="../../"` (pages two levels deep), and optionally `data-nav="projects"` to mark the active section.
 
@@ -424,7 +424,7 @@ Every page sets `<body data-root="">` (root pages) or `data-root="../../"` (page
 })();
 ```
 
-- [ ] **Step 2: Verify**
+- [x] **Step 2: Verify**
 
 Create a throwaway `_chrome-test.html` in repo root:
 
@@ -445,7 +445,7 @@ Create a throwaway `_chrome-test.html` in repo root:
 Run `python -m http.server 8080`, open `http://localhost:8080/_chrome-test.html`.
 Pass: masthead with monogram + "Matt Bloomfield / for The GVC Team" lockup and Home/Projects nav; footer with the four real links; "Home" has a sky underline; no console errors.
 
-- [ ] **Step 3: Delete test file and commit**
+- [x] **Step 3: Delete test file and commit**
 
 ```bash
 rm _chrome-test.html
@@ -459,7 +459,7 @@ git add assets/js/chrome.js && git commit -m "feat: shared chrome injection"
 **Files:**
 - Create: `assets/js/motion.js`
 
-- [ ] **Step 1: Write motion.js**
+- [x] **Step 1: Write motion.js**
 
 Pages load GSAP from CDN *before* this file. All initial hidden states are set from JS so no-JS users see full content.
 
@@ -548,7 +548,7 @@ Pages load GSAP from CDN *before* this file. All initial hidden states are set f
 })();
 ```
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 git add assets/js/motion.js && git commit -m "feat: motion helpers"
@@ -563,7 +563,7 @@ git add assets/js/motion.js && git commit -m "feat: motion helpers"
 **Files:**
 - Create: `assets/img/tile-photo.jpg`, `assets/img/icon-strip/*.svg` (8 files)
 
-- [ ] **Step 1: Pick and resize one property photo**
+- [x] **Step 1: Pick and resize one property photo**
 
 List candidates, pick any **landscape interior** JPG (executor's judgment — a wide living room or kitchen reads best at tile size):
 
@@ -583,7 +583,7 @@ img.convert("RGB").save(r"assets\img\tile-photo.jpg", quality=82, optimize=True)
 
 Pass: `assets/img/tile-photo.jpg` exists and is under 250 KB.
 
-- [ ] **Step 2: Copy 8 icons for the strip**
+- [x] **Step 2: Copy 8 icons for the strip**
 
 ```bash
 ls "/c/Users/Matthew Bloomdield/Desktop/Icons/output/"*.svg | head -40
@@ -596,7 +596,7 @@ cp "/c/Users/Matthew Bloomdield/Desktop/Icons/output/gear.svg" assets/img/icon-s
 
 Pass: 8 SVGs in `assets/img/icon-strip/`.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add assets/img && git commit -m "feat: homepage tile assets (photo, icon strip)"
@@ -609,7 +609,7 @@ git add assets/img && git commit -m "feat: homepage tile assets (photo, icon str
 **Files:**
 - Create: `index.html`
 
-- [ ] **Step 1: Write index.html**
+- [x] **Step 1: Write index.html**
 
 16-cell layout (4 cols): Photo 2×2 · Icons 2×1 · Map Studio 2×1 · Showsheet 1 · Floorplan 1 · Calculator 1 · GitHub 1 · Casa 2×1 · Le Rêve 2×1. Tool tiles point at their future routes but render the navy fallback until their plans land — **keep `href` removed (use `<div>`) until the target exists; convert to `<a>` in the plan that ships each tool.** Photo/Icons tiles also stay `<div>` until Plans 3/4. Only the case studies and GitHub are live links in Plan 1.
 
@@ -701,7 +701,7 @@ Note: `tile-casa.webp` / `tile-lereve.webp` don't exist until Task 9 — the two
 - `loading=lazy` + `fetchpriority` hints on tile images deferred to Task 9 (depends on webps existing first).
 - `og:` meta tags deferred to Task 12 (deploy step, where the canonical URL is known).
 
-- [ ] **Step 2: Verify**
+- [x] **Step 2: Verify**
 
 Open `http://localhost:8080/`. Pass:
 - Bento fills 4 rows × 4 cols with no empty cells at 1280px; 2-col at 768px; 1-col at 375px
@@ -710,7 +710,7 @@ Open `http://localhost:8080/`. Pass:
 - With DevTools "Emulate prefers-reduced-motion", everything appears instantly, no animation
 - No console errors except the two missing webp images
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add index.html && git commit -m "feat: homepage bento"
@@ -723,7 +723,7 @@ git add index.html && git commit -m "feat: homepage bento"
 **Files:**
 - Create: `assets/img/tile-casa.webp`, `assets/img/tile-lereve.webp`, `projects/casa-avenida/hero.webp`, `projects/le-reve/hero.webp`
 
-- [ ] **Step 1: Confirm both sites are live**
+- [x] **Step 1: Confirm both sites are live**
 
 ```bash
 curl -sI https://casaavenidadelray.com | head -1
@@ -732,7 +732,7 @@ curl -sI https://lerevebocaraton.com | head -1
 
 Expected: `HTTP/2 200` (or 301 to the canonical host — follow it). If Casa Avenida is not live yet, run it locally instead (`cd "Desktop/Casa Avenida Website" && npm run dev`) and screenshot `http://localhost:3000`.
 
-- [ ] **Step 2: Capture**
+- [x] **Step 2: Capture**
 
 Either use the Claude-in-Chrome / Preview MCP screenshot tools at 1440×900, or Playwright CLI:
 
@@ -744,7 +744,7 @@ npx -y playwright@1.53 screenshot --viewport-size=1440,900 --wait-for-timeout=60
 
 (6s wait lets hero crossfades/fonts settle.)
 
-- [ ] **Step 3: Convert to webp at two sizes**
+- [x] **Step 3: Convert to webp at two sizes**
 
 ```python
 # one-off convert_shots.py, delete after running
@@ -761,7 +761,7 @@ for raw, slug in [("casa-raw.png", "casa-avenida"), ("lereve-raw.png", "le-reve"
 
 Pass: 4 webp files exist, each ≤300 KB. Delete the raw PNGs and the script.
 
-- [ ] **Step 4: Verify homepage and commit**
+- [x] **Step 4: Verify homepage and commit**
 
 Reload `http://localhost:8080/` — both website tiles now show screenshots, zero console errors.
 
@@ -776,7 +776,7 @@ git add assets/img/*.webp projects && git commit -m "feat: website screenshots f
 **Files:**
 - Create: `projects/casa-avenida/index.html`, `projects/le-reve/index.html`
 
-- [ ] **Step 1: Write projects/casa-avenida/index.html**
+- [x] **Step 1: Write projects/casa-avenida/index.html**
 
 Facts from the project's README/CLAUDE.md — verify against the live site while writing; correct copy beats complete copy.
 
@@ -839,7 +839,7 @@ Facts from the project's README/CLAUDE.md — verify against the live site while
 </html>
 ```
 
-- [ ] **Step 2: Write projects/le-reve/index.html**
+- [x] **Step 2: Write projects/le-reve/index.html**
 
 Same skeleton with Le Rêve content (full file, changed parts shown in place):
 
@@ -901,7 +901,7 @@ Same skeleton with Le Rêve content (full file, changed parts shown in place):
 </html>
 ```
 
-- [ ] **Step 3: Verify**
+- [x] **Step 3: Verify**
 
 Open both `http://localhost:8080/projects/casa-avenida/` and `.../le-reve/`. Pass:
 - Chrome injects correctly at depth 2 (monogram loads, lockup links back to home)
@@ -909,7 +909,7 @@ Open both `http://localhost:8080/projects/casa-avenida/` and `.../le-reve/`. Pas
 - 375px width: meta column stacks below body text
 - No console errors
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add projects && git commit -m "feat: Casa Avenida and Le Reve case studies"
@@ -919,19 +919,19 @@ git add projects && git commit -m "feat: Casa Avenida and Le Reve case studies"
 
 ### Task 11: Full-site verification pass
 
-- [ ] **Step 1: Walk every page at three widths**
+- [x] **Step 1: Walk every page at three widths**
 
 375 / 768 / 1280 px: homepage + both case studies. Pass criteria:
 - No horizontal scrollbars, no overlapping text, tap targets ≥40px on mobile
 - Fonts render (Fraunces serif visible in headings — if a heading shows Georgia, the Google Fonts link is wrong)
 - Keyboard: Tab reaches every tile/link, focus ring visible (sky outline)
 
-- [ ] **Step 2: Reduced-motion + no-JS pass**
+- [x] **Step 2: Reduced-motion + no-JS pass**
 
 - DevTools emulate `prefers-reduced-motion: reduce` → no animation anywhere, all content visible
 - Disable JavaScript → pages show content (no masthead/footer is acceptable; content must not be hidden)
 
-- [ ] **Step 3: Fix anything found, commit**
+- [x] **Step 3: Fix anything found, commit**
 
 ```bash
 git add -A && git commit -m "fix: verification pass findings"
@@ -957,7 +957,7 @@ git add -A && git commit -m "fix: verification pass findings"
 
 ### Task 12: Deploy to GitHub Pages
 
-- [ ] **Step 1: Switch gh account and create repo**
+- [x] **Step 1: Switch gh account and create repo**
 
 ```bash
 gh auth switch --user mattbloom1
@@ -970,7 +970,7 @@ Pass: `mattbloom1` is the active account.
 gh repo create mattbloom1.github.io --public --source . --remote origin --push
 ```
 
-- [ ] **Step 2: Confirm Pages is serving**
+- [x] **Step 2: Confirm Pages is serving**
 
 For `<user>.github.io` repos, Pages auto-enables on `main`. Wait ~2 minutes, then:
 
@@ -980,11 +980,11 @@ curl -sI https://mattbloom1.github.io | head -1
 
 Expected: `HTTP/2 200`. If 404 persists after 5 minutes: `gh api repos/mattbloom1/mattbloom1.github.io/pages -X POST -f "source[branch]=main" -f "source[path]=/"` then re-check (or enable via repo Settings → Pages → Deploy from branch → main).
 
-- [ ] **Step 3: Verify live site**
+- [x] **Step 3: Verify live site**
 
 Open `https://mattbloom1.github.io` in a real browser: homepage renders identically to local, both case studies reachable, monogram draws, screenshots load.
 
-- [ ] **Step 4: Tag the milestone**
+- [x] **Step 4: Tag the milestone**
 
 ```bash
 git tag plan-1-foundation && git push origin plan-1-foundation

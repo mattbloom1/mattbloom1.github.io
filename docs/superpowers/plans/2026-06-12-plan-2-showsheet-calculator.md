@@ -43,7 +43,7 @@ Portfolio/
 **Files:**
 - Create: `tools/showsheet/index.html` (verbatim copy)
 
-- [ ] **Step 1: Copy the file**
+- [x] **Step 1: Copy the file**
 
 ```bash
 mkdir -p tools/showsheet
@@ -52,7 +52,7 @@ cp "/c/Users/Matthew Bloomdield/Desktop/Showsheet Generator/GVC Showsheet Genera
 
 Do NOT modify the source project, now or in any later task.
 
-- [ ] **Step 2: Build the verification harness (reused in Tasks 3 and 5)**
+- [x] **Step 2: Build the verification harness (reused in Tasks 3 and 5)**
 
 Create scratch folder `_verify/` at repo root (it is throwaway — deleted before every commit):
 
@@ -90,7 +90,7 @@ if (errors.length) { console.error('FAIL: console errors'); process.exit(1); }
 console.log('PASS');
 ```
 
-- [ ] **Step 3: Run the baseline check**
+- [x] **Step 3: Run the baseline check**
 
 List `C:\Users\Matthew Bloomdield\Desktop\Showsheet Generator\Example Property Info Docs\` and pick any one `.docx`. Serve the repo root on :8080, then:
 
@@ -100,7 +100,7 @@ node _verify/showsheet-check.mjs "C:\Users\Matthew Bloomdield\Desktop\Showsheet 
 
 Pass: prints a non-empty sheet address and `PASS`, zero console errors. Read `_verify/showsheet-state.png` — the sheet preview must show the address, price area, and the dropped photo. This is the functional baseline the restyle must preserve.
 
-- [ ] **Step 4: Commit (the tool copy only — never commit `_verify/`)**
+- [x] **Step 4: Commit (the tool copy only — never commit `_verify/`)**
 
 ```bash
 echo "_verify/" >> .gitignore
@@ -117,7 +117,7 @@ git commit -m "feat: showsheet generator (verbatim copy, baseline verified)"
 - Modify: `assets/js/chrome.js` (NAV)
 - Modify: `assets/css/base.css` (one line)
 
-- [ ] **Step 1: Update chrome.js NAV**
+- [x] **Step 1: Update chrome.js NAV**
 
 In `assets/js/chrome.js`, replace the NAV array (keep the growth comment, minus tools):
 
@@ -132,7 +132,7 @@ In `assets/js/chrome.js`, replace the NAV array (keep the growth comment, minus 
 
 ("Tools" points at the showsheet until more tools/an index exist — same placeholder pattern as "Projects".)
 
-- [ ] **Step 2: Tap-target row clearance in base.css**
+- [x] **Step 2: Tap-target row clearance in base.css**
 
 The ≤640px media block in `assets/css/base.css` contains the masthead rules with the `::after` tap-target extensions (40px tall — they need ≥24px row gap if the nav ever wraps). Inside that same `@media (max-width:640px)` block, after the existing `.mast-nav` rule, add:
 
@@ -142,7 +142,7 @@ The ≤640px media block in `assets/css/base.css` contains the masthead rules wi
 
 (Append it to the existing `.mast-nav{gap:14px}` declaration — `gap:14px; row-gap:24px` — or as a separate later rule; later-wins ordering matters, same gotcha as the footer row-gap fix in Plan 1 Task 11.)
 
-- [ ] **Step 3: Rework the showsheet page head**
+- [x] **Step 3: Rework the showsheet page head**
 
 In `tools/showsheet/index.html`, replace lines 4–11 (meta/title/fonts/CDN scripts stay, but title changes, favicon + portfolio CSS links are added, and the fonts URL is merged to include the portfolio families). The head becomes:
 
@@ -164,7 +164,7 @@ In `tools/showsheet/index.html`, replace lines 4–11 (meta/title/fonts/CDN scri
 
 Portfolio CSS loads BEFORE the tool's inline `<style>` so the tool's own rules win every conflict. Playfair Display and the full Nunito Sans/Raleway ranges are kept for the sheet canvas.
 
-- [ ] **Step 4: Body shell changes**
+- [x] **Step 4: Body shell changes**
 
 1. `<body>` → `<body data-root="../../" data-nav="tools">`
 2. Wrap `<div id="app">…</div>` in `<main>` and add a hidden h1 as its first child:
@@ -184,7 +184,7 @@ Portfolio CSS loads BEFORE the tool's inline `<style>` so the tool's own rules w
    <script src="../../assets/js/motion.js"></script>
    ```
 
-- [ ] **Step 5: Verify**
+- [x] **Step 5: Verify**
 
 Serve :8080. Check `http://localhost:8080/tools/showsheet/` with preview tools AND re-run the Task 1 functional script (`node _verify/showsheet-check.mjs <same docx>`). Pass:
 - Masthead injected, monogram draws, "Tools" nav item has the sky underline (aria-current); footer renders below the app (scroll down)
@@ -194,7 +194,7 @@ Serve :8080. Check `http://localhost:8080/tools/showsheet/` with preview tools A
 - Homepage: nav now shows Home/Tools/Projects on all existing pages (check `/` and one case page)
 - At 375px: masthead intact, no horizontal scroll from the chrome (the tool app itself is desktop-first per its PRODUCT.md — a horizontally scrollable `#app` at 375px is ACCEPTED; the chrome must not break)
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add tools/showsheet/index.html assets/js/chrome.js assets/css/base.css
@@ -208,11 +208,11 @@ git commit -m "feat: showsheet chrome integration (masthead, Tools nav, print is
 **Files:**
 - Modify: `tools/showsheet/index.html` (`<style>` block only — the `<script>` block, lines ~493–1403, must not change)
 
-- [ ] **Step 1: Establish the boundary**
+- [x] **Step 1: Establish the boundary**
 
 Everything rendered INSIDE `.sheet` (and `.sheet-wrap`) is sheet design — **do not touch it**: this includes `.addr`, `.ag-card`, `.scell`, `.r-spec`, `.r-feat`, `.r-note`, `.pg-col` print/layout rules, the `@media print` block (beyond what Task 2 added), the `@page` rule, and the `--bleed` machinery. Tool UI is everything else: `#quickBar`, `#editor` (all `.field`, `.chip`, `.btn`, section styles), `#stage` background, `#stageBar`, `#toasts`, drop zones, scrollbars.
 
-- [ ] **Step 2: Re-ink the token block**
+- [x] **Step 2: Re-ink the token block**
 
 The tool's `:root` (lines ~18–25) keeps the sheet palette (`--navy --sky --sky2 --ow`, `--serif` Playfair, `--sans`, `--body`, `--bleed`, `--hairline` — sheets use them) and the editor surface tokens change to the system:
 
@@ -231,7 +231,7 @@ The tool's `:root` (lines ~18–25) keeps the sheet palette (`--navy --sky --sky
 }
 ```
 
-- [ ] **Step 3: Restyle the editor chrome to GVC Editorial**
+- [x] **Step 3: Restyle the editor chrome to GVC Editorial**
 
 Re-ink the tool-UI selectors to the light paper system. Constraints (this is craft work — the executor styles within these rules, matching the portfolio's established feel):
 - Surfaces: editor sidebar + quick bar on `--page` paper / white cards with `--ui-rule` hairline borders and 8px radii (match the portfolio `.tile`/`.case-meta` feel); `#stage` (preview well) may go `--ui-paper-2`. Kill any remaining dark/navy UI panels — navy stays only as text/active-state color (`--navy` is the ink)
@@ -241,11 +241,11 @@ Re-ink the tool-UI selectors to the light paper system. Constraints (this is cra
 - Contrast: every text/bg pair ≥4.5:1 (the tokens above all clear it on paper/white; `--sky` is never body text)
 - Do not rename ids/classes, do not reorder DOM, do not touch the `<script>` block
 
-- [ ] **Step 4: Functional re-verification**
+- [x] **Step 4: Functional re-verification**
 
 Re-run: `node _verify/showsheet-check.mjs <same docx>` → must print `PASS`. Read `_verify/showsheet-state.png` and compare against the Task 1 baseline screenshot: **the rendered sheets must be pixel-equivalent in design** (same fonts, colors, layout — Playfair address, navy/sky sheet palette); only the surrounding editor chrome looks different. Also click-test in preview tools: expand/collapse an editor section, toggle a chip, zoom buttons in `#stageBar` work.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add tools/showsheet/index.html
@@ -260,7 +260,7 @@ git commit -m "feat: restyle showsheet editor chrome to GVC Editorial (sheets un
 - Modify: `tools/showsheet/index.html`, `assets/css/components.css`, `index.html`
 - Create: `assets/img/tile-showsheet.webp`
 
-- [ ] **Step 1: Add .tool-about styles to components.css**
+- [x] **Step 1: Add .tool-about styles to components.css**
 
 After the case-study section in `assets/css/components.css`:
 
@@ -270,7 +270,7 @@ After the case-study section in `assets/css/components.css`:
 .tool-about p{max-width:62ch;margin-top:10px;font-weight:400}
 ```
 
-- [ ] **Step 2: Add the About block to the showsheet page**
+- [x] **Step 2: Add the About block to the showsheet page**
 
 Inside `<main>`, after `</div>` closing `#app`:
 
@@ -283,11 +283,11 @@ Inside `<main>`, after `</div>` closing `#app`:
 
 (Task 2 already added `.tool-about` to the print-hide list.)
 
-- [ ] **Step 3: Capture the tile thumbnail**
+- [x] **Step 3: Capture the tile thumbnail**
 
 With the restyled tool serving on :8080, screenshot it at 1440×900 (Playwright from `_verify/`, same pattern as the check script but just `page.screenshot({path:'showsheet-raw.png'})` after a 3s settle — load the SAME example docx + photo first so the preview shows a real sheet, not an empty state). Convert with a one-off Pillow script (delete after): thumbnail ≤1000px, WEBP quality 80 → `assets/img/tile-showsheet.webp`. Pass: file exists, ≤300 KB, legible at a glance.
 
-- [ ] **Step 4: Convert the homepage tile**
+- [x] **Step 4: Convert the homepage tile**
 
 In `index.html`, replace the Showsheet Generator navy `<div>` tile with:
 
@@ -304,7 +304,7 @@ In `index.html`, replace the Showsheet Generator navy `<div>` tile with:
 
 Judgment call: view the tile at 1280px — if the center crop hides what makes it recognizable (sheet preview), add the existing `crop-top` class. Grid math is unchanged (still a 1×1 cell; 16 cells total).
 
-- [ ] **Step 5: og tags on the tool page**
+- [x] **Step 5: og tags on the tool page**
 
 In the showsheet head, after the meta description (same pattern as the case pages):
 
@@ -317,7 +317,7 @@ In the showsheet head, after the meta description (same pattern as the case page
 <meta name="twitter:card" content="summary_large_image">
 ```
 
-- [ ] **Step 6: Verify and commit**
+- [x] **Step 6: Verify and commit**
 
 Preview: homepage shows the showsheet thumbnail tile, clicking navigates to the tool; About block renders above the footer on the tool page; zero console errors anywhere; tile renders sensibly at 375/768/1280.
 
@@ -330,7 +330,7 @@ git commit -m "feat: showsheet about block, homepage tile, og tags"
 
 ### Task 5: Showsheet verification pass + DEPLOY (showsheet goes live)
 
-- [ ] **Step 1: Full pass on the tool page**
+- [x] **Step 1: Full pass on the tool page**
 
 - 1280/768: tool usable, chrome intact, no overlap. 375: chrome intact, no chrome-caused horizontal scroll (tool app itself may scroll — accepted)
 - Print check via Playwright `emulateMedia({media:'print'})` screenshot: only sheets visible
@@ -339,7 +339,7 @@ git commit -m "feat: showsheet about block, homepage tile, og tags"
 - No-JS: fetch raw HTML — form markup present (tool legitimately requires JS to function; chrome-less static content is the accepted floor)
 - localStorage round-trip: fill a field, reload, field persists
 
-- [ ] **Step 2: Fix anything found, then delete the scratch folder and deploy**
+- [x] **Step 2: Fix anything found, then delete the scratch folder and deploy**
 
 ```bash
 rm -rf _verify
@@ -347,7 +347,7 @@ git add -A && git commit -m "fix: showsheet verification findings"   # skip if n
 git push
 ```
 
-- [ ] **Step 3: Verify LIVE**
+- [x] **Step 3: Verify LIVE**
 
 - `curl -sI https://mattbloom1.github.io/tools/showsheet/` → 200 (allow ~2 min for Pages build; check `gh api repos/mattbloom1/mattbloom1.github.io/pages/builds/latest` → built)
 - curl the live HTML: contains `id="app"` and the og:image tag
@@ -362,14 +362,14 @@ git push
 **Files:**
 - Create: `tools/calculator/index.html` (verbatim copy)
 
-- [ ] **Step 1: Copy**
+- [x] **Step 1: Copy**
 
 ```bash
 mkdir -p tools/calculator
 cp "/c/Users/Matthew Bloomdield/Desktop/SizeCalculator/calculator.html" tools/calculator/index.html
 ```
 
-- [ ] **Step 2: Baseline functional check (preview tools, no Playwright needed)**
+- [x] **Step 2: Baseline functional check (preview tools, no Playwright needed)**
 
 Serve :8080, open `/tools/calculator/`, then via preview_eval:
 
@@ -387,7 +387,7 @@ Serve :8080, open `/tools/calculator/`, then via preview_eval:
 
 Pass: total `5' 3"`, inches `63 inches`. Then add `2` ft `10` in to row 2 the same way → total `8' 1"`, `97 inches`. Click the Subtract button in `#modeSwitch`, re-check → `2' 5"`, `29 inches`. Zero console errors.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add tools/calculator/index.html
@@ -401,7 +401,7 @@ git commit -m "feat: feet & inches calculator (verbatim copy, baseline verified)
 **Files:**
 - Modify: `tools/calculator/index.html` (head, body shell, `<style>` lines ~6–183; the `<script>` block lines ~221–377 must not change)
 
-- [ ] **Step 1: Replace the head**
+- [x] **Step 1: Replace the head**
 
 ```html
 <meta charset="UTF-8">
@@ -423,7 +423,7 @@ git commit -m "feat: feet & inches calculator (verbatim copy, baseline verified)
 
 (No og:image — this tool's tile is typographic, there is no meaningful image. summary_large_image card is omitted for the same reason.)
 
-- [ ] **Step 2: Body shell**
+- [x] **Step 2: Body shell**
 
 ```html
 <body data-root="../../" data-nav="tools">
@@ -447,7 +447,7 @@ git commit -m "feat: feet & inches calculator (verbatim copy, baseline verified)
 
 NOTE: keep the calculator's own `<script>` LAST and unchanged. The old `<h1>`/`.subtitle` removal must not break the script (it only references ids/classes listed in the source facts — verify with a grep for `subtitle` in the script block before deleting; if referenced, keep the element hidden instead).
 
-- [ ] **Step 3: Restyle the `<style>` block**
+- [x] **Step 3: Restyle the `<style>` block**
 
 Delete the dark-theme `:root` and re-ink (logic-neutral, full re-skin):
 - Remove `body` rules entirely (base.css now owns body: paper bg, Raleway, ink) and `* {box-sizing}` (base.css has it)
@@ -459,11 +459,11 @@ Delete the dark-theme `:root` and re-ink (logic-neutral, full re-skin):
 - `.result-main` (the big total): JetBrains Mono, ~clamp(32px,6vw,44px), ink; `.result-label` Nunito Sans 800 caps; `.result-secondary` mono 11px `var(--ink-soft)`
 - All text/bg pairs ≥4.5:1; do not rename any id/class the script uses (`#modeSwitch #rows #addBtn #clearBtn #total #totalInches #totalDecimal`, `.feet`, `.inches`, `.row`)
 
-- [ ] **Step 4: Verify**
+- [x] **Step 4: Verify**
 
 Re-run the Task 6 Step 2 preview_eval checks (add 5'3" + 2'10" = `8' 1"`/`97 inches`; subtract = `2' 5"`/`29 inches`; clear-all resets; remove-row works). Plus: chrome injected, Tools nav underlined, About block present, 375px no horizontal scroll (this tool MUST be fully responsive — it's a simple column), keyboard tab order sensible, zero console errors.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add tools/calculator/index.html
@@ -477,7 +477,7 @@ git commit -m "feat: calculator chrome integration and GVC Editorial restyle"
 **Files:**
 - Modify: `index.html`, `assets/css/components.css`
 
-- [ ] **Step 1: Add the glyph style to components.css**
+- [x] **Step 1: Add the glyph style to components.css**
 
 After the `.tool-about` block:
 
@@ -490,7 +490,7 @@ After the `.tool-about` block:
 }
 ```
 
-- [ ] **Step 2: Convert the tile**
+- [x] **Step 2: Convert the tile**
 
 In `index.html`, replace the Feet & Inches Calculator navy `<div>` tile with:
 
@@ -505,7 +505,7 @@ In `index.html`, replace the Feet & Inches Calculator navy `<div>` tile with:
     </a>
 ```
 
-- [ ] **Step 3: Verify and commit**
+- [x] **Step 3: Verify and commit**
 
 Preview at 1280/768/375: glyph sits top-right of the navy tile in italic Fraunces sky, doesn't collide with the caption at any width (if it does at 375, hide it ≤560px: `@media (max-width:560px){.tile .tile-glyph{display:none}}`); tile navigates to the calculator; grid still 16 cells, no console errors.
 
@@ -518,16 +518,16 @@ git commit -m "feat: calculator homepage tile with type-set glyph"
 
 ### Task 9: Plan 2 verification pass + deploy + tag
 
-- [ ] **Step 1: Walk all pages at 375/768/1280**
+- [x] **Step 1: Walk all pages at 375/768/1280**
 
 Homepage, both case studies, both tools: no horizontal scroll from chrome, fonts render (Fraunces in page chrome, Playfair only inside sheets), nav consistent (Home/Tools/Projects, correct aria-current per section), focus rings, zero console errors.
 
-- [ ] **Step 2: Functional finals**
+- [x] **Step 2: Functional finals**
 
 - Calculator: 5'3" + 2'10" = 8' 1" (preview_eval)
 - Showsheet: load example docx via the Playwright harness (recreate `_verify/` if deleted; delete again after) → `PASS`; print emulation shows sheets only
 
-- [ ] **Step 3: Fix findings, deploy, tag**
+- [x] **Step 3: Fix findings, deploy, tag**
 
 ```bash
 git add -A && git commit -m "fix: plan 2 verification findings"   # skip if nothing found
