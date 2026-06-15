@@ -10,6 +10,7 @@
   --bone: #E5E5E5;       /* text/elements on navy */
   --rule: #D3D4D0;       /* hairline borders */
   --ink-soft: #33525F;   /* secondary text on paper (7.1:1, passes AA) */
+  --danger: #8C3A2B;     /* destructive actions (remove, error) */
 
   /* type */
   --serif: 'Fraunces', Georgia, serif;
