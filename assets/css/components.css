@@ -56,13 +56,6 @@ a.tile,button.tile{cursor:pointer}
 }
 @media (max-width:560px){.tile .tile-glyph{display:none}}
 
-/* icon strip inside the Icon Library tile */
-.tile .icon-strip{
-  position:relative;z-index:1;flex:1;
-  display:flex;align-items:center;gap:14px;flex-wrap:wrap;align-content:center;
-}
-.tile .icon-strip img{width:34px;height:34px;opacity:0.9}
-
 @media (max-width:980px){ .bento{grid-template-columns:repeat(2,1fr)} }
 @media (max-width:560px){
   .bento{grid-template-columns:1fr;grid-auto-rows:150px}
