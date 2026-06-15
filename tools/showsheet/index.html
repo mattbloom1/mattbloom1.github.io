@@ -212,7 +212,7 @@ body.bleed .trim{overflow:visible;}
 /* fit blocks — JS sets the container font-size so content fills its space; children scale in em */
 .fitblk{min-height:0;overflow:hidden;}
 .res-fit{flex:1;font-size:10pt;display:flex;flex-direction:column;justify-content:space-between;align-items:stretch;}
-.bld-fit{flex:1;font-size:9pt;}
+.bld-fit{flex:1;font-size:10pt;}
 .r-note{font:300 .8em var(--body);font-style:italic;color:rgba(0,39,58,.6);padding:.1em 0 .3em;}
 .r-spec{display:flex;gap:1em;padding:.3em 0;border-bottom:.6pt solid var(--hairline);align-items:baseline;}
 .r-spec .sl{font:900 .76em var(--sans);letter-spacing:.05em;text-transform:uppercase;color:rgba(0,39,58,.7);width:10em;flex:none;}
@@ -222,8 +222,11 @@ body.bleed .trim{overflow:visible;}
 .r-feat{break-inside:avoid;display:flex;gap:.55em;font:400 .84em var(--body);color:var(--navy);line-height:1.4;padding:.12em 0;}
 .r-feat::before{content:'';width:.36em;height:.36em;background:var(--sky);flex:none;margin-top:.5em;}
 /* building band — sits under the photo, photo ends at its rule */
-.f-bldg{flex:none;height:1.55in;margin-top:.13in;border-top:1.8pt solid var(--navy);padding-top:.08in;display:flex;flex-direction:column;}
+.f-bldg{flex:none;margin-top:.13in;border-top:1.8pt solid var(--navy);padding-top:.08in;display:flex;flex-direction:column;}
 .f-bldg .col-h{margin-bottom:.06in;}
+/* when the building grows past the squeeze limit the hero is dropped and the band owns the column */
+.f-right.no-photo .photo-hero,.f-right.no-photo .photo-empty{display:none;}
+.f-right.no-photo .f-bldg{flex:1;min-height:0;border-top:0;margin-top:0;padding-top:0;}
 /* stat strip — tops the residence column, ends where the residence column ends */
 .strip{display:flex;border-top:.8pt solid var(--hairline);border-bottom:.8pt solid var(--hairline);margin-bottom:.13in;flex:none;}
 .scell{flex:1;padding:.08in .12in .07in;border-left:.8pt solid var(--hairline);min-width:0;}
@@ -524,6 +527,7 @@ body.bleed .crop{display:block;}
 <section class="tool-about">
   <span class="t-label">About this tool</span>
   <p>Generates print-ready A5 listing showsheets for The GVC Team. Drop a listing .docx, a photo, and a floorplan — building and unit data are extracted automatically and laid out on a two-sided sheet for print. Everything runs in the browser; nothing is uploaded.</p>
+  <button class="btn sm ghost" id="btnLoadPreview" style="margin-top:12px" hidden>Load preview — 555 W59th (sample)</button>
 </section>
 </main>
 <script id="unit-data" type="application/json"></script>
@@ -893,10 +897,23 @@ function fitResidence(){
   }
 }
 function fitBuilding(){
-  const el = document.querySelector('#sheetFront .bld-fit');
-  if(!el) return;
-  if(fitBlock(el, 6, 11.5)) return;
-  const run = el.querySelector('.amen-run');
+  // The building facts mirror the residence: same 10pt base, same 6.8–16pt range.
+  // The band is no longer a fixed height — it grows to fit its facts and the hero
+  // photo (flex:1) gives up whatever space is left, shrinking freely. Once the photo
+  // would be thinner than MIN_HERO_IN it isn't worth showing, so we drop it entirely
+  // and let the building fill the whole right column the way the residence fills the left.
+  const MIN_HERO_IN = 1.5;  // smallest hero-photo height before the photo is removed — tweak here
+  const right = document.querySelector('#sheetFront .f-right');
+  if(!right) return;
+  right.classList.remove('no-photo');            // reset to the photo-on-top state each render
+  const el = right.querySelector('.bld-fit');
+  if(!el) return;                                // no building content on this sheet
+  el.style.fontSize = '10pt';                    // match the residence base; the band sizes to fit
+  const photo = right.querySelector('.photo-hero') || right.querySelector('.photo-empty');
+  if(photo && photo.offsetHeight >= MIN_HERO_IN * 96) return;  // hero still tall enough — keep it
+  right.classList.add('no-photo');               // hero too thin (or absent) — drop it
+  if(fitBlock(el, 6.8, 16)) return;              // autofit the building to the full right column
+  const run = el.querySelector('.amen-run');     // last resort: trim amenities if even 6.8pt overflows
   let guard = 0;
   while(run && el.scrollHeight > el.clientHeight + 1 && run.childNodes.length > 1 && guard++ < 80){
     run.removeChild(run.lastChild);
@@ -1347,6 +1364,34 @@ function applyParsedDocx(blocks){
   return [...new Set(found)];
 }
 wireDrop($('#docxDrop'), $('#docxFile'), importDocx, false);
+
+/* ---- sample loader: runs the bundled 555 W59th files through the SAME
+        docx/photo/floorplan handlers as the drop zones, so the preview always
+        reflects the current code. Needs the site served over http (fetch can't
+        read file:// siblings). ---- */
+(function(){
+  const btn = document.getElementById('btnLoadPreview');
+  if(!btn) return;
+  btn.hidden = false;
+  btn.addEventListener('click', async ()=>{
+    const label = btn.textContent; btn.disabled = true; btn.textContent = 'Loading…';
+    try{
+      const grab = async (url, name, type)=> new File([await (await fetch(url)).blob()], name, {type});
+      const docx  = await grab('sample/listing.docx', 'Showsheet details - PHC.docx',
+                               'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      const photo = await grab('sample/hero.jpg', 'hero.jpg', 'image/jpeg');
+      const fp    = await grab('sample/floorplan.jpg', 'floorplan.jpg', 'image/jpeg');
+      await importDocx(docx);        // identical to dropping the .docx
+      await addPhotoFiles([photo]);  // identical to dropping the photo
+      await setFloorplanFile(fp);    // identical to dropping the floorplan
+    }catch(e){
+      console.error(e);
+      toast('Could not load the sample — serve the site over http (not file://).', true);
+    }finally{
+      btn.disabled = false; btn.textContent = label;
+    }
+  });
+})();
 
 /* ============================================================
    PERSISTENCE — the working unit autosaves to this browser
