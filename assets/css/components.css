@@ -47,6 +47,15 @@ a.tile,button.tile{cursor:pointer}
 .tile .tile-name{font-family:var(--serif);font-size:22px;line-height:1.1}
 .tile.h2 .tile-name{font-size:30px}
 
+/* type-set glyph decoration (no screenshot tiles, e.g. calculator) */
+.tile .tile-glyph{
+  position:absolute;top:2px;right:14px;z-index:0;
+  font-family:var(--serif);font-style:italic;font-weight:300;
+  font-size:72px;line-height:1.2;color:var(--sky);opacity:.55;
+  user-select:none;pointer-events:none;
+}
+@media (max-width:560px){.tile .tile-glyph{display:none}}
+
 /* icon strip inside the Icon Library tile */
 .tile .icon-strip{
   position:relative;z-index:1;flex:1;
