@@ -3,16 +3,10 @@
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const gsapOk = typeof gsap !== "undefined";
 
-  /* sessionStorage helpers — blocked storage (cookie-blocking, some webviews)
-     would otherwise throw SecurityError and kill the whole module. */
-  const sget = k => { try { return sessionStorage.getItem(k); } catch { return null; } };
-  const sset = (k, v) => { try { sessionStorage.setItem(k, v); } catch {} };
-
-  /* 1 — Monogram self-draw, once per session.
+  /* 1 — Monogram self-draw on every page load.
      The GVC mark is fill-based, so: stroke the paths, dash-animate, fade fill in. */
   function drawMonogram() {
     if (reduced || !gsapOk) return;
-    if (sget("monogram-drawn")) return;
     const svg = document.querySelector("#mast-monogram svg");
     if (!svg) return;
     const paths = svg.querySelectorAll("path");
@@ -24,9 +18,7 @@
       p.style.strokeDasharray = len;
       p.style.strokeDashoffset = len;
     });
-    const tl = gsap.timeline({
-      onComplete: () => sset("monogram-drawn", "1"),
-    });
+    const tl = gsap.timeline();
     tl.to(paths, { strokeDashoffset: 0, duration: 1.1, ease: "power2.inOut", stagger: 0.08 })
       .to(paths, { fillOpacity: 1, strokeWidth: 0, duration: 0.4 }, "-=0.3");
   }

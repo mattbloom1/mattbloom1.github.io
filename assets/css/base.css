@@ -43,11 +43,11 @@ h1,h2,h3{font-weight:300;font-family:var(--serif);letter-spacing:-0.02em}
   min-height:var(--mast-h);padding:0 var(--pad-x);
   background:var(--paper);border-bottom:1px solid var(--rule);
 }
-.mast-lockup{display:flex;align-items:center;gap:14px;min-width:0}
-.mast-lockup .monogram{width:34px;height:34px;flex-shrink:0}
+.mast-lockup{display:flex;align-items:center;gap:11px;min-width:0}
+.mast-lockup .monogram{width:28px;height:28px;flex-shrink:0}
 .mast-lockup .names{display:flex;flex-direction:column;line-height:1.15}
-.mast-lockup .who{font-family:var(--serif);font-size:17px;white-space:nowrap}
-.mast-lockup .for{font-family:var(--mono);font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-soft)}
+.mast-lockup .who{font-family:var(--serif);font-size:14px;white-space:nowrap}
+.mast-lockup .for{font-family:var(--mono);font-size:8px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-soft)}
 .mast-nav{display:flex;gap:22px;align-items:baseline;min-width:0;flex-wrap:wrap}
 .mast-nav a{
   font-family:var(--sans-display);font-weight:800;font-size:11px;
@@ -60,7 +60,7 @@ h1,h2,h3{font-weight:300;font-family:var(--serif);letter-spacing:-0.02em}
 .mast-lockup:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
 .mast-nav a[aria-current="page"]{border-color:var(--sky)}
 @media (max-width:640px){
-  .mast-lockup .who{font-size:14px}
+  .mast-lockup .who{font-size:13px}
   .mast-lockup .for{display:none}
   .mast-nav{gap:14px;row-gap:24px}
   .mast-nav a{font-size:10px;letter-spacing:0.12em}

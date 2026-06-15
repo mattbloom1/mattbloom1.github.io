@@ -54,7 +54,7 @@ One site that is equally:
 
 - All effects respect `prefers-reduced-motion: reduce` (CSS + JS gate)
 - Bento: staggered entrance on load; hover lift; pointer-parallax on tile imagery
-- Masthead monogram draws itself (SVG stroke-dash) on first load per session
+- Masthead monogram draws itself (SVG stroke-dash) on every page load
 - Icon library: staggered grid entrance, glyph scale on hover
 - Floorplan tool: converted plan draws in with stroke-dash line animation (showpiece)
 - Page-fade transitions between internal pages
