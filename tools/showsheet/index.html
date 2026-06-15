@@ -28,8 +28,8 @@
   --sans:'Nunito Sans','Segoe UI',sans-serif;
   --body:'Raleway','Segoe UI',sans-serif;
   /* tool-UI tokens (mirror the portfolio system) */
-  --ui-paper-2:#E7E4DC; --ui-rule:#D3D4D0; --ui-ink-soft:#33525F;
-  --ui-display:'Fraunces',Georgia,serif; --ui-mono:'JetBrains Mono',ui-monospace,monospace;
+  --ui-paper-2:#E7E4DC; --ui-rule:#D3D4D0; --ui-ink-soft:#33525F; --ui-danger:#8C3A2B;
+  --ui-mono:'JetBrains Mono',ui-monospace,monospace;
 }
 *{box-sizing:border-box; -webkit-print-color-adjust:exact; print-color-adjust:exact;}
 html,body{margin:0;padding:0;background:var(--page);}
@@ -83,7 +83,7 @@ details.ed-sec summary .hint{margin-left:auto;font:400 10px var(--ui-mono);lette
 .field label{display:block;font:800 9px var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--ui-ink-soft);margin-bottom:4px;}
 .field input[type=text],.field input[type=number],.field select,.field textarea{
   width:100%;border:1px solid var(--ui-rule);background:#fff;padding:7px 9px;font:500 12.5px var(--body);color:var(--navy);outline:none;border-radius:6px;}
-.field input::placeholder,.field textarea::placeholder{color:var(--ui-ink-soft);opacity:.65;}
+.field input::placeholder,.field textarea::placeholder{color:var(--ui-ink-soft);opacity:.8;}
 .field textarea{resize:vertical;min-height:64px;line-height:1.45;}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--sky);outline:2px solid var(--sky);outline-offset:1px;}
 .field .note{font:400 10px var(--ui-mono);color:var(--ui-ink-soft);margin-top:4px;line-height:1.5;}
@@ -104,7 +104,7 @@ details.ed-sec summary .hint{margin-left:auto;font:400 10px var(--ui-mono);lette
 .d-check{width:16px;height:16px;border-radius:50%;background:var(--navy);color:var(--ow);font:800 10px/16px var(--sans);flex:none;}
 .d-name{font:800 10.5px var(--sans);letter-spacing:.04em;color:var(--navy);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .d-x{border:1px solid var(--ui-rule);background:#fff;color:var(--ui-ink-soft);font:800 11px/1 var(--sans);width:20px;height:20px;border-radius:50%;cursor:pointer;flex:none;padding:0;transition:background .15s,border-color .15s,color .15s;}
-.d-x:hover{background:#8C3A2B;border-color:#8C3A2B;color:#fff;}
+.d-x:hover{background:var(--ui-danger);border-color:var(--ui-danger);color:#fff;}
 .d-x:focus-visible{outline:2px solid var(--sky);outline-offset:2px;}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--navy);border-radius:999px;background:transparent;color:var(--navy);font:800 11px var(--sans);letter-spacing:.18em;text-transform:uppercase;padding:10px 18px;cursor:pointer;transition:background .18s,color .18s,border-color .18s;}
 .btn:hover{background:var(--navy);color:var(--ow);}
@@ -133,7 +133,7 @@ details.ed-sec summary .hint{margin-left:auto;font:400 10px var(--ui-mono);lette
 /* toasts */
 #toasts{position:fixed;bottom:18px;left:18px;z-index:99;display:flex;flex-direction:column;gap:8px;}
 .toast{background:#fff;color:var(--navy);border:1px solid var(--ui-rule);border-left:3px solid var(--navy);border-radius:8px;font:600 12px var(--body);padding:10px 16px;box-shadow:0 6px 24px rgba(0,39,58,.18);animation:tIn .2s;max-width:360px;}
-.toast.err{border-left-color:#8C3A2B;color:#8C3A2B;}
+.toast.err{border-left-color:var(--ui-danger);color:var(--ui-danger);}
 @keyframes tIn{from{transform:translateY(8px);opacity:0;}to{transform:none;opacity:1;}}
 /* pre-print warning — essentials missing */
 #warnOverlay{position:fixed;inset:0;background:rgba(0,39,58,.45);z-index:120;display:flex;align-items:center;justify-content:center;}
@@ -141,7 +141,7 @@ details.ed-sec summary .hint{margin-left:auto;font:400 10px var(--ui-mono);lette
 .warn-box{background:#fff;width:400px;padding:22px 26px 20px;border:1px solid var(--ui-rule);border-top:3px solid var(--navy);border-radius:8px;box-shadow:0 18px 60px rgba(0,39,58,.28);}
 .warn-box .w-title{font:800 11px var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--navy);}
 .warn-box ul{margin:12px 0 6px;padding-left:18px;}
-.warn-box li{font:600 12.5px var(--body);color:#8C3A2B;line-height:1.7;}
+.warn-box li{font:600 12.5px var(--body);color:var(--ui-danger);line-height:1.7;}
 .warn-box .w-sub{font:300 11px var(--body);color:var(--ui-ink-soft);line-height:1.5;margin-top:4px;}
 
 /* ================= STAGE / PREVIEW ================= */
