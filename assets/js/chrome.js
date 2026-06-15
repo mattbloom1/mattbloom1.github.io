@@ -5,11 +5,11 @@
   const root = document.body.dataset.root || "";
   const active = document.body.dataset.nav || "";
 
-  // Add entries here as sections ship: ["photos","Photos","photos/"]
   const NAV = [
     ["home", "Home", ""],
     ["tools", "Tools", "tools/"],
     ["projects", "Projects", "projects/"],
+    ["photos", "Photos", "photos/"],
   ];
 
   const navLinks = NAV.map(([id, label, href]) =>
