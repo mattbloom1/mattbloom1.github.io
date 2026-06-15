@@ -94,6 +94,10 @@ h1,h2,h3{font-weight:300;font-family:var(--serif);letter-spacing:-0.02em}
 .page-head h1{font-size:clamp(36px,5vw,64px);line-height:1}
 .page-head .t-mono{margin-top:14px;display:block}
 
+/* ---------- tool pages ---------- */
+.tool-about{padding:28px var(--pad-x);border-top:1px solid var(--rule)}
+.tool-about p{max-width:62ch;margin-top:10px;font-weight:400}
+
 @media (prefers-reduced-motion: reduce){
   html{scroll-behavior:auto}
   body{animation:none}
