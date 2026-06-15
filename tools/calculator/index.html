@@ -2,80 +2,87 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Feet &amp; Inches Calculator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feet &amp; Inches Calculator — Matt Bloomfield</title>
+<meta name="description" content="Adds and subtracts measurements in feet and inches, with totals in feet-and-inches, total inches, and decimal feet.">
+<link rel="icon" href="../../assets/logos/monogram.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Nunito+Sans:wght@800;900&family=Raleway:wght@300;400;500&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/tokens.css">
+<link rel="stylesheet" href="../../assets/css/base.css">
+<link rel="stylesheet" href="../../assets/css/components.css">
+<meta property="og:title" content="Feet &amp; Inches Calculator — Matt Bloomfield">
+<meta property="og:description" content="Adds and subtracts measurements in feet and inches, with totals in feet-and-inches, total inches, and decimal feet.">
+<meta property="og:url" content="https://mattbloom1.github.io/tools/calculator/">
+<meta property="og:type" content="website">
 <style>
-  :root {
-    --bg: #1e1f24;
-    --panel: #2a2c33;
-    --panel-2: #34373f;
-    --text: #e8eaed;
-    --muted: #9aa0a6;
-    --accent: #4f8cff;
-    --accent-hover: #3a78f0;
-    --danger: #d9534f;
-    --border: #3f4248;
+  /* ============================================================
+     GVC Editorial restyle of the Feet & Inches calculator.
+     Logic-neutral re-skin — base.css owns body/box-sizing/reset.
+     ============================================================ */
+  .app { max-width: 560px; margin: 40px auto 0; }
+  .tool-instr { margin-bottom: 14px; }
+
+  .panel,
+  .result {
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
   }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    padding: 40px 16px;
-  }
-  .app { width: 100%; max-width: 520px; }
-  h1 { font-size: 22px; margin: 0 0 4px; font-weight: 600; }
-  .subtitle { color: var(--muted); font-size: 13px; margin-bottom: 24px; }
-  .panel {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px;
-  }
+  .panel { padding: 18px; }
+
   .mode-bar {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 14px;
-    padding-bottom: 14px;
-    border-bottom: 1px solid var(--border);
+    gap: 14px;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--rule);
   }
   .mode-bar .label {
-    color: var(--muted);
-    font-size: 12px;
+    font-family: var(--sans-display);
+    font-weight: 800;
+    font-size: 11px;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    color: var(--ink-soft);
   }
+
+  /* segmented pill control */
   .mode-switch {
     display: inline-flex;
-    background: var(--panel-2);
-    border: 1px solid var(--border);
-    border-radius: 7px;
-    padding: 3px;
-    gap: 3px;
+    gap: 6px;
   }
   .mode-switch button {
     background: transparent;
-    color: var(--muted);
-    border: none;
-    padding: 6px 14px;
-    border-radius: 5px;
-    font-size: 14px;
-    font-weight: 600;
+    color: var(--ink);
+    border: 1px solid var(--ink);
+    border-radius: 999px;
+    padding: 7px 16px;
+    font-family: var(--sans-display);
+    font-weight: 800;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
     cursor: pointer;
-    min-width: 56px;
+    min-width: 64px;
+    transition: background var(--dur-1), color var(--dur-1), border-color var(--dur-1);
   }
+  .mode-switch button:hover { background: var(--paper-2); }
   .mode-switch button.active[data-mode="add"] {
-    background: #2f4a33;
-    color: #8ee097;
+    background: var(--ink);
+    color: var(--bone);
+    border-color: var(--ink);
   }
   .mode-switch button.active[data-mode="sub"] {
-    background: #4a2f2f;
-    color: #ff9a95;
+    background: #8C3A2B;
+    color: var(--bone);
+    border-color: #8C3A2B;
   }
+  .mode-switch button.active:hover { opacity: 0.92; }
+  .mode-switch button:focus-visible { outline: 2px solid var(--sky); outline-offset: 2px; }
+
   .rows { display: flex; flex-direction: column; gap: 10px; }
   .row {
     display: grid;
@@ -83,18 +90,24 @@
     gap: 10px;
     align-items: center;
   }
-  .row .num { color: var(--muted); font-size: 13px; text-align: right; }
+  .row .num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-soft);
+    text-align: right;
+  }
   .field { position: relative; }
   .field input {
     width: 100%;
-    background: var(--panel-2);
-    color: var(--text);
-    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--ink);
+    border: 1px solid var(--rule);
     border-radius: 6px;
     padding: 10px 44px 10px 12px;
+    font-family: var(--sans-body);
     font-size: 15px;
     outline: none;
-    transition: border-color 0.15s;
+    transition: border-color var(--dur-1);
     -moz-appearance: textfield;
   }
   .field input::-webkit-outer-spin-button,
@@ -102,97 +115,117 @@
     -webkit-appearance: none;
     margin: 0;
   }
-  .field input:focus { border-color: var(--accent); }
+  .field input:hover { border-color: var(--ink-soft); }
+  .field input:focus-visible { border-color: var(--sky); outline: 2px solid var(--sky); outline-offset: 1px; }
   .field .unit {
     position: absolute;
-    right: 10px;
+    right: 12px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--muted);
-    font-size: 13px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-soft);
     pointer-events: none;
   }
   .remove-btn {
     background: transparent;
-    color: var(--muted);
+    color: var(--ink-soft);
     border: none;
     font-size: 18px;
     cursor: pointer;
     padding: 4px;
     border-radius: 4px;
     line-height: 1;
+    transition: background var(--dur-1), color var(--dur-1);
   }
-  .remove-btn:hover { color: var(--danger); background: rgba(217, 83, 79, 0.1); }
+  .remove-btn:hover { color: var(--bone); background: #8C3A2B; }
+  .remove-btn:focus-visible { outline: 2px solid var(--sky); outline-offset: 2px; }
   .remove-btn:disabled { opacity: 0; pointer-events: none; }
+
   .header-row {
     display: grid;
     grid-template-columns: 28px 1fr 1fr 32px;
     gap: 10px;
     margin-bottom: 8px;
-    color: var(--muted);
-    font-size: 12px;
+  }
+  .header-row .h {
+    padding-left: 4px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    color: var(--ink-soft);
   }
-  .header-row .h { padding-left: 4px; }
-  .actions { margin-top: 14px; display: flex; gap: 10px; }
-  button.primary {
-    background: var(--accent);
-    color: white;
-    border: none;
-    padding: 9px 14px;
-    border-radius: 6px;
-    font-size: 14px;
-    cursor: pointer;
-    font-weight: 500;
-  }
-  button.primary:hover { background: var(--accent-hover); }
+
+  .actions { margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap; }
+  /* #addBtn primary (filled-on-hover pill), #clearBtn ghost — components.css .btn pattern */
+  button.primary,
   button.ghost {
-    background: transparent;
-    color: var(--muted);
-    border: 1px solid var(--border);
-    padding: 9px 14px;
-    border-radius: 6px;
-    font-size: 14px;
-    cursor: pointer;
-  }
-  button.ghost:hover { color: var(--text); border-color: var(--muted); }
-  .result {
-    margin-top: 20px;
-    padding: 18px;
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-  }
-  .result-label {
-    color: var(--muted);
-    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--sans-display);
+    font-weight: 800;
+    font-size: 11px;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 8px;
+    border: 1px solid var(--ink);
+    border-radius: 999px;
+    padding: 10px 20px;
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+    transition: background var(--dur-1), color var(--dur-1), border-color var(--dur-1);
   }
-  .result-main { font-size: 28px; font-weight: 600; color: var(--text); }
+  button.primary:hover { background: var(--ink); color: var(--bone); }
+  button.ghost { border-color: var(--rule); color: var(--ink-soft); }
+  button.ghost:hover { border-color: var(--ink); color: var(--ink); }
+  button.primary:focus-visible,
+  button.ghost:focus-visible { outline: 2px solid var(--sky); outline-offset: 2px; }
+
+  .result { margin-top: 20px; padding: 20px; }
+  .result-label {
+    font-family: var(--sans-display);
+    font-weight: 800;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 10px;
+  }
+  .result-main {
+    font-family: var(--mono);
+    font-size: clamp(32px, 6vw, 44px);
+    line-height: 1.1;
+    color: var(--ink);
+  }
   .result-secondary {
-    color: var(--muted);
-    font-size: 13px;
-    margin-top: 6px;
+    margin-top: 10px;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 3px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--ink-soft);
   }
 </style>
 </head>
-<body>
-  <div class="app">
+<body data-root="../../" data-nav="tools">
+<main class="page">
+  <div class="page-head" data-reveal>
     <h1>Feet &amp; Inches Calculator</h1>
-    <div class="subtitle">Add measurements together. Tab to move between fields &mdash; a new row appears automatically.</div>
+    <span class="t-mono">Tool · Add and subtract measurements</span>
+  </div>
+  <div class="app">
+    <p class="t-mono tool-instr">Add measurements together. Tab to move between fields &mdash; a new row appears automatically.</p>
 
     <div class="panel">
       <div class="mode-bar">
         <span class="label">Operation</span>
-        <div class="mode-switch" id="modeSwitch" role="tablist">
-          <button type="button" data-mode="add" class="active" tabindex="-1">Add</button>
-          <button type="button" data-mode="sub" tabindex="-1">Subtract</button>
+        <div class="mode-switch" id="modeSwitch" role="group" aria-label="Operation">
+          <button type="button" data-mode="add" class="active">Add</button>
+          <button type="button" data-mode="sub">Subtract</button>
         </div>
       </div>
       <div class="header-row">
@@ -217,6 +250,16 @@
       </div>
     </div>
   </div>
+
+  <section class="tool-about">
+    <span class="t-label">About this tool</span>
+    <p>Adds and subtracts measurements in feet and inches. Totals show as feet-and-inches, total inches, and decimal feet. Built for checking furniture and floorplan dimensions quickly.</p>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="../../assets/js/chrome.js"></script>
+<script src="../../assets/js/motion.js"></script>
 
 <script>
   const rowsEl = document.getElementById('rows');
