@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Floorplan Converter — Matt Bloomfield</title>
+<meta name="description" content="Convert a CubiCasa floorplan SVG into a GVC-branded SVG — navy palette, Nunito Sans labels, clean layers, ready for Illustrator.">
+<meta property="og:title" content="Floorplan Converter — Matt Bloomfield">
+<meta property="og:description" content="CubiCasa SVG → GVC-branded SVG, in the browser.">
+<meta property="og:url" content="https://mattbloom1.github.io/tools/floorplan/">
+<meta property="og:type" content="website">
+<link rel="icon" href="../../assets/logos/monogram.svg" type="image/svg+xml">
+<link rel="icon" type="image/png" sizes="32x32" href="../../assets/logos/monogram-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../../assets/logos/apple-touch-icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Nunito+Sans:wght@300;800;900&family=Raleway:wght@300;400;500&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/tokens.css">
+<link rel="stylesheet" href="../../assets/css/base.css">
+<link rel="stylesheet" href="../../assets/css/components.css">
+<style>
+  .app{max-width:920px;margin:36px auto 0}
+  .tool-instr{max-width:62ch;margin-bottom:22px;font-weight:400}
+
+  /* drop zone */
+  .drop{
+    border:1.5px dashed var(--rule);border-radius:10px;background:var(--paper-2);
+    padding:54px 28px;text-align:center;cursor:pointer;
+    transition:border-color var(--dur-1),background var(--dur-1);
+  }
+  .drop:hover,.drop.dragover{border-color:var(--sky);background:#fff}
+  .drop:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+  .drop .ico{font-size:34px;color:var(--ink-soft);line-height:1;margin-bottom:14px}
+  .drop .big{font-family:var(--serif);font-weight:300;font-size:22px;color:var(--ink)}
+  .drop .sub{font-family:var(--mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-soft);margin-top:10px}
+  .drop input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+
+  .status{font-family:var(--mono);font-size:11px;letter-spacing:0.06em;color:var(--ink-soft);margin-top:14px;min-height:15px}
+  .status.err{color:var(--danger)}
+
+  /* result */
+  .result{display:none;margin-top:26px}
+  .result.show{display:block}
+  .result-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+  .result-bar .meta{font-family:var(--mono);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-soft)}
+  .result-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+  .view-toggle{display:inline-flex;border:1px solid var(--ink);border-radius:999px;overflow:hidden}
+  .view-toggle button{
+    padding:8px 16px;font-family:var(--sans-display);font-weight:800;font-size:10px;
+    letter-spacing:0.16em;text-transform:uppercase;background:transparent;border:0;color:var(--ink);cursor:pointer;
+    transition:background var(--dur-1),color var(--dur-1);
+  }
+  .view-toggle button.active{background:var(--ink);color:var(--bone)}
+
+  .preview{
+    border:1px solid var(--rule);border-radius:10px;overflow:hidden;
+    background:
+      linear-gradient(45deg,#e7e4dc 25%,transparent 25%),
+      linear-gradient(-45deg,#e7e4dc 25%,transparent 25%),
+      linear-gradient(45deg,transparent 75%,#e7e4dc 75%),
+      linear-gradient(-45deg,transparent 75%,#e7e4dc 75%),#fff;
+    background-size:22px 22px;background-position:0 0,0 11px,11px -11px,-11px 0;
+    padding:18px;min-height:320px;display:flex;align-items:center;justify-content:center;
+  }
+  .preview svg{max-width:100%;height:auto;max-height:70vh}
+  .stage{display:none}
+  .stage.show{display:flex;align-items:center;justify-content:center;width:100%}
+  .reset-link{font-family:var(--mono);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-soft);border-bottom:1px solid transparent;cursor:pointer;transition:border-color var(--dur-1)}
+  .reset-link:hover{border-color:var(--ink-soft)}
+</style>
+</head>
+<body data-root="../../" data-nav="tools">
+<main class="page">
+  <div class="page-head" data-reveal>
+    <h1>Floorplan Converter</h1>
+    <span class="t-mono">CubiCasa SVG → GVC-branded SVG</span>
+  </div>
+
+  <div class="app">
+    <p class="tool-instr" data-reveal>Drop a CubiCasa floorplan SVG below. It’s recolored to the GVC navy palette, relabeled in Nunito Sans (rooms bold, dimensions light), stripped of CubiCasa footers and dimension arrows, and reorganized into named layers — ready to open in Illustrator. Everything runs in your browser; nothing is uploaded.</p>
+
+    <div class="drop" id="drop" role="button" tabindex="0" aria-label="Choose or drop a CubiCasa SVG file">
+      <div class="ico" aria-hidden="true">⌖</div>
+      <div class="big">Drop a CubiCasa SVG here</div>
+      <div class="sub">or click to choose a file</div>
+      <input type="file" id="file" accept=".svg,image/svg+xml">
+    </div>
+    <div class="status" id="status" role="status" aria-live="polite"></div>
+
+    <div class="result" id="result">
+      <div class="result-bar">
+        <span class="meta" id="resultMeta"></span>
+        <div class="result-actions">
+          <div class="view-toggle" id="viewToggle">
+            <button class="active" data-view="converted">Converted</button>
+            <button data-view="original">Original</button>
+          </div>
+          <a class="btn" id="download" download>⬇ Download SVG</a>
+          <span class="reset-link" id="reset">Convert another</span>
+        </div>
+      </div>
+      <div class="preview">
+        <div class="stage show" id="stageConverted"></div>
+        <div class="stage" id="stageOriginal"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" integrity="sha384-HOvlOYPIs/zjoIkWUGXkVmXsjr8GuZLV+Q+rcPwmJOVZVpvTSXQChiN4t9Euv9Vc" crossorigin="anonymous"></script>
+<script src="../../assets/js/chrome.js"></script>
+<script src="../../assets/js/motion.js"></script>
+<script src="floorplan.js"></script>
+<script>
+(function(){
+  const drop=document.getElementById('drop');
+  const file=document.getElementById('file');
+  const status=document.getElementById('status');
+  const result=document.getElementById('result');
+  const stageC=document.getElementById('stageConverted');
+  const stageO=document.getElementById('stageOriginal');
+  const dl=document.getElementById('download');
+  const meta=document.getElementById('resultMeta');
+  const reset=document.getElementById('reset');
+  let objUrl=null;
+
+  function setStatus(m,err){ status.textContent=m||''; status.className='status'+(err?' err':''); }
+
+  function handle(f){
+    if(!f){ return; }
+    if(!/\.svg$/i.test(f.name) && f.type!=='image/svg+xml'){ setStatus('Please choose an .svg file.',true); return; }
+    setStatus('Reading '+f.name+'…');
+    const fr=new FileReader();
+    fr.onload=()=>{
+      const original=fr.result;
+      let converted;
+      try{ converted=window.convertFloorplanSVG(original); }
+      catch(e){ setStatus('Conversion failed: '+e.message,true); console.error(e); return; }
+
+      stageO.innerHTML=original;
+      stageC.innerHTML=converted;
+      // make injected SVGs scale to the frame
+      [stageO,stageC].forEach(s=>{ const svg=s.querySelector('svg'); if(svg){ svg.removeAttribute('width'); svg.removeAttribute('height'); } });
+
+      if(objUrl) URL.revokeObjectURL(objUrl);
+      objUrl=URL.createObjectURL(new Blob([converted],{type:'image/svg+xml'}));
+      dl.href=objUrl;
+      dl.download=f.name.replace(/\.svg$/i,'')+'_gvc.svg';
+
+      const kb=Math.round(converted.length/1024);
+      meta.textContent=f.name+' · '+kb+' KB converted';
+      result.classList.add('show');
+      setStatus('Done. Preview below — download the GVC SVG or convert another.');
+      result.scrollIntoView({behavior:'smooth',block:'nearest'});
+    };
+    fr.onerror=()=>setStatus('Could not read that file.',true);
+    fr.readAsText(f);
+  }
+
+  drop.addEventListener('click',()=>file.click());
+  drop.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); file.click(); } });
+  file.addEventListener('change',e=>handle(e.target.files[0]));
+  ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('dragover');}));
+  ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('dragover');}));
+  drop.addEventListener('drop',e=>{ const f=e.dataTransfer.files[0]; handle(f); });
+
+  document.getElementById('viewToggle').addEventListener('click',e=>{
+    const b=e.target.closest('button[data-view]'); if(!b) return;
+    document.querySelectorAll('#viewToggle button').forEach(x=>x.classList.toggle('active',x===b));
+    const conv=b.dataset.view==='converted';
+    stageC.classList.toggle('show',conv);
+    stageO.classList.toggle('show',!conv);
+  });
+
+  reset.addEventListener('click',()=>{
+    result.classList.remove('show'); file.value=''; setStatus('');
+    stageC.innerHTML=''; stageO.innerHTML='';
+  });
+})();
+</script>
+</body>
+</html>
