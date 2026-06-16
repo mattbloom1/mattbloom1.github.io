@@ -39,12 +39,12 @@ h1,h2,h3{font-weight:300;font-family:var(--serif);letter-spacing:-0.02em}
 /* ---------- masthead (injected by chrome.js) ---------- */
 .masthead{
   position:sticky;top:0;z-index:50;
-  display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;
+  display:grid;grid-template-columns:auto 1fr;align-items:center;gap:16px;
   min-height:var(--mast-h);padding:0 var(--pad-x);
   background:var(--paper);border-bottom:1px solid var(--rule);
 }
-.mast-lockup{display:flex;align-items:center;gap:11px;min-width:0;grid-column:2;justify-self:center}
-.mast-nav{grid-column:3;justify-self:end}
+.mast-lockup{display:flex;align-items:center;gap:11px;min-width:0;grid-column:1;justify-self:start}
+.mast-nav{grid-column:2;justify-self:end}
 .mast-lockup .monogram{width:28px;height:28px;flex-shrink:0}
 .mast-lockup .names{display:flex;flex-direction:column;line-height:1.15}
 .mast-lockup .who{font-family:var(--serif);font-size:14px;white-space:nowrap}
