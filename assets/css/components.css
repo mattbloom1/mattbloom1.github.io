@@ -89,5 +89,90 @@ a.tile,button.tile{cursor:pointer}
 .case-meta li{font-family:var(--mono);font-size:11px;letter-spacing:0.06em;color:var(--ink-soft);padding:6px 0;border-bottom:1px solid var(--rule)}
 @media (max-width:780px){ .case-grid{grid-template-columns:1fr;gap:28px} }
 
+/* ---------- home: tools + websites (hover-open) ---------- */
+.home{padding:32px 0 0}
+.home-sec + .home-sec{margin-top:40px}
+.sec-label{
+  font-family:var(--sans-display);font-weight:800;font-size:11px;
+  letter-spacing:0.22em;text-transform:uppercase;color:var(--ink);margin-bottom:16px;
+}
+
+/* tools — a row of compact navy pills; the hovered/focused one grows in place
+   to reveal its description + Open action, neighbours compress (flex-grow animates) */
+.tool-row{display:flex;gap:14px}
+.tool{
+  flex:1 1 0;min-width:0;position:relative;overflow:hidden;
+  background:var(--ink);color:var(--bone);border-radius:8px;
+  padding:18px 18px 18px 22px;min-height:134px;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  transition:flex-grow var(--dur-2) var(--ease);
+}
+.tool::before{content:"";position:absolute;left:0;top:16px;bottom:16px;width:3px;background:var(--sky)}
+.tool .t-mono{color:var(--sky);white-space:nowrap}
+.tool .tool-name{font-family:var(--serif);font-weight:300;font-size:19px;line-height:1.1;margin-top:7px}
+.tool .tool-desc{
+  max-height:0;opacity:0;overflow:hidden;font-weight:300;font-size:13px;line-height:1.45;
+  color:#C6CFD4;max-width:36ch;
+  transition:max-height var(--dur-2) var(--ease),opacity var(--dur-1),margin-top var(--dur-2) var(--ease);
+}
+.tool .tool-open{
+  align-self:flex-start;display:inline-flex;align-items:center;gap:6px;
+  max-height:0;opacity:0;overflow:hidden;
+  font-family:var(--sans-display);font-weight:800;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;
+  color:var(--ink);background:var(--sky);border-radius:999px;
+  transition:max-height var(--dur-2) var(--ease),opacity var(--dur-1),margin-top var(--dur-2) var(--ease),padding var(--dur-2) var(--ease);
+}
+.tool:hover,.tool:focus-visible{flex-grow:2.8;outline:none}
+.tool:focus-visible{box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--sky)}
+.tool:hover .tool-desc,.tool:focus-visible .tool-desc{max-height:96px;opacity:1;margin-top:8px}
+.tool:hover .tool-open,.tool:focus-visible .tool-open{max-height:32px;opacity:1;margin-top:14px;padding:7px 13px}
+
+/* websites — full-width navy bars; on hover/focus the bar grows and the
+   site screenshot reveals above the always-visible name strip */
+.site-stack{display:flex;flex-direction:column;gap:14px}
+.site{
+  position:relative;overflow:hidden;border-radius:8px;
+  background:var(--ink);color:var(--bone);height:84px;
+  transition:height var(--dur-2) var(--ease);
+}
+.site-shot{position:absolute;left:0;right:0;top:0;height:126px;opacity:0;transition:opacity var(--dur-2) var(--ease)}
+.site-shot img{width:100%;height:100%;object-fit:cover;object-position:top}
+.site-face{
+  position:absolute;left:0;right:0;bottom:0;height:84px;z-index:1;background:var(--ink);
+  display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 22px;
+}
+.site::after{content:"";position:absolute;left:0;top:16px;height:52px;width:3px;background:var(--sky);z-index:2}
+.site .tile-name{font-family:var(--serif);font-size:24px;line-height:1.1}
+.site .t-mono{color:var(--sky);display:block;margin-top:4px}
+.site-cta{position:relative;display:flex;align-items:center;justify-content:flex-end;min-width:86px;flex-shrink:0}
+.site-hint{color:var(--sky);font-size:20px;line-height:1;transition:opacity var(--dur-1)}
+.site-visit{
+  position:absolute;right:0;display:inline-flex;align-items:center;gap:6px;opacity:0;
+  font-family:var(--sans-display);font-weight:800;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;
+  color:var(--ink);background:var(--sky);border-radius:999px;padding:7px 13px;white-space:nowrap;
+  transition:opacity var(--dur-1);
+}
+.site:hover,.site:focus-visible{height:210px;outline:none}
+.site:focus-visible{box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--sky)}
+.site:hover .site-shot,.site:focus-visible .site-shot{opacity:1}
+.site:hover .site-hint,.site:focus-visible .site-hint{opacity:0}
+.site:hover .site-visit,.site:focus-visible .site-visit{opacity:1}
+
+/* responsive: 2-up then 1-up tool pills */
+@media (max-width:860px){ .tool-row{flex-wrap:wrap} .tool{flex:1 1 calc(50% - 7px)} }
+@media (max-width:520px){ .tool{flex:1 1 100%} }
+
+/* touch / no-hover: nothing to hover, so present everything open and stacked */
+@media (hover:none){
+  .tool{flex:1 1 100%;min-height:auto}
+  .tool .tool-desc{max-height:96px;opacity:1;margin-top:8px}
+  .tool .tool-open{max-height:32px;opacity:1;margin-top:14px;padding:7px 13px}
+  .site{height:auto}
+  .site-shot{position:relative;opacity:1;height:150px}
+  .site-face{position:relative;height:auto;padding:16px 22px}
+  .site-hint{display:none}
+  .site-visit{position:static;opacity:1}
+}
+
 /* reveal-on-scroll initial state is set by motion.js (not CSS) so content
    is visible when JS is disabled */
