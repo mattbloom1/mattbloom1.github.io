@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Showsheet Generator — Matt Bloomfield</title>
-<meta name="description" content="Print-ready A5 listing showsheets for The GVC Team: drop a listing doc, photo, and floorplan; data is extracted and laid out for two-sided print.">
+<meta name="description" content="Print-ready A5 or US Letter listing showsheets for The GVC Team: drop a listing doc, photo, and floorplan; data is extracted and laid out for two-sided print.">
 <meta property="og:title" content="Showsheet Generator — Matt Bloomfield">
-<meta property="og:description" content="Print-ready A5 listing showsheets for The GVC Team: drop a listing doc, photo, and floorplan; data is extracted and laid out for two-sided print.">
+<meta property="og:description" content="Print-ready A5 or US Letter listing showsheets for The GVC Team: drop a listing doc, photo, and floorplan; data is extracted and laid out for two-sided print.">
 <meta property="og:image" content="https://matthewgvc.github.io/assets/img/tile-showsheet.webp">
 <meta property="og:url" content="https://matthewgvc.github.io/tools/showsheet/">
 <meta property="og:type" content="website">
@@ -161,6 +161,9 @@ details.ed-sec summary .hint{margin-left:auto;font:400 10px var(--ui-mono);lette
 #stageBar .zlab{font:400 10px var(--ui-mono);letter-spacing:.14em;color:var(--ui-ink-soft);text-transform:uppercase;}
 .btn.lg{display:inline-flex;align-items:center;gap:9px;padding:12px 24px;font-size:11.5px;letter-spacing:.18em;}
 .btn.lg svg{width:15px;height:15px;flex:none;}
+/* compact segmented control for the bar (paper size) */
+#stageBar .seg{flex:none;width:auto;}
+#stageBar .seg button{flex:none;padding:7px 15px;}
 .pg-tag{font:400 10px var(--ui-mono);letter-spacing:.14em;color:var(--ui-ink-soft);text-transform:uppercase;margin:20px 0 8px 2px;}
 /* paper scrollbars (tool UI only) */
 #editor::-webkit-scrollbar,#stage::-webkit-scrollbar{width:10px;height:10px;}
@@ -174,9 +177,12 @@ details.ed-sec summary .hint{margin-left:auto;font:400 10px var(--ui-mono);lette
 .sheet{background:#fff;box-shadow:0 8px 40px rgba(10,40,55,.18);transform-origin:0 0;position:relative;}
 
 /* ================= THE SHEETS =================
-   Output is A5 LANDSCAPE (210 × 148mm). The design canvas is 11in wide ×
-   7.7524in tall — the exact A5 aspect — and prints scaled by .75161, so
-   every pt value below lands on paper at ~75% of its design size. */
+   The design canvas is 11in wide × 7.7524in tall — the exact A5 landscape
+   aspect. It prints onto either paper size with NO reflow, only a different
+   print scale (see @media print + body.paper-letter):
+     • A5 landscape (210 × 148mm): scaled by .75161 → fills the page (~75% of design).
+     • US Letter landscape (11 × 8.5in): scaled 1:1 → the 11in canvas spans the full
+       page width; the 7.7524in height is centered, leaving ~.37in top/bottom margins. */
 .sheet{width:calc(11in + 2*var(--bleed));height:calc(7.7524in + 2*var(--bleed));}
 .trim{position:absolute;left:var(--bleed);top:var(--bleed);width:11in;height:7.7524in;display:flex;flex-direction:column;padding:.4in .52in .34in;overflow:hidden;background:#fff;}
 /* in bleed mode the navy footer must run past the trim line */
@@ -354,6 +360,9 @@ body.bleed .crop{display:block;}
   /* the 11in-wide design canvas prints scaled onto a true A5 landscape page */
   .sheet-wrap{margin:0 !important;width:210mm !important;height:148mm !important;overflow:hidden;}
   .sheet{transform:scale(.75161) !important;transform-origin:0 0 !important;box-shadow:none !important;}
+  /* Letter landscape (11×8.5in): same canvas at 1:1, centered top-to-bottom */
+  body.paper-letter .sheet-wrap{width:11in !important;height:8.5in !important;}
+  body.paper-letter .sheet{transform:translateY(.3738in) scale(1) !important;}
   .pg-col:first-child{page-break-after:always;break-after:page;}
 }
 </style>
@@ -501,6 +510,11 @@ body.bleed .crop{display:block;}
 </main>
 <div id="stageBar">
   <span class="zlab">Preview</span>
+  <span class="zlab">Paper</span>
+  <div class="seg" id="paperSeg" role="group" aria-label="Paper size">
+    <button type="button" data-v="a5" class="on">A5</button>
+    <button type="button" data-v="letter">Letter</button>
+  </div>
   <div class="sp"></div>
   <span class="zlab" id="zoomInfo"></span>
   <button class="btn sm ghost" id="btnZoom">Zoom 100%</button>
@@ -526,7 +540,7 @@ body.bleed .crop{display:block;}
 <div id="toasts"></div>
 <section class="tool-about">
   <span class="t-label">About this tool</span>
-  <p>Generates print-ready A5 listing showsheets for The GVC Team. Drop a listing .docx, a photo, and a floorplan — building and unit data are extracted automatically and laid out on a two-sided sheet for print. Everything runs in the browser; nothing is uploaded.</p>
+  <p>Generates print-ready listing showsheets for The GVC Team — A5 or US Letter (toggle under the preview). Drop a listing .docx, a photo, and a floorplan — building and unit data are extracted automatically and laid out on a two-sided sheet for print. Everything runs in the browser; nothing is uploaded.</p>
   <button class="btn sm ghost" id="btnLoadPreview" style="margin-top:12px" hidden>Load preview — 555 W59th (sample)</button>
 </section>
 </main>
@@ -570,7 +584,7 @@ const LS_KEY = 'gvc-showsheet-current-v1';
 
 function blankUnit(){
   return {
-    ownership:'co-op', neighborhood:'', borough:'Manhattan', address:'', unit:'', positioning:'',
+    ownership:'co-op', paper:'a5', neighborhood:'', borough:'Manhattan', address:'', unit:'', positioning:'',
     webId:'', listingUrl:'', docxName:'',
     photos:[], heroIndex:0, secondaryIndex:null,
     floorplan:null,
@@ -983,6 +997,7 @@ function hydrateForm(){
     else el.value = v==null ? '' : v;
   });
   syncOwnership();
+  syncPaper();
   renderAgentPicker();
   renderPhotoCards();
   syncDropZones();
@@ -1001,12 +1016,27 @@ document.addEventListener('click', e=>{
   if(what==='floorplan'){ state.floorplan=null; }
   if(what==='docx'){
     // dropping the doc means starting the next listing — clear everything unit-specific
-    state = Object.assign(blankUnit(), {agentIds:[...state.agentIds]});
+    state = Object.assign(blankUnit(), {agentIds:[...state.agentIds], paper:state.paper});
     hydrateForm();
     toast('Form cleared — drop the next listing.');
   }
   syncDropZones(); render();
 }, true);
+// the paper size only changes the print output (page size + scale); the design
+// canvas and on-screen preview are identical for A5 and Letter.
+function syncPaper(){
+  const letter = state.paper === 'letter';
+  document.body.classList.toggle('paper-letter', letter);
+  $$('#paperSeg button').forEach(b=>b.classList.toggle('on', b.dataset.v===state.paper));
+  const ps = $('#pagesize');
+  if(ps) ps.textContent = letter ? '@page{size:11in 8.5in;margin:0;}' : '@page{size:210mm 148mm;margin:0;}';
+  const lbl = letter ? 'Letter landscape' : 'A5 landscape';
+  $$('.pg-tag').forEach((t,i)=>{ t.textContent = (i===0?'Front · ':'Back · ') + lbl; });
+  const pn = $('#btnPrint');
+  if(pn) pn.title = letter
+    ? "In the print dialog: Destination 'Save as PDF' · Paper 'Letter' · Layout 'Landscape' · Margins 'None' · enable 'Background graphics'. Prints as two Letter landscape pages."
+    : "In the print dialog: Destination 'Save as PDF' · Paper 'A5' · Margins 'None' · enable 'Background graphics'. Prints as two A5 landscape pages.";
+}
 function syncOwnership(){
   $$('#ownSeg button').forEach(b=>b.classList.toggle('on', b.dataset.v===state.ownership));
   document.body.classList.toggle('is-condo', state.ownership==='condo');
@@ -1030,6 +1060,11 @@ $('#ownSeg').addEventListener('click', e=>{
   const b = e.target.closest('button'); if(!b) return;
   state.ownership = b.dataset.v;
   syncOwnership(); render();
+});
+$('#paperSeg').addEventListener('click', e=>{
+  const b = e.target.closest('button'); if(!b) return;
+  state.paper = b.dataset.v;
+  syncPaper(); autosave();
 });
 /* ============================================================
    IMAGES — ingestion (canvas re-encode: CMYK→RGB, downscale)
@@ -1255,7 +1290,7 @@ function applyParsedDocx(blocks){
   // the disclaimer are team-level, so they carry over.
   const norm = s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
   if(newAddress && state.address && norm(newAddress)!==norm(state.address)){
-    state = Object.assign(blankUnit(), {agentIds:[...state.agentIds]});
+    state = Object.assign(blankUnit(), {agentIds:[...state.agentIds], paper:state.paper});
     found.push('(new unit — form reset)');
   }
   if(newAddress){ state.address = newAddress; found.push('address'); }
