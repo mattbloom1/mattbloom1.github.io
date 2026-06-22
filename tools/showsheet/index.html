@@ -32,6 +32,8 @@
   --page:#EFEDE8;            /* editor bg: GVC paper */
   --hairline:rgba(83,199,220,.55);
   --bleed:0in;
+  --ch:7.7524in;            /* design-canvas height (11in wide). A5 aspect by default;
+                              Letter is proportionally taller — see body.paper-letter. */
   --serif:'Playfair Display','Superior Title',Georgia,serif;  /* SHEET serif — stays */
   --sans:'Nunito Sans','Segoe UI',sans-serif;
   --body:'Raleway','Segoe UI',sans-serif;
@@ -177,14 +179,16 @@ details.ed-sec summary .hint{margin-left:auto;font:400 10px var(--ui-mono);lette
 .sheet{background:#fff;box-shadow:0 8px 40px rgba(10,40,55,.18);transform-origin:0 0;position:relative;}
 
 /* ================= THE SHEETS =================
-   The design canvas is 11in wide × 7.7524in tall — the exact A5 landscape
-   aspect. It prints onto either paper size with NO reflow, only a different
-   print scale (see @media print + body.paper-letter):
-     • A5 landscape (210 × 148mm): scaled by .75161 → fills the page (~75% of design).
-     • US Letter landscape (11 × 8.5in): scaled 1:1 → the 11in canvas spans the full
-       page width; the 7.7524in height is centered, leaving ~.37in top/bottom margins. */
-.sheet{width:calc(11in + 2*var(--bleed));height:calc(7.7524in + 2*var(--bleed));}
-.trim{position:absolute;left:var(--bleed);top:var(--bleed);width:11in;height:7.7524in;display:flex;flex-direction:column;padding:.4in .52in .34in;overflow:hidden;background:#fff;}
+   The design canvas is always 11in wide; its HEIGHT (--ch) follows the chosen
+   paper's landscape aspect, so the content reflows to fill whichever page it
+   prints on (the fit blocks autofit + the photo/columns are flex:1):
+     • A5 landscape (210 × 148mm): --ch 7.7524in (aspect 1.42), printed at scale .75161.
+     • US Letter landscape (11 × 8.5in): --ch 8.5in (aspect 1.29 — taller), printed 1:1.
+   --ch is switched by body.paper-letter (set from state.paper); see @media print. */
+.sheet{width:calc(11in + 2*var(--bleed));height:calc(var(--ch) + 2*var(--bleed));}
+.trim{position:absolute;left:var(--bleed);top:var(--bleed);width:11in;height:var(--ch);display:flex;flex-direction:column;padding:.4in .52in .34in;overflow:hidden;background:#fff;}
+/* Letter landscape is proportionally taller than A5 — grow the canvas to match */
+body.paper-letter{--ch:8.5in;}
 /* in bleed mode the navy footer must run past the trim line */
 body.bleed .trim{overflow:visible;}
 /* color block accent */
@@ -340,7 +344,7 @@ body.bleed .trim{overflow:visible;}
 .b-foot .fqr .qr-box{width:.72in;height:.72in;}
 .b-foot.has-qr .fqr{display:block;}
 /* crop marks (live in the bleed zone, outside the trim box) */
-.crop{display:none;position:absolute;left:var(--bleed);top:var(--bleed);width:11in;height:7.7524in;pointer-events:none;z-index:7;}
+.crop{display:none;position:absolute;left:var(--bleed);top:var(--bleed);width:11in;height:var(--ch);pointer-events:none;z-index:7;}
 body.bleed .crop{display:block;}
 .crop i{position:absolute;background:var(--navy);}
 .crop i.w{background:#fff;}
@@ -360,9 +364,9 @@ body.bleed .crop{display:block;}
   /* the 11in-wide design canvas prints scaled onto a true A5 landscape page */
   .sheet-wrap{margin:0 !important;width:210mm !important;height:148mm !important;overflow:hidden;}
   .sheet{transform:scale(.75161) !important;transform-origin:0 0 !important;box-shadow:none !important;}
-  /* Letter landscape (11×8.5in): same canvas at 1:1, centered top-to-bottom */
+  /* Letter landscape (11×8.5in): the taller --ch canvas prints 1:1, filling the page */
   body.paper-letter .sheet-wrap{width:11in !important;height:8.5in !important;}
-  body.paper-letter .sheet{transform:translateY(.3738in) scale(1) !important;}
+  body.paper-letter .sheet{transform:scale(1) !important;}
   .pg-col:first-child{page-break-after:always;break-after:page;}
 }
 </style>
@@ -1064,7 +1068,7 @@ $('#ownSeg').addEventListener('click', e=>{
 $('#paperSeg').addEventListener('click', e=>{
   const b = e.target.closest('button'); if(!b) return;
   state.paper = b.dataset.v;
-  syncPaper(); autosave();
+  syncPaper(); render();   // canvas height changes with paper — re-run the autofit
 });
 /* ============================================================
    IMAGES — ingestion (canvas re-encode: CMYK→RGB, downscale)
