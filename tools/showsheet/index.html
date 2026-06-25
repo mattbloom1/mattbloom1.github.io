@@ -264,12 +264,13 @@ body.bleed .safe{display:block;}
 .f-right.no-photo .f-bldg{flex:1;min-height:0;border-top:0;margin-top:0;padding-top:0;}
 /* stat strip — one box per stat: icon + label left, a dotted leader, value pinned right */
 .strip{display:flex;border-top:.8pt solid var(--hairline);border-bottom:.8pt solid var(--hairline);margin-bottom:.13in;flex:none;}
-.scell{flex:1;display:flex;align-items:baseline;gap:.09in;padding:.11in .14in;border-left:.8pt solid var(--hairline);min-width:0;}
+.scell{flex:1;display:flex;align-items:center;gap:.09in;padding:.11in .14in;border-left:.8pt solid var(--hairline);min-width:0;}
 .scell:first-child{border-left:0;padding-left:.02in;}
-.scell .slb{display:flex;align-items:center;gap:.07in;flex:none;font:800 var(--t-cap) var(--sans);letter-spacing:.1em;text-transform:uppercase;color:rgba(0,39,58,.6);}
-.scell .slb svg{width:.16in;height:.16in;color:var(--sky2);flex:none;}
+.scell .slb{display:flex;align-items:center;gap:.1in;flex:none;}
+.scell .slb svg{width:.24in;height:.24in;color:var(--sky2);flex:none;}
 .scell .lead{flex:1;min-width:.16in;align-self:center;border-bottom:1.6pt dotted rgba(0,39,58,.3);}
 .scell .sv{flex:none;font:900 15.5pt var(--sans);color:var(--navy);white-space:nowrap;}
+.scell .slabel{flex:none;font:800 var(--t-cap) var(--sans);letter-spacing:.1em;text-transform:uppercase;color:rgba(0,39,58,.6);}
 /* QR (back page) */
 .qr-box svg{width:100%;height:100%;display:block;}
 /* front photo (single — ends at the rule above asking price) */
@@ -295,7 +296,7 @@ body.bleed .safe{display:block;}
 .b-col.c1{flex:1;}
 .b-col.c3{flex:3;}
 .col-h{display:flex;align-items:center;gap:.1in;margin-bottom:.11in;}
-.col-h .ich{width:.17in;height:.17in;color:var(--sky2);flex:none;}
+.col-h .ich{width:.24in;height:.24in;color:var(--sky2);flex:none;}
 .col-h .ich svg{width:100%;height:100%;display:block;}
 .col-h span{font:900 var(--t-sub) var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--navy);white-space:nowrap;}
 .col-h::after{content:'';flex:1;height:.6pt;background:var(--hairline);}
@@ -740,7 +741,7 @@ function renderFront(){
     <div class="bld-fit fitblk">${bSpecs}${amenHtml}</div>` : '';
   const cells = statCells();
   const strip = cells.length ? `<div class="strip">${cells.map(c=>
-    `<div class="scell"><span class="slb">${c.ic}<span>${c.l}</span></span><span class="lead"></span><span class="sv">${c.v}</span></div>`).join('')}</div>` : '';
+    `<div class="scell"><span class="slb">${c.ic}<span class="sv">${c.v}</span></span><span class="lead"></span><span class="slabel">${c.l}</span></div>`).join('')}</div>` : '';
   const askBlock = state.price ? `<div class="ft-r"><div class="al">Asking Price</div><div class="av">${displayPrice(state.price)}</div></div>` : '';
   $('#sheetFront').innerHTML = `
     <div class="trim">
