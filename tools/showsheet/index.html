@@ -742,15 +742,11 @@ function renderFront(){
   const strip = cells.length ? `<div class="strip">${cells.map(c=>
     `<div class="scell"><span class="slb">${c.ic}<span>${c.l}</span></span><span class="lead"></span><span class="sv">${c.v}</span></div>`).join('')}</div>` : '';
   const askBlock = state.price ? `<div class="ft-r"><div class="al">Asking Price</div><div class="av">${displayPrice(state.price)}</div></div>` : '';
-  // eyebrow over the address — the neighborhood only (ownership now lives in the back-page box)
-  const place = state.neighborhood || state.borough || '';
-  const eyebrow = place ? esc(place).toUpperCase() : '';
   $('#sheetFront').innerHTML = `
     <div class="trim">
       <div class="sh-head">
         <div class="sh-logo">${LOGO_GVC_NAVY}</div>
         <div class="sh-id">
-          ${eyebrow ? `<div class="eyebrow">${eyebrow}</div>` : ''}
           <div class="addr">${esc(state.address) || '<span style="opacity:.25">Street Address</span>'}</div>
           ${state.unit ? `<div class="unit-lt">${esc(unitDisplay(state.unit))}</div>` : ''}
         </div>
