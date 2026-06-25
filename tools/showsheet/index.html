@@ -189,8 +189,19 @@ details.ed-sec summary .hint{margin-left:auto;font:400 10px var(--ui-mono);lette
 .trim{position:absolute;left:var(--bleed);top:var(--bleed);width:11in;height:var(--ch);display:flex;flex-direction:column;padding:.4in .52in .34in;overflow:hidden;background:#fff;}
 /* Letter landscape is proportionally taller than A5 — grow the canvas to match */
 body.paper-letter{--ch:8.5in;}
+/* ===== OPTIONAL PRINT BLEED (toggle under the preview) =====
+   Extends the artwork past the trim so the sheet can be printed oversized and cut to
+   size with no white slivers. Adds an .125in bleed, a navy keyline that bleeds off
+   every edge, crop marks, and a screen-only safe-area guide. */
+body.bleed{--bleed:.125in;}
 /* in bleed mode the navy footer must run past the trim line */
 body.bleed .trim{overflow:visible;}
+/* brand keyline — sits just inside the trim and runs out to the sheet edge, so after
+   cutting the card carries a navy border with no white showing, even if the cut drifts */
+body.bleed .trim::after{content:'';position:absolute;inset:calc(-1 * var(--bleed));border:calc(var(--bleed) + .1in) solid var(--navy);pointer-events:none;z-index:6;}
+/* safe area — keep important content inside this dashed guide (screen only, never prints) */
+.safe{display:none;position:absolute;left:calc(var(--bleed) + .3in);top:calc(var(--bleed) + .3in);right:calc(var(--bleed) + .3in);bottom:calc(var(--bleed) + .3in);border:.5pt dashed rgba(0,161,196,.55);pointer-events:none;z-index:6;}
+body.bleed .safe{display:block;}
 /* color block accent */
 .cblock{position:relative;display:block;width:3.62em;height:2.36em;flex:none;}
 .cblock i{position:absolute;display:block;}
@@ -199,31 +210,45 @@ body.bleed .trim{overflow:visible;}
 .cblock .c3{width:.7em;height:.7em;background:var(--sky2);left:2.4em;top:1.18em;}
 .cblock .c4{width:.5em;height:.5em;background:var(--ow);left:3.1em;top:1.86em;}
 .cblock.inline{display:inline-block;vertical-align:baseline;}
-/* header — lockup left, navy chip + web id right */
-.sh-head{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:.13in;border-bottom:2.6pt solid var(--navy);position:relative;}
+/* ===== TYPE SCALE — four sheet-wide sizes, consistent within each sheet =====
+   Everything keys off four roles so matching text always matches in size:
+     --t-h1   display      → the address
+     --t-sub  subheading   → section heads (THE RESIDENCE / BUILDING / NUMBERS)
+     --t-body running text → residence + building specs, bullets & amenities
+     --t-cap  caption      → the small uppercase labels
+   --t-body is set per-sheet by the unified autofit, so the residence column and the
+   building band always share one body size; the in-block labels/values ride off it in
+   em, so they match across the two columns too. */
+.trim{--t-h1:30pt;--t-sub:9.5pt;--t-body:10pt;--t-cap:8pt;}
+/* header — GVC logo + address lockup on the left, asking price on the right
+   (the asking price now sits where the navy condo/co-op chip used to) */
+.sh-head{display:flex;justify-content:space-between;align-items:flex-end;gap:.3in;padding-bottom:.12in;border-bottom:2.6pt solid var(--navy);position:relative;}
+.sh-logo{flex:none;}
 .sh-logo svg{height:.6in;width:auto;display:block;}
-.sh-right{display:flex;flex-direction:column;align-items:flex-end;gap:.075in;padding-top:.03in;}
+.sh-id{flex:1;min-width:0;}
+.eyebrow{font:900 var(--t-cap) var(--sans);letter-spacing:.13em;text-transform:uppercase;color:var(--sky2);line-height:1;margin-bottom:.06in;}
+.eyebrow .dotsep{color:rgba(0,39,58,.4);padding:0 .3em;}
+.addr{font-family:var(--serif);font-weight:700;color:var(--navy);line-height:1.02;font-size:var(--t-h1);letter-spacing:.002em;white-space:nowrap;}
+.unit-lt{font:300 14pt var(--sans);color:rgba(0,39,58,.58);margin-top:.03in;letter-spacing:.012em;}
+.sh-right{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:.05in;text-align:right;}
+.ft-r .al{font:900 var(--t-cap) var(--sans);letter-spacing:.14em;text-transform:uppercase;color:rgba(0,39,58,.7);}
+.ft-r .av{font:900 26pt var(--sans);color:var(--navy);letter-spacing:.01em;margin-top:.02in;line-height:1;white-space:nowrap;}
+.webid{font:300 8pt var(--sans);letter-spacing:.22em;text-transform:uppercase;color:rgba(0,39,58,.66);}
+/* the marketing one-liner spans the full width just under the header rule */
+.f-lede{font:300 11pt var(--body);font-style:italic;color:rgba(0,39,58,.72);line-height:1.4;margin-top:.1in;max-width:8.2in;}
+/* navy chip — still used on the back-page header */
 .chip{background:var(--navy);color:#fff;font:900 8.5pt var(--sans);letter-spacing:.08em;text-transform:uppercase;padding:.055in .13in .05in;}
 .chip .dotsep{color:var(--sky);padding:0 .32em;}
-.webid{font:300 8pt var(--sans);letter-spacing:.22em;text-transform:uppercase;color:rgba(0,39,58,.66);}
-/* front top block — address left, asking price right, stat strip beneath */
-.f-top{display:flex;align-items:flex-start;gap:.4in;margin-top:.15in;}
-.ft-l{flex:1;min-width:0;}
-.addr{font-family:var(--serif);font-weight:700;color:var(--navy);line-height:1.06;font-size:30pt;letter-spacing:.002em;}
-.unit-lt{font:300 14pt var(--sans);color:rgba(0,39,58,.58);margin-top:.04in;letter-spacing:.012em;}
-.posit{font:300 10.2pt var(--body);font-style:italic;color:rgba(0,39,58,.75);line-height:1.45;margin-top:.09in;max-width:6.4in;}
-.ft-r{flex:none;text-align:right;padding-top:.05in;}
-.ft-r .al{font:900 8.5pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:rgba(0,39,58,.7);}
-.ft-r .av{font:900 26pt var(--sans);color:var(--navy);letter-spacing:.01em;margin-top:.04in;}
 /* front columns — residence runs the full height on the left */
 .f-main{flex:1;display:flex;gap:.34in;margin-top:.14in;min-height:0;}
 .f-left{width:4.55in;flex:none;display:flex;flex-direction:column;min-height:0;}
 .f-left .col-h{margin-bottom:.08in;}
 /* fit blocks — JS sets the container font-size so content fills its space; children scale in em */
 .fitblk{min-height:0;overflow:hidden;}
-.res-fit{flex:1;font-size:10pt;display:flex;flex-direction:column;justify-content:space-between;align-items:stretch;}
-.bld-fit{flex:1;font-size:10pt;}
-.r-note{font:300 .8em var(--body);font-style:italic;color:rgba(0,39,58,.6);padding:.1em 0 .3em;}
+.res-fit{flex:1;font-size:var(--t-body);display:flex;flex-direction:column;justify-content:space-between;align-items:stretch;}
+.bld-fit{flex:1;font-size:var(--t-body);}
+/* the condo / co-op statement — a boxed callout at the top of The Residence */
+.r-note{align-self:flex-start;font:600 .82em var(--body);font-style:italic;color:var(--navy);border:1.2pt solid rgba(83,199,220,.7);background:rgba(83,199,220,.09);padding:.3em .6em;margin:0 0 .5em;}
 .r-spec{display:flex;gap:1em;padding:.3em 0;border-bottom:.6pt solid var(--hairline);align-items:baseline;}
 .r-spec .sl{font:900 .76em var(--sans);letter-spacing:.05em;text-transform:uppercase;color:rgba(0,39,58,.7);width:10em;flex:none;}
 .r-spec .sv{font:500 .92em var(--body);color:var(--navy);flex:1;line-height:1.35;}
@@ -237,13 +262,14 @@ body.bleed .trim{overflow:visible;}
 /* when the building grows past the squeeze limit the hero is dropped and the band owns the column */
 .f-right.no-photo .photo-hero,.f-right.no-photo .photo-empty{display:none;}
 .f-right.no-photo .f-bldg{flex:1;min-height:0;border-top:0;margin-top:0;padding-top:0;}
-/* stat strip — tops the residence column, ends where the residence column ends */
+/* stat strip — one box per stat: icon + label left, a dotted leader, value pinned right */
 .strip{display:flex;border-top:.8pt solid var(--hairline);border-bottom:.8pt solid var(--hairline);margin-bottom:.13in;flex:none;}
-.scell{flex:1;padding:.08in .12in .07in;border-left:.8pt solid var(--hairline);min-width:0;}
-.scell:first-child{border-left:0;padding-left:.01in;}
-.scell .sv{display:flex;align-items:center;gap:.075in;font:900 15.5pt var(--sans);color:var(--navy);white-space:nowrap;}
-.scell .sv svg{width:.18in;height:.18in;color:var(--sky2);flex:none;}
-.scell .slb{font:800 6.5pt var(--sans);letter-spacing:.1em;text-transform:uppercase;color:rgba(0,39,58,.55);margin-top:.04in;}
+.scell{flex:1;display:flex;align-items:baseline;gap:.09in;padding:.11in .14in;border-left:.8pt solid var(--hairline);min-width:0;}
+.scell:first-child{border-left:0;padding-left:.02in;}
+.scell .slb{display:flex;align-items:center;gap:.07in;flex:none;font:800 var(--t-cap) var(--sans);letter-spacing:.1em;text-transform:uppercase;color:rgba(0,39,58,.6);}
+.scell .slb svg{width:.16in;height:.16in;color:var(--sky2);flex:none;}
+.scell .lead{flex:1;min-width:.16in;align-self:center;border-bottom:1.6pt dotted rgba(0,39,58,.3);}
+.scell .sv{flex:none;font:900 15.5pt var(--sans);color:var(--navy);white-space:nowrap;}
 /* QR (back page) */
 .qr-box svg{width:100%;height:100%;display:block;}
 /* front photo (single — ends at the rule above asking price) */
@@ -271,7 +297,7 @@ body.bleed .trim{overflow:visible;}
 .col-h{display:flex;align-items:center;gap:.1in;margin-bottom:.11in;}
 .col-h .ich{width:.17in;height:.17in;color:var(--sky2);flex:none;}
 .col-h .ich svg{width:100%;height:100%;display:block;}
-.col-h span{font:900 9.5pt var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--navy);white-space:nowrap;}
+.col-h span{font:900 var(--t-sub) var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--navy);white-space:nowrap;}
 .col-h::after{content:'';flex:1;height:.6pt;background:var(--hairline);}
 /* ledger — label stacked over its value; em-scaled so the column autofits */
 .num-fit{flex:1;font-size:10pt;}
@@ -367,6 +393,11 @@ body.bleed .crop{display:block;}
   /* Letter landscape (11×8.5in): the taller --ch canvas prints 1:1, filling the page */
   body.paper-letter .sheet-wrap{width:11in !important;height:8.5in !important;}
   body.paper-letter .sheet{transform:scale(1) !important;}
+  /* bleed on: the page (set in #pagesize) grows by the bleed, so the wrap must show the
+     whole scaled sheet — including the bleed and crop marks — instead of clipping to trim */
+  body.bleed .sheet-wrap{width:calc((11in + 2 * var(--bleed)) * .75161) !important;height:calc((var(--ch) + 2 * var(--bleed)) * .75161) !important;overflow:visible !important;}
+  body.paper-letter.bleed .sheet-wrap{width:calc(11in + 2 * var(--bleed)) !important;height:calc(8.5in + 2 * var(--bleed)) !important;}
+  .safe{display:none !important;}
   .pg-col:first-child{page-break-after:always;break-after:page;}
 }
 </style>
@@ -519,6 +550,11 @@ body.bleed .crop{display:block;}
     <button type="button" data-v="a5" class="on">A5</button>
     <button type="button" data-v="letter">Letter</button>
   </div>
+  <span class="zlab">Bleed</span>
+  <div class="seg" id="bleedSeg" role="group" aria-label="Print bleed and crop marks">
+    <button type="button" data-v="off" class="on">Off</button>
+    <button type="button" data-v="on">On</button>
+  </div>
   <div class="sp"></div>
   <span class="zlab" id="zoomInfo"></span>
   <button class="btn sm ghost" id="btnZoom">Zoom 100%</button>
@@ -588,7 +624,7 @@ const LS_KEY = 'gvc-showsheet-current-v1';
 
 function blankUnit(){
   return {
-    ownership:'co-op', paper:'a5', neighborhood:'', borough:'Manhattan', address:'', unit:'', positioning:'',
+    ownership:'co-op', paper:'a5', bleed:false, neighborhood:'', borough:'Manhattan', address:'', unit:'', positioning:'',
     webId:'', listingUrl:'', docxName:'',
     photos:[], heroIndex:0, secondaryIndex:null,
     floorplan:null,
@@ -705,25 +741,26 @@ function renderFront(){
     <div class="bld-fit fitblk">${bSpecs}${amenHtml}</div>` : '';
   const cells = statCells();
   const strip = cells.length ? `<div class="strip">${cells.map(c=>
-    `<div class="scell"><div class="sv">${c.ic}<span>${c.v}</span></div><div class="slb">${c.l}</div></div>`).join('')}</div>` : '';
+    `<div class="scell"><span class="slb">${c.ic}<span>${c.l}</span></span><span class="lead"></span><span class="sv">${c.v}</span></div>`).join('')}</div>` : '';
   const askBlock = state.price ? `<div class="ft-r"><div class="al">Asking Price</div><div class="av">${displayPrice(state.price)}</div></div>` : '';
+  // eyebrow over the address carries the old chip's content (ownership · neighborhood)
+  const place = state.neighborhood || state.borough || '';
+  const eyebrow = `${ownLabel()}${place ? `<span class="dotsep">·</span>${esc(place).toUpperCase()}` : ''}`;
   $('#sheetFront').innerHTML = `
     <div class="trim">
       <div class="sh-head">
         <div class="sh-logo">${LOGO_GVC_NAVY}</div>
+        <div class="sh-id">
+          <div class="eyebrow">${eyebrow}</div>
+          <div class="addr">${esc(state.address) || '<span style="opacity:.25">Street Address</span>'}</div>
+          ${state.unit ? `<div class="unit-lt">${esc(unitDisplay(state.unit))}</div>` : ''}
+        </div>
         <div class="sh-right">
-          ${chipHtml()}
+          ${askBlock}
           ${state.webId ? `<span class="webid">Web ID ${esc(state.webId)}</span>` : ''}
         </div>
       </div>
-      <div class="f-top">
-        <div class="ft-l">
-          <div class="addr">${esc(state.address) || '<span style="opacity:.25">Street Address</span>'}</div>
-          ${state.unit ? `<div class="unit-lt">${esc(unitDisplay(state.unit))}</div>` : ''}
-          ${state.positioning ? `<div class="posit">${esc(state.positioning)}</div>` : ''}
-        </div>
-        ${askBlock}
-      </div>
+      ${state.positioning ? `<div class="f-lede">${esc(state.positioning)}</div>` : ''}
       <div class="f-main">
         <div class="f-left">
           ${strip}
@@ -739,6 +776,7 @@ function renderFront(){
         <div class="badges"><span class="badge">${BADGE_DE}</span><span class="badge">${BADGE_GVC}</span><span class="badge">${BADGE_EHO}</span></div>
       </div>
     </div>
+    <div class="safe"></div>
     ${cropMarks()}`;
 }
 function ledgerRows(){
@@ -852,6 +890,7 @@ function renderBack(){
         ${qrInFooter?`<div class="fqr"><div class="qr-box">${qr}</div></div>`:''}
       </div>
     </div>
+    <div class="safe"></div>
     ${cropMarks(true)}`;
 }
 function fitLogos(){
@@ -895,48 +934,62 @@ function fitHeading(el, minPt, maxPt){
   if(el.scrollWidth > avail) el.style.whiteSpace = 'normal';
 }
 let warnedTrim = false;
-function fitResidence(){
-  // ALL residence info lives on the front; scale first, trim only as a last resort
-  const el = document.querySelector('#sheetFront .res-fit');
-  if(!el) return;
-  if(fitBlock(el, 6.8, 16)) return;
-  const feats = [...el.querySelectorAll('.r-feat')];
-  let removed = 0, note = null;
-  while(el.scrollHeight > el.clientHeight + 1 && feats.length && removed < 60){
-    feats.pop().remove(); removed++;
-    if(!note){
-      note = document.createElement('div');
-      note.className = 'feat-more';
-      note.textContent = 'A complete list of features is available upon request.';
-      el.appendChild(note);
+function fitFrontBody(){
+  // The residence (left column) and the building band (right, beneath the hero) share
+  // ONE body size — var(--t-body) — so a residence bullet and a building bullet always
+  // match. We take the largest size where the residence column fits; the hero photo
+  // (flex:1) gives the building whatever room it needs. If the photo would end up
+  // thinner than MIN_HERO_IN it isn't worth keeping, so it's dropped and the building
+  // fills the right column at that same shared size. Features/amenities are trimmed only
+  // as a last resort, when even the minimum size overflows.
+  const MIN_HERO_IN = 1.5, PX = 96, MIN = 6.8, MAX = 14;
+  const trim  = document.querySelector('#sheetFront .trim');
+  const res   = document.querySelector('#sheetFront .res-fit');
+  const right = document.querySelector('#sheetFront .f-right');
+  const bld   = right && right.querySelector('.bld-fit');
+  if(!trim) return;
+  if(right) right.classList.remove('no-photo');  // reset to the photo-on-top state each render
+  const set  = pt => trim.style.setProperty('--t-body', pt.toFixed(2) + 'pt');
+  const fits = el => !el || (el.scrollHeight <= el.clientHeight + 1 && el.scrollWidth <= el.clientWidth + 1);
+
+  // 1) biggest shared size that keeps the residence column from overflowing
+  let lo = MIN, hi = MAX, size = MAX;
+  set(MAX);
+  if(!fits(res)){ for(let k=0;k<8;k++){ const m=(lo+hi)/2; set(m); fits(res)?lo=m:hi=m; } set(lo); size = lo; }
+
+  // 2) if the photo is now too short, hand the right column to the building and re-cap
+  //    so the (clipping) building band and the residence still fit at one shared size
+  const photo = right && (right.querySelector('.photo-hero') || right.querySelector('.photo-empty'));
+  if(right && bld && photo && photo.offsetHeight < MIN_HERO_IN * PX){
+    right.classList.add('no-photo');
+    lo = MIN; hi = size; set(size);
+    if(!(fits(res) && fits(bld))){ for(let k=0;k<8;k++){ const m=(lo+hi)/2; set(m); (fits(res)&&fits(bld))?lo=m:hi=m; } set(lo); }
+  }
+
+  // 3) last resort — trim residence features, then building amenities, if MIN still overflows
+  if(res && !fits(res)){
+    const feats = [...res.querySelectorAll('.r-feat')];
+    let removed = 0, note = null;
+    while(res.scrollHeight > res.clientHeight + 1 && feats.length && removed < 60){
+      feats.pop().remove(); removed++;
+      if(!note){
+        note = document.createElement('div');
+        note.className = 'feat-more';
+        note.textContent = 'A complete list of features is available upon request.';
+        res.appendChild(note);
+      }
+    }
+    if(removed && !warnedTrim){
+      warnedTrim = true;
+      toast(`${removed} feature line${removed>1?'s':''} didn't fit — trim the Residence list in the editor to choose what shows.`);
     }
   }
-  if(removed && !warnedTrim){
-    warnedTrim = true;
-    toast(`${removed} feature line${removed>1?'s':''} didn't fit — trim the Residence list in the editor to choose what shows.`);
-  }
-}
-function fitBuilding(){
-  // The building facts mirror the residence: same 10pt base, same 6.8–16pt range.
-  // The band is no longer a fixed height — it grows to fit its facts and the hero
-  // photo (flex:1) gives up whatever space is left, shrinking freely. Once the photo
-  // would be thinner than MIN_HERO_IN it isn't worth showing, so we drop it entirely
-  // and let the building fill the whole right column the way the residence fills the left.
-  const MIN_HERO_IN = 1.5;  // smallest hero-photo height before the photo is removed — tweak here
-  const right = document.querySelector('#sheetFront .f-right');
-  if(!right) return;
-  right.classList.remove('no-photo');            // reset to the photo-on-top state each render
-  const el = right.querySelector('.bld-fit');
-  if(!el) return;                                // no building content on this sheet
-  el.style.fontSize = '10pt';                    // match the residence base; the band sizes to fit
-  const photo = right.querySelector('.photo-hero') || right.querySelector('.photo-empty');
-  if(photo && photo.offsetHeight >= MIN_HERO_IN * 96) return;  // hero still tall enough — keep it
-  right.classList.add('no-photo');               // hero too thin (or absent) — drop it
-  if(fitBlock(el, 6.8, 16)) return;              // autofit the building to the full right column
-  const run = el.querySelector('.amen-run');     // last resort: trim amenities if even 6.8pt overflows
-  let guard = 0;
-  while(run && el.scrollHeight > el.clientHeight + 1 && run.childNodes.length > 1 && guard++ < 80){
-    run.removeChild(run.lastChild);
+  if(right && right.classList.contains('no-photo') && bld && !fits(bld)){
+    const run = bld.querySelector('.amen-run');
+    let guard = 0;
+    while(run && bld.scrollHeight > bld.clientHeight + 1 && run.childNodes.length > 1 && guard++ < 80){
+      run.removeChild(run.lastChild);
+    }
   }
 }
 function fitSheets(){
@@ -949,8 +1002,7 @@ function fitSheets(){
     unit.style.fontSize = Math.max(9.5, Math.min(14, pt * .47)).toFixed(2) + 'pt';
   }
   fitHeading(document.querySelector('#sheetBack .b-head .ba'), 13, 19);
-  fitResidence();
-  fitBuilding();
+  fitFrontBody();
   // the back-page ledger never clips — it shrinks to fit its column (10pt is full size)
   fitBlock(document.querySelector('#sheetBack .num-fit'), 7, 10);
 }
@@ -1002,6 +1054,7 @@ function hydrateForm(){
   });
   syncOwnership();
   syncPaper();
+  syncBleed();
   renderAgentPicker();
   renderPhotoCards();
   syncDropZones();
@@ -1020,7 +1073,7 @@ document.addEventListener('click', e=>{
   if(what==='floorplan'){ state.floorplan=null; }
   if(what==='docx'){
     // dropping the doc means starting the next listing — clear everything unit-specific
-    state = Object.assign(blankUnit(), {agentIds:[...state.agentIds], paper:state.paper});
+    state = Object.assign(blankUnit(), {agentIds:[...state.agentIds], paper:state.paper, bleed:state.bleed});
     hydrateForm();
     toast('Form cleared — drop the next listing.');
   }
@@ -1032,14 +1085,26 @@ function syncPaper(){
   const letter = state.paper === 'letter';
   document.body.classList.toggle('paper-letter', letter);
   $$('#paperSeg button').forEach(b=>b.classList.toggle('on', b.dataset.v===state.paper));
+  // printed bleed = the .125in design bleed times the paper's print scale (A5 prints at .75161, Letter 1:1)
+  const bleedIn = state.bleed ? 0.125 * (letter ? 1 : 0.75161) : 0;
   const ps = $('#pagesize');
-  if(ps) ps.textContent = letter ? '@page{size:11in 8.5in;margin:0;}' : '@page{size:210mm 148mm;margin:0;}';
+  if(ps){
+    if(letter){ const w = (11 + 2*bleedIn).toFixed(3), h = (8.5 + 2*bleedIn).toFixed(3);
+      ps.textContent = `@page{size:${w}in ${h}in;margin:0;}`; }
+    else { const w = (210 + 2*bleedIn*25.4).toFixed(2), h = (148 + 2*bleedIn*25.4).toFixed(2);
+      ps.textContent = `@page{size:${w}mm ${h}mm;margin:0;}`; }
+  }
   const lbl = letter ? 'Letter landscape' : 'A5 landscape';
-  $$('.pg-tag').forEach((t,i)=>{ t.textContent = (i===0?'Front · ':'Back · ') + lbl; });
+  $$('.pg-tag').forEach((t,i)=>{ t.textContent = (i===0?'Front · ':'Back · ') + lbl + (state.bleed ? ' · bleed' : ''); });
   const pn = $('#btnPrint');
   if(pn) pn.title = letter
     ? "In the print dialog: Destination 'Save as PDF' · Paper 'Letter' · Layout 'Landscape' · Margins 'None' · enable 'Background graphics'. Prints as two Letter landscape pages."
     : "In the print dialog: Destination 'Save as PDF' · Paper 'A5' · Margins 'None' · enable 'Background graphics'. Prints as two A5 landscape pages.";
+}
+function syncBleed(){
+  document.body.classList.toggle('bleed', !!state.bleed);
+  $$('#bleedSeg button').forEach(b=>b.classList.toggle('on', (b.dataset.v==='on')===!!state.bleed));
+  syncPaper();   // the print page size grows with the bleed
 }
 function syncOwnership(){
   $$('#ownSeg button').forEach(b=>b.classList.toggle('on', b.dataset.v===state.ownership));
@@ -1069,6 +1134,11 @@ $('#paperSeg').addEventListener('click', e=>{
   const b = e.target.closest('button'); if(!b) return;
   state.paper = b.dataset.v;
   syncPaper(); render();   // canvas height changes with paper — re-run the autofit
+});
+$('#bleedSeg').addEventListener('click', e=>{
+  const b = e.target.closest('button'); if(!b) return;
+  state.bleed = b.dataset.v === 'on';
+  syncBleed(); render();   // bleed reshapes the page — re-run the autofit
 });
 /* ============================================================
    IMAGES — ingestion (canvas re-encode: CMYK→RGB, downscale)
@@ -1294,7 +1364,7 @@ function applyParsedDocx(blocks){
   // the disclaimer are team-level, so they carry over.
   const norm = s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
   if(newAddress && state.address && norm(newAddress)!==norm(state.address)){
-    state = Object.assign(blankUnit(), {agentIds:[...state.agentIds], paper:state.paper});
+    state = Object.assign(blankUnit(), {agentIds:[...state.agentIds], paper:state.paper, bleed:state.bleed});
     found.push('(new unit — form reset)');
   }
   if(newAddress){ state.address = newAddress; found.push('address'); }
