@@ -719,7 +719,12 @@ function chipHtml(){
 }
 function statCells(){
   const cells = [];
-  if(!blankish(state.beds)) cells.push({v: state.beds==='0' ? 'Studio' : esc(state.beds), l:'Bedrooms', ic:ICONS.bed});
+  if(!blankish(state.beds)){
+    // a studio is zero bedrooms — show STUDIO in the label slot (no number) so it
+    // can't collide with the value text and clip off the edge of the strip
+    const studio = String(state.beds).trim() === '0';
+    cells.push(studio ? {v:'', l:'Studio', ic:ICONS.bed} : {v: esc(state.beds), l:'Bedrooms', ic:ICONS.bed});
+  }
   if(!blankish(state.baths)) cells.push({v: esc(state.baths), l:'Bathrooms', ic:ICONS.bath});
   return cells;
 }
