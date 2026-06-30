@@ -1595,14 +1595,27 @@ const ESSENTIALS = [
   ['Floorplan', ()=>!!state.floorplan],
   ['Listing URL', ()=>!!String(state.listingUrl||'').trim()],
 ];
+// The browser's Print → "Save as PDF" dialog uses the page title as the default
+// file name, so set it to the listing address (+ unit) just before printing and
+// restore it afterward, leaving the normal app title in place the rest of the time.
+const APP_TITLE = document.title;
+function printSheet(){
+  const addr = String(state.address||'').trim();
+  const unit = String(state.unit||'').trim();
+  const name = [addr, unit && unitDisplay(unit)].filter(Boolean).join(' - ').trim();
+  if(name) document.title = name;
+  const restore = ()=>{ document.title = APP_TITLE; window.removeEventListener('afterprint', restore); };
+  window.addEventListener('afterprint', restore);
+  window.print();
+}
 $('#btnPrint').onclick = ()=>{
   const missing = ESSENTIALS.filter(([,ok])=>!ok()).map(([name])=>name);
-  if(!missing.length){ window.print(); return; }
+  if(!missing.length){ printSheet(); return; }
   $('#warnList').innerHTML = missing.map(m=>`<li>${m}</li>`).join('');
   $('#warnOverlay').hidden = false;
 };
 $('#warnBack').onclick = ()=>{ $('#warnOverlay').hidden = true; };
-$('#warnPrint').onclick = ()=>{ $('#warnOverlay').hidden = true; window.print(); };
+$('#warnPrint').onclick = ()=>{ $('#warnOverlay').hidden = true; printSheet(); };
 $('#btnZoom').onclick = ()=>{
   zoom100 = !zoom100;
   $('#btnZoom').textContent = zoom100 ? 'Zoom: Fit' : 'Zoom 100%';
