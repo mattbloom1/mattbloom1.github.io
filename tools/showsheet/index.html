@@ -1140,9 +1140,21 @@ function syncPaper(){
   const lbl = letter ? 'Letter landscape' : 'A5 landscape';
   $$('.pg-tag').forEach((t,i)=>{ t.textContent = (i===0?'Front · ':'Back · ') + lbl + (state.bleed ? ' · bleed' : ''); });
   const pn = $('#btnPrint');
-  if(pn) pn.title = letter
-    ? "In the print dialog: Destination 'Save as PDF' · Paper 'Letter' · Layout 'Landscape' · Margins 'None' · enable 'Background graphics'. Prints as two Letter landscape pages."
-    : "In the print dialog: Destination 'Save as PDF' · Paper 'A5' · Margins 'None' · enable 'Background graphics'. Prints as two A5 landscape pages.";
+  if(pn){
+    if(state.bleed){
+      // Bleed prints an OVERSIZED page (the artwork runs past the trim) that you cut down
+      // afterward. Forcing the dialog's paper to A5/Letter shrinks that oversized page back
+      // onto a standard sheet and kills the bleed — so the user must leave paper at default
+      // and let 'Save as PDF' honor the oversized @page size we set.
+      const dim = letter ? '11.25 × 8.75 in' : '~215 × 153 mm';
+      const trim = letter ? 'Letter' : 'A5';
+      pn.title = `Bleed is on, so the page is intentionally oversized (${dim}) to be trimmed down to ${trim} after printing. In the print dialog: Destination 'Save as PDF' · leave Paper size at its default — do NOT pick ${trim}, that scales the page down and cuts off the bleed${letter ? " · Layout 'Landscape'" : ''} · Margins 'None' · enable 'Background graphics'.`;
+    } else {
+      pn.title = letter
+        ? "In the print dialog: Destination 'Save as PDF' · Paper 'Letter' · Layout 'Landscape' · Margins 'None' · enable 'Background graphics'. Prints as two Letter landscape pages."
+        : "In the print dialog: Destination 'Save as PDF' · Paper 'A5' · Margins 'None' · enable 'Background graphics'. Prints as two A5 landscape pages.";
+    }
+  }
 }
 function syncBleed(){
   document.body.classList.toggle('bleed', !!state.bleed);
