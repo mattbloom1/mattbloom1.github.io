@@ -279,6 +279,9 @@ body.bleed .safe{display:block;}
 .photo-hero img{width:100%;height:100%;object-fit:cover;display:block;}
 .photo-empty{flex:1;display:flex;align-items:center;justify-content:center;background:var(--ow);}
 .photo-empty svg{height:1.1in;opacity:.16;}
+/* secondary photo — left column, initially collapsed; fitSecondary() gives it the empty space */
+.photo-secondary{flex:0 0 0;min-height:0;overflow:hidden;position:relative;}
+.photo-secondary img{width:100%;height:100%;object-fit:cover;display:block;}
 /* footers */
 .sh-foot{margin-top:.16in;border-top:1pt solid var(--hairline);padding-top:.1in;display:flex;justify-content:space-between;align-items:center;gap:.35in;}
 .sh-foot .fl{font:300 7pt var(--body);color:rgba(0,39,58,.66);line-height:1.55;flex:1;}
@@ -439,12 +442,21 @@ body.bleed .crop{display:block;}
     <div class="d-loaded"><span class="d-check">&#10003;</span><span class="d-name">Floorplan</span><button class="d-x" data-clear="floorplan" title="Remove floorplan">&#10005;</button></div>
   </div>
   <div id="phList"></div>
+  <div class="drop" id="phSecDrop" style="display:none">
+    <div class="d-idle">
+      <div class="d-big">Secondary Photo</div>
+      <div class="d-sub">optional — fills empty space in the left column</div>
+    </div>
+    <div class="d-loaded"><span class="d-check">&#10003;</span><span class="d-name">Secondary photo</span><button class="d-x" data-clear="secondary-photo" title="Remove secondary photo">&#10005;</button></div>
+  </div>
+  <div id="phSecList"></div>
   <div class="qb-fields">
     <div class="field"><label>Listing URL</label><input type="text" data-field="listingUrl" placeholder="https://www.elliman.com/listing/…"></div>
     <div class="field"><label>Positioning — one sentence</label><input type="text" data-field="positioning" placeholder="A sun-flooded penthouse with three private terraces atop Lenox Hill."></div>
   </div>
   <input type="file" id="docxFile" accept=".docx" hidden>
   <input type="file" id="phFile" accept="image/*" hidden>
+  <input type="file" id="phSecFile" accept="image/*" hidden>
   <input type="file" id="fpFile" accept="image/*" hidden>
 </header>
 
@@ -626,7 +638,7 @@ function blankUnit(){
   return {
     ownership:'co-op', paper:'a5', bleed:false, neighborhood:'', borough:'Manhattan', address:'', unit:'', positioning:'',
     webId:'', listingUrl:'', docxName:'',
-    photos:[], heroIndex:0, secondaryIndex:null,
+    photos:[], heroIndex:0, secondaryIndex:null, secondaryPhoto:null,
     floorplan:null,
     price:'', beds:'', baths:'',
     maintenance:'', commonCharges:'', taxesMonthly:'', taxDeductible:'',
@@ -761,6 +773,7 @@ function renderFront(){
         <div class="f-left">
           ${strip}
           ${resHtml}
+          ${state.secondaryPhoto ? `<div class="photo-secondary"><img src="${state.secondaryPhoto.src}" style="object-position:${state.secondaryPhoto.fx??50}% ${state.secondaryPhoto.fy??50}%" alt=""></div>` : ''}
         </div>
         <div class="f-right">
           ${photoHtml}
@@ -988,6 +1001,19 @@ function fitFrontBody(){
     }
   }
 }
+function fitSecondary(){
+  const res = document.querySelector('#sheetFront .res-fit');
+  const sec = document.querySelector('#sheetFront .photo-secondary');
+  if(!res || !sec) return;
+  // res-fit has flex:1 so clientHeight = full available column space; scrollHeight = natural content size
+  const empty = res.clientHeight - res.scrollHeight;
+  const MIN_PX = 96 * 1.2; // at least 1.2in before showing the photo
+  if(empty >= MIN_PX){
+    res.style.flex = 'none';
+    res.style.height = res.scrollHeight + 'px';
+    sec.style.flex = '1';
+  }
+}
 function fitSheets(){
   const addr = document.querySelector('#sheetFront .addr');
   fitHeading(addr, 16, 30);
@@ -999,6 +1025,7 @@ function fitSheets(){
   }
   fitHeading(document.querySelector('#sheetBack .b-head .ba'), 13, 19);
   fitFrontBody();
+  fitSecondary();
   // the back-page ledger never clips — it shrinks to fit its column (10pt is full size)
   fitBlock(document.querySelector('#sheetBack .num-fit'), 7, 10);
 }
@@ -1059,13 +1086,17 @@ function syncDropZones(){
   $('#docxDrop').classList.toggle('loaded', !!state.docxName);
   $('#docxName').textContent = state.docxName || '';
   $('#phDrop').classList.toggle('loaded', state.photos.length > 0);
+  const hasPrimary = state.photos.length > 0;
+  $('#phSecDrop').style.display = hasPrimary ? '' : 'none';
+  $('#phSecDrop').classList.toggle('loaded', !!state.secondaryPhoto);
   $('#fpDrop').classList.toggle('loaded', !!state.floorplan);
 }
 document.addEventListener('click', e=>{
   const x = e.target.closest('.d-x'); if(!x) return;
   e.preventDefault(); e.stopPropagation();
   const what = x.dataset.clear;
-  if(what==='photo'){ state.photos=[]; state.heroIndex=0; state.secondaryIndex=null; renderPhotoCards(); }
+  if(what==='photo'){ state.photos=[]; state.heroIndex=0; state.secondaryIndex=null; state.secondaryPhoto=null; renderPhotoCards(); }
+  if(what==='secondary-photo'){ state.secondaryPhoto=null; renderPhotoCards(); }
   if(what==='floorplan'){ state.floorplan=null; }
   if(what==='docx'){
     // dropping the doc means starting the next listing — clear everything unit-specific
@@ -1218,40 +1249,66 @@ function wireDrop(zone, input, handler, multiple){
 }
 wireDrop($('#phDrop'), $('#phFile'), addPhotoFiles, true);
 wireDrop($('#fpDrop'), $('#fpFile'), setFloorplanFile, false);
+async function addSecondaryPhotoFile(f){
+  if(!f) return;
+  try{
+    const img = await fileToImage(f);
+    state.secondaryPhoto = {src: reencode(img, 2000, .87), fx:50, fy:50};
+    renderPhotoCards(); syncDropZones(); render();
+    toast('Secondary photo set.');
+  }catch(e){ toast(`Couldn't read ${f.name}`, true); }
+}
+wireDrop($('#phSecDrop'), $('#phSecFile'), addSecondaryPhotoFile, false);
 
 /* photo card: focal point for the single sheet photo */
 function renderPhotoCards(){
   const list = $('#phList');
   const p = state.photos[state.heroIndex] || state.photos[0];
-  if(!p){ list.innerHTML=''; return; }
-  const i = state.photos.indexOf(p);
-  list.innerHTML = `
+  if(!p){ list.innerHTML=''; }
+  else{
+    const i = state.photos.indexOf(p);
+    list.innerHTML = `
+      <div class="ph-card">
+        <div class="ph-thumb" data-i="${i}" data-type="primary" title="Click or drag to set the focal point — the crop keeps what matters">
+          <img src="${p.src}">
+          <span class="fx-dot" style="left:${p.fx}%;top:${p.fy}%"></span>
+        </div>
+      </div>`;
+  }
+  const secList = $('#phSecList');
+  const sp = state.secondaryPhoto;
+  if(!sp){ secList.innerHTML=''; return; }
+  secList.innerHTML = `
     <div class="ph-card">
-      <div class="ph-thumb" data-i="${i}" title="Click or drag to set the focal point — the crop keeps what matters">
-        <img src="${p.src}">
-        <span class="fx-dot" style="left:${p.fx}%;top:${p.fy}%"></span>
+      <div class="ph-thumb" data-type="secondary" title="Click or drag to set the focal point for the secondary photo">
+        <img src="${sp.src}">
+        <span class="fx-dot" style="left:${sp.fx}%;top:${sp.fy}%"></span>
       </div>
     </div>`;
 }
-/* focal point: click/drag on thumb */
+/* focal point: click/drag on thumb — handles both primary and secondary */
 let focalDrag = null;
-$('#phList').addEventListener('pointerdown', e=>{
-  const th = e.target.closest('.ph-thumb'); if(!th) return;
-  focalDrag = +th.dataset.i;
-  setFocal(e, th);
-  th.setPointerCapture(e.pointerId);
-});
-$('#phList').addEventListener('pointermove', e=>{
-  if(focalDrag==null) return;
-  const th = e.target.closest('.ph-thumb'); if(!th) return;
-  setFocal(e, th);
-});
-$('#phList').addEventListener('pointerup', ()=>{ focalDrag=null; });
-function setFocal(e, th){
+function focalListeners(list, getPhoto){
+  list.addEventListener('pointerdown', e=>{
+    const th = e.target.closest('.ph-thumb'); if(!th) return;
+    focalDrag = th.dataset.type;
+    setFocal(e, th, getPhoto(th));
+    th.setPointerCapture(e.pointerId);
+  });
+  list.addEventListener('pointermove', e=>{
+    if(focalDrag==null) return;
+    const th = e.target.closest('.ph-thumb'); if(!th) return;
+    setFocal(e, th, getPhoto(th));
+  });
+  list.addEventListener('pointerup', ()=>{ focalDrag=null; });
+}
+focalListeners($('#phList'), th => state.photos[+th.dataset.i]);
+focalListeners($('#phSecList'), () => state.secondaryPhoto);
+function setFocal(e, th, p){
+  if(!p) return;
   const r = th.getBoundingClientRect();
   const fx = Math.max(0, Math.min(100, (e.clientX-r.left)/r.width*100));
   const fy = Math.max(0, Math.min(100, (e.clientY-r.top)/r.height*100));
-  const p = state.photos[+th.dataset.i];
   p.fx = Math.round(fx); p.fy = Math.round(fy);
   th.querySelector('.fx-dot').style.left = p.fx+'%';
   th.querySelector('.fx-dot').style.top = p.fy+'%';
