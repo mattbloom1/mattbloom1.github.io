@@ -1005,13 +1005,23 @@ function fitSecondary(){
   const res = document.querySelector('#sheetFront .res-fit');
   const sec = document.querySelector('#sheetFront .photo-secondary');
   if(!res || !sec) return;
-  // res-fit has flex:1 so clientHeight = full available column space; scrollHeight = natural content size
-  const empty = res.clientHeight - res.scrollHeight;
-  const MIN_PX = 96 * 1.2; // at least 1.2in before showing the photo
+  // reset to the flex:1 state so we measure the full column each render
+  res.style.flex = ''; res.style.height = ''; sec.style.flex = '';
+  // res-fit is flex:1, so clientHeight = the full space the column can give it.
+  // scrollHeight can't report less than clientHeight, so collapse res to its natural
+  // height first, measure that, then decide if the leftover is worth a photo.
+  const avail = res.clientHeight;
+  res.style.flex = 'none';
+  res.style.height = 'auto';
+  const natural = res.scrollHeight;
+  const empty = avail - natural;
+  const MIN_PX = 96 * 1.2; // need at least ~1.2in of slack before showing the photo
   if(empty >= MIN_PX){
-    res.style.flex = 'none';
-    res.style.height = res.scrollHeight + 'px';
+    res.style.height = natural + 'px';
     sec.style.flex = '1';
+  }else{
+    // not enough room — give the column back to the residence, hide the photo
+    res.style.flex = ''; res.style.height = '';
   }
 }
 function fitSheets(){
