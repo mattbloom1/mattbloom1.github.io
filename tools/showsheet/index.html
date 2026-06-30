@@ -721,8 +721,9 @@ function statCells(){
   const cells = [];
   if(!blankish(state.beds)){
     // a studio is zero bedrooms — show STUDIO in the label slot (no number) so it
-    // can't collide with the value text and clip off the edge of the strip
-    const studio = String(state.beds).trim() === '0';
+    // can't collide with the value text and clip off the edge of the strip.
+    // Catch both a literal 0 and the word "studio" typed straight into the field.
+    const studio = /^(0|studios?)$/i.test(String(state.beds).trim());
     cells.push(studio ? {v:'', l:'Studio', ic:ICONS.bed} : {v: esc(state.beds), l:'Bedrooms', ic:ICONS.bed});
   }
   if(!blankish(state.baths)) cells.push({v: esc(state.baths), l:'Bathrooms', ic:ICONS.bath});
