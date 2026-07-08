@@ -77,3 +77,31 @@ class TestBuildPairs(unittest.TestCase):
         self.assertEqual(len(warnings), 1)
         self.assertIn("Living Room 2 .jpg", warnings[0])
         self.assertIn("Living room 2.jpg", warnings[0])
+
+
+class TestOptimizeImage(unittest.TestCase):
+    def test_resizes_to_max_edge(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            src = Path(tmp) / "src.jpg"
+            Image.new("RGB", (2000, 1000), "red").save(src, "JPEG")
+            dst = Path(tmp) / "out.webp"
+
+            build_photos.optimize_image(src, dst, max_edge=1100, quality=72)
+
+            self.assertTrue(dst.exists())
+            with Image.open(dst) as im:
+                self.assertEqual(im.format, "WEBP")
+                self.assertEqual(max(im.size), 1100)
+
+    def test_skips_existing_unless_forced(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            src = Path(tmp) / "src.jpg"
+            Image.new("RGB", (400, 400), "blue").save(src, "JPEG")
+            dst = Path(tmp) / "out.webp"
+            dst.write_bytes(b"placeholder")
+
+            build_photos.optimize_image(src, dst, max_edge=1100, quality=72)
+            self.assertEqual(dst.read_bytes(), b"placeholder")
+
+            build_photos.optimize_image(src, dst, max_edge=1100, quality=72, force=True)
+            self.assertNotEqual(dst.read_bytes(), b"placeholder")

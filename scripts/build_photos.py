@@ -96,3 +96,21 @@ def build_pairs(raw_names, edited_names):
         stem = Path(edited_name or raw_name).stem
         photos.append({"label": nice_label(stem), "raw_name": raw_name, "edited_name": edited_name})
     return photos, warnings
+
+
+# ---------- image optimization ----------
+
+def optimize_image(src: Path, dst: Path, max_edge: int, quality: int, force: bool = False) -> None:
+    """Resize src so its longest edge is at most max_edge, save as WEBP at dst."""
+    if dst.exists() and not force:
+        return
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    with Image.open(src) as im:
+        im = ImageOps.exif_transpose(im)
+        if im.mode in ("RGBA", "P", "LA"):
+            im = im.convert("RGB")
+        w, h = im.size
+        scale = min(1.0, max_edge / max(w, h))
+        if scale < 1.0:
+            im = im.resize((round(w * scale), round(h * scale)), Image.LANCZOS)
+        im.save(dst, "WEBP", quality=quality, method=5)
