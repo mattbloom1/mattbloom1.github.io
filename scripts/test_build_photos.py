@@ -158,3 +158,51 @@ class TestWriteIndexHtml(unittest.TestCase):
         self.assertIn("3 photos", out)
         self.assertIn('href="aaa/"', out)
         self.assertIn('href="bbb/"', out)
+
+
+class TestCollectProperties(unittest.TestCase):
+    def test_skips_template_and_incomplete_folders(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            (base / "120 East 75th" / "Raw").mkdir(parents=True)
+            (base / "120 East 75th" / "Edited").mkdir(parents=True)
+            (base / "120 East 75th" / "Raw" / "Bath.jpg").write_bytes(b"x")
+            (base / "120 East 75th" / "Edited" / "Bath-Edit.jpg").write_bytes(b"x")
+
+            (base / "Template" / "Raw").mkdir(parents=True)
+            (base / "Template" / "Edited").mkdir(parents=True)
+            (base / "Template" / "Raw" / "x.jpg").write_bytes(b"x")
+
+            (base / "No Edits Yet" / "Raw").mkdir(parents=True)
+            (base / "No Edits Yet" / "Raw" / "x.jpg").write_bytes(b"x")
+
+            props = build_photos.collect_properties(base)
+
+        self.assertEqual(len(props), 1)
+        self.assertEqual(props[0]["slug"], "120-east-75th")
+        self.assertEqual(len(props[0]["photos"]), 1)
+        self.assertEqual(props[0]["photos"][0]["label"], "Bath")
+
+
+class TestMainIntegration(unittest.TestCase):
+    def test_main_writes_expected_files(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "source"
+            out = Path(tmp) / "out"
+            prop_dir = source / "Test Property"
+            (prop_dir / "Raw").mkdir(parents=True)
+            (prop_dir / "Edited").mkdir(parents=True)
+            Image.new("RGB", (400, 300), "green").save(prop_dir / "Raw" / "Bath.jpg", "JPEG")
+            Image.new("RGB", (400, 300), "blue").save(prop_dir / "Edited" / "Bath-Edit.jpg", "JPEG")
+
+            original_source, original_out = build_photos.SOURCE, build_photos.OUT
+            build_photos.SOURCE, build_photos.OUT = source, out
+            try:
+                build_photos.main()
+            finally:
+                build_photos.SOURCE, build_photos.OUT = original_source, original_out
+
+            self.assertTrue((out / "index.html").exists())
+            self.assertTrue((out / "test-property" / "index.html").exists())
+            self.assertTrue((out / "test-property" / "img" / "0-e-t.webp").exists())
+            self.assertTrue((out / "test-property" / "img" / "0-r-t.webp").exists())

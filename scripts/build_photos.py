@@ -275,3 +275,78 @@ def write_index_html(galleries: list) -> str:
 </html>
 """
     return head + body
+
+
+# ---------- filesystem scanning + orchestration ----------
+
+def collect_properties(source_dir: Path):
+    """
+    Scan source_dir for <property>/Raw/ + <property>/Edited/ folders.
+    Returns a list of {"slug", "name", "raw_dir", "edited_dir", "photos"}
+    dicts, sorted by folder name. Prints any collision warnings as found.
+    """
+    properties = []
+    for folder in sorted(source_dir.iterdir(), key=lambda p: p.name.lower()):
+        if not folder.is_dir() or folder.name.startswith(".") or folder.name in SKIP_FOLDERS:
+            continue
+        raw_dir = folder / "Raw"
+        edited_dir = folder / "Edited"
+        if not raw_dir.is_dir() or not edited_dir.is_dir():
+            continue
+
+        raw_names = [f.name for f in raw_dir.iterdir() if f.suffix.lower() in EXTS]
+        edited_names = [f.name for f in edited_dir.iterdir() if f.suffix.lower() in EXTS]
+        photos, warnings = build_pairs(raw_names, edited_names)
+        for w in warnings:
+            print(f"  WARNING [{folder.name}] {w}")
+        if not photos:
+            continue
+
+        properties.append({
+            "slug": slugify(folder.name),
+            "name": folder.name,
+            "raw_dir": raw_dir,
+            "edited_dir": edited_dir,
+            "photos": photos,
+        })
+    return properties
+
+
+def main():
+    galleries = []
+    for prop in collect_properties(SOURCE):
+        if prop["slug"] in SKIP_SLUGS:
+            continue
+        photos = []
+        for i, ph in enumerate(prop["photos"]):
+            raw_src = prop["raw_dir"] / ph["raw_name"] if ph["raw_name"] else None
+            edited_src = prop["edited_dir"] / ph["edited_name"] if ph["edited_name"] else None
+            imgdir = OUT / prop["slug"] / "img"
+            entry = {"label": ph["label"]}
+            if edited_src:
+                optimize_image(edited_src, imgdir / f"{i}-e-t.webp", THUMB_MAX, THUMB_Q, FORCE)
+                optimize_image(edited_src, imgdir / f"{i}-e-f.webp", FULL_MAX, FULL_Q, FORCE)
+                entry["edit_t"], entry["edit_f"] = f"img/{i}-e-t.webp", f"img/{i}-e-f.webp"
+            if raw_src:
+                optimize_image(raw_src, imgdir / f"{i}-r-t.webp", THUMB_MAX, THUMB_Q, FORCE)
+                optimize_image(raw_src, imgdir / f"{i}-r-f.webp", FULL_MAX, FULL_Q, FORCE)
+                entry["raw_t"], entry["raw_f"] = f"img/{i}-r-t.webp", f"img/{i}-r-f.webp"
+            photos.append(entry)
+        if not photos:
+            continue
+        galleries.append({"slug": prop["slug"], "name": prop["name"], "photos": photos})
+        print(f"  {prop['slug']}: {len(photos)} photos")
+
+    for i, gallery in enumerate(galleries):
+        out_dir = OUT / gallery["slug"]
+        out_dir.mkdir(parents=True, exist_ok=True)
+        (out_dir / "index.html").write_text(write_property_html(gallery, galleries, i), encoding="utf-8")
+
+    (OUT / "index.html").write_text(write_index_html(galleries), encoding="utf-8")
+
+    total = sum(len(g["photos"]) for g in galleries)
+    print(f"\nDONE: {len(galleries)} galleries, {total} photos -> {OUT}")
+
+
+if __name__ == "__main__":
+    main()
