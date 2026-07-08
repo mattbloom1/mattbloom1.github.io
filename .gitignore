@@ -3,3 +3,5 @@
 _verify/
 docs/
 .tmp-pw/
+__pycache__/
+*.pyc
