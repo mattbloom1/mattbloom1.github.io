@@ -128,6 +128,19 @@ class TestWritePropertyHtml(unittest.TestCase):
         self.assertIn('class="page-link prev disabled"', out)
         self.assertIn('class="page-link next disabled"', out)
 
+    def test_og_image_falls_back_to_raw_when_first_photo_has_no_edit(self):
+        gallery = {
+            "slug": "test-property",
+            "name": "Test Property",
+            "photos": [
+                {"label": "Exterior", "raw_t": "img/0-r-t.webp", "raw_f": "img/0-r-f.webp"},
+            ],
+        }
+        out = build_photos.write_property_html(gallery, [gallery], 0)
+
+        self.assertIn("img/0-r-t.webp", out)
+        self.assertNotIn("img/0-e-t.webp", out)
+
 
 class TestWriteIndexHtml(unittest.TestCase):
     def test_lists_all_galleries_with_counts(self):

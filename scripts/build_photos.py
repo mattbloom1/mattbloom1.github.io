@@ -207,9 +207,11 @@ def write_property_html(gallery: dict, galleries: list, index: int) -> str:
         if next_g else '<span class="page-link next disabled"><span class="eyebrow">&rarr;</span><span class="name">End</span></span>'
     )
     desc = f'Real-estate photo editing for {gallery["name"]} — {count} before/after photos.'
+    cover_photo = gallery["photos"][0]
+    cover_img = cover_photo.get("edit_t") or cover_photo.get("raw_t")
     head = HEAD.format(
         title=f'{name} — Matt Bloomfield', desc=esc(desc), root="../../",
-        css="../photos.css", og=f'https://matthewgvc.github.io/photos/{gallery["slug"]}/img/0-e-t.webp',
+        css="../photos.css", og=f'https://matthewgvc.github.io/photos/{gallery["slug"]}/{cover_img}',
         url=f'https://matthewgvc.github.io/photos/{gallery["slug"]}/',
     )
     body = f"""<body data-root="../../" data-nav="photos">
