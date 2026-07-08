@@ -105,3 +105,43 @@ class TestOptimizeImage(unittest.TestCase):
 
             build_photos.optimize_image(src, dst, max_edge=1100, quality=72, force=True)
             self.assertNotEqual(dst.read_bytes(), b"placeholder")
+
+
+class TestWritePropertyHtml(unittest.TestCase):
+    def test_includes_correct_domain_and_counts(self):
+        gallery = {
+            "slug": "test-property",
+            "name": "Test Property",
+            "photos": [
+                {
+                    "label": "Bath",
+                    "edit_t": "img/0-e-t.webp", "edit_f": "img/0-e-f.webp",
+                    "raw_t": "img/0-r-t.webp", "raw_f": "img/0-r-f.webp",
+                },
+            ],
+        }
+        out = build_photos.write_property_html(gallery, [gallery], 0)
+
+        self.assertIn("matthewgvc.github.io", out)
+        self.assertNotIn("mattbloom1.github.io", out)
+        self.assertIn("1 photos", out)
+        self.assertIn('class="page-link prev disabled"', out)
+        self.assertIn('class="page-link next disabled"', out)
+
+
+class TestWriteIndexHtml(unittest.TestCase):
+    def test_lists_all_galleries_with_counts(self):
+        gallery_a = {"slug": "aaa", "name": "AAA", "photos": [{"label": "X", "edit_t": "img/0-e-t.webp"}]}
+        gallery_b = {
+            "slug": "bbb", "name": "BBB",
+            "photos": [
+                {"label": "Y", "raw_t": "img/0-r-t.webp"},
+                {"label": "Z", "raw_t": "img/1-r-t.webp"},
+            ],
+        }
+        out = build_photos.write_index_html([gallery_a, gallery_b])
+
+        self.assertIn("2 property galleries", out)
+        self.assertIn("3 photos", out)
+        self.assertIn('href="aaa/"', out)
+        self.assertIn('href="bbb/"', out)
