@@ -206,3 +206,43 @@ class TestMainIntegration(unittest.TestCase):
             self.assertTrue((out / "test-property" / "index.html").exists())
             self.assertTrue((out / "test-property" / "img" / "0-e-t.webp").exists())
             self.assertTrue((out / "test-property" / "img" / "0-r-t.webp").exists())
+
+
+class TestClearStaleImages(unittest.TestCase):
+    def test_leaves_directory_alone_when_no_orphans(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            imgdir = Path(tmp) / "img"
+            imgdir.mkdir()
+            (imgdir / "0-e-t.webp").write_bytes(b"real content")
+            (imgdir / "0-r-t.webp").write_bytes(b"real content")
+
+            cleared = build_photos.clear_stale_images(imgdir, {"0-e-t.webp", "0-r-t.webp"})
+
+            self.assertFalse(cleared)
+            self.assertEqual((imgdir / "0-e-t.webp").read_bytes(), b"real content")
+
+    def test_clears_whole_directory_when_an_orphan_file_is_present(self):
+        # Regression: 400-5th-ave-32c's pairing shrank from 12 photos to 10.
+        # Index 9's edited file kept stale content because "9-e-t.webp" was
+        # still a valid filename in the new pairing (just for a different
+        # photo) - only index 10/11's files were true orphans. Detecting
+        # ANY orphan must clear the WHOLE directory, not just the orphans,
+        # so same-named-but-wrong-content files get regenerated too.
+        with tempfile.TemporaryDirectory() as tmp:
+            imgdir = Path(tmp) / "img"
+            imgdir.mkdir()
+            (imgdir / "9-e-t.webp").write_bytes(b"stale - belongs to the old photo 9")
+            (imgdir / "10-r-t.webp").write_bytes(b"orphan - index 10 no longer used")
+
+            cleared = build_photos.clear_stale_images(imgdir, {"9-e-t.webp", "9-r-t.webp"})
+
+            self.assertTrue(cleared)
+            self.assertFalse(imgdir.exists())
+
+    def test_missing_directory_is_not_an_error(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            imgdir = Path(tmp) / "does-not-exist"
+
+            cleared = build_photos.clear_stale_images(imgdir, {"0-e-t.webp"})
+
+            self.assertFalse(cleared)

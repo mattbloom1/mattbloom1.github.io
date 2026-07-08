@@ -17,6 +17,7 @@ Usage:
 """
 import html
 import re
+import shutil
 import sys
 from pathlib import Path
 
@@ -312,16 +313,46 @@ def collect_properties(source_dir: Path):
     return properties
 
 
+def clear_stale_images(imgdir: Path, expected_files: set) -> bool:
+    """
+    Remove imgdir entirely if it contains any file not in expected_files.
+
+    A property's raw/edited pairing can change between runs (a normalize()
+    fix, a renamed source file, an added/removed photo), which shifts which
+    photo a given positional index represents. optimize_image()'s skip-if-
+    exists check has no way to know a same-named file's content is now
+    wrong for a different photo - so if a stale, no-longer-expected file
+    (an orphan) is found, the whole directory is cleared and everything
+    for this property gets regenerated fresh, not just the orphans.
+    """
+    if not imgdir.exists():
+        return False
+    existing = {f.name for f in imgdir.iterdir() if f.is_file()}
+    if existing - expected_files:
+        shutil.rmtree(imgdir)
+        return True
+    return False
+
+
 def main():
     galleries = []
     for prop in collect_properties(SOURCE):
         if prop["slug"] in SKIP_SLUGS:
             continue
+        imgdir = OUT / prop["slug"] / "img"
+        expected_files = set()
+        for i, ph in enumerate(prop["photos"]):
+            if ph["edited_name"]:
+                expected_files.add(f"{i}-e-t.webp")
+                expected_files.add(f"{i}-e-f.webp")
+            if ph["raw_name"]:
+                expected_files.add(f"{i}-r-t.webp")
+                expected_files.add(f"{i}-r-f.webp")
+        clear_stale_images(imgdir, expected_files)
         photos = []
         for i, ph in enumerate(prop["photos"]):
             raw_src = prop["raw_dir"] / ph["raw_name"] if ph["raw_name"] else None
             edited_src = prop["edited_dir"] / ph["edited_name"] if ph["edited_name"] else None
-            imgdir = OUT / prop["slug"] / "img"
             entry = {"label": ph["label"]}
             if edited_src:
                 optimize_image(edited_src, imgdir / f"{i}-e-t.webp", THUMB_MAX, THUMB_Q, FORCE)
