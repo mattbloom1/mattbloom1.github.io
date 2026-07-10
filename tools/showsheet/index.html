@@ -953,10 +953,12 @@ function fitFrontBody(){
   // The residence (left column) and the building band (right, beneath the hero) share
   // ONE body size — var(--t-body) — so a residence bullet and a building bullet always
   // match. We take the largest size where the residence column fits; the hero photo
-  // (flex:1) gives the building whatever room it needs. If the photo would end up
-  // thinner than MIN_HERO_IN it isn't worth keeping, so it's dropped and the building
-  // fills the right column at that same shared size. Features/amenities are trimmed only
-  // as a last resort, when even the minimum size overflows.
+  // (flex:1) gives the building whatever room it needs. The photo is guaranteed at
+  // least MIN_HERO_IN: if the building band crowds it below that, the shared size is
+  // walked back down until the photo has its room. Only when even the minimum size
+  // can't make it fit is the hero dropped and the building given the right column.
+  // Features/amenities are trimmed only as a last resort, when even the minimum
+  // size overflows.
   const MIN_HERO_IN = 1.5, PX = 96, MIN = 6.8, MAX = 14;
   const trim  = document.querySelector('#sheetFront .trim');
   const res   = document.querySelector('#sheetFront .res-fit');
@@ -972,13 +974,23 @@ function fitFrontBody(){
   set(MAX);
   if(!fits(res)){ for(let k=0;k<8;k++){ const m=(lo+hi)/2; set(m); fits(res)?lo=m:hi=m; } set(lo); size = lo; }
 
-  // 2) if the photo is now too short, hand the right column to the building and re-cap
-  //    so the (clipping) building band and the residence still fit at one shared size
+  // 2) if the photo is now too short, the type is what's crowding it out — shrink the
+  //    shared size (the residence still fits at anything smaller) until the building
+  //    band frees up the photo's minimum height. Only when even MIN can't buy the
+  //    photo its room does the hero get dropped and the building take the column.
   const photo = right && (right.querySelector('.photo-hero') || right.querySelector('.photo-empty'));
-  if(right && bld && photo && photo.offsetHeight < MIN_HERO_IN * PX){
-    right.classList.add('no-photo');
-    lo = MIN; hi = size; set(size);
-    if(!(fits(res) && fits(bld))){ for(let k=0;k<8;k++){ const m=(lo+hi)/2; set(m); (fits(res)&&fits(bld))?lo=m:hi=m; } set(lo); }
+  const heroOK = () => photo.offsetHeight >= MIN_HERO_IN * PX;
+  if(right && bld && photo && !heroOK()){
+    set(MIN);
+    if(heroOK()){
+      lo = MIN; hi = size;
+      for(let k=0;k<8;k++){ const m=(lo+hi)/2; set(m); heroOK()?lo=m:hi=m; }
+      set(lo); size = lo;
+    }else{
+      right.classList.add('no-photo');
+      lo = MIN; hi = size; set(size);
+      if(!(fits(res) && fits(bld))){ for(let k=0;k<8;k++){ const m=(lo+hi)/2; set(m); (fits(res)&&fits(bld))?lo=m:hi=m; } set(lo); }
+    }
   }
 
   // 3) last resort — trim residence features, then building amenities, if MIN still overflows
