@@ -246,3 +246,18 @@ class TestClearStaleImages(unittest.TestCase):
             cleared = build_photos.clear_stale_images(imgdir, {"0-e-t.webp"})
 
             self.assertFalse(cleared)
+
+    def test_non_webp_os_cruft_is_not_treated_as_an_orphan(self):
+        # Regression: browsing img/ in Windows Explorer can drop a
+        # Thumbs.db. That's not part of expected_files either, but it
+        # must not trigger a full-gallery rebuild every run.
+        with tempfile.TemporaryDirectory() as tmp:
+            imgdir = Path(tmp) / "img"
+            imgdir.mkdir()
+            (imgdir / "0-e-t.webp").write_bytes(b"real content")
+            (imgdir / "Thumbs.db").write_bytes(b"os cruft")
+
+            cleared = build_photos.clear_stale_images(imgdir, {"0-e-t.webp"})
+
+            self.assertFalse(cleared)
+            self.assertTrue((imgdir / "Thumbs.db").exists())

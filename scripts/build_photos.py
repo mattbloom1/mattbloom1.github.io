@@ -327,7 +327,7 @@ def clear_stale_images(imgdir: Path, expected_files: set) -> bool:
     """
     if not imgdir.exists():
         return False
-    existing = {f.name for f in imgdir.iterdir() if f.is_file()}
+    existing = {f.name for f in imgdir.iterdir() if f.is_file() and f.suffix == ".webp"}
     if existing - expected_files:
         shutil.rmtree(imgdir)
         return True
