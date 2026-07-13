@@ -245,9 +245,6 @@ body.bleed .safe{display:block;}
 .f-left .col-h{margin-bottom:.08in;}
 /* fit blocks — JS sets the container font-size so content fills its space; children scale in em */
 .fitblk{min-height:0;overflow:hidden;}
-/* justify-content is toggled by fitSecondary(): space-between spreads the spec rows
-   and bullets out to fill any leftover column height; flex-start packs them tight
-   when the secondary photo needs that room instead */
 .res-fit{flex:1;font-size:var(--t-body);display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;}
 .bld-fit{flex:1;font-size:var(--t-body);}
 /* the condo / co-op statement — a boxed callout at the top of The Residence */
@@ -255,12 +252,14 @@ body.bleed .safe{display:block;}
 .r-spec{display:flex;gap:1em;padding:.3em 0;border-bottom:.6pt solid var(--hairline);align-items:baseline;}
 .r-spec .sl{font:900 .76em var(--sans);letter-spacing:.05em;text-transform:uppercase;color:rgba(0,39,58,.7);width:10em;flex:none;}
 .r-spec .sv{font:500 .92em var(--body);color:var(--navy);flex:1;line-height:1.35;}
-/* 5 or fewer features render as bare .r-feat rows — direct .res-fit children — so
-   the space-between toggle above can spread each bullet individually down the column;
-   more than 5 still runs the two-column layout below as one fixed block */
-.r-feats{column-count:2;column-gap:.24in;margin-top:.5em;}
-.r-feat{break-inside:avoid;display:flex;gap:.55em;font:400 .84em var(--body);color:var(--navy);line-height:1.4;padding:.12em 0;}
-.r-spec+.r-feat{margin-top:.5em;}
+/* the feature list grows (flex:1) to claim whatever column height the specs above
+   don't use, then spreads its own bullets — not the specs — evenly down that space
+   via justify-content:space-between; more than 5 features split into two side-by-side
+   flex columns (.r-feat-col), each spacing its own bullets the same way */
+.r-feats{flex:1;min-height:0;display:flex;margin-top:.5em;}
+.r-feats.two{gap:.24in;}
+.r-feat-col{flex:1;min-width:0;min-height:0;display:flex;flex-direction:column;justify-content:space-between;align-items:stretch;}
+.r-feat{display:flex;gap:.55em;font:400 .84em var(--body);color:var(--navy);line-height:1.4;padding:.12em 0;}
 .r-feat::before{content:'';width:.36em;height:.36em;background:var(--sky);flex:none;margin-top:.5em;}
 /* building band — sits under the photo, photo ends at its rule */
 .f-bldg{flex:none;margin-top:.13in;border-top:1.8pt solid var(--navy);padding-top:.08in;display:flex;flex-direction:column;}
@@ -746,10 +745,11 @@ function renderFront(){
   const r = state.residence;
   const rSpecs = specRow('Exposures', r.exposures) + specRow('Outdoor', r.outdoor) + specRow('Ceilings', r.ceiling) + specRow('Climate', r.climate);
   const feats = (r.features||[]).filter(s=>s.trim());
-  // 5 or fewer: bare rows so they sit directly in .res-fit and can be spaced out
-  // individually; more than that: wrap in the two-column layout as one fixed block
-  const featItems = feats.map(f=>`<div class="r-feat">${esc(f)}</div>`).join('');
-  const featHtml = !feats.length ? '' : feats.length<=5 ? featItems : `<div class="r-feats">${featItems}</div>`;
+  const featCol = items => `<div class="r-feat-col">${items.map(f=>`<div class="r-feat">${esc(f)}</div>`).join('')}</div>`;
+  // 5 or fewer: one flex column of bullets; more: split across two side-by-side
+  // columns — each column spaces its own bullets via justify-content:space-between
+  const featHtml = !feats.length ? '' : feats.length<=5 ? `<div class="r-feats one">${featCol(feats)}</div>` :
+    (()=>{ const cut = Math.ceil(feats.length/2); return `<div class="r-feats two">${featCol(feats.slice(0,cut))}${featCol(feats.slice(cut))}</div>`; })();
   const resHtml = (rSpecs || featHtml) ? `
     <div class="col-h"><span class="ich">${ICONS.key}</span><span>The Residence</span></div>
     <div class="res-fit fitblk">${rSpecs}${featHtml}</div>` : '';
@@ -1030,31 +1030,25 @@ function fitFrontBody(){
 }
 function fitSecondary(){
   const res = document.querySelector('#sheetFront .res-fit');
-  if(!res) return;
   const sec = document.querySelector('#sheetFront .photo-secondary');
-  // reset to the flex:1, natural-gap state so we measure the full column fresh each render
-  res.style.flex = ''; res.style.height = ''; res.style.justifyContent = 'flex-start';
-  if(sec) sec.style.flex = '';
+  if(!res || !sec) return;
+  // reset to the flex:1 state so we measure the full column each render
+  res.style.flex = ''; res.style.height = ''; sec.style.flex = '';
   // res-fit is flex:1, so clientHeight = the full space the column can give it.
   // scrollHeight can't report less than clientHeight, so collapse res to its natural
-  // height first, measure that, then decide whether a photo fits there or the rows/
-  // bullets should spread out to fill the leftover space instead.
+  // height first, measure that, then decide if the leftover is worth a photo.
   const avail = res.clientHeight;
   res.style.flex = 'none';
   res.style.height = 'auto';
   const natural = res.scrollHeight;
   const empty = avail - natural;
-  const MIN_PX = 96 * 1.2; // need at least ~1.2in of slack before showing a photo there
-  if(sec && empty >= MIN_PX){
-    // enough slack for the second photo — keep the residence block at its natural,
-    // compact height (rows/bullets stay packed) and hand the rest of the column to it
+  const MIN_PX = 96 * 1.2; // need at least ~1.2in of slack before showing the photo
+  if(empty >= MIN_PX){
     res.style.height = natural + 'px';
     sec.style.flex = '1';
   }else{
-    // no photo (or not enough room for one) — give the column back to the residence
-    // and spread its rows/bullets out evenly so they fill the empty space
+    // not enough room — give the column back to the residence, hide the photo
     res.style.flex = ''; res.style.height = '';
-    res.style.justifyContent = 'space-between';
   }
 }
 function fitSheets(){
