@@ -8,7 +8,9 @@ Photo-Review project (no intermediate JSON, no local preview site), pairs
 photos by normalized filename, optimizes each to two WebP sizes, and writes
 photos/<slug>/index.html plus photos/index.html.
 
-Idempotent: existing optimized images are skipped unless --force is passed.
+Idempotent: each gallery's img/.sources.json records which exact source file
+(size + mtime) every webp was built from; only photos whose source changed are
+re-encoded. --force re-encodes everything regardless.
 
 Requires Pillow (see scripts/requirements.txt).
 
@@ -16,6 +18,7 @@ Usage:
     python scripts/build_photos.py [--force]
 """
 import html
+import json
 import re
 import shutil
 import sys
@@ -101,10 +104,50 @@ def build_pairs(raw_names, edited_names):
 
 # ---------- image optimization ----------
 
-def optimize_image(src: Path, dst: Path, max_edge: int, quality: int, force: bool = False) -> None:
+MANIFEST_NAME = ".sources.json"
+
+
+def src_signature(src: Path, max_edge: int, quality: int) -> str:
+    """Fingerprint of the source file + encode params a webp was built from."""
+    st = src.stat()
+    return f"{st.st_size}:{st.st_mtime_ns}:{max_edge}:{quality}"
+
+
+def load_manifest(imgdir: Path) -> dict:
+    """Read img/.sources.json (output filename -> src_signature), {} if absent."""
+    try:
+        return json.loads((imgdir / MANIFEST_NAME).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
+def save_manifest(imgdir: Path, manifest: dict) -> None:
+    imgdir.mkdir(parents=True, exist_ok=True)
+    (imgdir / MANIFEST_NAME).write_text(
+        json.dumps(manifest, indent=1, sort_keys=True), encoding="utf-8"
+    )
+
+
+def encode_if_stale(src: Path, dst: Path, max_edge: int, quality: int,
+                    manifest: dict, force: bool = False) -> str:
+    """
+    Encode src -> dst unless the manifest proves dst was already built from
+    this exact source file (same size + mtime) with these exact settings.
+
+    File-existence or mtime comparisons against dst are NOT reliable here: a
+    git checkout rewrites dst with a fresh mtime, and copying a photo into
+    the source folder preserves its original (older) mtime — which is exactly
+    how a swapped-out photo used to keep its stale webp. Returns the source
+    signature for the caller to record in the new manifest.
+    """
+    sig = src_signature(src, max_edge, quality)
+    if force or not dst.exists() or manifest.get(dst.name) != sig:
+        optimize_image(src, dst, max_edge, quality)
+    return sig
+
+
+def optimize_image(src: Path, dst: Path, max_edge: int, quality: int) -> None:
     """Resize src so its longest edge is at most max_edge, save as WEBP at dst."""
-    if dst.exists() and not force:
-        return
     dst.parent.mkdir(parents=True, exist_ok=True)
     with Image.open(src) as im:
         im = ImageOps.exif_transpose(im)
@@ -319,11 +362,11 @@ def clear_stale_images(imgdir: Path, expected_files: set) -> bool:
 
     A property's raw/edited pairing can change between runs (a normalize()
     fix, a renamed source file, an added/removed photo), which shifts which
-    photo a given positional index represents. optimize_image()'s skip-if-
-    exists check has no way to know a same-named file's content is now
-    wrong for a different photo - so if a stale, no-longer-expected file
-    (an orphan) is found, the whole directory is cleared and everything
-    for this property gets regenerated fresh, not just the orphans.
+    photo a given positional index represents. If a stale, no-longer-expected
+    file (an orphan) is found, the whole directory - manifest included - is
+    cleared and everything for this property gets regenerated fresh, not
+    just the orphans. (The .sources.json manifest also catches shifted
+    indexes on its own, but a full clear keeps no orphan files behind.)
     """
     if not imgdir.exists():
         return False
@@ -349,20 +392,25 @@ def main():
                 expected_files.add(f"{i}-r-t.webp")
                 expected_files.add(f"{i}-r-f.webp")
         clear_stale_images(imgdir, expected_files)
+        manifest = load_manifest(imgdir)
+        new_manifest = {}
         photos = []
         for i, ph in enumerate(prop["photos"]):
             raw_src = prop["raw_dir"] / ph["raw_name"] if ph["raw_name"] else None
             edited_src = prop["edited_dir"] / ph["edited_name"] if ph["edited_name"] else None
             entry = {"label": ph["label"]}
             if edited_src:
-                optimize_image(edited_src, imgdir / f"{i}-e-t.webp", THUMB_MAX, THUMB_Q, FORCE)
-                optimize_image(edited_src, imgdir / f"{i}-e-f.webp", FULL_MAX, FULL_Q, FORCE)
+                for name, edge, q in ((f"{i}-e-t.webp", THUMB_MAX, THUMB_Q),
+                                      (f"{i}-e-f.webp", FULL_MAX, FULL_Q)):
+                    new_manifest[name] = encode_if_stale(edited_src, imgdir / name, edge, q, manifest, FORCE)
                 entry["edit_t"], entry["edit_f"] = f"img/{i}-e-t.webp", f"img/{i}-e-f.webp"
             if raw_src:
-                optimize_image(raw_src, imgdir / f"{i}-r-t.webp", THUMB_MAX, THUMB_Q, FORCE)
-                optimize_image(raw_src, imgdir / f"{i}-r-f.webp", FULL_MAX, FULL_Q, FORCE)
+                for name, edge, q in ((f"{i}-r-t.webp", THUMB_MAX, THUMB_Q),
+                                      (f"{i}-r-f.webp", FULL_MAX, FULL_Q)):
+                    new_manifest[name] = encode_if_stale(raw_src, imgdir / name, edge, q, manifest, FORCE)
                 entry["raw_t"], entry["raw_f"] = f"img/{i}-r-t.webp", f"img/{i}-r-f.webp"
             photos.append(entry)
+        save_manifest(imgdir, new_manifest)
         if not photos:
             continue
         galleries.append({"slug": prop["slug"], "name": prop["name"], "photos": photos})

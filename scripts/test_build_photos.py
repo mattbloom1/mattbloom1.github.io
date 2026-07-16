@@ -93,7 +93,8 @@ class TestOptimizeImage(unittest.TestCase):
                 self.assertEqual(im.format, "WEBP")
                 self.assertEqual(max(im.size), 1100)
 
-    def test_skips_existing_unless_forced(self):
+    def test_always_overwrites_existing_output(self):
+        # Skip decisions live in encode_if_stale; optimize_image is a pure encoder.
         with tempfile.TemporaryDirectory() as tmp:
             src = Path(tmp) / "src.jpg"
             Image.new("RGB", (400, 400), "blue").save(src, "JPEG")
@@ -101,10 +102,70 @@ class TestOptimizeImage(unittest.TestCase):
             dst.write_bytes(b"placeholder")
 
             build_photos.optimize_image(src, dst, max_edge=1100, quality=72)
+            self.assertNotEqual(dst.read_bytes(), b"placeholder")
+
+
+class TestEncodeIfStale(unittest.TestCase):
+    def _src(self, tmp, color="blue"):
+        src = Path(tmp) / "src.jpg"
+        Image.new("RGB", (400, 400), color).save(src, "JPEG")
+        return src
+
+    def test_skips_when_manifest_matches_source(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            src = self._src(tmp)
+            dst = Path(tmp) / "out.webp"
+            dst.write_bytes(b"placeholder")
+            manifest = {"out.webp": build_photos.src_signature(src, 1100, 72)}
+
+            build_photos.encode_if_stale(src, dst, 1100, 72, manifest)
+
             self.assertEqual(dst.read_bytes(), b"placeholder")
 
-            build_photos.optimize_image(src, dst, max_edge=1100, quality=72, force=True)
+    def test_reencodes_when_source_content_changed(self):
+        # Regression: 3 Crosby Lane photos were swapped for re-edited versions
+        # with the SAME filenames, and the old skip-if-dst-exists check kept
+        # serving the stale webps. A changed source (new size/mtime) must
+        # re-encode even though dst exists.
+        with tempfile.TemporaryDirectory() as tmp:
+            src = self._src(tmp)
+            dst = Path(tmp) / "out.webp"
+            dst.write_bytes(b"stale webp built from the old photo")
+            manifest = {"out.webp": "999:12345:1100:72"}  # some other source
+
+            build_photos.encode_if_stale(src, dst, 1100, 72, manifest)
+
+            self.assertNotEqual(dst.read_bytes(), b"stale webp built from the old photo")
+
+    def test_reencodes_when_dst_missing_even_if_manifest_matches(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            src = self._src(tmp)
+            dst = Path(tmp) / "out.webp"
+            manifest = {"out.webp": build_photos.src_signature(src, 1100, 72)}
+
+            build_photos.encode_if_stale(src, dst, 1100, 72, manifest)
+
+            self.assertTrue(dst.exists())
+
+    def test_force_reencodes_regardless(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            src = self._src(tmp)
+            dst = Path(tmp) / "out.webp"
+            dst.write_bytes(b"placeholder")
+            manifest = {"out.webp": build_photos.src_signature(src, 1100, 72)}
+
+            build_photos.encode_if_stale(src, dst, 1100, 72, manifest, force=True)
+
             self.assertNotEqual(dst.read_bytes(), b"placeholder")
+
+    def test_returns_signature_for_new_manifest(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            src = self._src(tmp)
+            dst = Path(tmp) / "out.webp"
+
+            sig = build_photos.encode_if_stale(src, dst, 1100, 72, {})
+
+            self.assertEqual(sig, build_photos.src_signature(src, 1100, 72))
 
 
 class TestWritePropertyHtml(unittest.TestCase):
