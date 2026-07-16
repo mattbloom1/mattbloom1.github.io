@@ -186,6 +186,20 @@ Then open **http://localhost:8080** in the browser. For the showsheet specifical
 If neither Python nor Node is installed and they want to preview, the simplest fix is to install
 Python from https://www.python.org/downloads/ (check "Add to PATH" during install).
 
+### Adding a photo gallery — Matt's one-command publish
+Matt (the repo owner) publishes new property galleries with a single command — **no branch, no
+PR, no account switching.** This owner fast path is the one sanctioned exception to §5/§7, for
+Matt only; teammates helping with photos still follow §5.
+
+1. Drop the photos into `"<Property Name>/Raw/"` and `"<Property Name>/Edited/"` inside the
+   **Personal Photo Editing Project** folder on the Desktop (it sits next to this repo).
+2. From this repo run: `python scripts/publish_photos.py`
+
+That script pulls the latest `main`, rebuilds all galleries, commits, and pushes straight to
+`main` — live at https://matthewgvc.github.io/photos/ within a minute. To eyeball a gallery
+before publishing, run `python scripts/build_photos.py` first, preview via §6's local server,
+then run the publish script.
+
 ### Redesigning the Showsheet — the most common request
 - The entire tool is **one self-contained file:** `tools/showsheet/index.html` (HTML + CSS +
   JavaScript all inside it). Everything you need to restyle it is in that file.
