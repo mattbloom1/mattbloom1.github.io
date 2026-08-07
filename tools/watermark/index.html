@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Watermark — Matt Bloomfield</title>
+<meta name="description" content="Add a Virtually Staged or Virtually Renovated watermark to a listing photo. Runs entirely in the browser — nothing is uploaded.">
+<meta property="og:title" content="Watermark — Matt Bloomfield">
+<meta property="og:description" content="Add a Virtually Staged or Virtually Renovated watermark to a listing photo. Runs entirely in the browser — nothing is uploaded.">
+<meta property="og:image" content="https://matthewgvc.github.io/assets/img/tile-showsheet.webp">
+<meta property="og:url" content="https://matthewgvc.github.io/tools/watermark/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../assets/logos/monogram.svg" type="image/svg+xml">
+<link rel="icon" type="image/png" sizes="32x32" href="../../assets/logos/monogram-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../../assets/logos/apple-touch-icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Nunito+Sans:wght@800;900&family=Raleway:wght@300;400;500&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/tokens.css">
+<link rel="stylesheet" href="../../assets/css/base.css">
+<link rel="stylesheet" href="../../assets/css/components.css">
+<style>
+/* ============================================================
+   GVC WATERMARK TOOL
+   Uses the portfolio token system (tokens.css) — no local palette.
+   ============================================================ */
+.tool{
+  display:grid;
+  grid-template-columns:300px 1fr;
+  align-items:start;
+}
+.controls{
+  border-right:1px solid var(--rule);
+  padding:28px 28px 28px 0;
+  display:flex;flex-direction:column;gap:24px;
+}
+.ctl-group h4{
+  font-family:var(--mono);font-size:11px;color:var(--ink-soft);
+  letter-spacing:0.14em;text-transform:uppercase;font-weight:400;
+  margin-bottom:10px;
+}
+.seg{display:flex;flex-direction:column;gap:6px}
+.seg.grid2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.seg button{
+  font-family:var(--mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;
+  background:none;border:1px solid var(--rule);color:var(--ink);
+  padding:10px 12px;cursor:pointer;text-align:left;
+  transition:border-color var(--dur-1) var(--ease),background-color var(--dur-1) var(--ease),color var(--dur-1) var(--ease);
+}
+.seg.grid2 button{text-align:center;padding:10px 6px}
+.seg button:hover{border-color:var(--sky)}
+.seg button.active{background:var(--ink);border-color:var(--ink);color:var(--bone)}
+.seg button:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+
+#dropzone{
+  border:1px dashed var(--rule);
+  background:var(--paper-2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  cursor:pointer;text-align:center;padding:20px 12px;
+  transition:border-color var(--dur-1) var(--ease);
+}
+#dropzone:hover,#dropzone.dragover{border-color:var(--sky)}
+#dropzone .dz-main{font-family:var(--serif);font-style:italic;font-weight:300;font-size:17px;color:var(--ink)}
+#dropzone .dz-sub{font-family:var(--mono);font-size:10px;color:var(--ink-soft);letter-spacing:0.1em;text-transform:uppercase}
+
+#download{
+  font-family:var(--mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;
+  background:var(--ink);border:1px solid var(--ink);color:var(--bone);
+  padding:12px 14px;cursor:pointer;width:100%;
+  transition:opacity var(--dur-1) var(--ease);
+}
+#download:hover{opacity:0.88}
+#download:disabled{opacity:0.35;cursor:not-allowed}
+
+.stage{padding:28px 0 28px 40px;min-width:0}
+#placeholder{
+  border:1px dashed var(--rule);
+  min-height:340px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:11px;color:var(--ink-soft);
+  letter-spacing:0.14em;text-transform:uppercase;
+}
+#canvas{
+  display:block;max-width:100%;max-height:58vh;margin:0 auto;
+  border:1px solid var(--rule);
+}
+#filemeta{
+  font-family:var(--mono);font-size:11px;color:var(--ink-soft);
+  letter-spacing:0.08em;text-transform:uppercase;
+  margin-top:12px;text-align:center;
+}
+.privacy-note{
+  font-family:var(--mono);font-size:11px;color:var(--ink-soft);
+  letter-spacing:0.06em;text-transform:uppercase;
+  margin-top:20px;
+}
+
+@media (max-width:820px){
+  .tool{grid-template-columns:1fr}
+  .controls{
+    border-right:0;border-bottom:1px solid var(--rule);
+    padding:20px 0;gap:20px;
+  }
+  .stage{padding:20px 0}
+  #placeholder{min-height:220px}
+}
+</style>
+</head>
+<body data-root="../../" data-nav="tools">
+<main class="page">
+  <div class="page-head" data-reveal>
+    <h1>Watermark</h1>
+    <span class="t-mono">Virtually staged &amp; renovated labels</span>
+  </div>
+
+  <section class="tool">
+    <aside class="controls">
+      <div class="ctl-group">
+        <h4>Photo</h4>
+        <div id="dropzone" role="button" tabindex="0" aria-label="Drop a photo or click to browse">
+          <span class="dz-main">Drop a photo</span>
+          <span class="dz-sub">or click to browse</span>
+        </div>
+      </div>
+      <div class="ctl-group">
+        <h4>Label</h4>
+        <div class="seg" id="label-seg">
+          <button type="button" data-label="VIRTUALLY STAGED" class="active">Virtually Staged</button>
+          <button type="button" data-label="VIRTUALLY RENOVATED">Virtually Renovated</button>
+        </div>
+      </div>
+      <div class="ctl-group">
+        <h4>Corner</h4>
+        <div class="seg grid2" id="corner-seg">
+          <button type="button" data-corner="tl" class="active">Top Left</button>
+          <button type="button" data-corner="tr">Top Right</button>
+          <button type="button" data-corner="bl">Bottom Left</button>
+          <button type="button" data-corner="br">Bottom Right</button>
+        </div>
+      </div>
+      <div class="ctl-group">
+        <h4>Export</h4>
+        <button type="button" id="download" disabled>Download</button>
+      </div>
+    </aside>
+
+    <section class="stage">
+      <div id="placeholder">No photo loaded</div>
+      <canvas id="canvas" hidden></canvas>
+      <p id="filemeta" hidden></p>
+      <p class="privacy-note">Photos are processed in your browser. Nothing is uploaded.</p>
+      <input type="file" id="file" accept="image/*" hidden>
+    </section>
+  </section>
+</main>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const dropzone = document.getElementById("dropzone");
+const placeholder = document.getElementById("placeholder");
+const fileInput = document.getElementById("file");
+const filemeta = document.getElementById("filemeta");
+const downloadBtn = document.getElementById("download");
+
+const WM_FONT = "'Nunito Sans', Arial, sans-serif";
+
+let img = null;
+let fileName = "photo";
+let fileType = "image/jpeg";
+let label = "VIRTUALLY STAGED";
+let corner = "tl";
+
+function draw(){
+  if(!img) return;
+  canvas.width = img.naturalWidth;
+  canvas.height = img.naturalHeight;
+  ctx.drawImage(img, 0, 0);
+
+  const w = canvas.width, h = canvas.height;
+  const fontSize = Math.max(14, Math.round(Math.min(w, h) * 0.032));
+  ctx.font = "800 " + fontSize + "px " + WM_FONT;
+  if("letterSpacing" in ctx) ctx.letterSpacing = Math.round(fontSize * 0.08) + "px";
+
+  const tw = ctx.measureText(label).width;
+  const padX = Math.round(fontSize * 0.9);
+  const padY = Math.round(fontSize * 0.55);
+  const margin = Math.round(Math.min(w, h) * 0.035);
+  const boxW = tw + padX * 2;
+  const boxH = fontSize + padY * 2;
+
+  const x = corner === "tl" || corner === "bl" ? margin : w - margin - boxW;
+  const y = corner === "tl" || corner === "tr" ? margin : h - margin - boxH;
+
+  ctx.fillStyle = "rgba(0,39,58,0.55)";
+  ctx.beginPath();
+  ctx.roundRect(x, y, boxW, boxH, Math.round(fontSize * 0.25));
+  ctx.fill();
+
+  ctx.fillStyle = "#ffffff";
+  ctx.textBaseline = "middle";
+  ctx.fillText(label, x + padX, y + boxH / 2 + fontSize * 0.06);
+}
+
+function loadFile(file){
+  if(!file || !file.type.startsWith("image/")) return;
+  fileName = file.name.replace(/\.[^.]+$/, "") || "photo";
+  fileType = file.type === "image/png" ? "image/png" : "image/jpeg";
+  const url = URL.createObjectURL(file);
+  const im = new Image();
+  im.onload = () => {
+    URL.revokeObjectURL(url);
+    img = im;
+    placeholder.hidden = true;
+    canvas.hidden = false;
+    filemeta.hidden = false;
+    filemeta.textContent = file.name + " — " + im.naturalWidth + " × " + im.naturalHeight;
+    downloadBtn.disabled = false;
+    document.fonts.load("800 32px " + WM_FONT).then(draw).catch(draw);
+  };
+  im.src = url;
+}
+
+dropzone.addEventListener("click", () => fileInput.click());
+dropzone.addEventListener("keydown", e => {
+  if(e.key === "Enter" || e.key === " "){ e.preventDefault(); fileInput.click(); }
+});
+fileInput.addEventListener("change", () => loadFile(fileInput.files[0]));
+
+["dragover","dragenter"].forEach(ev => dropzone.addEventListener(ev, () => {
+  dropzone.classList.add("dragover");
+}));
+["dragleave","drop"].forEach(ev => dropzone.addEventListener(ev, () => {
+  dropzone.classList.remove("dragover");
+}));
+
+window.addEventListener("dragover", e => e.preventDefault());
+window.addEventListener("drop", e => {
+  e.preventDefault();
+  if(e.dataTransfer.files.length) loadFile(e.dataTransfer.files[0]);
+});
+
+function wireSeg(id, attr, cb){
+  const seg = document.getElementById(id);
+  seg.addEventListener("click", e => {
+    const btn = e.target.closest("button");
+    if(!btn) return;
+    seg.querySelectorAll("button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    cb(btn.dataset[attr]);
+    draw();
+  });
+}
+wireSeg("label-seg", "label", v => label = v);
+wireSeg("corner-seg", "corner", v => corner = v);
+
+downloadBtn.addEventListener("click", () => {
+  if(!img) return;
+  const suffix = label === "VIRTUALLY STAGED" ? "virtually-staged" : "virtually-renovated";
+  const ext = fileType === "image/png" ? "png" : "jpg";
+  canvas.toBlob(blob => {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = fileName + "-" + suffix + "." + ext;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  }, fileType, 0.92);
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" integrity="sha384-HOvlOYPIs/zjoIkWUGXkVmXsjr8GuZLV+Q+rcPwmJOVZVpvTSXQChiN4t9Euv9Vc" crossorigin="anonymous"></script>
+<script src="../../assets/js/chrome.js"></script>
+<script src="../../assets/js/motion.js"></script>
+</body>
+</html>
