@@ -36,36 +36,26 @@
       <a class="tool" href="tools/showsheet/" data-enter>
         <span class="t-mono">Generator</span>
         <span class="tool-name">Showsheet Generator</span>
-        <span class="tool-desc">Build branded, print-ready listing showsheets.</span>
-        <span class="tool-open">Open <span aria-hidden="true">↗</span></span>
       </a>
 
       <a class="tool" href="tools/floorplan/" data-enter>
         <span class="t-mono">Converter</span>
         <span class="tool-name">Floorplan Converter</span>
-        <span class="tool-desc">Turn CubiCasa SVG exports into GVC-styled floor plans.</span>
-        <span class="tool-open">Open <span aria-hidden="true">↗</span></span>
       </a>
 
       <a class="tool" href="tools/map-studio/" data-enter>
         <span class="t-mono">3D maps</span>
         <span class="tool-name">Map Studio</span>
-        <span class="tool-desc">Turn an address list into a 3D map, then export it.</span>
-        <span class="tool-open">Open <span aria-hidden="true">↗</span></span>
       </a>
 
       <a class="tool" href="tools/calculator/" data-enter>
         <span class="t-mono">Measurements</span>
         <span class="tool-name">Feet &amp; Inches Calculator</span>
-        <span class="tool-desc">Add, subtract, and convert feet-and-inches measurements.</span>
-        <span class="tool-open">Open <span aria-hidden="true">↗</span></span>
       </a>
 
-      <a class="tool" href="photos/" data-enter>
-        <span class="t-mono">14 galleries</span>
-        <span class="tool-name">Photos</span>
-        <span class="tool-desc">Before &amp; after editing across 14 property galleries.</span>
-        <span class="tool-open">Open <span aria-hidden="true">↗</span></span>
+      <a class="tool" href="tools/watermark/" data-enter>
+        <span class="t-mono">Staging</span>
+        <span class="tool-name">Watermark</span>
       </a>
 
     </div>
@@ -80,42 +70,73 @@
     <div class="site-stack">
 
       <a class="site" href="projects/casa-avenida/" data-enter>
-        <span class="site-shot"><img src="assets/img/tile-casa.webp" alt="" loading="lazy"></span>
         <span class="site-face">
           <span><span class="tile-name">Casa Avenida</span><span class="t-mono">Single-property site</span></span>
-          <span class="site-cta"><span class="site-hint" aria-hidden="true">▾</span><span class="site-visit">Visit <span aria-hidden="true">↗</span></span></span>
+          <span class="site-cta"><span class="site-visit">Visit <span aria-hidden="true">↗</span></span></span>
         </span>
       </a>
 
       <a class="site" href="projects/le-reve/" data-enter>
-        <span class="site-shot"><img src="assets/img/tile-lereve.webp" alt="" loading="lazy"></span>
         <span class="site-face">
           <span><span class="tile-name">Le Rêve</span><span class="t-mono">Single-property site</span></span>
-          <span class="site-cta"><span class="site-hint" aria-hidden="true">▾</span><span class="site-visit">Visit <span aria-hidden="true">↗</span></span></span>
+          <span class="site-cta"><span class="site-visit">Visit <span aria-hidden="true">↗</span></span></span>
         </span>
       </a>
 
       <a class="site" href="projects/the-edge/" data-enter>
-        <span class="site-shot"><img src="projects/the-edge/hero.webp" alt="" loading="lazy"></span>
         <span class="site-face">
           <span><span class="tile-name">The Edge</span><span class="t-mono">7 townhomes · Delray Beach</span></span>
-          <span class="site-cta"><span class="site-hint" aria-hidden="true">▾</span><span class="site-visit">Visit <span aria-hidden="true">↗</span></span></span>
+          <span class="site-cta"><span class="site-visit">Visit <span aria-hidden="true">↗</span></span></span>
         </span>
       </a>
 
       <a class="site" href="projects/gvc-team/" data-enter>
-        <span class="site-shot"><img src="projects/gvc-team/hero.webp" alt="" loading="lazy"></span>
         <span class="site-face">
           <span><span class="tile-name">GVC Team</span><span class="t-mono">Douglas Elliman team site</span></span>
-          <span class="site-cta"><span class="site-hint" aria-hidden="true">▾</span><span class="site-visit">Visit <span aria-hidden="true">↗</span></span></span>
+          <span class="site-cta"><span class="site-visit">Visit <span aria-hidden="true">↗</span></span></span>
         </span>
       </a>
 
+    </div>
+  </section>
+
+  <section class="home-sec" aria-label="Photos">
+    <div class="sec-head">
+      <h2 class="sec-label">Photos</h2>
+      <span class="sec-rule" aria-hidden="true"></span>
+      <span class="sec-count" id="ph-count">Before / after</span>
+    </div>
+
+    <!-- Populated by shuffle.js from photos/pairs.json. Hidden until a photo
+         loads so a failed fetch degrades to just the "All galleries" link. -->
+    <div class="shuffle" data-enter>
+      <div class="shuffle-stage" id="ph-stage" hidden>
+        <div class="ba" id="ph-ba">
+          <img class="ba-img ba-after" id="ph-after" alt="" decoding="async">
+          <div class="ba-before-wrap" id="ph-clip">
+            <img class="ba-img ba-before" id="ph-before" alt="" decoding="async">
+          </div>
+          <div class="ba-divider" id="ph-divider" aria-hidden="true"></div>
+          <span class="ba-tag ba-tag-l">Raw</span>
+          <span class="ba-tag ba-tag-r">Edited</span>
+          <input class="ba-range" id="ph-range" type="range" min="0" max="100" value="50"
+                 aria-label="Reveal more of the raw or edited photo">
+        </div>
+      </div>
+
+      <div class="shuffle-bar">
+        <span class="shuffle-meta" id="ph-meta">Loading…</span>
+        <span class="shuffle-actions">
+          <button class="btn" type="button" id="ph-shuffle">Shuffle</button>
+          <a class="btn" href="photos/">All galleries <span aria-hidden="true">↗</span></a>
+        </span>
+      </div>
     </div>
   </section>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" integrity="sha384-HOvlOYPIs/zjoIkWUGXkVmXsjr8GuZLV+Q+rcPwmJOVZVpvTSXQChiN4t9Euv9Vc" crossorigin="anonymous"></script>
 <script src="assets/js/chrome.js"></script>
 <script src="assets/js/motion.js"></script>
+<script src="assets/js/shuffle.js"></script>
 </body>
 </html>
