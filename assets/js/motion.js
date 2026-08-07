@@ -69,22 +69,7 @@
     els.forEach(el => io.observe(el));
   }
 
-  /* 4 — Pointer parallax on tile imagery (pointer:fine only). */
-  function parallax() {
-    if (reduced || !window.matchMedia("(pointer: fine)").matches) return;
-    document.querySelectorAll(".tile .tile-img img").forEach(img => {
-      const tile = img.closest(".tile");
-      tile.addEventListener("mousemove", e => {
-        const r = tile.getBoundingClientRect();
-        const dx = (e.clientX - r.left) / r.width - 0.5;
-        const dy = (e.clientY - r.top) / r.height - 0.5;
-        img.style.transform = `scale(1.07) translate(${dx * -8}px, ${dy * -8}px)`;
-      });
-      tile.addEventListener("mouseleave", () => { img.style.transform = ""; });
-    });
-  }
-
-  /* 5 — Print: snap all [data-reveal] elements visible so below-fold sections
+  /* 4 — Print: snap all [data-reveal] elements visible so below-fold sections
      don't print blank (they may still have inline opacity:0 / translateY). */
   window.addEventListener("beforeprint", () => {
     document.querySelectorAll("[data-reveal]").forEach(el => {
@@ -94,5 +79,5 @@
     });
   });
 
-  document.addEventListener("DOMContentLoaded", () => { entrances(); reveals(); parallax(); });
+  document.addEventListener("DOMContentLoaded", () => { entrances(); reveals(); });
 })();

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -219,6 +220,40 @@ class TestWriteIndexHtml(unittest.TestCase):
         self.assertIn("3 photos", out)
         self.assertIn('href="aaa/"', out)
         self.assertIn('href="bbb/"', out)
+
+
+class TestWritePairsJson(unittest.TestCase):
+    def test_includes_only_photos_with_both_versions(self):
+        galleries = [{
+            "slug": "aaa", "name": "AAA",
+            "photos": [
+                {"label": "Both", "raw_t": "img/0-r-t.webp", "edit_t": "img/0-e-t.webp"},
+                {"label": "RawOnly", "raw_t": "img/1-r-t.webp"},
+                {"label": "EditOnly", "edit_t": "img/2-e-t.webp"},
+            ],
+        }]
+        pairs = json.loads(build_photos.write_pairs_json(galleries))
+
+        self.assertEqual(len(pairs), 1)
+        self.assertEqual(pairs[0]["label"], "Both")
+        self.assertEqual(pairs[0]["property"], "AAA")
+        self.assertEqual(pairs[0]["raw"], "aaa/img/0-r-t.webp")
+        self.assertEqual(pairs[0]["edit"], "aaa/img/0-e-t.webp")
+
+    def test_flattens_across_galleries(self):
+        galleries = [
+            {"slug": "aaa", "name": "AAA",
+             "photos": [{"label": "X", "raw_t": "img/0-r-t.webp", "edit_t": "img/0-e-t.webp"}]},
+            {"slug": "bbb", "name": "BBB",
+             "photos": [{"label": "Y", "raw_t": "img/0-r-t.webp", "edit_t": "img/0-e-t.webp"}]},
+        ]
+        pairs = json.loads(build_photos.write_pairs_json(galleries))
+
+        self.assertEqual([p["slug"] for p in pairs], ["aaa", "bbb"])
+
+    def test_empty_when_nothing_is_paired(self):
+        galleries = [{"slug": "aaa", "name": "AAA", "photos": [{"label": "X", "raw_t": "img/0-r-t.webp"}]}]
+        self.assertEqual(json.loads(build_photos.write_pairs_json(galleries)), [])
 
 
 class TestCollectProperties(unittest.TestCase):

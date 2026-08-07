@@ -1,20 +1,10 @@
-/* Injects shared masthead + footer. NAV grows as sections ship (Plans 2-6).
+/* Injects shared masthead + footer.
+   There is no nav: the home page is the index for everything, and the lockup
+   is the way back to it. Pages still set data-nav; it is unused but harmless.
    Dereferences document.body at execution — load as a classic script at the end of <body>. */
 (function () {
   if (document.querySelector(".masthead")) return;
   const root = document.body.dataset.root || "";
-  const active = document.body.dataset.nav || "";
-
-  const NAV = [
-    ["home", "Home", ""],
-    ["tools", "Tools", "tools/"],
-    ["projects", "Projects", "projects/"],
-    ["photos", "Photos", "photos/"],
-  ];
-
-  const navLinks = NAV.map(([id, label, href]) =>
-    `<a href="${root}${href || "."}" ${id === active ? 'aria-current="page"' : ""}>${label}</a>`
-  ).join("");
 
   const mast = document.createElement("header");
   mast.className = "masthead";
@@ -25,8 +15,7 @@
         <span class="who">Matt Bloomfield</span>
         <span class="for">for The GVC Team</span>
       </span>
-    </a>
-    <nav class="mast-nav" aria-label="Primary">${navLinks}</nav>`;
+    </a>`;
   document.body.prepend(mast);
 
   // Inline the monogram SVG so motion.js can animate its paths.

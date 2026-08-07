@@ -321,6 +321,33 @@ def write_index_html(galleries: list) -> str:
     return head + body
 
 
+def write_pairs_json(galleries: list) -> str:
+    """
+    Render photos/pairs.json: a flat list of every photo that has BOTH a raw
+    and an edited version.
+
+    The home page's shuffle panel picks one photo at random across all
+    properties. Without this it would have to fetch every gallery page to know
+    what exists. Thumb sizes only — the panel is a card, not a lightbox.
+
+    Photos missing one half of the pair are skipped: a before/after slider with
+    nothing to compare is not worth showing.
+    """
+    pairs = []
+    for g in galleries:
+        for ph in g["photos"]:
+            if not (ph.get("raw_t") and ph.get("edit_t")):
+                continue
+            pairs.append({
+                "slug": g["slug"],
+                "property": g["name"],
+                "label": ph["label"],
+                "raw": f'{g["slug"]}/{ph["raw_t"]}',
+                "edit": f'{g["slug"]}/{ph["edit_t"]}',
+            })
+    return json.dumps(pairs, ensure_ascii=False, separators=(",", ":"))
+
+
 # ---------- filesystem scanning + orchestration ----------
 
 def collect_properties(source_dir: Path):
@@ -422,6 +449,7 @@ def main():
         (out_dir / "index.html").write_text(write_property_html(gallery, galleries, i), encoding="utf-8")
 
     (OUT / "index.html").write_text(write_index_html(galleries), encoding="utf-8")
+    (OUT / "pairs.json").write_text(write_pairs_json(galleries), encoding="utf-8")
 
     total = sum(len(g["photos"]) for g in galleries)
     print(f"\nDONE: {len(galleries)} galleries, {total} photos -> {OUT}")
