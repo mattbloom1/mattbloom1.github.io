@@ -49,14 +49,24 @@
   border:1.5pt dashed rgba(229,229,229,.35);margin:.35in;
   font:800 9pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:rgba(229,229,229,.55);text-align:center;padding:0 .5in;}
 
-/* address block sits in the bottom third */
-.cover-head{position:absolute;left:var(--pad);right:var(--pad);bottom:.75in;}
-.cv-addr{font:700 34pt/1.06 var(--serif);color:#fff;text-align:left;
+/* address block sits in the bottom third, above the footer bar */
+.cover-head{position:absolute;left:var(--pad);right:var(--pad);bottom:1.45in;text-align:center;}
+.cv-addr{font:700 34pt/1.06 var(--serif);color:#fff;
          text-wrap:balance;overflow-wrap:break-word;}
 .cv-city{font:800 11pt var(--sans);letter-spacing:.10em;text-transform:uppercase;color:#fff;
-         margin-top:.11in;text-align:left;}
-.cv-mono{margin-top:.30in;text-align:center;}
-.cv-mono img{height:.62in;width:auto;display:inline-block;}
+         margin-top:.11in;}
+
+/* footer bar — agent left, monogram centred, website right */
+.cover-foot{position:absolute;left:var(--pad);right:var(--pad);bottom:.5in;
+  display:flex;align-items:center;gap:.25in;padding-top:.17in;
+  border-top:.75pt solid rgba(229,229,229,.4);}
+.cf-agent{flex:1;min-width:0;}
+.cf-site{flex:1;min-width:0;text-align:right;}
+.cf-mono{flex:none;}
+.cf-mono img{height:.46in;width:auto;display:block;}
+.cf-name{font:800 8.5pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:#fff;}
+.cf-meta{font:300 8.5pt/1.5 var(--body);color:rgba(229,229,229,.88);margin-top:.03in;}
+.cf-site span{font:800 8.5pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:#fff;}
 
 /* ---------- PAGE 2 — BENTO GALLERY ---------- */
 .bento{position:absolute;inset:0;display:grid;
@@ -90,17 +100,23 @@
 
 /* top third of the page = top half of the colour block */
 .info-top{position:absolute;top:0;left:0;right:0;height:50%;padding:.6in var(--pad) 0;display:flex;flex-direction:column;}
-.info-head{display:flex;align-items:flex-start;justify-content:space-between;gap:.3in;}
-.info-eyebrow{font:800 11pt var(--sans);letter-spacing:.18em;text-transform:uppercase;color:#fff;padding-top:.06in;}
-/* price banner runs off the right edge so it reads as a device, not a box */
-.info-price{flex:none;background:var(--sky);color:var(--navy);
-  margin-right:calc(-1 * var(--pad));padding:.13in var(--pad) .13in .26in;
-  font:700 22pt/1 var(--serif);white-space:nowrap;}
+.info-eyebrow{font:800 11pt var(--sans);letter-spacing:.18em;text-transform:uppercase;color:#fff;}
+
+/* photo sits in the top-right corner, bleeding off the top and right edges */
+.info-tr{position:absolute;top:0;right:0;width:4.25in;height:2.5in;overflow:hidden;background:rgba(255,255,255,.05);}
+.info-tr img{width:100%;height:100%;object-fit:cover;display:block;}
+.info-tr .ph-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font:800 8pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:rgba(229,229,229,.4);text-align:center;padding:0 .4in;}
+
+/* price banner sits under the photo and runs off the right edge */
+.info-price{position:absolute;top:2.5in;right:0;background:var(--sky);color:var(--navy);
+  padding:.13in var(--pad) .13in .26in;font:700 22pt/1 var(--serif);white-space:nowrap;}
 .info-price .po{font:800 10pt var(--sans);letter-spacing:.14em;text-transform:uppercase;}
 /* flex:1 + min-height:0 makes these bounded by their parent rather than
    growing past it — which is what lets scrollHeight detect an overflow */
-.info-blurb{margin-top:.28in;font:300 10.5pt/16pt var(--body);color:var(--ow);max-width:6.2in;
-  flex:1;min-height:0;overflow:hidden;}
+/* the blurb keeps clear of the top-right photo, so it stays in the left column */
+.info-blurb{margin-top:.28in;font:300 10.5pt/16pt var(--body);color:var(--ow);
+  width:3.4in;flex:1;min-height:0;overflow:hidden;}
 
 /* middle third of the page = bottom half of the colour block */
 .info-mid{position:absolute;top:50%;bottom:0;left:0;right:0;padding:.34in var(--pad) .5in;
@@ -110,22 +126,25 @@
 .info-col.stats{flex:1;}
 .info-lbl{font:800 8pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--sky);
   margin-bottom:.14in;}
-.info-feats{list-style:none;margin:0;padding:0;flex:1;min-height:0;overflow:hidden;
-  columns:2;column-gap:.28in;}
+.info-feats{list-style:none;margin:0;padding:0;flex:1;min-height:0;overflow:hidden;}
 .info-feats li{font:400 9.5pt/15pt var(--body);color:var(--ow);padding-left:.17in;position:relative;
-  margin-bottom:.055in;break-inside:avoid;}
+  margin-bottom:.055in;}
 .info-feats li::before{content:'';position:absolute;left:0;top:.072in;width:.055in;height:.055in;
   background:var(--sky);}
 
 .info-stats{display:grid;grid-template-columns:1fr 1fr;gap:.26in .2in;}
+.stat{display:flex;gap:.12in;align-items:flex-start;}
+.stat .ico{flex:none;width:.21in;height:.21in;margin-top:.035in;color:var(--sky);}
+.stat .ico svg{width:100%;height:100%;display:block;stroke:currentColor;fill:none;
+  stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 .stat .v{font:700 20pt/1 var(--serif);color:#fff;}
 .stat .k{font:800 7.5pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--sky);margin-top:.05in;}
 
 /* page 3 photo is repositionable inside its crop */
 @media screen{
-  .info-photo.has-img{cursor:grab;touch-action:none;user-select:none;}
-  .info-photo.has-img:active,.info-photo.is-moving{cursor:grabbing;}
-  .info-photo img{pointer-events:none;}
+  .info-photo.has-img,.info-tr.has-img{cursor:grab;touch-action:none;user-select:none;}
+  .info-photo.is-moving,.info-tr.is-moving{cursor:grabbing;}
+  .info-photo img,.info-tr img{pointer-events:none;}
 }
 
 /* ---------- OVERFLOW WARNINGS (screen only) ---------- */
@@ -199,6 +218,24 @@
       </details>
 
       <details class="ed-sec" open>
+        <summary>Agent <span class="hint">page 1 footer</span></summary>
+        <div class="sec-in">
+          <div class="field">
+            <label>Name</label>
+            <input type="text" data-field="agentName" placeholder="John Gasdaska">
+          </div>
+          <div class="f-row">
+            <div class="field"><label>Phone</label><input type="text" data-field="agentPhone" placeholder="646.345.7350"></div>
+            <div class="field"><label>Email</label><input type="text" data-field="agentEmail" placeholder="john.gasdaska@elliman.com"></div>
+          </div>
+          <div class="field">
+            <label>Website</label>
+            <input type="text" data-field="site" placeholder="gvcrealestateteam.com">
+          </div>
+        </div>
+      </details>
+
+      <details class="ed-sec" open>
         <summary>Gallery <span class="hint">page 2</span></summary>
         <div class="sec-in">
           <div class="sec-note" id="bentoNote">Add 2 more photos &mdash; the hero is held back for page 1.</div>
@@ -210,10 +247,14 @@
         <summary>Property <span class="hint">page 3</span></summary>
         <div class="sec-in">
           <div class="field">
-            <label>Photo</label>
+            <label>Top-right photo</label>
+            <select id="infoTopPhoto"></select>
+          </div>
+          <div class="field">
+            <label>Bottom photo</label>
             <select id="infoPhoto"></select>
-            <div class="note">Drag the photo on page 3 to reframe it inside the crop.
-              <button type="button" class="linkish" id="btnResetPos">Re-centre</button>
+            <div class="note">Drag either photo on page 3 to reframe it.
+              <button type="button" class="linkish" id="btnResetPos">Re-centre both</button>
             </div>
           </div>
           <div class="field">
@@ -321,6 +362,17 @@ const BENTO = {
   ]
 };
 
+/* Lucide icons (lucide.dev, ISC), inlined so print and offline both work.
+   24x24 viewBox, stroke styling comes from .stat .ico svg. */
+const ICONS = {
+  bed: '<path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8"/><path d="M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4"/><path d="M12 4v6"/><path d="M2 18h20"/>',
+  bath: '<path d="M9 6 6.5 3.5a1.5 1.5 0 0 0-1-.5C4.683 3 4 3.683 4 4.5V17a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/><line x1="10" x2="8" y1="5" y2="7"/><line x1="2" x2="22" y1="12" y2="12"/><line x1="7" x2="7" y1="19" y2="21"/><line x1="17" x2="17" y1="19" y2="21"/>',
+  car: '<path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/>',
+  ruler: '<path d="M21.3 8.7 8.7 21.3a1 1 0 0 1-1.4 0l-4.6-4.6a1 1 0 0 1 0-1.4L15.3 2.7a1 1 0 0 1 1.4 0l4.6 4.6a1 1 0 0 1 0 1.4Z"/><path d="m7.5 10.5 2 2"/><path d="m10.5 7.5 2 2"/><path d="m13.5 4.5 2 2"/><path d="m4.5 13.5 2 2"/>'
+};
+const icon = n => '<span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true">' +
+                  ICONS[n] + '</svg></span>';
+
 /* ---------------- state ---------------- */
 const state = {
   images: [],      // {id, name, url}
@@ -331,9 +383,16 @@ const state = {
   zip: '',
   bentoVariant: 0, // index into BENTO[count]
   bentoOrder: [],  // image ids, the order they fill cells a..f
+  // page 1 footer
+  agentName: '',
+  agentPhone: '',
+  agentEmail: '',
+  site: 'gvcrealestateteam.com',
   // page 3
   infoPhotoId: null,
-  infoPos: { x: 50, y: 50 },   // object-position %, dragged by the agent
+  infoTopPhotoId: null,
+  infoPos: { x: 50, y: 50 },      // object-position %, dragged by the agent
+  infoTopPos: { x: 50, y: 50 },
   price: '',
   blurb: '',
   features: '',
@@ -450,6 +509,8 @@ function beginDrag(e, cell, slot, grid) {
 function renderCover(page) {
   const hero = heroImage();
   const city = cityLine();
+  const contact = [state.agentPhone, state.agentEmail].filter(Boolean)
+    .map(escapeHtml).join(' &nbsp;·&nbsp; ');
   page.innerHTML =
     '<div class="cover">' +
       (hero ? '<img class="cover-img" src="' + hero.url + '" alt="">' : '') +
@@ -458,7 +519,16 @@ function renderCover(page) {
       '<div class="cover-head">' +
         '<div class="cv-addr">' + (escapeHtml(state.address) || '&nbsp;') + '</div>' +
         (city ? '<div class="cv-city">' + escapeHtml(city) + '</div>' : '') +
-        '<div class="cv-mono"><img src="../../assets/logos/monogram-white.svg" alt=""></div>' +
+      '</div>' +
+      '<div class="cover-foot">' +
+        '<div class="cf-agent">' +
+          (state.agentName ? '<div class="cf-name">' + escapeHtml(state.agentName) + '</div>' : '') +
+          (contact ? '<div class="cf-meta">' + contact + '</div>' : '') +
+        '</div>' +
+        '<div class="cf-mono"><img src="../../assets/logos/monogram-white.svg" alt=""></div>' +
+        '<div class="cf-site">' +
+          (state.site ? '<span>' + escapeHtml(state.site) + '</span>' : '') +
+        '</div>' +
       '</div>' +
     '</div>';
 }
@@ -507,9 +577,10 @@ function renderGallery(page) {
 function renderInfo(page) {
   const photo = state.images.find(i => i.id === state.infoPhotoId) || null;
   const feats = state.features.split('\n').map(s => s.trim()).filter(Boolean);
+  const topPhoto = state.images.find(i => i.id === state.infoTopPhotoId) || null;
   const stats = [
-    ['Bedrooms', state.beds], ['Bathrooms', state.baths],
-    ['Parking', state.parking], ['Sq Ft', state.sqft]
+    ['Bedrooms', state.beds, 'bed'], ['Bathrooms', state.baths, 'bath'],
+    ['Parking', state.parking, 'car'], ['Sq Ft', state.sqft, 'ruler']
   ];
 
   const price = state.price
@@ -521,11 +592,14 @@ function renderInfo(page) {
   page.innerHTML =
     '<div class="info">' +
       '<div class="info-block">' +
+        '<div class="info-tr' + (topPhoto ? ' has-img' : '') + '">' +
+          (topPhoto ? '<img src="' + topPhoto.url + '" alt="" style="object-position:' +
+                        state.infoTopPos.x + '% ' + state.infoTopPos.y + '%">'
+                    : '<div class="ph-empty">Top-right photo</div>') +
+        '</div>' +
+        (price ? '<div class="info-price">' + price + '</div>' : '') +
         '<div class="info-top">' +
-          '<div class="info-head">' +
-            '<div class="info-eyebrow">About Property</div>' +
-            (price ? '<div class="info-price">' + price + '</div>' : '') +
-          '</div>' +
+          '<div class="info-eyebrow">About Property</div>' +
           '<div class="info-blurb">' + escapeHtml(state.blurb) + '</div>' +
         '</div>' +
         '<div class="info-mid">' +
@@ -538,9 +612,9 @@ function renderInfo(page) {
           '<div class="info-col stats">' +
             '<div class="info-lbl">The Details</div>' +
             '<div class="info-stats">' +
-              stats.map(s => '<div class="stat"><div class="v">' +
-                (escapeHtml(s[1]) || '&mdash;') + '</div><div class="k">' +
-                s[0] + '</div></div>').join('') +
+              stats.map(s => '<div class="stat">' + icon(s[2]) + '<div class="txt">' +
+                '<div class="v">' + (escapeHtml(s[1]) || '&mdash;') + '</div>' +
+                '<div class="k">' + s[0] + '</div></div></div>').join('') +
             '</div>' +
           '</div>' +
         '</div>' +
@@ -553,14 +627,16 @@ function renderInfo(page) {
     '</div>';
 
   const box = page.querySelector('.info-photo');
-  if (photo) box.addEventListener('pointerdown', e => beginPhotoDrag(e, box));
+  if (photo) box.addEventListener('pointerdown', e => beginPhotoDrag(e, box, state.infoPos));
+  const trBox = page.querySelector('.info-tr');
+  if (topPhoto) trBox.addEventListener('pointerdown', e => beginPhotoDrag(e, trBox, state.infoTopPos));
 }
 
 /* drag the page-3 photo around inside its crop.
    object-position p% puts the image's overflow at -(overflow * p/100), so
    moving it by d px means changing p by -d/overflow*100. Pointer deltas are
    in screen px, so they're divided by the preview's scale first. */
-function beginPhotoDrag(e, box) {
+function beginPhotoDrag(e, box, pos) {
   const img = box.querySelector('img');
   if (!img || !img.naturalWidth) return;
   e.preventDefault();
@@ -572,16 +648,16 @@ function beginPhotoDrag(e, box) {
   const overX = img.naturalWidth * cover - bw;
   const overY = img.naturalHeight * cover - bh;
 
-  const start = { x: e.clientX, y: e.clientY, px: state.infoPos.x, py: state.infoPos.y };
+  const start = { x: e.clientX, y: e.clientY, px: pos.x, py: pos.y };
   box.classList.add('is-moving');
   try { box.setPointerCapture(e.pointerId); } catch (_) {}
 
   const move = ev => {
     const dx = (ev.clientX - start.x) / scale;
     const dy = (ev.clientY - start.y) / scale;
-    if (overX > 0.5) state.infoPos.x = Math.max(0, Math.min(100, start.px - (dx / overX) * 100));
-    if (overY > 0.5) state.infoPos.y = Math.max(0, Math.min(100, start.py - (dy / overY) * 100));
-    img.style.objectPosition = state.infoPos.x + '% ' + state.infoPos.y + '%';
+    if (overX > 0.5) pos.x = Math.max(0, Math.min(100, start.px - (dx / overX) * 100));
+    if (overY > 0.5) pos.y = Math.max(0, Math.min(100, start.py - (dy / overY) * 100));
+    img.style.objectPosition = pos.x + '% ' + pos.y + '%';
   };
   const done = ev => {
     box.removeEventListener('pointermove', move);
@@ -683,22 +759,22 @@ function updateBentoNote() {
 
 // page 3's photo picker mirrors whatever is currently loaded
 function renderPhotoPicker() {
-  const sel = $('#infoPhoto');
-  if (state.infoPhotoId && !state.images.some(i => i.id === state.infoPhotoId)) {
-    state.infoPhotoId = null;
-  }
-  sel.innerHTML = '';
-  const none = document.createElement('option');
-  none.value = '';
-  none.textContent = state.images.length ? 'None' : 'Add photos first';
-  sel.appendChild(none);
-  state.images.forEach(img => {
-    const o = document.createElement('option');
-    o.value = String(img.id);
-    o.textContent = img.name + (img.id === state.heroId ? ' (hero)' : '');
-    sel.appendChild(o);
+  [['#infoPhoto', 'infoPhotoId'], ['#infoTopPhoto', 'infoTopPhotoId']].forEach(pair => {
+    const sel = $(pair[0]), key = pair[1];
+    if (state[key] && !state.images.some(i => i.id === state[key])) state[key] = null;
+    sel.innerHTML = '';
+    const none = document.createElement('option');
+    none.value = '';
+    none.textContent = state.images.length ? 'None' : 'Add photos first';
+    sel.appendChild(none);
+    state.images.forEach(img => {
+      const o = document.createElement('option');
+      o.value = String(img.id);
+      o.textContent = img.name + (img.id === state.heroId ? ' (hero)' : '');
+      sel.appendChild(o);
+    });
+    sel.value = state[key] ? String(state[key]) : '';
   });
-  sel.value = state.infoPhotoId ? String(state.infoPhotoId) : '';
 }
 
 function renderImgList() {
@@ -790,6 +866,7 @@ document.querySelectorAll('[data-field]').forEach(el => {
 $('#btnShuffle').addEventListener('click', shuffleGallery);
 $('#btnResetPos').addEventListener('click', () => {
   state.infoPos = { x: 50, y: 50 };
+  state.infoTopPos = { x: 50, y: 50 };
   redraw();
 });
 
@@ -797,7 +874,8 @@ $('#btnResetPos').addEventListener('click', () => {
    Real photography from photos/3-crosby-lane, invented listing copy.
    Images are same-origin paths, not data URLs, so this stays cheap. */
 const PREVIEW = {
-  photos: [0, 3, 6, 9, 12, 15, 18, 21],
+  // 9: hero + six for the bento + the two on page 3, so nothing repeats
+  photos: [0, 3, 6, 9, 12, 15, 18, 21, 24],
   address: '3 Crosby Lane',
   city: 'Rye', state: 'NY', zip: '10580',
   price: '$4,275,000',
@@ -809,7 +887,11 @@ const PREVIEW = {
     'Primary suite with dual dressing rooms', 'Wood-burning fireplace',
     'Finished lower level with gym', 'Whole-house generator',
     'Irrigated landscaped grounds', 'Attached two-car garage'].join('\n'),
-  beds: '5', baths: '4.5', parking: '2', sqft: '4,180'
+  beds: '5', baths: '4.5', parking: '2', sqft: '4,180',
+  agentName: 'John Gasdaska',
+  agentPhone: '646.345.7350',
+  agentEmail: 'john.gasdaska@elliman.com',
+  site: 'gvcrealestateteam.com'
 };
 
 $('#btnPreview').addEventListener('click', () => {
@@ -820,12 +902,15 @@ $('#btnPreview').addEventListener('click', () => {
   }));
   state.heroId = state.images[0].id;
   state.infoPhotoId = state.images[state.images.length - 1].id;
+  state.infoTopPhotoId = state.images[state.images.length - 2].id;
   state.infoPos = { x: 50, y: 50 };
+  state.infoTopPos = { x: 50, y: 50 };
   state.bentoOrder = [];
   state.bentoVariant = 0;
 
   ['address', 'city', 'state', 'zip', 'price', 'blurb', 'features',
-   'beds', 'baths', 'parking', 'sqft'].forEach(k => {
+   'beds', 'baths', 'parking', 'sqft',
+   'agentName', 'agentPhone', 'agentEmail', 'site'].forEach(k => {
     state[k] = PREVIEW[k];
     const el = document.querySelector('[data-field=' + k + ']');
     if (el) el.value = PREVIEW[k];
@@ -838,7 +923,18 @@ $('#btnPreview').addEventListener('click', () => {
 });
 $('#infoPhoto').addEventListener('change', e => {
   state.infoPhotoId = e.target.value ? parseInt(e.target.value, 10) : null;
+  state.infoPos = { x: 50, y: 50 };
   redraw();
+});
+$('#infoTopPhoto').addEventListener('change', e => {
+  state.infoTopPhotoId = e.target.value ? parseInt(e.target.value, 10) : null;
+  state.infoTopPos = { x: 50, y: 50 };
+  redraw();
+});
+
+// seed inputs from any state defaults (the website, for one)
+document.querySelectorAll('[data-field]').forEach(el => {
+  if (state[el.dataset.field]) el.value = state[el.dataset.field];
 });
 
 builder = Builder.init({ pages: 3, label: 'Page', render: renderPage });
