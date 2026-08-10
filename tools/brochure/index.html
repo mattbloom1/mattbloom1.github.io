@@ -32,10 +32,22 @@
   --bento-gap:.06in;       /* white gutter between bento cells */
 }
 
+/* shared bits ------------------------------------------------ */
+.ico{display:block;}
+.ico svg{width:100%;height:100%;display:block;stroke:currentColor;fill:none;
+  stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.sheet-head{flex:none;background:var(--navy);color:#fff;
+  padding:.42in var(--pad) .34in;display:flex;align-items:baseline;justify-content:space-between;gap:.3in;}
+.sheet-head .t{font:800 12pt var(--sans);letter-spacing:.18em;text-transform:uppercase;}
+.sheet-head .s{font:300 9pt var(--body);color:rgba(229,229,229,.85);text-align:right;min-width:0;}
+.empty-note{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font:800 8.5pt var(--sans);letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(229,229,229,.45);text-align:center;padding:0 .6in;line-height:1.7;}
+.empty-note.on-white{color:rgba(0,39,58,.32);}
+
 /* ---------- PAGE 1 — COVER ---------- */
 .cover{position:absolute;inset:0;overflow:hidden;background:var(--navy);}
 .cover-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
-
 /* Two scrims, each a clean 100% -> 0 opacity fade over its own band.
    Stop order matters: a later stop with a smaller percentage gets clamped
    up to the previous one, which turns the fade into a hard cut. */
@@ -44,19 +56,9 @@
     linear-gradient(to bottom, rgba(0,39,58,1) 0%, rgba(0,39,58,0) var(--mask-top)),
     linear-gradient(to top,    rgba(0,39,58,1) 0%, rgba(0,39,58,0) var(--mask-bot));
 }
-
-.cover-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  border:1.5pt dashed rgba(229,229,229,.35);margin:.35in;
-  font:800 9pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:rgba(229,229,229,.55);text-align:center;padding:0 .5in;}
-
-/* address block sits in the bottom third, above the footer bar */
 .cover-head{position:absolute;left:var(--pad);right:var(--pad);bottom:1.45in;text-align:center;}
-.cv-addr{font:700 34pt/1.06 var(--serif);color:#fff;
-         text-wrap:balance;overflow-wrap:break-word;}
-.cv-city{font:800 11pt var(--sans);letter-spacing:.10em;text-transform:uppercase;color:#fff;
-         margin-top:.11in;}
-
-/* footer bar — agent left, monogram centred, website right */
+.cv-addr{font:700 34pt/1.06 var(--serif);color:#fff;text-wrap:balance;overflow-wrap:break-word;}
+.cv-city{font:800 11pt var(--sans);letter-spacing:.10em;text-transform:uppercase;color:#fff;margin-top:.11in;}
 .cover-foot{position:absolute;left:var(--pad);right:var(--pad);bottom:.5in;
   display:flex;align-items:center;gap:.25in;padding-top:.17in;
   border-top:.75pt solid rgba(229,229,229,.4);}
@@ -74,78 +76,118 @@
   gap:var(--bento-gap);background:#fff;overflow:hidden;}
 .bento-cell{position:relative;overflow:hidden;background:var(--navy);}
 .bento-cell img{width:100%;height:100%;object-fit:cover;display:block;}
-
-/* drag-to-swap affordances — screen only, and stripped on drop */
+.bento-empty{position:absolute;inset:0;background:var(--navy);}
 @media screen{
   .bento-cell{cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;}
-  .bento-cell img{-webkit-user-drag:none;user-drag:none;pointer-events:none;}
+  .bento-cell img{-webkit-user-drag:none;pointer-events:none;}
   .bento-cell:active{cursor:grabbing;}
   .bento-cell.is-dragging{opacity:.4;}
   .bento-cell.is-target::after{content:'';position:absolute;inset:0;
     background:rgba(83,199,220,.28);box-shadow:inset 0 0 0 3px var(--sky);}
 }
 
-.bento-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  background:var(--navy);
-  font:800 9pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:rgba(229,229,229,.55);
-  text-align:center;padding:0 .8in;line-height:1.7;}
-
 /* ---------- PAGE 3 — PROPERTY INFORMATION ---------- */
 .info{position:absolute;inset:0;overflow:hidden;background:#fff;}
 .info-block{position:absolute;top:0;left:0;right:0;height:66.667%;background:var(--navy);color:var(--ow);}
 .info-photo{position:absolute;top:66.667%;bottom:0;left:0;right:0;background:var(--navy);overflow:hidden;}
 .info-photo img{width:100%;height:100%;object-fit:cover;display:block;}
-.info-photo .ph-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  font:800 8.5pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:rgba(229,229,229,.5);}
-
-/* top third of the page = top half of the colour block */
 .info-top{position:absolute;top:0;left:0;right:0;height:50%;padding:.6in var(--pad) 0;display:flex;flex-direction:column;}
 .info-eyebrow{font:800 11pt var(--sans);letter-spacing:.18em;text-transform:uppercase;color:#fff;}
-
-/* photo sits in the top-right corner, bleeding off the top and right edges */
 .info-tr{position:absolute;top:0;right:0;width:4.25in;height:2.5in;overflow:hidden;background:rgba(255,255,255,.05);}
 .info-tr img{width:100%;height:100%;object-fit:cover;display:block;}
-.info-tr .ph-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  font:800 8pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:rgba(229,229,229,.4);text-align:center;padding:0 .4in;}
-
-/* price banner sits under the photo and runs off the right edge */
 .info-price{position:absolute;top:2.5in;right:0;background:var(--sky);color:var(--navy);
   padding:.13in var(--pad) .13in .26in;font:700 22pt/1 var(--serif);white-space:nowrap;}
 .info-price .po{font:800 10pt var(--sans);letter-spacing:.14em;text-transform:uppercase;}
-/* flex:1 + min-height:0 makes these bounded by their parent rather than
-   growing past it — which is what lets scrollHeight detect an overflow */
 /* the blurb keeps clear of the top-right photo, so it stays in the left column */
 .info-blurb{margin-top:.28in;font:300 10.5pt/16pt var(--body);color:var(--ow);
   width:3.4in;flex:1;min-height:0;overflow:hidden;}
-
-/* middle third of the page = bottom half of the colour block */
 .info-mid{position:absolute;top:50%;bottom:0;left:0;right:0;padding:.34in var(--pad) .5in;
   display:flex;gap:.5in;border-top:.75pt solid rgba(83,199,220,.35);}
 .info-col{min-width:0;display:flex;flex-direction:column;}
 .info-col.features{flex:1.35;}
 .info-col.stats{flex:1;}
-.info-lbl{font:800 8pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--sky);
-  margin-bottom:.14in;}
+.info-lbl{font:800 8pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--sky);margin-bottom:.14in;}
 .info-feats{list-style:none;margin:0;padding:0;flex:1;min-height:0;overflow:hidden;}
-.info-feats li{font:400 9.5pt/15pt var(--body);color:var(--ow);padding-left:.17in;position:relative;
-  margin-bottom:.055in;}
-.info-feats li::before{content:'';position:absolute;left:0;top:.072in;width:.055in;height:.055in;
-  background:var(--sky);}
-
+.info-feats li{font:400 9.5pt/15pt var(--body);color:var(--ow);padding-left:.17in;position:relative;margin-bottom:.055in;}
+.info-feats li::before{content:'';position:absolute;left:0;top:.072in;width:.055in;height:.055in;background:var(--sky);}
 .info-stats{display:grid;grid-template-columns:1fr 1fr;gap:.26in .2in;}
 .stat{display:flex;gap:.12in;align-items:flex-start;}
 .stat .ico{flex:none;width:.21in;height:.21in;margin-top:.035in;color:var(--sky);}
-.stat .ico svg{width:100%;height:100%;display:block;stroke:currentColor;fill:none;
-  stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 .stat .v{font:700 20pt/1 var(--serif);color:#fff;}
 .stat .k{font:800 7.5pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--sky);margin-top:.05in;}
-
-/* page 3 photo is repositionable inside its crop */
 @media screen{
   .info-photo.has-img,.info-tr.has-img{cursor:grab;touch-action:none;user-select:none;}
   .info-photo.is-moving,.info-tr.is-moving{cursor:grabbing;}
   .info-photo img,.info-tr img{pointer-events:none;}
 }
+
+/* ---------- FLOOR PLANS ---------- */
+.fp{position:absolute;inset:0;background:#fff;display:flex;flex-direction:column;}
+.fp-body{flex:1;min-height:0;display:flex;flex-direction:column;gap:.3in;padding:.4in var(--pad) .3in;}
+.fp-item{flex:1;min-height:0;display:flex;flex-direction:column;}
+.fp-frame{flex:1;min-height:0;position:relative;display:flex;align-items:center;justify-content:center;
+  background:#F7F6F3;border:.75pt solid rgba(0,39,58,.15);overflow:hidden;}
+.fp-frame img{max-width:100%;max-height:100%;object-fit:contain;display:block;}
+.fp-cap{flex:none;font:800 8.5pt var(--sans);letter-spacing:.16em;text-transform:uppercase;
+  color:var(--navy);margin-top:.13in;display:flex;justify-content:space-between;gap:.2in;}
+.fp-cap .sub{font:300 8.5pt var(--body);letter-spacing:0;text-transform:none;color:var(--ui-ink-soft);}
+.fp-foot{flex:none;padding:0 var(--pad) .42in;display:flex;justify-content:space-between;align-items:baseline;
+  font:400 7.5pt var(--ui-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ui-ink-soft);}
+
+/* ---------- LOCATION ---------- */
+.loc{position:absolute;inset:0;background:var(--navy);color:var(--ow);display:flex;flex-direction:column;overflow:hidden;}
+.loc-photo{flex:none;height:42%;position:relative;overflow:hidden;background:rgba(255,255,255,.05);}
+.loc-photo img{width:100%;height:100%;object-fit:cover;display:block;}
+.loc-body{flex:1;min-height:0;padding:.42in var(--pad) .5in;display:flex;flex-direction:column;}
+.loc-eyebrow{font:800 11pt var(--sans);letter-spacing:.18em;text-transform:uppercase;color:#fff;}
+.loc-name{font:700 25pt/1.05 var(--serif);color:#fff;margin-top:.09in;}
+.loc-blurb{font:300 10pt/15pt var(--body);color:var(--ow);margin-top:.14in;max-width:6.6in;
+  max-height:.95in;overflow:hidden;}
+.loc-grid{margin-top:.28in;flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;
+  gap:.24in .45in;overflow:hidden;align-content:start;}
+.loc-cat{min-width:0;display:flex;flex-direction:column;min-height:0;}
+.loc-cat h3{display:flex;align-items:center;gap:.09in;font:800 8pt var(--sans);letter-spacing:.16em;
+  text-transform:uppercase;color:var(--sky);margin-bottom:.09in;}
+.loc-cat h3 .ico{width:.15in;height:.15in;flex:none;}
+.loc-cat ul{list-style:none;margin:0;padding:0;flex:1;min-height:0;overflow:hidden;}
+.loc-cat li{font:400 9pt/14.5pt var(--body);color:var(--ow);}
+@media screen{ .loc-photo.has-img{cursor:grab;touch-action:none;user-select:none;}
+  .loc-photo.is-moving{cursor:grabbing;} .loc-photo img{pointer-events:none;} }
+
+/* ---------- AGENT ---------- */
+.ag{position:absolute;inset:0;background:var(--navy);color:var(--ow);
+  display:flex;flex-direction:column;padding:.7in var(--pad) .5in;overflow:hidden;}
+.ag-eyebrow{font:800 11pt var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--sky);}
+.ag-title{font:700 30pt/1.05 var(--serif);color:#fff;margin-top:.1in;}
+.ag-cards{flex:1;min-height:0;display:flex;gap:.45in;margin-top:.42in;}
+.ag-card{flex:1;min-width:0;display:flex;flex-direction:column;}
+.ag-shot{width:100%;aspect-ratio:4/5;background:rgba(255,255,255,.07);position:relative;overflow:hidden;}
+.ag-shot img{width:100%;height:100%;object-fit:cover;display:block;}
+.ag-shot .mono-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.22;}
+.ag-shot .mono-ph img{height:38%;width:auto;object-fit:contain;}
+.ag-name{font:700 19pt/1.15 var(--serif);color:#fff;margin-top:.2in;}
+.ag-role{font:800 7pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--sky);margin-top:.07in;line-height:1.5;}
+.ag-contact{font:300 9pt/1.65 var(--body);color:var(--ow);margin-top:.11in;}
+.ag-bio{flex:none;max-height:1.5in;overflow:hidden;font:300 9.5pt/15pt var(--body);
+  color:var(--ow);margin-top:.34in;padding-top:.26in;border-top:.75pt solid rgba(83,199,220,.35);}
+.ag-foot{flex:none;margin-top:.3in;display:flex;align-items:center;justify-content:space-between;gap:.3in;}
+.ag-foot .site{font:800 8.5pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:#fff;}
+.ag-foot img{height:.44in;width:auto;display:block;}
+
+/* ---------- MARKETING SPECS ---------- */
+.mk{position:absolute;inset:0;background:#fff;display:flex;flex-direction:column;overflow:hidden;}
+.mk-body{flex:1;min-height:0;padding:.42in var(--pad) .3in;display:flex;flex-direction:column;}
+.mk-intro{font:300 10pt/15pt var(--body);color:var(--navy);max-width:6.6in;flex:none;max-height:.95in;overflow:hidden;}
+.mk-grid{margin-top:.32in;flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;
+  gap:.2in .45in;overflow:hidden;align-content:start;}
+.mk-item{display:flex;gap:.14in;min-width:0;}
+.mk-item .ico{width:.2in;height:.2in;color:var(--sky2);flex:none;margin-top:.025in;}
+.mk-item h4{font:800 8.5pt var(--sans);letter-spacing:.13em;text-transform:uppercase;color:var(--navy);}
+.mk-item p{font:300 8.5pt/13pt var(--body);color:var(--ui-ink-soft);margin-top:.03in;}
+.mk-foot{flex:none;background:var(--navy);color:var(--ow);padding:.26in var(--pad);
+  display:flex;align-items:center;justify-content:space-between;gap:.3in;}
+.mk-foot .l{font:800 8.5pt var(--sans);letter-spacing:.14em;text-transform:uppercase;}
+.mk-foot img{height:.4in;width:auto;display:block;}
 
 /* ---------- OVERFLOW WARNINGS (screen only) ---------- */
 @media screen{
@@ -159,12 +201,11 @@
   font:500 10.5px/1.5 var(--body);color:#8C1D18;}
 .warn.on{display:block;}
 .warn b{font-weight:700;}
-
 .ed-foot{flex:none;padding:14px 20px 18px;border-top:1px solid var(--ui-rule);}
 .ed-foot .btn{width:100%;}
 
 @media print{
-  .cover-empty,.bento-empty,.info-photo .ph-empty,.over-flag{display:none !important;}
+  .empty-note,.over-flag{display:none !important;}
   .is-over{outline:none !important;}
 }
 </style>
@@ -180,15 +221,24 @@
     <div class="ed-body">
 
       <details class="ed-sec" open>
-        <summary>Images <span class="hint">tag one as hero</span></summary>
+        <summary>Photos <span class="hint">roles &amp; placement</span></summary>
         <div class="sec-in">
-          <div class="drop" id="imgDrop" tabindex="0" role="button" aria-label="Add images">
+          <div class="drop" id="imgDrop" tabindex="0" role="button" aria-label="Add photos">
             <div class="d-big">Drop photos</div>
             <div class="d-sub">or click to browse</div>
           </div>
           <input type="file" id="imgFile" accept="image/*" multiple hidden>
+          <div class="field">
+            <label>Placement strategy</label>
+            <select id="strategy">
+              <option value="sequence">In order — upload order fills the pages</option>
+              <option value="aspect">By shape — match each photo to the slot it fits</option>
+              <option value="spotlight">Spotlight — best photos get the biggest slots</option>
+              <option value="manual">Manual — only what I tag by hand</option>
+            </select>
+          </div>
           <div id="imgList"></div>
-          <div class="sec-note" id="imgNote">The first photo you add becomes the hero.</div>
+          <div class="sec-note" id="imgNote">Photos you add are placed automatically. Override any one with its dropdown.</div>
         </div>
       </details>
 
@@ -201,32 +251,22 @@
             <div class="warn" id="warnAddr"><b>Too long.</b> The address has grown above the dark scrim on page 1, so the top of it may be unreadable.</div>
           </div>
           <div class="f-row">
-            <div class="field">
-              <label>City</label>
-              <input type="text" data-field="city" placeholder="New York">
-            </div>
-            <div class="field">
-              <label>State</label>
-              <input type="text" data-field="state" placeholder="NY">
-            </div>
-            <div class="field">
-              <label>ZIP</label>
-              <input type="text" data-field="zip" placeholder="10012">
-            </div>
+            <div class="field"><label>City</label><input type="text" data-field="city" placeholder="New York"></div>
+            <div class="field"><label>State</label><input type="text" data-field="state" placeholder="NY"></div>
+            <div class="field"><label>ZIP</label><input type="text" data-field="zip" placeholder="10012"></div>
           </div>
         </div>
       </details>
 
       <details class="ed-sec" open>
-        <summary>Agent <span class="hint">page 1 footer</span></summary>
+        <summary>Agents <span class="hint">pages 1 &amp; 6</span></summary>
         <div class="sec-in">
+          <div id="rosterPick"></div>
+          <div class="sec-note">Pick one or two. The first fills the page 1 footer automatically.</div>
+          <div id="shotList"></div>
           <div class="field">
-            <label>Name</label>
-            <input type="text" data-field="agentName" placeholder="John Gasdaska">
-          </div>
-          <div class="f-row">
-            <div class="field"><label>Phone</label><input type="text" data-field="agentPhone" placeholder="646.345.7350"></div>
-            <div class="field"><label>Email</label><input type="text" data-field="agentEmail" placeholder="john.gasdaska@elliman.com"></div>
+            <label>Team statement</label>
+            <textarea data-field="agentBio" rows="4"></textarea>
           </div>
           <div class="field">
             <label>Website</label>
@@ -235,40 +275,29 @@
         </div>
       </details>
 
-      <details class="ed-sec" open>
+      <details class="ed-sec">
         <summary>Gallery <span class="hint">page 2</span></summary>
         <div class="sec-in">
-          <div class="sec-note" id="bentoNote">Add 2 more photos &mdash; the hero is held back for page 1.</div>
+          <div class="sec-note" id="bentoNote">Add 2 more photos.</div>
           <button class="btn sm" id="btnShuffle" style="margin-top:10px;width:100%">Shuffle layout</button>
         </div>
       </details>
 
-      <details class="ed-sec" open>
+      <details class="ed-sec">
         <summary>Property <span class="hint">page 3</span></summary>
         <div class="sec-in">
-          <div class="field">
-            <label>Top-right photo</label>
-            <select id="infoTopPhoto"></select>
-          </div>
-          <div class="field">
-            <label>Bottom photo</label>
-            <select id="infoPhoto"></select>
-            <div class="note">Drag either photo on page 3 to reframe it.
-              <button type="button" class="linkish" id="btnResetPos">Re-centre both</button>
-            </div>
-          </div>
           <div class="field">
             <label>Price</label>
             <input type="text" data-field="price" placeholder="$8,950,000">
           </div>
           <div class="field">
             <label>About the property</label>
-            <textarea data-field="blurb" rows="5" placeholder="Perched above Crosby Street, this full-floor residence captures light on four exposures…"></textarea>
+            <textarea data-field="blurb" rows="5" placeholder="Perched above Crosby Street…"></textarea>
             <div class="warn" id="warnBlurb"><b>Too long.</b> The end of this blurb is cut off on page 3.</div>
           </div>
           <div class="field">
             <label>Features — one per line</label>
-            <textarea data-field="features" rows="6" placeholder="Blackened-steel fireplace&#10;Calacatta kitchen&#10;Private landscaped terrace"></textarea>
+            <textarea data-field="features" rows="6" placeholder="Blackened-steel fireplace&#10;Calacatta kitchen"></textarea>
             <div class="warn" id="warnFeats"><b>Too many.</b> The last features are cut off on page 3.</div>
           </div>
           <div class="f-row">
@@ -278,6 +307,54 @@
           <div class="f-row">
             <div class="field"><label>Parking</label><input type="text" data-field="parking" placeholder="2"></div>
             <div class="field"><label>Sq Ft</label><input type="text" data-field="sqft" placeholder="3,240"></div>
+          </div>
+          <div class="note">Drag either page-3 photo to reframe it.
+            <button type="button" class="linkish" id="btnResetPos">Re-centre</button>
+          </div>
+        </div>
+      </details>
+
+      <details class="ed-sec">
+        <summary>Floor plans <span class="hint">2 per page</span></summary>
+        <div class="sec-in">
+          <div class="drop" id="fpDrop" tabindex="0" role="button" aria-label="Add floor plans">
+            <div class="d-big">Drop floor plans</div>
+            <div class="d-sub">two per page — label each below</div>
+          </div>
+          <input type="file" id="fpFile" accept="image/*" multiple hidden>
+          <div id="fpList"></div>
+          <div class="field">
+            <label>Footnote</label>
+            <input type="text" data-field="fpNote" placeholder="Dimensions are approximate.">
+          </div>
+        </div>
+      </details>
+
+      <details class="ed-sec">
+        <summary>Location <span class="hint">amenities page</span></summary>
+        <div class="sec-in">
+          <div class="field"><label>Neighbourhood</label><input type="text" data-field="hood" placeholder="Milton Point, Rye"></div>
+          <div class="field">
+            <label>About the area</label>
+            <textarea data-field="hoodBlurb" rows="4"></textarea>
+          </div>
+          <div class="field"><label>Dining &amp; shopping — one per line</label><textarea data-field="amDining" rows="4"></textarea></div>
+          <div class="field"><label>Schools — one per line</label><textarea data-field="amSchools" rows="4"></textarea></div>
+          <div class="field"><label>Transit — one per line</label><textarea data-field="amTransit" rows="4"></textarea></div>
+          <div class="field"><label>Parks &amp; recreation — one per line</label><textarea data-field="amRec" rows="4"></textarea></div>
+        </div>
+      </details>
+
+      <details class="ed-sec">
+        <summary>Marketing <span class="hint">specs page</span></summary>
+        <div class="sec-in">
+          <div class="field">
+            <label>Intro</label>
+            <textarea data-field="mkIntro" rows="3"></textarea>
+          </div>
+          <div class="field">
+            <label>Specs — one per line, "Title | Description"</label>
+            <textarea data-field="mkSpecs" rows="10"></textarea>
           </div>
         </div>
       </details>
@@ -309,144 +386,210 @@
   </div>
 
 </div><!-- /app -->
-
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" integrity="sha384-HOvlOYPIs/zjoIkWUGXkVmXsjr8GuZLV+Q+rcPwmJOVZVpvTSXQChiN4t9Euv9Vc" crossorigin="anonymous"></script>
 <script src="../../assets/js/chrome.js"></script>
 <script src="../../assets/js/motion.js"></script>
 <script src="../../assets/js/builder.js"></script>
+<script src="icons.js"></script>
 <script>
 'use strict';
 const $ = s => document.querySelector(s);
+const MONO = '../../assets/logos/monogram-white.svg';
 
+/* ============================================================
+   ROSTER — The Gasdaska Verdiglione Conlon Team
+   Selecting an agent fills the page 1 footer and the agent page,
+   so contact details are never retyped.
+   ============================================================ */
+const ROSTER = [
+  {id:'john-gasdaska',   name:'John Gasdaska',   title:'Licensed Associate Real Estate Broker', phone:'646.345.7350', email:'john.gasdaska@elliman.com'},
+  {id:'tj-verdiglione',  name:'TJ Verdiglione',  title:'Licensed Real Estate Salesperson',      phone:'732.425.7477', email:'thomas.verdiglione@elliman.com'},
+  {id:'jonathan-conlon', name:'Jonathan Conlon', title:'Licensed Associate Real Estate Broker', phone:'347.564.2440', email:'jonathan.conlon@elliman.com'},
+  {id:'katie-cook',      name:'Katie Cook',      title:'Licensed Real Estate Salesperson',      phone:'516.319.9732', email:'katie.cook@elliman.com'},
+  {id:'nicole-melveney', name:'Nicole Melveney', title:'Licensed Real Estate Sales Associate',  phone:'732.567.5375', email:'nicole.melveney@elliman.com'},
+  {id:'jessica-wolf',    name:'Jessica Wolf',    title:'Licensed Real Estate Salesperson',      phone:'847.414.7841', email:'jessica.wolf@elliman.com'}
+];
+const MAX_AGENTS = 2;
+
+/* Bento layouts — six rows of six characters on a 6x6 grid; the letter is
+   the cell index (a = photo 1). Four variants per photo count. */
+const BENTO = {
+  2: [['aaabbb','aaabbb','aaabbb','aaabbb','aaabbb','aaabbb'],
+      ['aaaaaa','aaaaaa','aaaaaa','bbbbbb','bbbbbb','bbbbbb'],
+      ['aaaabb','aaaabb','aaaabb','aaaabb','aaaabb','aaaabb'],
+      ['aaaaaa','aaaaaa','aaaaaa','aaaaaa','bbbbbb','bbbbbb']],
+  3: [['aaabbb','aaabbb','aaabbb','aaaccc','aaaccc','aaaccc'],
+      ['aaaaaa','aaaaaa','aaaaaa','bbbccc','bbbccc','bbbccc'],
+      ['aabbcc','aabbcc','aabbcc','aabbcc','aabbcc','aabbcc'],
+      ['aaaaaa','aaaaaa','aaaaaa','aaaaaa','bbbccc','bbbccc']],
+  4: [['aaabbb','aaabbb','aaabbb','cccddd','cccddd','cccddd'],
+      ['aaabbb','aaabbb','aaaccc','aaaccc','aaaddd','aaaddd'],
+      ['aaaaaa','aaaaaa','aaaaaa','aaaaaa','bbccdd','bbccdd'],
+      ['aabbcc','aabbcc','aabbcc','dddddd','dddddd','dddddd']],
+  5: [['aaaabb','aaaabb','aaaacc','aaaacc','dddeee','dddeee'],
+      ['aaabbb','aaabbb','aaabbb','ccddee','ccddee','ccddee'],
+      ['aaaaaa','aaaaaa','bbbccc','bbbccc','dddeee','dddeee'],
+      ['aabbcc','aabbcc','aabbcc','ddddee','ddddee','ddddee']],
+  6: [['aabbcc','aabbcc','aabbcc','ddeeff','ddeeff','ddeeff'],
+      ['aaaabb','aaaabb','aaaacc','aaaacc','ddeeff','ddeeff'],
+      ['aaabbb','aaabbb','cccddd','cccddd','eeefff','eeefff'],
+      ['aabbcc','aabbcc','ddddee','ddddee','ddddff','ddddff']]
+};
 const GALLERY_MIN = 2, GALLERY_MAX = 6;
 
 /* ============================================================
-   BENTO LAYOUTS
-   Each variant is six rows of six characters on a 6x6 grid;
-   the letter is the cell index (a = image 1). Shuffle picks a
-   random variant for the current image count AND reshuffles
-   which image lands in which cell.
+   PHOTO PLACEMENT
+   Every photo has a role. 'auto' lets the chosen strategy decide;
+   anything else is an explicit override the strategy won't touch.
    ============================================================ */
-const BENTO = {
-  2: [
-    ['aaabbb','aaabbb','aaabbb','aaabbb','aaabbb','aaabbb'],
-    ['aaaaaa','aaaaaa','aaaaaa','bbbbbb','bbbbbb','bbbbbb'],
-    ['aaaabb','aaaabb','aaaabb','aaaabb','aaaabb','aaaabb'],
-    ['aaaaaa','aaaaaa','aaaaaa','aaaaaa','bbbbbb','bbbbbb']
-  ],
-  3: [
-    ['aaabbb','aaabbb','aaabbb','aaaccc','aaaccc','aaaccc'],
-    ['aaaaaa','aaaaaa','aaaaaa','bbbccc','bbbccc','bbbccc'],
-    ['aabbcc','aabbcc','aabbcc','aabbcc','aabbcc','aabbcc'],
-    ['aaaaaa','aaaaaa','aaaaaa','aaaaaa','bbbccc','bbbccc']
-  ],
-  4: [
-    ['aaabbb','aaabbb','aaabbb','cccddd','cccddd','cccddd'],
-    ['aaabbb','aaabbb','aaaccc','aaaccc','aaaddd','aaaddd'],
-    ['aaaaaa','aaaaaa','aaaaaa','aaaaaa','bbccdd','bbccdd'],
-    ['aabbcc','aabbcc','aabbcc','dddddd','dddddd','dddddd']
-  ],
-  5: [
-    ['aaaabb','aaaabb','aaaacc','aaaacc','dddeee','dddeee'],
-    ['aaabbb','aaabbb','aaabbb','ccddee','ccddee','ccddee'],
-    ['aaaaaa','aaaaaa','bbbccc','bbbccc','dddeee','dddeee'],
-    ['aabbcc','aabbcc','aabbcc','ddddee','ddddee','ddddee']
-  ],
-  6: [
-    ['aabbcc','aabbcc','aabbcc','ddeeff','ddeeff','ddeeff'],
-    ['aaaabb','aaaabb','aaaacc','aaaacc','ddeeff','ddeeff'],
-    ['aaabbb','aaabbb','cccddd','cccddd','eeefff','eeefff'],
-    ['aabbcc','aabbcc','ddddee','ddddee','ddddff','ddddff']
-  ]
-};
+const ROLES = [
+  ['auto',        'Auto'],
+  ['hero',        'Cover'],
+  ['gallery',     'Gallery'],
+  ['info-top',    'Info · top right'],
+  ['info-bottom', 'Info · bottom'],
+  ['location',    'Location'],
+  ['exclude',     'Unused']
+];
+// aspect ratio each single slot wants, used by the "by shape" strategy
+const SLOT_AR = { hero: 0.77, infoTop: 1.70, infoBottom: 2.32, location: 2.00 };
 
-/* Lucide icons (lucide.dev, ISC), inlined so print and offline both work.
-   24x24 viewBox, stroke styling comes from .stat .ico svg. */
-const ICONS = {
-  bed: '<path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8"/><path d="M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4"/><path d="M12 4v6"/><path d="M2 18h20"/>',
-  bath: '<path d="M9 6 6.5 3.5a1.5 1.5 0 0 0-1-.5C4.683 3 4 3.683 4 4.5V17a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/><line x1="10" x2="8" y1="5" y2="7"/><line x1="2" x2="22" y1="12" y2="12"/><line x1="7" x2="7" y1="19" y2="21"/><line x1="17" x2="17" y1="19" y2="21"/>',
-  car: '<path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/>',
-  ruler: '<path d="M21.3 8.7 8.7 21.3a1 1 0 0 1-1.4 0l-4.6-4.6a1 1 0 0 1 0-1.4L15.3 2.7a1 1 0 0 1 1.4 0l4.6 4.6a1 1 0 0 1 0 1.4Z"/><path d="m7.5 10.5 2 2"/><path d="m10.5 7.5 2 2"/><path d="m13.5 4.5 2 2"/><path d="m4.5 13.5 2 2"/>'
-};
-const icon = n => '<span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true">' +
-                  ICONS[n] + '</svg></span>';
-
-/* ---------------- state ---------------- */
 const state = {
-  images: [],      // {id, name, url}
-  heroId: null,
-  address: '',
-  city: '',
-  state: '',
-  zip: '',
-  bentoVariant: 0, // index into BENTO[count]
-  bentoOrder: [],  // image ids, the order they fill cells a..f
-  // page 1 footer
-  agentName: '',
-  agentPhone: '',
-  agentEmail: '',
+  images: [],            // {id,name,url,ar,role}
+  strategy: 'sequence',
+  bentoVariant: 0,
+  bentoOrder: [],
+  // page 1
+  address: '', city: '', state: '', zip: '',
+  // agents
+  agents: [], headshots: {},
+  agentBio: 'The Gasdaska Verdiglione Conlon Team brings a combined three decades of ' +
+    'experience across Manhattan and Westchester, pairing institutional market data with ' +
+    'the kind of hands-on preparation that gets a property photographed, priced and ' +
+    'positioned properly the first time.',
   site: 'gvcrealestateteam.com',
   // page 3
-  infoPhotoId: null,
-  infoTopPhotoId: null,
-  infoPos: { x: 50, y: 50 },      // object-position %, dragged by the agent
-  infoTopPos: { x: 50, y: 50 },
-  price: '',
-  blurb: '',
-  features: '',
-  beds: '',
-  baths: '',
-  parking: '',
-  sqft: ''
+  price: '', blurb: '', features: '',
+  beds: '', baths: '', parking: '', sqft: '',
+  infoPos: { x: 50, y: 50 }, infoTopPos: { x: 50, y: 50 },
+  // floor plans
+  floorplans: [],        // {id,name,url,label}
+  fpNote: 'Dimensions and square footage are approximate and subject to verification.',
+  // location
+  hood: '', hoodBlurb: '', locPos: { x: 50, y: 50 },
+  amDining: '', amSchools: '', amTransit: '', amRec: '',
+  // marketing
+  mkIntro: 'Every GVC listing runs the same programme. Nothing here is an upsell — it is ' +
+    'what we do for each property we represent, from the first walkthrough to the closing table.',
+  mkSpecs: [
+    'Professional Photography | Full interior and exterior shoot, colour-corrected and retouched.',
+    'Twilight & Aerial | Dusk exteriors and licensed drone coverage where the property warrants it.',
+    'Floor Plans | Measured, drafted and published with every listing.',
+    '3D Virtual Tour | Matterport walkthrough hosted on the listing page.',
+    'Staging Consultation | A walkthrough with our stager before photography.',
+    'Print Collateral | Brochures, showsheets and mailers produced in house.',
+    'Digital Advertising | Targeted placement across search and social.',
+    'Email Campaigns | Announcements to our brokerage and buyer database.',
+    'Syndication | Elliman.com plus every major portal and aggregator.',
+    'Open Houses | Public and broker-only, staffed by the team.',
+    'Weekly Reporting | Traffic, feedback and pricing guidance in writing.',
+    'Closing Management | Coordination through contract, inspection and close.'
+  ].join('\n')
 };
-let uid = 0;
-let builder = null;
+const SPEC_ICONS = ['camera','sun','ruler','box','home','printer','megaphone','mail',
+                    'globe','users','check','phone'];
+
+let uid = 0, builder = null;
+let assign = { hero: null, infoTop: null, infoBottom: null, location: null, gallery: [] };
 
 /* ---------------- helpers ---------------- */
-const heroImage = () => state.images.find(i => i.id === state.heroId) || null;
-const escapeHtml = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-function cityLine() {
+const escapeHtml = s => String(s == null ? '' : s)
+  .replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
+const lines = s => String(s || '').split('\n').map(x => x.trim()).filter(Boolean);
+const cityLine = () => {
   const cs = [state.city, state.state].filter(Boolean).join(', ');
   return [cs, state.zip].filter(Boolean).join(' ');
+};
+const agentObjs = () => state.agents.map(id => ROSTER.find(a => a.id === id)).filter(Boolean);
+
+/* ---------------- placement ---------------- */
+function computeAssignment() {
+  const res = { hero: null, infoTop: null, infoBottom: null, location: null, gallery: [] };
+  const taken = new Set();
+  const forcedGallery = [];
+
+  state.images.forEach(im => {
+    switch (im.role) {
+      case 'hero':        if (!res.hero)        { res.hero = im;        taken.add(im.id); } break;
+      case 'info-top':    if (!res.infoTop)     { res.infoTop = im;     taken.add(im.id); } break;
+      case 'info-bottom': if (!res.infoBottom)  { res.infoBottom = im;  taken.add(im.id); } break;
+      case 'location':    if (!res.location)    { res.location = im;    taken.add(im.id); } break;
+      case 'gallery':     forcedGallery.push(im); taken.add(im.id); break;
+      case 'exclude':     taken.add(im.id); break;
+    }
+  });
+
+  let pool = state.images.filter(im => !taken.has(im.id));
+
+  if (state.strategy !== 'manual') {
+    const take = slot => {
+      if (res[slot] || !pool.length) return;
+      let pick = pool[0];
+      if (state.strategy === 'aspect') {
+        const target = SLOT_AR[slot];
+        pick = pool.reduce((best, im) =>
+          Math.abs((im.ar || 1.5) - target) < Math.abs((best.ar || 1.5) - target) ? im : best, pool[0]);
+      }
+      res[slot] = pick;
+      pool = pool.filter(im => im !== pick);
+    };
+
+    if (state.strategy === 'spotlight') {
+      // the strongest photos go to the cover and the gallery's big cells;
+      // the page-3 and location slots take what is left
+      take('hero');
+      const n = Math.min(GALLERY_MAX - forcedGallery.length, Math.max(0, pool.length - 3));
+      res.gallery = forcedGallery.concat(pool.slice(0, n));
+      pool = pool.slice(n);
+      take('infoTop'); take('infoBottom'); take('location');
+    } else {
+      take('hero'); take('infoTop'); take('infoBottom'); take('location');
+    }
+  }
+
+  // manual means manual: untagged photos stay out of the gallery too
+  if (!res.gallery.length) {
+    res.gallery = state.strategy === 'manual' ? forcedGallery : forcedGallery.concat(pool);
+  }
+  res.gallery = res.gallery.slice(0, GALLERY_MAX);
+
+  // apply the agent's manual bento ordering on top
+  const idx = id => { const i = state.bentoOrder.indexOf(id); return i === -1 ? 1e6 : i; };
+  res.gallery.sort((a, b) => idx(a.id) - idx(b.id));
+  return res;
 }
 
-// the hero carries page 1, so it's held out of the gallery
-const galleryPool = () => state.images.filter(i => i.id !== state.heroId);
-
-// images used on page 2, in the order the user has arranged them
-function galleryImages() {
-  const byId = new Map(galleryPool().map(i => [i.id, i]));
-  return state.bentoOrder.map(id => byId.get(id)).filter(Boolean).slice(0, GALLERY_MAX);
-}
-
-// keep the gallery order valid whenever the image set or the hero changes
 function syncGallery() {
-  const ids = galleryPool().map(i => i.id);
+  const ids = assign.gallery.map(i => i.id);
   state.bentoOrder = state.bentoOrder.filter(id => ids.includes(id));
   ids.forEach(id => { if (!state.bentoOrder.includes(id)) state.bentoOrder.push(id); });
-  const n = Math.min(ids.length, GALLERY_MAX);
-  const variants = BENTO[n];
+  const variants = BENTO[Math.min(ids.length, GALLERY_MAX)];
   if (variants && state.bentoVariant >= variants.length) state.bentoVariant = 0;
 }
 
-// Shuffle re-rolls the bento geometry only. Which photo sits in which
-// cell is the user's call, made by dragging one onto another.
 function shuffleGallery() {
-  const n = Math.min(galleryPool().length, GALLERY_MAX);
+  const n = Math.min(assign.gallery.length, GALLERY_MAX);
   if (n < GALLERY_MIN) return;
   const variants = BENTO[n];
   if (variants && variants.length > 1) {
-    let v;
-    do { v = Math.floor(Math.random() * variants.length); } while (v === state.bentoVariant);
+    let v; do { v = Math.floor(Math.random() * variants.length); } while (v === state.bentoVariant);
     state.bentoVariant = v;
   }
-  redraw();
-  updateBentoNote();
+  redraw(); updateBentoNote();
 }
 
-// swap two gallery slots — the drag-and-drop primitive
 function swapCells(a, b) {
   const o = state.bentoOrder;
   if (a === b || a < 0 || b < 0 || a >= o.length || b >= o.length) return;
@@ -454,97 +597,51 @@ function swapCells(a, b) {
   redraw();
 }
 
-/* ---------------- drag to swap (pointer events) ---------------- */
-const DRAG_THRESHOLD = 4;   // px of movement before it counts as a drag, not a click
-let drag = null;
-
-function clearDragClasses(grid) {
-  (grid || document).querySelectorAll('.bento-cell').forEach(c =>
-    c.classList.remove('is-dragging', 'is-target'));
+/* ---------------- page plan ---------------- */
+function pagePlan() {
+  const plan = [{ t: 'cover' }, { t: 'gallery' }, { t: 'info' }];
+  const fpPages = Math.max(1, Math.ceil(state.floorplans.length / 2));
+  for (let i = 0; i < fpPages; i++) plan.push({ t: 'floorplan', from: i * 2, page: i + 1, of: fpPages });
+  plan.push({ t: 'location' }, { t: 'agent' }, { t: 'specs' });
+  return plan;
 }
 
-function slotUnderPointer(e) {
-  // the source cell is mid-drag but still hit-testable; elementFromPoint
-  // is unaffected by the page's CSS scale, unlike native DnD
-  const el = document.elementFromPoint(e.clientX, e.clientY);
-  const cell = el && el.closest ? el.closest('.bento-cell') : null;
-  if (!cell || !cell.dataset.slot) return null;
-  return { cell: cell, slot: parseInt(cell.dataset.slot, 10) };
-}
-
-function beginDrag(e, cell, slot, grid) {
-  if (e.pointerType === 'mouse' && e.button !== 0) return;
-  e.preventDefault();
-  drag = { slot: slot, cell: cell, grid: grid, x: e.clientX, y: e.clientY, active: false, target: null };
-  try { cell.setPointerCapture(e.pointerId); } catch (_) { /* capture is a nicety */ }
-
-  const move = ev => {
-    if (!drag) return;
-    if (!drag.active && Math.hypot(ev.clientX - drag.x, ev.clientY - drag.y) < DRAG_THRESHOLD) return;
-    drag.active = true;
-    drag.cell.classList.add('is-dragging');
-    const hit = slotUnderPointer(ev);
-    drag.grid.querySelectorAll('.bento-cell').forEach(c => c.classList.remove('is-target'));
-    drag.target = (hit && hit.slot !== drag.slot) ? hit.slot : null;
-    if (hit && hit.slot !== drag.slot) hit.cell.classList.add('is-target');
-  };
-
-  const finish = ev => {
-    cell.removeEventListener('pointermove', move);
-    cell.removeEventListener('pointerup', finish);
-    cell.removeEventListener('pointercancel', finish);
-    try { cell.releasePointerCapture(ev.pointerId); } catch (_) {}
-    const d = drag;
-    drag = null;
-    clearDragClasses(d && d.grid);
-    if (d && d.active && d.target !== null) swapCells(d.slot, d.target);
-  };
-
-  cell.addEventListener('pointermove', move);
-  cell.addEventListener('pointerup', finish);
-  cell.addEventListener('pointercancel', finish);
-}
-
-/* ---------------- page rendering ---------------- */
+/* ---------------- renderers ---------------- */
 function renderCover(page) {
-  const hero = heroImage();
-  const city = cityLine();
-  const contact = [state.agentPhone, state.agentEmail].filter(Boolean)
-    .map(escapeHtml).join(' &nbsp;·&nbsp; ');
+  const hero = assign.hero, city = cityLine(), a = agentObjs()[0];
+  const contact = a ? [a.phone, a.email].filter(Boolean).map(escapeHtml).join(' &nbsp;·&nbsp; ') : '';
   page.innerHTML =
     '<div class="cover">' +
       (hero ? '<img class="cover-img" src="' + hero.url + '" alt="">' : '') +
       '<div class="cover-mask"></div>' +
-      (hero ? '' : '<div class="cover-empty">Drop a photo and tag it as the hero</div>') +
+      (hero ? '' : '<div class="empty-note">Add a photo — the cover takes the first one</div>') +
       '<div class="cover-head">' +
         '<div class="cv-addr">' + (escapeHtml(state.address) || '&nbsp;') + '</div>' +
         (city ? '<div class="cv-city">' + escapeHtml(city) + '</div>' : '') +
       '</div>' +
       '<div class="cover-foot">' +
         '<div class="cf-agent">' +
-          (state.agentName ? '<div class="cf-name">' + escapeHtml(state.agentName) + '</div>' : '') +
+          (a ? '<div class="cf-name">' + escapeHtml(a.name) + '</div>' : '') +
           (contact ? '<div class="cf-meta">' + contact + '</div>' : '') +
         '</div>' +
-        '<div class="cf-mono"><img src="../../assets/logos/monogram-white.svg" alt=""></div>' +
-        '<div class="cf-site">' +
-          (state.site ? '<span>' + escapeHtml(state.site) + '</span>' : '') +
-        '</div>' +
+        '<div class="cf-mono"><img src="' + MONO + '" alt=""></div>' +
+        '<div class="cf-site">' + (state.site ? '<span>' + escapeHtml(state.site) + '</span>' : '') + '</div>' +
       '</div>' +
     '</div>';
 }
 
 function renderGallery(page) {
-  const imgs = galleryImages();
+  const imgs = assign.gallery;
   if (imgs.length < GALLERY_MIN) {
-    page.innerHTML = '<div class="bento-empty">Add at least ' + GALLERY_MIN +
-      ' photos besides the hero<br>for the gallery page</div>';
+    page.innerHTML = '<div class="bento-empty"><div class="empty-note">Add at least ' +
+      GALLERY_MIN + ' photos<br>for the gallery page</div></div>';
     return;
   }
   const variants = BENTO[imgs.length];
   const areas = variants[Math.min(state.bentoVariant, variants.length - 1)];
 
-  // Built via DOM, not an HTML string: grid-template-areas rows are
-  // quoted CSS strings, and those quotes terminate a style="" attribute.
+  // Built via DOM, not an HTML string: grid-template-areas rows are quoted
+  // CSS strings, and those quotes terminate a style="" attribute.
   const grid = document.createElement('div');
   grid.className = 'bento';
   grid.style.gridTemplateAreas = areas.map(r => '"' + r.split('').join(' ') + '"').join(' ');
@@ -555,38 +652,23 @@ function renderGallery(page) {
     cell.style.gridArea = String.fromCharCode(97 + i);
     cell.dataset.slot = String(i);
     cell.title = 'Drag onto another photo to swap them';
-
     const el = document.createElement('img');
-    el.src = img.url;
-    el.alt = '';
-    el.draggable = false;
+    el.src = img.url; el.alt = ''; el.draggable = false;
     cell.appendChild(el);
-
-    // Pointer events, not HTML5 drag-and-drop. The preview pages are
-    // CSS-scaled, and native DnD's drop/dataTransfer handshake is
-    // unreliable through that transform — the drag image appears but the
-    // drop never lands. Hit-testing with elementFromPoint is transform-safe.
     cell.addEventListener('pointerdown', e => beginDrag(e, cell, i, grid));
-
     grid.appendChild(cell);
   });
-
   page.replaceChildren(grid);
 }
 
 function renderInfo(page) {
-  const photo = state.images.find(i => i.id === state.infoPhotoId) || null;
-  const feats = state.features.split('\n').map(s => s.trim()).filter(Boolean);
-  const topPhoto = state.images.find(i => i.id === state.infoTopPhotoId) || null;
-  const stats = [
-    ['Bedrooms', state.beds, 'bed'], ['Bathrooms', state.baths, 'bath'],
-    ['Parking', state.parking, 'car'], ['Sq Ft', state.sqft, 'ruler']
-  ];
-
+  const photo = assign.infoBottom, topPhoto = assign.infoTop;
+  const feats = lines(state.features);
+  const stats = [['Bedrooms', state.beds, 'bed'], ['Bathrooms', state.baths, 'bath'],
+                 ['Parking', state.parking, 'car'], ['Sq Ft', state.sqft, 'ruler']];
   const price = state.price
-    ? (/\d/.test(state.price)
-        ? escapeHtml(state.price)
-        : '<span class="po">' + escapeHtml(state.price) + '</span>')
+    ? (/\d/.test(state.price) ? escapeHtml(state.price)
+       : '<span class="po">' + escapeHtml(state.price) + '</span>')
     : '';
 
   page.innerHTML =
@@ -595,7 +677,7 @@ function renderInfo(page) {
         '<div class="info-tr' + (topPhoto ? ' has-img' : '') + '">' +
           (topPhoto ? '<img src="' + topPhoto.url + '" alt="" style="object-position:' +
                         state.infoTopPos.x + '% ' + state.infoTopPos.y + '%">'
-                    : '<div class="ph-empty">Top-right photo</div>') +
+                    : '<div class="empty-note">Top-right photo</div>') +
         '</div>' +
         (price ? '<div class="info-price">' + price + '</div>' : '') +
         '<div class="info-top">' +
@@ -603,14 +685,10 @@ function renderInfo(page) {
           '<div class="info-blurb">' + escapeHtml(state.blurb) + '</div>' +
         '</div>' +
         '<div class="info-mid">' +
-          '<div class="info-col features">' +
-            '<div class="info-lbl">Features</div>' +
-            '<ul class="info-feats">' +
-              feats.map(f => '<li>' + escapeHtml(f) + '</li>').join('') +
-            '</ul>' +
+          '<div class="info-col features"><div class="info-lbl">Features</div>' +
+            '<ul class="info-feats">' + feats.map(f => '<li>' + escapeHtml(f) + '</li>').join('') + '</ul>' +
           '</div>' +
-          '<div class="info-col stats">' +
-            '<div class="info-lbl">The Details</div>' +
+          '<div class="info-col stats"><div class="info-lbl">The Details</div>' +
             '<div class="info-stats">' +
               stats.map(s => '<div class="stat">' + icon(s[2]) + '<div class="txt">' +
                 '<div class="v">' + (escapeHtml(s[1]) || '&mdash;') + '</div>' +
@@ -622,17 +700,247 @@ function renderInfo(page) {
       '<div class="info-photo' + (photo ? ' has-img' : '') + '">' +
         (photo ? '<img src="' + photo.url + '" alt="" style="object-position:' +
                    state.infoPos.x + '% ' + state.infoPos.y + '%">'
-               : '<div class="ph-empty">Pick a photo in the Property panel</div>') +
+               : '<div class="empty-note">Bottom photo</div>') +
       '</div>' +
     '</div>';
 
   const box = page.querySelector('.info-photo');
   if (photo) box.addEventListener('pointerdown', e => beginPhotoDrag(e, box, state.infoPos));
-  const trBox = page.querySelector('.info-tr');
-  if (topPhoto) trBox.addEventListener('pointerdown', e => beginPhotoDrag(e, trBox, state.infoTopPos));
+  const tr = page.querySelector('.info-tr');
+  if (topPhoto) tr.addEventListener('pointerdown', e => beginPhotoDrag(e, tr, state.infoTopPos));
 }
 
-/* drag the page-3 photo around inside its crop.
+function renderFloorplan(page, spec) {
+  const slice = state.floorplans.slice(spec.from, spec.from + 2);
+  const items = slice.length ? slice : [null];
+  page.innerHTML =
+    '<div class="fp">' +
+      '<div class="sheet-head"><span class="t">Floor Plans</span>' +
+        '<span class="s">' + escapeHtml(state.address || '') +
+        (spec.of > 1 ? ' &nbsp;·&nbsp; ' + spec.page + ' of ' + spec.of : '') + '</span></div>' +
+      '<div class="fp-body">' +
+        items.map((fp, i) =>
+          '<div class="fp-item">' +
+            '<div class="fp-frame">' +
+              (fp ? '<img src="' + fp.url + '" alt="">'
+                  : '<div class="empty-note on-white">Drop a floor plan<br>in the Floor plans panel</div>') +
+            '</div>' +
+            (fp ? '<div class="fp-cap"><span>' + escapeHtml(fp.label || ('Level ' + (spec.from + i + 1))) +
+                  '</span>' + (state.sqft ? '<span class="sub">' + escapeHtml(state.sqft) + ' sq ft total</span>' : '') +
+                  '</div>' : '') +
+          '</div>').join('') +
+      '</div>' +
+      '<div class="fp-foot"><span>' + escapeHtml(state.fpNote || '') + '</span>' +
+        '<span>' + escapeHtml(state.site || '') + '</span></div>' +
+    '</div>';
+}
+
+function renderLocation(page) {
+  const photo = assign.location;
+  const cats = [
+    ['Dining &amp; Shopping', 'utensils', lines(state.amDining)],
+    ['Schools',               'school',   lines(state.amSchools)],
+    ['Transit',               'train',    lines(state.amTransit)],
+    ['Parks &amp; Recreation','trees',    lines(state.amRec)]
+  ].filter(c => c[2].length);
+
+  page.innerHTML =
+    '<div class="loc">' +
+      '<div class="loc-photo' + (photo ? ' has-img' : '') + '">' +
+        (photo ? '<img src="' + photo.url + '" alt="" style="object-position:' +
+                   state.locPos.x + '% ' + state.locPos.y + '%">'
+               : '<div class="empty-note">Location photo</div>') +
+      '</div>' +
+      '<div class="loc-body">' +
+        '<div class="loc-eyebrow">The Location</div>' +
+        '<div class="loc-name">' + (escapeHtml(state.hood) || '&nbsp;') + '</div>' +
+        '<div class="loc-blurb">' + escapeHtml(state.hoodBlurb) + '</div>' +
+        '<div class="loc-grid">' +
+          cats.map(c =>
+            '<div class="loc-cat"><h3>' + icon(c[1]) + '<span>' + c[0] + '</span></h3>' +
+            '<ul>' + c[2].map(x => '<li>' + escapeHtml(x) + '</li>').join('') + '</ul></div>').join('') +
+        '</div>' +
+      '</div>' +
+    '</div>';
+
+  const box = page.querySelector('.loc-photo');
+  if (photo) box.addEventListener('pointerdown', e => beginPhotoDrag(e, box, state.locPos));
+}
+
+function renderAgent(page) {
+  const list = agentObjs();
+  const title = list.length > 1 ? 'Your Team' : 'Your Agent';
+  page.innerHTML =
+    '<div class="ag">' +
+      '<div class="ag-eyebrow">Represented By</div>' +
+      '<div class="ag-title">' + title + '</div>' +
+      '<div class="ag-cards">' +
+        (list.length ? list.map(a => {
+          const shot = state.headshots[a.id];
+          return '<div class="ag-card">' +
+            '<div class="ag-shot">' +
+              (shot ? '<img src="' + shot + '" alt="">'
+                    : '<div class="mono-ph"><img src="' + MONO + '" alt=""></div>') +
+            '</div>' +
+            '<div class="ag-name">' + escapeHtml(a.name) + '</div>' +
+            '<div class="ag-role">' + escapeHtml(a.title) + '</div>' +
+            '<div class="ag-contact">' + escapeHtml(a.phone) + '<br>' + escapeHtml(a.email) + '</div>' +
+          '</div>';
+        }).join('') : '<div class="ag-card"><div class="ag-shot">' +
+            '<div class="empty-note">Pick an agent<br>in the Agents panel</div></div></div>') +
+      '</div>' +
+      '<div class="ag-bio">' + escapeHtml(state.agentBio) + '</div>' +
+      '<div class="ag-foot"><span class="site">' + escapeHtml(state.site || '') + '</span>' +
+        '<img src="' + MONO + '" alt=""></div>' +
+    '</div>';
+}
+
+function renderSpecs(page) {
+  const items = lines(state.mkSpecs).map(l => {
+    const i = l.indexOf('|');
+    return i === -1 ? [l.trim(), ''] : [l.slice(0, i).trim(), l.slice(i + 1).trim()];
+  });
+  page.innerHTML =
+    '<div class="mk">' +
+      '<div class="sheet-head"><span class="t">Marketing Programme</span>' +
+        '<span class="s">The GVC Team &nbsp;·&nbsp; Douglas Elliman</span></div>' +
+      '<div class="mk-body">' +
+        '<div class="mk-intro">' + escapeHtml(state.mkIntro) + '</div>' +
+        '<div class="mk-grid">' +
+          items.map((it, i) =>
+            '<div class="mk-item">' + icon(SPEC_ICONS[i % SPEC_ICONS.length]) +
+            '<div class="txt"><h4>' + escapeHtml(it[0]) + '</h4>' +
+            (it[1] ? '<p>' + escapeHtml(it[1]) + '</p>' : '') + '</div></div>').join('') +
+        '</div>' +
+      '</div>' +
+      '<div class="mk-foot"><span class="l">' + escapeHtml(state.site || '') + '</span>' +
+        '<img src="' + MONO + '" alt=""></div>' +
+    '</div>';
+}
+
+function renderPage(page, i) {
+  const spec = pagePlan()[i];
+  if (!spec) return;
+  if (spec.t === 'cover')          renderCover(page);
+  else if (spec.t === 'gallery')   renderGallery(page);
+  else if (spec.t === 'info')      renderInfo(page);
+  else if (spec.t === 'floorplan') renderFloorplan(page, spec);
+  else if (spec.t === 'location')  renderLocation(page);
+  else if (spec.t === 'agent')     renderAgent(page);
+  else if (spec.t === 'specs')     renderSpecs(page);
+}
+
+function redraw() {
+  if (!builder) return;
+  assign = computeAssignment();
+  syncGallery();
+  assign = computeAssignment();   // re-apply ordering once bentoOrder is synced
+  const n = pagePlan().length;
+  if (builder.state.pages !== n) builder.setPages(n);
+  else builder.rebuild();
+  // setTimeout, not requestAnimationFrame: rAF is suspended while the tab
+  // isn't rendering, which would leave stale warnings on a background tab.
+  setTimeout(checkOverflow, 0);
+}
+
+/* ---------------- overflow warnings ---------------- */
+const OVER_TARGETS = [
+  ['.info-blurb',  'Blurb clipped',       '#warnBlurb'],
+  ['.info-feats',  'Features clipped',    '#warnFeats'],
+  ['.loc-blurb',   'Area text clipped',   null],
+  ['.loc-cat ul',  'Amenities clipped',   null],
+  ['.loc-grid',    'Categories clipped',  null],
+  ['.ag-bio',      'Statement clipped',   null],
+  ['.mk-intro',    'Intro clipped',       null],
+  ['.mk-grid',     'Specs clipped',       null]
+];
+
+function flag(el, label) {
+  el.classList.add('is-over');
+  const page = el.closest('.page');
+  if (!page) return;
+  const pr = page.getBoundingClientRect(), r = el.getBoundingClientRect();
+  const tag = document.createElement('div');
+  tag.className = 'over-flag';
+  tag.textContent = label;
+  tag.style.left = Math.max(0, r.left - pr.left) + 'px';
+  tag.style.top = Math.max(0, r.bottom - pr.top - 18) + 'px';
+  page.appendChild(tag);
+}
+
+function checkOverflow() {
+  document.querySelectorAll('.over-flag').forEach(n => n.remove());
+  document.querySelectorAll('.is-over').forEach(n => n.classList.remove('is-over'));
+
+  // multi-column and grid regions overflow sideways, so both axes matter
+  const over = el => !!el && (el.scrollHeight > el.clientHeight + 1 ||
+                              el.scrollWidth > el.clientWidth + 1);
+  const hit = {};
+  OVER_TARGETS.forEach(t => {
+    let any = false;
+    document.querySelectorAll(t[0]).forEach(el => { if (over(el)) { flag(el, t[1]); any = true; } });
+    if (t[2]) hit[t[2]] = any;
+  });
+
+  // page 1: has the address grown up out of the bottom scrim?
+  let addrOver = false;
+  const head = document.querySelector('.cover-head');
+  if (head) {
+    const page = head.closest('.page'), pr = page.getBoundingClientRect();
+    const bot = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--mask-bot'));
+    const scrimTop = pr.top + pr.height * (1 - bot / 100);
+    addrOver = head.getBoundingClientRect().top < scrimTop;
+    if (addrOver) flag(head, 'Above the scrim');
+  }
+
+  $('#warnBlurb').classList.toggle('on', !!hit['#warnBlurb']);
+  $('#warnFeats').classList.toggle('on', !!hit['#warnFeats']);
+  $('#warnAddr').classList.toggle('on', addrOver);
+}
+
+/* ---------------- drag: swap bento cells ---------------- */
+const DRAG_THRESHOLD = 4;
+let drag = null;
+
+function slotUnderPointer(e) {
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  const cell = el && el.closest ? el.closest('.bento-cell') : null;
+  if (!cell || cell.dataset.slot === undefined) return null;
+  return { cell: cell, slot: parseInt(cell.dataset.slot, 10) };
+}
+
+function beginDrag(e, cell, slot, grid) {
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+  e.preventDefault();
+  drag = { slot: slot, cell: cell, grid: grid, x: e.clientX, y: e.clientY, active: false, target: null };
+  try { cell.setPointerCapture(e.pointerId); } catch (_) {}
+
+  const move = ev => {
+    if (!drag) return;
+    if (!drag.active && Math.hypot(ev.clientX - drag.x, ev.clientY - drag.y) < DRAG_THRESHOLD) return;
+    drag.active = true;
+    drag.cell.classList.add('is-dragging');
+    const hit = slotUnderPointer(ev);
+    drag.grid.querySelectorAll('.bento-cell').forEach(c => c.classList.remove('is-target'));
+    drag.target = (hit && hit.slot !== drag.slot) ? hit.slot : null;
+    if (hit && hit.slot !== drag.slot) hit.cell.classList.add('is-target');
+  };
+  const finish = ev => {
+    cell.removeEventListener('pointermove', move);
+    cell.removeEventListener('pointerup', finish);
+    cell.removeEventListener('pointercancel', finish);
+    try { cell.releasePointerCapture(ev.pointerId); } catch (_) {}
+    const d = drag; drag = null;
+    (d && d.grid ? d.grid : document).querySelectorAll('.bento-cell')
+      .forEach(c => c.classList.remove('is-dragging', 'is-target'));
+    if (d && d.active && d.target !== null) swapCells(d.slot, d.target);
+  };
+  cell.addEventListener('pointermove', move);
+  cell.addEventListener('pointerup', finish);
+  cell.addEventListener('pointercancel', finish);
+}
+
+/* ---------------- drag: reframe a photo inside its crop ----------------
    object-position p% puts the image's overflow at -(overflow * p/100), so
    moving it by d px means changing p by -d/overflow*100. Pointer deltas are
    in screen px, so they're divided by the preview's scale first. */
@@ -640,21 +948,17 @@ function beginPhotoDrag(e, box, pos) {
   const img = box.querySelector('img');
   if (!img || !img.naturalWidth) return;
   e.preventDefault();
-
   const page = box.closest('.page');
   const scale = page ? page.getBoundingClientRect().width / (8.5 * 96) : 1;
   const bw = box.clientWidth, bh = box.clientHeight;
   const cover = Math.max(bw / img.naturalWidth, bh / img.naturalHeight);
-  const overX = img.naturalWidth * cover - bw;
-  const overY = img.naturalHeight * cover - bh;
-
+  const overX = img.naturalWidth * cover - bw, overY = img.naturalHeight * cover - bh;
   const start = { x: e.clientX, y: e.clientY, px: pos.x, py: pos.y };
   box.classList.add('is-moving');
   try { box.setPointerCapture(e.pointerId); } catch (_) {}
 
   const move = ev => {
-    const dx = (ev.clientX - start.x) / scale;
-    const dy = (ev.clientY - start.y) / scale;
+    const dx = (ev.clientX - start.x) / scale, dy = (ev.clientY - start.y) / scale;
     if (overX > 0.5) pos.x = Math.max(0, Math.min(100, start.px - (dx / overX) * 100));
     if (overY > 0.5) pos.y = Math.max(0, Math.min(100, start.py - (dy / overY) * 100));
     img.style.objectPosition = pos.x + '% ' + pos.y + '%';
@@ -671,110 +975,28 @@ function beginPhotoDrag(e, box, pos) {
   box.addEventListener('pointercancel', done);
 }
 
-function renderPage(page, i) {
-  if (i === 0) renderCover(page);
-  else if (i === 1) renderGallery(page);
-  else if (i === 2) renderInfo(page);
-  // pages 4+ stay blank for now
-}
-
-function redraw() {
-  if (!builder) return;
-  builder.rebuild();
-  // setTimeout, not requestAnimationFrame: rAF is suspended while the tab
-  // isn't rendering, which would leave stale warnings on a background tab.
-  // Reading scrollHeight forces the layout we need anyway.
-  setTimeout(checkOverflow, 0);
-}
-
-/* ---------------- overflow warnings ----------------
-   Content regions are fixed-height with overflow:hidden, so too much copy
-   is silently clipped rather than breaking the layout. Measure after every
-   redraw and say so, on the page and in the panel. */
-function flag(el, label) {
-  if (!el) return;
-  el.classList.add('is-over');
-  const page = el.closest('.page');
-  if (!page) return;
-  const pr = page.getBoundingClientRect(), r = el.getBoundingClientRect();
-  const tag = document.createElement('div');
-  tag.className = 'over-flag';
-  tag.textContent = label;
-  tag.style.left = (r.left - pr.left) + 'px';
-  tag.style.top = Math.max(0, r.bottom - pr.top - 18) + 'px';
-  page.appendChild(tag);
-}
-
-function checkOverflow() {
-  document.querySelectorAll('.over-flag').forEach(n => n.remove());
-  document.querySelectorAll('.is-over').forEach(n => n.classList.remove('is-over'));
-
-  // multi-column lists overflow sideways into a third column, so the
-  // horizontal axis has to be checked too — scrollHeight alone misses it
-  const over = el => !!el && (el.scrollHeight > el.clientHeight + 1 ||
-                              el.scrollWidth > el.clientWidth + 1);
-  const blurb = document.querySelector('.info-blurb');
-  const feats = document.querySelector('.info-feats');
-  const blurbOver = over(blurb), featsOver = over(feats);
-  if (blurbOver) flag(blurb, 'Blurb clipped');
-  if (featsOver) flag(feats, 'Features clipped');
-
-  // page 1: has the address grown up out of the bottom scrim?
-  let addrOver = false;
-  const head = document.querySelector('.cover-head');
-  if (head) {
-    const page = head.closest('.page');
-    const pr = page.getBoundingClientRect();
-    const scrimTop = pr.top + pr.height * (1 - parseFloat(
-      getComputedStyle(document.documentElement).getPropertyValue('--mask-bot')) / 100);
-    addrOver = head.getBoundingClientRect().top < scrimTop;
-    if (addrOver) flag(head, 'Above the scrim');
-  }
-
-  $('#warnBlurb').classList.toggle('on', blurbOver);
-  $('#warnFeats').classList.toggle('on', featsOver);
-  $('#warnAddr').classList.toggle('on', addrOver);
-}
-
 /* ---------------- editor UI ---------------- */
 function updateBentoNote() {
-  const pool = galleryPool().length;
-  const n = Math.min(pool, GALLERY_MAX);
+  const n = Math.min(assign.gallery.length, GALLERY_MAX);
   const note = $('#bentoNote'), btn = $('#btnShuffle');
-  if (n < GALLERY_MIN) {
-    note.textContent = 'Add ' + (GALLERY_MIN - pool) + ' more photo' +
-      (GALLERY_MIN - pool === 1 ? '' : 's') + ' — the hero is held back for page 1.';
-    btn.disabled = true;
-    btn.style.opacity = '.45';
-    btn.style.cursor = 'not-allowed';
-  } else {
-    const extra = pool > GALLERY_MAX ? ' First ' + GALLERY_MAX + ' used.' : '';
-    note.textContent = n + ' photos, layout ' + (state.bentoVariant + 1) + ' of ' +
-                       BENTO[n].length + '.' + extra + ' Drag one onto another to swap.';
-    btn.disabled = false;
-    btn.style.opacity = '';
-    btn.style.cursor = '';
-  }
+  const ok = n >= GALLERY_MIN;
+  note.textContent = ok
+    ? n + ' photos, layout ' + (state.bentoVariant + 1) + ' of ' + BENTO[n].length +
+      '. Drag one onto another to swap.'
+    : 'Add ' + (GALLERY_MIN - n) + ' more photo' + (GALLERY_MIN - n === 1 ? '' : 's') + '.';
+  btn.disabled = !ok;
+  btn.style.opacity = ok ? '' : '.45';
+  btn.style.cursor = ok ? '' : 'not-allowed';
 }
 
-// page 3's photo picker mirrors whatever is currently loaded
-function renderPhotoPicker() {
-  [['#infoPhoto', 'infoPhotoId'], ['#infoTopPhoto', 'infoTopPhotoId']].forEach(pair => {
-    const sel = $(pair[0]), key = pair[1];
-    if (state[key] && !state.images.some(i => i.id === state[key])) state[key] = null;
-    sel.innerHTML = '';
-    const none = document.createElement('option');
-    none.value = '';
-    none.textContent = state.images.length ? 'None' : 'Add photos first';
-    sel.appendChild(none);
-    state.images.forEach(img => {
-      const o = document.createElement('option');
-      o.value = String(img.id);
-      o.textContent = img.name + (img.id === state.heroId ? ' (hero)' : '');
-      sel.appendChild(o);
-    });
-    sel.value = state[key] ? String(state[key]) : '';
-  });
+function roleLabelFor(img) {
+  if (img.role && img.role !== 'auto') return null;   // explicit shows in the select
+  if (assign.hero === img) return 'Cover';
+  if (assign.infoTop === img) return 'Info · top';
+  if (assign.infoBottom === img) return 'Info · bottom';
+  if (assign.location === img) return 'Location';
+  if (assign.gallery.includes(img)) return 'Gallery';
+  return 'Unused';
 }
 
 function renderImgList() {
@@ -782,186 +1004,282 @@ function renderImgList() {
   host.innerHTML = '';
   state.images.forEach(img => {
     const row = document.createElement('div');
-    row.className = 'img-row' + (img.id === state.heroId ? ' is-hero' : '');
+    row.className = 'img-row';
 
     const thumb = document.createElement('img');
-    thumb.className = 'img-thumb';
-    thumb.src = img.url;
-    thumb.alt = '';
+    thumb.className = 'img-thumb'; thumb.src = img.url; thumb.alt = '';
 
-    const name = document.createElement('span');
-    name.className = 'img-name';
-    name.textContent = img.name;
+    const mid = document.createElement('div');
+    mid.className = 'img-mid';
+    const name = document.createElement('div');
+    name.className = 'img-name'; name.textContent = img.name;
+    const auto = document.createElement('div');
+    auto.className = 'img-auto';
+    const lab = roleLabelFor(img);
+    auto.textContent = lab ? 'auto → ' + lab : 'pinned';
+    mid.append(name, auto);
 
-    const heroBtn = document.createElement('button');
-    heroBtn.type = 'button';
-    heroBtn.className = 'img-hero';
-    heroBtn.textContent = img.id === state.heroId ? 'Hero' : 'Set hero';
-    heroBtn.addEventListener('click', () => {
-      state.heroId = img.id;
-      syncGallery();          // the new hero leaves the gallery, the old one rejoins it
-      renderImgList();
-      updateBentoNote();
-      redraw();
+    const sel = document.createElement('select');
+    sel.className = 'img-role';
+    ROLES.forEach(r => {
+      const o = document.createElement('option');
+      o.value = r[0]; o.textContent = r[1];
+      sel.appendChild(o);
+    });
+    sel.value = img.role || 'auto';
+    sel.addEventListener('change', () => {
+      img.role = sel.value;
+      redraw(); renderImgList(); updateBentoNote();
     });
 
     const del = document.createElement('button');
-    del.type = 'button';
-    del.className = 'img-x';
-    del.innerHTML = '&#10005;';
-    del.title = 'Remove';
+    del.type = 'button'; del.className = 'img-x'; del.innerHTML = '&#10005;'; del.title = 'Remove';
     del.addEventListener('click', () => {
       state.images = state.images.filter(x => x.id !== img.id);
-      if (state.heroId === img.id) state.heroId = state.images.length ? state.images[0].id : null;
-      syncGallery();
-      renderImgList();
-      updateBentoNote();
-      redraw();
+      redraw(); renderImgList(); updateBentoNote();
     });
 
-    row.append(thumb, name, heroBtn, del);
+    row.append(thumb, mid, sel, del);
     host.appendChild(row);
   });
-
-  renderPhotoPicker();
-
   $('#imgNote').textContent = state.images.length
-    ? state.images.length + ' photo' + (state.images.length > 1 ? 's' : '') + '.'
-    : 'The first photo you add becomes the hero.';
+    ? state.images.length + ' photos. Override any placement with its dropdown.'
+    : 'Photos you add are placed automatically. Override any one with its dropdown.';
 }
 
+function renderRoster() {
+  const host = $('#rosterPick');
+  host.innerHTML = '';
+  ROSTER.forEach(a => {
+    const on = state.agents.includes(a.id);
+    const row = document.createElement('button');
+    row.type = 'button';
+    row.className = 'ros' + (on ? ' on' : '');
+    row.innerHTML = '<span class="ros-nm">' + escapeHtml(a.name) + '</span>' +
+                    '<span class="ros-tt">' + escapeHtml(a.phone) + '</span>';
+    row.addEventListener('click', () => {
+      if (on) state.agents = state.agents.filter(id => id !== a.id);
+      else if (state.agents.length < MAX_AGENTS) state.agents.push(a.id);
+      else state.agents = [state.agents[1], a.id];
+      renderRoster(); renderShots(); redraw();
+    });
+    host.appendChild(row);
+  });
+}
+
+function renderShots() {
+  const host = $('#shotList');
+  host.innerHTML = '';
+  agentObjs().forEach(a => {
+    const wrap = document.createElement('div');
+    wrap.className = 'shot-row';
+    const d = document.createElement('div');
+    d.className = 'drop' + (state.headshots[a.id] ? ' loaded' : '');
+    d.style.marginTop = '8px';
+    d.innerHTML = '<div class="d-big">' + escapeHtml(a.name.split(' ')[0]) + '’s headshot</div>' +
+                  '<div class="d-sub">' + (state.headshots[a.id] ? 'loaded — click to replace' : 'click to browse') + '</div>';
+    const inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = 'image/*'; inp.hidden = true;
+    d.addEventListener('click', () => inp.click());
+    inp.addEventListener('change', () => {
+      const f = inp.files && inp.files[0];
+      if (!f) return;
+      const r = new FileReader();
+      r.onload = e => { state.headshots[a.id] = e.target.result; renderShots(); redraw(); };
+      r.readAsDataURL(f);
+    });
+    wrap.append(d, inp);
+    host.appendChild(wrap);
+  });
+}
+
+function renderFpList() {
+  const host = $('#fpList');
+  host.innerHTML = '';
+  state.floorplans.forEach((fp, i) => {
+    const row = document.createElement('div');
+    row.className = 'img-row';
+    const thumb = document.createElement('img');
+    thumb.className = 'img-thumb'; thumb.src = fp.url; thumb.alt = '';
+    const inp = document.createElement('input');
+    inp.type = 'text'; inp.className = 'fp-label'; inp.value = fp.label || '';
+    inp.placeholder = 'Level ' + (i + 1);
+    inp.addEventListener('input', () => { fp.label = inp.value; redraw(); });
+    const del = document.createElement('button');
+    del.type = 'button'; del.className = 'img-x'; del.innerHTML = '&#10005;'; del.title = 'Remove';
+    del.addEventListener('click', () => {
+      state.floorplans = state.floorplans.filter(x => x.id !== fp.id);
+      renderFpList(); redraw();
+    });
+    row.append(thumb, inp, del);
+    host.appendChild(row);
+  });
+}
+
+/* ---------------- file intake ---------------- */
 function addFiles(files) {
   [...files].filter(f => f.type.startsWith('image/')).forEach(f => {
     const reader = new FileReader();
     reader.onload = e => {
-      const img = { id: ++uid, name: f.name, url: e.target.result };
+      const img = { id: ++uid, name: f.name, url: e.target.result, ar: 1.5, role: 'auto' };
       state.images.push(img);
-      if (!state.heroId) state.heroId = img.id;
-      syncGallery();
-      renderImgList();
-      updateBentoNote();
-      redraw();
+      // aspect ratio drives the "by shape" strategy
+      const probe = new Image();
+      probe.onload = () => {
+        img.ar = probe.naturalWidth / probe.naturalHeight;
+        if (state.strategy === 'aspect') { redraw(); renderImgList(); }
+      };
+      probe.src = img.url;
+      redraw(); renderImgList(); updateBentoNote();
     };
     reader.readAsDataURL(f);
   });
 }
 
-/* ---------------- wiring ---------------- */
-const drop = $('#imgDrop'), fileInput = $('#imgFile');
-drop.addEventListener('click', () => fileInput.click());
-drop.addEventListener('keydown', e => {
-  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
-});
-fileInput.addEventListener('change', () => { addFiles(fileInput.files); fileInput.value = ''; });
-['dragenter', 'dragover'].forEach(ev =>
-  drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
-['dragleave', 'drop'].forEach(ev =>
-  drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
-drop.addEventListener('drop', e => addFiles(e.dataTransfer.files));
+function addFloorplans(files) {
+  [...files].filter(f => f.type.startsWith('image/')).forEach(f => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      state.floorplans.push({ id: ++uid, name: f.name, url: e.target.result, label: '' });
+      renderFpList(); redraw();
+    };
+    reader.readAsDataURL(f);
+  });
+}
 
-document.querySelectorAll('[data-field]').forEach(el => {
-  el.addEventListener('input', () => { state[el.dataset.field] = el.value; redraw(); });
-});
-
-$('#btnShuffle').addEventListener('click', shuffleGallery);
-$('#btnResetPos').addEventListener('click', () => {
-  state.infoPos = { x: 50, y: 50 };
-  state.infoTopPos = { x: 50, y: 50 };
-  redraw();
-});
+function wireDrop(dropSel, inputSel, handler) {
+  const drop = $(dropSel), input = $(inputSel);
+  drop.addEventListener('click', () => input.click());
+  drop.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); input.click(); }
+  });
+  input.addEventListener('change', () => { handler(input.files); input.value = ''; });
+  ['dragenter', 'dragover'].forEach(ev =>
+    drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+  ['dragleave', 'drop'].forEach(ev =>
+    drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+  drop.addEventListener('drop', e => handler(e.dataTransfer.files));
+}
 
 /* ---------------- sample data ----------------
-   Real photography from photos/3-crosby-lane, invented listing copy.
-   Images are same-origin paths, not data URLs, so this stays cheap. */
+   Real photography from photos/3-crosby-lane, invented listing copy. */
 const PREVIEW = {
-  // 9: hero + six for the bento + the two on page 3, so nothing repeats
-  photos: [0, 3, 6, 9, 12, 15, 18, 21, 24],
-  address: '3 Crosby Lane',
-  city: 'Rye', state: 'NY', zip: '10580',
+  photos: [0, 3, 6, 9, 12, 15, 18, 21, 24, 27],
+  address: '3 Crosby Lane', city: 'Rye', state: 'NY', zip: '10580',
   price: '$4,275,000',
-  blurb: 'Set behind a stone wall on a quiet lane, this shingle-and-clapboard ' +
-    'colonial opens to a double-height entry and a great room that runs the depth ' +
-    'of the house. Every principal room faces the rear garden, and the kitchen ' +
-    'gives onto a covered porch built for long dinners.',
+  blurb: 'Set behind a stone wall on a quiet lane, this shingle-and-clapboard colonial ' +
+    'opens to a double-height entry and a great room that runs the depth of the house. ' +
+    'Every principal room faces the rear garden.',
   features: ['Chef\'s kitchen with double island', 'Covered bluestone porch',
     'Primary suite with dual dressing rooms', 'Wood-burning fireplace',
     'Finished lower level with gym', 'Whole-house generator',
     'Irrigated landscaped grounds', 'Attached two-car garage'].join('\n'),
   beds: '5', baths: '4.5', parking: '2', sqft: '4,180',
-  agentName: 'John Gasdaska',
-  agentPhone: '646.345.7350',
-  agentEmail: 'john.gasdaska@elliman.com',
-  site: 'gvcrealestateteam.com'
+  hood: 'Milton Point, Rye',
+  hoodBlurb: 'Milton Point sits on the Long Island Sound at the southern edge of Rye, ' +
+    'a ten-minute walk from the village and thirty-eight minutes from Grand Central.',
+  amDining: ['Ruby\'s Oyster Bar — 0.8 mi', 'Frankie & Fanucci\'s — 1.1 mi',
+    'Rye Village shops — 0.9 mi', 'Whole Foods, Port Chester — 2.4 mi'].join('\n'),
+  amSchools: ['Midland Elementary — 1.2 mi', 'Rye Middle School — 1.4 mi',
+    'Rye High School — 1.4 mi', 'Rye Country Day — 2.1 mi'].join('\n'),
+  amTransit: ['Rye Metro-North — 1.0 mi', 'Grand Central — 38 min express',
+    'I-95 interchange 19 — 1.3 mi', 'Westchester County Airport — 7 mi'].join('\n'),
+  amRec: ['Rye Town Park & Beach — 0.6 mi', 'Playland Park — 1.7 mi',
+    'American Yacht Club — 0.5 mi', 'Marshlands Conservancy — 1.9 mi'].join('\n'),
+  agents: ['john-gasdaska', 'tj-verdiglione']
 };
+
+/* ---------------- wiring ---------------- */
+wireDrop('#imgDrop', '#imgFile', addFiles);
+wireDrop('#fpDrop', '#fpFile', addFloorplans);
+
+document.querySelectorAll('[data-field]').forEach(el => {
+  el.addEventListener('input', () => { state[el.dataset.field] = el.value; redraw(); });
+});
+$('#strategy').addEventListener('change', e => {
+  state.strategy = e.target.value;
+  redraw(); renderImgList(); updateBentoNote();
+});
+$('#btnShuffle').addEventListener('click', shuffleGallery);
+$('#btnResetPos').addEventListener('click', () => {
+  state.infoPos = { x: 50, y: 50 };
+  state.infoTopPos = { x: 50, y: 50 };
+  state.locPos = { x: 50, y: 50 };
+  redraw();
+});
 
 $('#btnPreview').addEventListener('click', () => {
   state.images = PREVIEW.photos.map(n => ({
-    id: ++uid,
-    name: '3-crosby-' + n + '.webp',
-    url: '../../photos/3-crosby-lane/img/' + n + '-e-f.webp'
+    id: ++uid, name: '3-crosby-' + n + '.webp',
+    url: '../../photos/3-crosby-lane/img/' + n + '-e-f.webp',
+    ar: 1.5, role: 'auto'
   }));
-  state.heroId = state.images[0].id;
-  state.infoPhotoId = state.images[state.images.length - 1].id;
-  state.infoTopPhotoId = state.images[state.images.length - 2].id;
+  state.images.forEach(img => {
+    const probe = new Image();
+    probe.onload = () => { img.ar = probe.naturalWidth / probe.naturalHeight; };
+    probe.src = img.url;
+  });
+  state.floorplans = [
+    { id: ++uid, name: 'floorplan.jpg', url: '../showsheet/sample/floorplan.jpg', label: 'First Floor' },
+    { id: ++uid, name: 'floorplan.jpg', url: '../showsheet/sample/floorplan.jpg', label: 'Second Floor' }
+  ];
+  state.agents = PREVIEW.agents.slice();
+  state.bentoOrder = []; state.bentoVariant = 0;
   state.infoPos = { x: 50, y: 50 };
   state.infoTopPos = { x: 50, y: 50 };
-  state.bentoOrder = [];
-  state.bentoVariant = 0;
+  state.locPos = { x: 50, y: 50 };
 
-  ['address', 'city', 'state', 'zip', 'price', 'blurb', 'features',
-   'beds', 'baths', 'parking', 'sqft',
-   'agentName', 'agentPhone', 'agentEmail', 'site'].forEach(k => {
+  ['address','city','state','zip','price','blurb','features','beds','baths','parking','sqft',
+   'hood','hoodBlurb','amDining','amSchools','amTransit','amRec'].forEach(k => {
     state[k] = PREVIEW[k];
     const el = document.querySelector('[data-field=' + k + ']');
     if (el) el.value = PREVIEW[k];
   });
 
-  syncGallery();
-  renderImgList();
-  updateBentoNote();
-  redraw();
-});
-$('#infoPhoto').addEventListener('change', e => {
-  state.infoPhotoId = e.target.value ? parseInt(e.target.value, 10) : null;
-  state.infoPos = { x: 50, y: 50 };
-  redraw();
-});
-$('#infoTopPhoto').addEventListener('change', e => {
-  state.infoTopPhotoId = e.target.value ? parseInt(e.target.value, 10) : null;
-  state.infoTopPos = { x: 50, y: 50 };
-  redraw();
+  renderImgList(); renderFpList(); renderRoster(); renderShots();
+  redraw(); updateBentoNote();
 });
 
-// seed inputs from any state defaults (the website, for one)
+// seed inputs from state defaults (website, bio, marketing copy, footnote)
 document.querySelectorAll('[data-field]').forEach(el => {
   if (state[el.dataset.field]) el.value = state[el.dataset.field];
 });
 
-builder = Builder.init({ pages: 3, label: 'Page', render: renderPage });
-renderImgList();
-updateBentoNote();
+builder = Builder.init({ pages: pagePlan().length, label: 'Page', render: renderPage });
+renderImgList(); renderRoster(); renderShots(); renderFpList();
+redraw(); updateBentoNote();
 // webfont metrics change block heights, so re-measure once they land
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(checkOverflow);
 </script>
 
 <style>
-/* image list rows — editor chrome, screen only */
+/* editor chrome — screen only */
 .img-row{display:flex;align-items:center;gap:9px;padding:7px 8px;margin-top:8px;
   border:1px solid var(--ui-rule);border-radius:8px;background:#fff;}
-.img-row.is-hero{border-color:var(--sky);box-shadow:inset 3px 0 0 var(--sky);}
 .img-thumb{width:44px;height:34px;object-fit:cover;border-radius:4px;flex:none;background:var(--ui-paper-2);}
-.img-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-  font:500 11px var(--body);color:var(--navy);}
-.img-hero{flex:none;border:1px solid var(--ui-rule);background:#fff;border-radius:999px;
-  font:800 8.5px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ui-ink-soft);
-  padding:5px 9px;cursor:pointer;transition:background .15s,color .15s,border-color .15s;}
-.img-hero:hover{border-color:var(--navy);background:var(--navy);color:var(--ow);}
-.img-row.is-hero .img-hero{background:var(--navy);border-color:var(--navy);color:var(--ow);}
+.img-mid{flex:1;min-width:0;}
+.img-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:500 11px var(--body);color:var(--navy);}
+.img-auto{font:400 9px var(--ui-mono);color:var(--ui-ink-soft);margin-top:2px;}
+.img-role{flex:none;width:104px;border:1px solid var(--ui-rule);border-radius:6px;background:#fff;
+  font:500 10.5px var(--body);color:var(--navy);padding:4px 5px;}
+.img-role:focus{outline:2px solid var(--sky);outline-offset:1px;}
+.fp-label{flex:1;min-width:0;border:1px solid var(--ui-rule);border-radius:6px;background:#fff;
+  font:500 11px var(--body);color:var(--navy);padding:6px 8px;}
+.fp-label:focus{outline:2px solid var(--sky);outline-offset:1px;}
 .img-x{flex:none;border:1px solid var(--ui-rule);background:#fff;color:var(--ui-ink-soft);
   font:800 10px/1 var(--sans);width:20px;height:20px;border-radius:50%;cursor:pointer;padding:0;
   transition:background .15s,border-color .15s,color .15s;}
 .img-x:hover{background:var(--danger,#B3261E);border-color:var(--danger,#B3261E);color:#fff;}
-.img-hero:focus-visible,.img-x:focus-visible{outline:2px solid var(--sky);outline-offset:2px;}
+.img-x:focus-visible{outline:2px solid var(--sky);outline-offset:2px;}
+.ros{display:flex;align-items:baseline;justify-content:space-between;gap:8px;width:100%;
+  text-align:left;padding:7px 10px;margin-top:6px;border:1px solid var(--ui-rule);border-radius:8px;
+  background:#fff;cursor:pointer;transition:background .15s,border-color .15s,color .15s;}
+.ros-nm{font:600 11.5px var(--body);color:var(--navy);}
+.ros-tt{font:400 9.5px var(--ui-mono);color:var(--ui-ink-soft);}
+.ros:hover{border-color:var(--sky);}
+.ros.on{background:var(--navy);border-color:var(--navy);}
+.ros.on .ros-nm,.ros.on .ros-tt{color:var(--ow);}
+.ros:focus-visible{outline:2px solid var(--sky);outline-offset:2px;}
 .linkish{border:0;background:none;padding:0;margin-left:5px;cursor:pointer;
   font:400 10px var(--ui-mono);color:var(--sky2);text-decoration:underline;text-underline-offset:2px;}
 .linkish:hover{color:var(--navy);}
