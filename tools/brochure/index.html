@@ -67,7 +67,8 @@
 
 /* drag-to-swap affordances — screen only, and stripped on drop */
 @media screen{
-  .bento-cell{cursor:grab;}
+  .bento-cell{cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;}
+  .bento-cell img{-webkit-user-drag:none;user-drag:none;pointer-events:none;}
   .bento-cell:active{cursor:grabbing;}
   .bento-cell.is-dragging{opacity:.4;}
   .bento-cell.is-target::after{content:'';position:absolute;inset:0;
@@ -79,8 +80,47 @@
   font:800 9pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:rgba(229,229,229,.55);
   text-align:center;padding:0 .8in;line-height:1.7;}
 
+/* ---------- PAGE 3 — PROPERTY INFORMATION ---------- */
+.info{position:absolute;inset:0;overflow:hidden;background:#fff;}
+.info-block{position:absolute;top:0;left:0;right:0;height:66.667%;background:var(--navy);color:var(--ow);}
+.info-photo{position:absolute;top:66.667%;bottom:0;left:0;right:0;background:var(--navy);overflow:hidden;}
+.info-photo img{width:100%;height:100%;object-fit:cover;display:block;}
+.info-photo .ph-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font:800 8.5pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:rgba(229,229,229,.5);}
+
+/* top third of the page = top half of the colour block */
+.info-top{position:absolute;top:0;left:0;right:0;height:50%;padding:.6in var(--pad) 0;display:flex;flex-direction:column;}
+.info-head{display:flex;align-items:flex-start;justify-content:space-between;gap:.3in;}
+.info-eyebrow{font:800 11pt var(--sans);letter-spacing:.18em;text-transform:uppercase;color:#fff;padding-top:.06in;}
+/* price banner runs off the right edge so it reads as a device, not a box */
+.info-price{flex:none;background:var(--sky);color:var(--navy);
+  margin-right:calc(-1 * var(--pad));padding:.13in var(--pad) .13in .26in;
+  font:700 22pt/1 var(--serif);white-space:nowrap;}
+.info-price .po{font:800 10pt var(--sans);letter-spacing:.14em;text-transform:uppercase;}
+.info-blurb{margin-top:.28in;font:300 10.5pt/16pt var(--body);color:var(--ow);max-width:6.2in;
+  overflow:hidden;}
+
+/* middle third of the page = bottom half of the colour block */
+.info-mid{position:absolute;top:50%;bottom:0;left:0;right:0;padding:.34in var(--pad) .5in;
+  display:flex;gap:.5in;border-top:.75pt solid rgba(83,199,220,.35);}
+.info-col{min-width:0;display:flex;flex-direction:column;}
+.info-col.features{flex:1.35;}
+.info-col.stats{flex:1;}
+.info-lbl{font:800 8pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--sky);
+  margin-bottom:.14in;}
+.info-feats{list-style:none;margin:0;padding:0;overflow:hidden;
+  columns:2;column-gap:.28in;}
+.info-feats li{font:400 9.5pt/15pt var(--body);color:var(--ow);padding-left:.17in;position:relative;
+  margin-bottom:.055in;break-inside:avoid;}
+.info-feats li::before{content:'';position:absolute;left:0;top:.072in;width:.055in;height:.055in;
+  background:var(--sky);}
+
+.info-stats{display:grid;grid-template-columns:1fr 1fr;gap:.26in .2in;}
+.stat .v{font:700 20pt/1 var(--serif);color:#fff;}
+.stat .k{font:800 7.5pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--sky);margin-top:.05in;}
+
 @media print{
-  .cover-empty,.bento-empty{display:none !important;}
+  .cover-empty,.bento-empty,.info-photo .ph-empty{display:none !important;}
 }
 </style>
 </head>
@@ -139,12 +179,42 @@
         </div>
       </details>
 
+      <details class="ed-sec" open>
+        <summary>Property <span class="hint">page 3</span></summary>
+        <div class="sec-in">
+          <div class="field">
+            <label>Photo</label>
+            <select id="infoPhoto"></select>
+          </div>
+          <div class="field">
+            <label>Price</label>
+            <input type="text" data-field="price" placeholder="$8,950,000">
+          </div>
+          <div class="field">
+            <label>About the property</label>
+            <textarea data-field="blurb" rows="5" placeholder="Perched above Crosby Street, this full-floor residence captures light on four exposures…"></textarea>
+          </div>
+          <div class="field">
+            <label>Features — one per line</label>
+            <textarea data-field="features" rows="6" placeholder="Blackened-steel fireplace&#10;Calacatta kitchen&#10;Private landscaped terrace"></textarea>
+          </div>
+          <div class="f-row">
+            <div class="field"><label>Beds</label><input type="text" data-field="beds" placeholder="4"></div>
+            <div class="field"><label>Baths</label><input type="text" data-field="baths" placeholder="3.5"></div>
+          </div>
+          <div class="f-row">
+            <div class="field"><label>Parking</label><input type="text" data-field="parking" placeholder="2"></div>
+            <div class="field"><label>Sq Ft</label><input type="text" data-field="sqft" placeholder="3,240"></div>
+          </div>
+        </div>
+      </details>
+
       <details class="ed-sec">
         <summary>Document <span class="hint">8.5 &times; 11 in</span></summary>
         <div class="sec-in">
           <div class="field">
             <label>Pages</label>
-            <input type="number" id="pageCount" min="1" max="40" value="2">
+            <input type="number" id="pageCount" min="1" max="40" value="3">
           </div>
         </div>
       </details>
@@ -240,7 +310,16 @@ const state = {
   state: '',
   zip: '',
   bentoVariant: 0, // index into BENTO[count]
-  bentoOrder: []   // image ids, the order they fill cells a..f
+  bentoOrder: [],  // image ids, the order they fill cells a..f
+  // page 3
+  infoPhotoId: null,
+  price: '',
+  blurb: '',
+  features: '',
+  beds: '',
+  baths: '',
+  parking: '',
+  sqft: ''
 };
 let uid = 0;
 let builder = null;
@@ -295,6 +374,57 @@ function swapCells(a, b) {
   redraw();
 }
 
+/* ---------------- drag to swap (pointer events) ---------------- */
+const DRAG_THRESHOLD = 4;   // px of movement before it counts as a drag, not a click
+let drag = null;
+
+function clearDragClasses(grid) {
+  (grid || document).querySelectorAll('.bento-cell').forEach(c =>
+    c.classList.remove('is-dragging', 'is-target'));
+}
+
+function slotUnderPointer(e) {
+  // the source cell is mid-drag but still hit-testable; elementFromPoint
+  // is unaffected by the page's CSS scale, unlike native DnD
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  const cell = el && el.closest ? el.closest('.bento-cell') : null;
+  if (!cell || !cell.dataset.slot) return null;
+  return { cell: cell, slot: parseInt(cell.dataset.slot, 10) };
+}
+
+function beginDrag(e, cell, slot, grid) {
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+  e.preventDefault();
+  drag = { slot: slot, cell: cell, grid: grid, x: e.clientX, y: e.clientY, active: false, target: null };
+  try { cell.setPointerCapture(e.pointerId); } catch (_) { /* capture is a nicety */ }
+
+  const move = ev => {
+    if (!drag) return;
+    if (!drag.active && Math.hypot(ev.clientX - drag.x, ev.clientY - drag.y) < DRAG_THRESHOLD) return;
+    drag.active = true;
+    drag.cell.classList.add('is-dragging');
+    const hit = slotUnderPointer(ev);
+    drag.grid.querySelectorAll('.bento-cell').forEach(c => c.classList.remove('is-target'));
+    drag.target = (hit && hit.slot !== drag.slot) ? hit.slot : null;
+    if (hit && hit.slot !== drag.slot) hit.cell.classList.add('is-target');
+  };
+
+  const finish = ev => {
+    cell.removeEventListener('pointermove', move);
+    cell.removeEventListener('pointerup', finish);
+    cell.removeEventListener('pointercancel', finish);
+    try { cell.releasePointerCapture(ev.pointerId); } catch (_) {}
+    const d = drag;
+    drag = null;
+    clearDragClasses(d && d.grid);
+    if (d && d.active && d.target !== null) swapCells(d.slot, d.target);
+  };
+
+  cell.addEventListener('pointermove', move);
+  cell.addEventListener('pointerup', finish);
+  cell.addEventListener('pointercancel', finish);
+}
+
 /* ---------------- page rendering ---------------- */
 function renderCover(page) {
   const hero = heroImage();
@@ -332,37 +462,20 @@ function renderGallery(page) {
     const cell = document.createElement('div');
     cell.className = 'bento-cell';
     cell.style.gridArea = String.fromCharCode(97 + i);
-    cell.draggable = true;
     cell.dataset.slot = String(i);
     cell.title = 'Drag onto another photo to swap them';
 
     const el = document.createElement('img');
     el.src = img.url;
     el.alt = '';
-    el.draggable = false;            // let the drag target the cell, not the image
+    el.draggable = false;
     cell.appendChild(el);
 
-    cell.addEventListener('dragstart', e => {
-      e.dataTransfer.setData('text/plain', String(i));
-      e.dataTransfer.effectAllowed = 'move';
-      cell.classList.add('is-dragging');
-    });
-    cell.addEventListener('dragend', () => {
-      grid.querySelectorAll('.bento-cell').forEach(c =>
-        c.classList.remove('is-dragging', 'is-target'));
-    });
-    cell.addEventListener('dragover', e => {
-      e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
-      if (!cell.classList.contains('is-dragging')) cell.classList.add('is-target');
-    });
-    cell.addEventListener('dragleave', () => cell.classList.remove('is-target'));
-    cell.addEventListener('drop', e => {
-      e.preventDefault();
-      cell.classList.remove('is-target');
-      const from = parseInt(e.dataTransfer.getData('text/plain'), 10);
-      if (!Number.isNaN(from)) swapCells(from, i);
-    });
+    // Pointer events, not HTML5 drag-and-drop. The preview pages are
+    // CSS-scaled, and native DnD's drop/dataTransfer handshake is
+    // unreliable through that transform — the drag image appears but the
+    // drop never lands. Hit-testing with elementFromPoint is transform-safe.
+    cell.addEventListener('pointerdown', e => beginDrag(e, cell, i, grid));
 
     grid.appendChild(cell);
   });
@@ -370,10 +483,59 @@ function renderGallery(page) {
   page.replaceChildren(grid);
 }
 
+function renderInfo(page) {
+  const photo = state.images.find(i => i.id === state.infoPhotoId) || null;
+  const feats = state.features.split('\n').map(s => s.trim()).filter(Boolean);
+  const stats = [
+    ['Bedrooms', state.beds], ['Bathrooms', state.baths],
+    ['Parking', state.parking], ['Sq Ft', state.sqft]
+  ];
+
+  const price = state.price
+    ? (/\d/.test(state.price)
+        ? escapeHtml(state.price)
+        : '<span class="po">' + escapeHtml(state.price) + '</span>')
+    : '';
+
+  page.innerHTML =
+    '<div class="info">' +
+      '<div class="info-block">' +
+        '<div class="info-top">' +
+          '<div class="info-head">' +
+            '<div class="info-eyebrow">About Property</div>' +
+            (price ? '<div class="info-price">' + price + '</div>' : '') +
+          '</div>' +
+          '<div class="info-blurb">' + escapeHtml(state.blurb) + '</div>' +
+        '</div>' +
+        '<div class="info-mid">' +
+          '<div class="info-col features">' +
+            '<div class="info-lbl">Features</div>' +
+            '<ul class="info-feats">' +
+              feats.map(f => '<li>' + escapeHtml(f) + '</li>').join('') +
+            '</ul>' +
+          '</div>' +
+          '<div class="info-col stats">' +
+            '<div class="info-lbl">The Details</div>' +
+            '<div class="info-stats">' +
+              stats.map(s => '<div class="stat"><div class="v">' +
+                (escapeHtml(s[1]) || '&mdash;') + '</div><div class="k">' +
+                s[0] + '</div></div>').join('') +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="info-photo">' +
+        (photo ? '<img src="' + photo.url + '" alt="">'
+               : '<div class="ph-empty">Pick a photo in the Property panel</div>') +
+      '</div>' +
+    '</div>';
+}
+
 function renderPage(page, i) {
   if (i === 0) renderCover(page);
   else if (i === 1) renderGallery(page);
-  // pages 3+ stay blank for now
+  else if (i === 2) renderInfo(page);
+  // pages 4+ stay blank for now
 }
 
 function redraw() { if (builder) builder.rebuild(); }
@@ -397,6 +559,26 @@ function updateBentoNote() {
     btn.style.opacity = '';
     btn.style.cursor = '';
   }
+}
+
+// page 3's photo picker mirrors whatever is currently loaded
+function renderPhotoPicker() {
+  const sel = $('#infoPhoto');
+  if (state.infoPhotoId && !state.images.some(i => i.id === state.infoPhotoId)) {
+    state.infoPhotoId = null;
+  }
+  sel.innerHTML = '';
+  const none = document.createElement('option');
+  none.value = '';
+  none.textContent = state.images.length ? 'None' : 'Add photos first';
+  sel.appendChild(none);
+  state.images.forEach(img => {
+    const o = document.createElement('option');
+    o.value = String(img.id);
+    o.textContent = img.name + (img.id === state.heroId ? ' (hero)' : '');
+    sel.appendChild(o);
+  });
+  sel.value = state.infoPhotoId ? String(state.infoPhotoId) : '';
 }
 
 function renderImgList() {
@@ -445,6 +627,8 @@ function renderImgList() {
     host.appendChild(row);
   });
 
+  renderPhotoPicker();
+
   $('#imgNote').textContent = state.images.length
     ? state.images.length + ' photo' + (state.images.length > 1 ? 's' : '') + '.'
     : 'The first photo you add becomes the hero.';
@@ -484,8 +668,12 @@ document.querySelectorAll('[data-field]').forEach(el => {
 });
 
 $('#btnShuffle').addEventListener('click', shuffleGallery);
+$('#infoPhoto').addEventListener('change', e => {
+  state.infoPhotoId = e.target.value ? parseInt(e.target.value, 10) : null;
+  redraw();
+});
 
-builder = Builder.init({ pages: 2, label: 'Page', render: renderPage });
+builder = Builder.init({ pages: 3, label: 'Page', render: renderPage });
 renderImgList();
 updateBentoNote();
 </script>
