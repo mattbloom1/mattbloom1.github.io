@@ -19,6 +19,49 @@
 <link rel="stylesheet" href="../../assets/css/tokens.css">
 <link rel="stylesheet" href="../../assets/css/base.css">
 <link rel="stylesheet" href="../../assets/css/builder.css">
+<style>
+/* ============================================================
+   BROCHURE — page styles
+   Type is set in pt so the design canvas matches real print
+   sizes. Page geometry lives in assets/css/builder.css.
+   ============================================================ */
+:root{
+  --pad:.6in;              /* page margin, matches the type specimen */
+  --mask-top:20%;          /* navy scrim over the top of the hero */
+  --mask-bot:5%;
+}
+
+/* ---------- COVER (page 1) ---------- */
+.cover{position:absolute;inset:0;overflow:hidden;background:var(--navy);}
+.cover-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
+
+/* the scrim: navy fading out of the top ~20% and up from the bottom ~5% */
+.cover-mask{position:absolute;inset:0;pointer-events:none;
+  background:
+    linear-gradient(to bottom, rgba(0,39,58,.82) 0%, rgba(0,39,58,.55) 45%, rgba(0,39,58,0) var(--mask-top)),
+    linear-gradient(to top,   rgba(0,39,58,.70) 0%, rgba(0,39,58,0) var(--mask-bot));
+}
+
+/* empty state — only on screen, never prints */
+.cover-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  border:1.5pt dashed rgba(229,229,229,.35);margin:.35in;
+  font:800 9pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:rgba(229,229,229,.55);text-align:center;padding:0 .5in;}
+
+.cover-head{position:absolute;left:var(--pad);right:var(--pad);top:.75in;}
+.cv-addr{font:700 34pt/1.06 var(--serif);color:#fff;text-align:left;
+         text-wrap:balance;overflow-wrap:break-word;}
+.cv-city{font:800 11pt var(--sans);letter-spacing:.10em;text-transform:uppercase;color:#fff;
+         margin-top:.11in;text-align:left;}
+.cv-mono{margin-top:.30in;text-align:center;}
+.cv-mono img{height:.62in;width:auto;display:inline-block;}
+
+@media screen{
+  .cover-empty[hidden]{display:none;}
+}
+@media print{
+  .cover-empty{display:none !important;}
+}
+</style>
 </head>
 <body data-root="../../" data-nav="tools">
 <main>
@@ -31,57 +74,50 @@
     <div class="ed-body">
 
       <details class="ed-sec" open>
+        <summary>Images <span class="hint">tag one as hero</span></summary>
+        <div class="sec-in">
+          <div class="drop" id="imgDrop" tabindex="0" role="button" aria-label="Add images">
+            <div class="d-big">Drop photos</div>
+            <div class="d-sub">or click to browse — JPG, PNG, WebP. Add as many as you like.</div>
+          </div>
+          <input type="file" id="imgFile" accept="image/*" multiple hidden>
+          <div id="imgList"></div>
+          <div class="sec-note" id="imgNote">No images yet. The first one you add becomes the hero automatically.</div>
+        </div>
+      </details>
+
+      <details class="ed-sec" open>
+        <summary>Address <span class="hint">page 1</span></summary>
+        <div class="sec-in">
+          <div class="field">
+            <label>Property address</label>
+            <input type="text" data-field="address" placeholder="45 Crosby Street, Penthouse">
+            <div class="note">Playfair 700 · 34pt. Wraps to a second line when long.</div>
+          </div>
+          <div class="f-row">
+            <div class="field">
+              <label>City</label>
+              <input type="text" data-field="city" placeholder="New York">
+            </div>
+            <div class="field">
+              <label>State</label>
+              <input type="text" data-field="state" placeholder="NY">
+            </div>
+          </div>
+          <div class="sec-note">Nunito Sans 800 · 11pt · .10em tracking, one line under the address.</div>
+        </div>
+      </details>
+
+      <details class="ed-sec">
         <summary>Document <span class="hint">8.5 &times; 11 in</span></summary>
         <div class="sec-in">
           <div class="field">
             <label>Pages</label>
-            <input type="number" id="pageCount" min="1" max="40" value="4">
-            <div class="note">Blank US Letter portrait pages. Layout comes later.</div>
-          </div>
-          <div class="field">
-            <label>Document title</label>
-            <input type="text" data-field="docTitle" placeholder="45 Crosby St, Penthouse">
+            <input type="number" id="pageCount" min="1" max="40" value="1">
+            <div class="note">Only page 1 is designed so far. Extra pages render blank.</div>
           </div>
         </div>
       </details>
-
-      <details class="ed-sec">
-        <summary>Property</summary>
-        <div class="sec-in">
-          <div class="field"><label>Address</label><input type="text" data-field="address" placeholder="45 Crosby St, Penthouse"></div>
-          <div class="field"><label>Price</label><input type="text" data-field="price" placeholder="$8,950,000"></div>
-          <div class="sec-note">Fields TBD &mdash; add them here once the brochure spec is defined.</div>
-        </div>
-      </details>
-
-      <details class="ed-sec">
-        <summary>Photography</summary>
-        <div class="sec-in">
-          <div class="sec-note">Fields TBD &mdash; add them here once the brochure spec is defined.</div>
-        </div>
-      </details>
-
-      <details class="ed-sec">
-        <summary>Copy</summary>
-        <div class="sec-in">
-          <div class="sec-note">Fields TBD &mdash; add them here once the brochure spec is defined.</div>
-        </div>
-      </details>
-
-      <details class="ed-sec">
-        <summary>Floorplan</summary>
-        <div class="sec-in">
-          <div class="sec-note">Fields TBD &mdash; add them here once the brochure spec is defined.</div>
-        </div>
-      </details>
-
-      <details class="ed-sec">
-        <summary>Agents</summary>
-        <div class="sec-in">
-          <div class="sec-note">Fields TBD &mdash; add them here once the brochure spec is defined.</div>
-        </div>
-      </details>
-
 
     </div>
   </aside>
@@ -111,7 +147,7 @@
 <section class="tool-about">
   <span class="t-label">About this tool</span>
   <p>Builds a property brochure on 8.5 &times; 11 pages &mdash; photography, copy, floorplans, and the details. Everything runs in the browser; nothing is uploaded.</p>
-  <p style="margin-top:10px"><em>Work in progress</em> &mdash; this is the shell only: the left panel and a blank 8.5&nbsp;&times;&nbsp;11 preview. Page design and the auto-fill blocks land once the specs are settled.</p>
+  <p style="margin-top:10px"><em>In progress</em> &mdash; page 1 (the cover) is designed. Remaining pages render blank.</p>
 </section>
 </main>
 
@@ -120,7 +156,154 @@
 <script src="../../assets/js/motion.js"></script>
 <script src="../../assets/js/builder.js"></script>
 <script>
-  Builder.init({ pages: 4, label: 'Page' });
+'use strict';
+const $ = s => document.querySelector(s);
+
+/* ---------------- state ---------------- */
+const state = {
+  images: [],      // {id, name, url}
+  heroId: null,
+  address: '',
+  city: '',
+  state: ''
+};
+let uid = 0;
+let builder = null;
+
+/* ---------------- page rendering ---------------- */
+function heroImage() {
+  return state.images.find(i => i.id === state.heroId) || null;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+}
+
+function cityLine() {
+  return [state.city, state.state].filter(Boolean).join(', ');
+}
+
+function renderPage(page, i) {
+  if (i !== 0) return;                 // pages 2+ stay blank for now
+  const hero = heroImage();
+  const city = cityLine();
+  page.innerHTML =
+    '<div class="cover">' +
+      (hero ? '<img class="cover-img" src="' + hero.url + '" alt="">' : '') +
+      '<div class="cover-mask"></div>' +
+      (hero ? '' : '<div class="cover-empty">Drop a photo and tag it as the hero</div>') +
+      '<div class="cover-head">' +
+        '<div class="cv-addr">' + (escapeHtml(state.address) || '&nbsp;') + '</div>' +
+        (city ? '<div class="cv-city">' + escapeHtml(city) + '</div>' : '') +
+        '<div class="cv-mono"><img src="../../assets/logos/monogram-white.svg" alt=""></div>' +
+      '</div>' +
+    '</div>';
+}
+
+function redraw() { if (builder) builder.rebuild(); }
+
+/* ---------------- image list ---------------- */
+function renderImgList() {
+  const host = $('#imgList');
+  host.innerHTML = '';
+  state.images.forEach(img => {
+    const row = document.createElement('div');
+    row.className = 'img-row' + (img.id === state.heroId ? ' is-hero' : '');
+
+    const thumb = document.createElement('img');
+    thumb.className = 'img-thumb';
+    thumb.src = img.url;
+    thumb.alt = '';
+
+    const name = document.createElement('span');
+    name.className = 'img-name';
+    name.textContent = img.name;
+
+    const heroBtn = document.createElement('button');
+    heroBtn.type = 'button';
+    heroBtn.className = 'img-hero';
+    heroBtn.textContent = img.id === state.heroId ? 'Hero' : 'Set hero';
+    heroBtn.title = img.id === state.heroId ? 'This image is the cover hero' : 'Use this image as the cover hero';
+    heroBtn.addEventListener('click', () => {
+      state.heroId = img.id;
+      renderImgList();
+      redraw();
+    });
+
+    const del = document.createElement('button');
+    del.type = 'button';
+    del.className = 'img-x';
+    del.innerHTML = '&#10005;';
+    del.title = 'Remove this image';
+    del.addEventListener('click', () => {
+      state.images = state.images.filter(x => x.id !== img.id);
+      if (state.heroId === img.id) state.heroId = state.images.length ? state.images[0].id : null;
+      renderImgList();
+      redraw();
+    });
+
+    row.append(thumb, name, heroBtn, del);
+    host.appendChild(row);
+  });
+
+  $('#imgNote').textContent = state.images.length
+    ? state.images.length + ' image' + (state.images.length > 1 ? 's' : '') + '. The hero fills the cover, full bleed.'
+    : 'No images yet. The first one you add becomes the hero automatically.';
+}
+
+function addFiles(files) {
+  [...files].filter(f => f.type.startsWith('image/')).forEach(f => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = { id: ++uid, name: f.name, url: e.target.result };
+      state.images.push(img);
+      if (!state.heroId) state.heroId = img.id;
+      renderImgList();
+      redraw();
+    };
+    reader.readAsDataURL(f);
+  });
+}
+
+/* ---------------- wiring ---------------- */
+const drop = $('#imgDrop'), fileInput = $('#imgFile');
+drop.addEventListener('click', () => fileInput.click());
+drop.addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
+});
+fileInput.addEventListener('change', () => { addFiles(fileInput.files); fileInput.value = ''; });
+['dragenter', 'dragover'].forEach(ev =>
+  drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave', 'drop'].forEach(ev =>
+  drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', e => addFiles(e.dataTransfer.files));
+
+document.querySelectorAll('[data-field]').forEach(el => {
+  el.addEventListener('input', () => { state[el.dataset.field] = el.value; redraw(); });
+});
+
+builder = Builder.init({ pages: 1, label: 'Page', render: renderPage });
+renderImgList();
 </script>
+
+<style>
+/* image list rows — editor chrome, screen only */
+.img-row{display:flex;align-items:center;gap:9px;padding:7px 8px;margin-top:8px;
+  border:1px solid var(--ui-rule);border-radius:8px;background:#fff;}
+.img-row.is-hero{border-color:var(--sky);box-shadow:inset 3px 0 0 var(--sky);}
+.img-thumb{width:44px;height:34px;object-fit:cover;border-radius:4px;flex:none;background:var(--ui-paper-2);}
+.img-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font:500 11px var(--body);color:var(--navy);}
+.img-hero{flex:none;border:1px solid var(--ui-rule);background:#fff;border-radius:999px;
+  font:800 8.5px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ui-ink-soft);
+  padding:5px 9px;cursor:pointer;transition:background .15s,color .15s,border-color .15s;}
+.img-hero:hover{border-color:var(--navy);background:var(--navy);color:var(--ow);}
+.img-row.is-hero .img-hero{background:var(--navy);border-color:var(--navy);color:var(--ow);}
+.img-x{flex:none;border:1px solid var(--ui-rule);background:#fff;color:var(--ui-ink-soft);
+  font:800 10px/1 var(--sans);width:20px;height:20px;border-radius:50%;cursor:pointer;padding:0;
+  transition:background .15s,border-color .15s,color .15s;}
+.img-x:hover{background:var(--danger,#B3261E);border-color:var(--danger,#B3261E);color:#fff;}
+.img-hero:focus-visible,.img-x:focus-visible{outline:2px solid var(--sky);outline-offset:2px;}
+</style>
 </body>
 </html>
