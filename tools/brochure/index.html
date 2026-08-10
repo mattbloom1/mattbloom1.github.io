@@ -27,8 +27,8 @@
    ============================================================ */
 :root{
   --pad:.6in;              /* page margin */
-  --mask-top:20%;          /* navy scrim down from the top edge */
-  --mask-bot:5%;           /* navy scrim up from the bottom edge */
+  --mask-top:15%;          /* navy scrim down from the top edge */
+  --mask-bot:40%;          /* navy scrim up from the bottom edge — carries the address */
   --bento-gap:.06in;       /* white gutter between bento cells */
 }
 
@@ -64,6 +64,15 @@
   gap:var(--bento-gap);background:#fff;overflow:hidden;}
 .bento-cell{position:relative;overflow:hidden;background:var(--navy);}
 .bento-cell img{width:100%;height:100%;object-fit:cover;display:block;}
+
+/* drag-to-swap affordances — screen only, and stripped on drop */
+@media screen{
+  .bento-cell{cursor:grab;}
+  .bento-cell:active{cursor:grabbing;}
+  .bento-cell.is-dragging{opacity:.4;}
+  .bento-cell.is-target::after{content:'';position:absolute;inset:0;
+    background:rgba(83,199,220,.28);box-shadow:inset 0 0 0 3px var(--sky);}
+}
 
 .bento-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   background:var(--navy);
@@ -114,6 +123,10 @@
               <label>State</label>
               <input type="text" data-field="state" placeholder="NY">
             </div>
+            <div class="field">
+              <label>ZIP</label>
+              <input type="text" data-field="zip" placeholder="10012">
+            </div>
           </div>
         </div>
       </details>
@@ -121,7 +134,7 @@
       <details class="ed-sec" open>
         <summary>Gallery <span class="hint">page 2</span></summary>
         <div class="sec-in">
-          <div class="sec-note" id="bentoNote">Add 2&ndash;6 photos.</div>
+          <div class="sec-note" id="bentoNote">Add 2 more photos &mdash; the hero is held back for page 1.</div>
           <button class="btn sm" id="btnShuffle" style="margin-top:10px;width:100%">Shuffle layout</button>
         </div>
       </details>
@@ -225,6 +238,7 @@ const state = {
   address: '',
   city: '',
   state: '',
+  zip: '',
   bentoVariant: 0, // index into BENTO[count]
   bentoOrder: []   // image ids, the order they fill cells a..f
 };
@@ -234,39 +248,35 @@ let builder = null;
 /* ---------------- helpers ---------------- */
 const heroImage = () => state.images.find(i => i.id === state.heroId) || null;
 const escapeHtml = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const cityLine = () => [state.city, state.state].filter(Boolean).join(', ');
-
-// images used on page 2, in their shuffled order, capped at GALLERY_MAX
-function galleryImages() {
-  const byId = new Map(state.images.map(i => [i.id, i]));
-  const ordered = state.bentoOrder.map(id => byId.get(id)).filter(Boolean);
-  state.images.forEach(i => { if (!ordered.includes(i)) ordered.push(i); });
-  return ordered.slice(0, GALLERY_MAX);
+function cityLine() {
+  const cs = [state.city, state.state].filter(Boolean).join(', ');
+  return [cs, state.zip].filter(Boolean).join(' ');
 }
 
-// keep the shuffle state valid whenever the image set changes
+// the hero carries page 1, so it's held out of the gallery
+const galleryPool = () => state.images.filter(i => i.id !== state.heroId);
+
+// images used on page 2, in the order the user has arranged them
+function galleryImages() {
+  const byId = new Map(galleryPool().map(i => [i.id, i]));
+  return state.bentoOrder.map(id => byId.get(id)).filter(Boolean).slice(0, GALLERY_MAX);
+}
+
+// keep the gallery order valid whenever the image set or the hero changes
 function syncGallery() {
-  const ids = state.images.map(i => i.id);
+  const ids = galleryPool().map(i => i.id);
   state.bentoOrder = state.bentoOrder.filter(id => ids.includes(id));
   ids.forEach(id => { if (!state.bentoOrder.includes(id)) state.bentoOrder.push(id); });
-  const n = Math.min(state.images.length, GALLERY_MAX);
+  const n = Math.min(ids.length, GALLERY_MAX);
   const variants = BENTO[n];
   if (variants && state.bentoVariant >= variants.length) state.bentoVariant = 0;
 }
 
+// Shuffle re-rolls the bento geometry only. Which photo sits in which
+// cell is the user's call, made by dragging one onto another.
 function shuffleGallery() {
-  const n = Math.min(state.images.length, GALLERY_MAX);
+  const n = Math.min(galleryPool().length, GALLERY_MAX);
   if (n < GALLERY_MIN) return;
-  const order = galleryImages().map(i => i.id);
-  // Fisher-Yates
-  for (let i = order.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [order[i], order[j]] = [order[j], order[i]];
-  }
-  const rest = state.images.map(i => i.id).filter(id => !order.includes(id));
-  state.bentoOrder = order.concat(rest);
-
-  // pick a different variant than the current one when there's a choice
   const variants = BENTO[n];
   if (variants && variants.length > 1) {
     let v;
@@ -275,6 +285,14 @@ function shuffleGallery() {
   }
   redraw();
   updateBentoNote();
+}
+
+// swap two gallery slots — the drag-and-drop primitive
+function swapCells(a, b) {
+  const o = state.bentoOrder;
+  if (a === b || a < 0 || b < 0 || a >= o.length || b >= o.length) return;
+  [o[a], o[b]] = [o[b], o[a]];
+  redraw();
 }
 
 /* ---------------- page rendering ---------------- */
@@ -297,7 +315,8 @@ function renderCover(page) {
 function renderGallery(page) {
   const imgs = galleryImages();
   if (imgs.length < GALLERY_MIN) {
-    page.innerHTML = '<div class="bento-empty">Add at least ' + GALLERY_MIN + ' photos<br>for the gallery page</div>';
+    page.innerHTML = '<div class="bento-empty">Add at least ' + GALLERY_MIN +
+      ' photos besides the hero<br>for the gallery page</div>';
     return;
   }
   const variants = BENTO[imgs.length];
@@ -313,10 +332,38 @@ function renderGallery(page) {
     const cell = document.createElement('div');
     cell.className = 'bento-cell';
     cell.style.gridArea = String.fromCharCode(97 + i);
+    cell.draggable = true;
+    cell.dataset.slot = String(i);
+    cell.title = 'Drag onto another photo to swap them';
+
     const el = document.createElement('img');
     el.src = img.url;
     el.alt = '';
+    el.draggable = false;            // let the drag target the cell, not the image
     cell.appendChild(el);
+
+    cell.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text/plain', String(i));
+      e.dataTransfer.effectAllowed = 'move';
+      cell.classList.add('is-dragging');
+    });
+    cell.addEventListener('dragend', () => {
+      grid.querySelectorAll('.bento-cell').forEach(c =>
+        c.classList.remove('is-dragging', 'is-target'));
+    });
+    cell.addEventListener('dragover', e => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      if (!cell.classList.contains('is-dragging')) cell.classList.add('is-target');
+    });
+    cell.addEventListener('dragleave', () => cell.classList.remove('is-target'));
+    cell.addEventListener('drop', e => {
+      e.preventDefault();
+      cell.classList.remove('is-target');
+      const from = parseInt(e.dataTransfer.getData('text/plain'), 10);
+      if (!Number.isNaN(from)) swapCells(from, i);
+    });
+
     grid.appendChild(cell);
   });
 
@@ -333,18 +380,19 @@ function redraw() { if (builder) builder.rebuild(); }
 
 /* ---------------- editor UI ---------------- */
 function updateBentoNote() {
-  const n = Math.min(state.images.length, GALLERY_MAX);
+  const pool = galleryPool().length;
+  const n = Math.min(pool, GALLERY_MAX);
   const note = $('#bentoNote'), btn = $('#btnShuffle');
   if (n < GALLERY_MIN) {
-    note.textContent = 'Add ' + GALLERY_MIN + '–' + GALLERY_MAX + ' photos.';
+    note.textContent = 'Add ' + (GALLERY_MIN - pool) + ' more photo' +
+      (GALLERY_MIN - pool === 1 ? '' : 's') + ' — the hero is held back for page 1.';
     btn.disabled = true;
     btn.style.opacity = '.45';
     btn.style.cursor = 'not-allowed';
   } else {
-    const extra = state.images.length > GALLERY_MAX
-      ? ' The first ' + GALLERY_MAX + ' after shuffling are used.' : '';
-    note.textContent = n + ' photos in the gallery. Layout ' + (state.bentoVariant + 1) +
-                       ' of ' + BENTO[n].length + '.' + extra;
+    const extra = pool > GALLERY_MAX ? ' First ' + GALLERY_MAX + ' used.' : '';
+    note.textContent = n + ' photos, layout ' + (state.bentoVariant + 1) + ' of ' +
+                       BENTO[n].length + '.' + extra + ' Drag one onto another to swap.';
     btn.disabled = false;
     btn.style.opacity = '';
     btn.style.cursor = '';
@@ -371,7 +419,13 @@ function renderImgList() {
     heroBtn.type = 'button';
     heroBtn.className = 'img-hero';
     heroBtn.textContent = img.id === state.heroId ? 'Hero' : 'Set hero';
-    heroBtn.addEventListener('click', () => { state.heroId = img.id; renderImgList(); redraw(); });
+    heroBtn.addEventListener('click', () => {
+      state.heroId = img.id;
+      syncGallery();          // the new hero leaves the gallery, the old one rejoins it
+      renderImgList();
+      updateBentoNote();
+      redraw();
+    });
 
     const del = document.createElement('button');
     del.type = 'button';
