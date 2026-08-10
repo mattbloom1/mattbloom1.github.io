@@ -97,8 +97,10 @@
   margin-right:calc(-1 * var(--pad));padding:.13in var(--pad) .13in .26in;
   font:700 22pt/1 var(--serif);white-space:nowrap;}
 .info-price .po{font:800 10pt var(--sans);letter-spacing:.14em;text-transform:uppercase;}
+/* flex:1 + min-height:0 makes these bounded by their parent rather than
+   growing past it — which is what lets scrollHeight detect an overflow */
 .info-blurb{margin-top:.28in;font:300 10.5pt/16pt var(--body);color:var(--ow);max-width:6.2in;
-  overflow:hidden;}
+  flex:1;min-height:0;overflow:hidden;}
 
 /* middle third of the page = bottom half of the colour block */
 .info-mid{position:absolute;top:50%;bottom:0;left:0;right:0;padding:.34in var(--pad) .5in;
@@ -108,7 +110,7 @@
 .info-col.stats{flex:1;}
 .info-lbl{font:800 8pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--sky);
   margin-bottom:.14in;}
-.info-feats{list-style:none;margin:0;padding:0;overflow:hidden;
+.info-feats{list-style:none;margin:0;padding:0;flex:1;min-height:0;overflow:hidden;
   columns:2;column-gap:.28in;}
 .info-feats li{font:400 9.5pt/15pt var(--body);color:var(--ow);padding-left:.17in;position:relative;
   margin-bottom:.055in;break-inside:avoid;}
@@ -119,8 +121,32 @@
 .stat .v{font:700 20pt/1 var(--serif);color:#fff;}
 .stat .k{font:800 7.5pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--sky);margin-top:.05in;}
 
+/* page 3 photo is repositionable inside its crop */
+@media screen{
+  .info-photo.has-img{cursor:grab;touch-action:none;user-select:none;}
+  .info-photo.has-img:active,.info-photo.is-moving{cursor:grabbing;}
+  .info-photo img{pointer-events:none;}
+}
+
+/* ---------- OVERFLOW WARNINGS (screen only) ---------- */
+@media screen{
+  .is-over{outline:2px solid var(--danger,#B3261E);outline-offset:2px;}
+  .over-flag{position:absolute;z-index:9;background:var(--danger,#B3261E);color:#fff;
+    font:800 7pt var(--sans);letter-spacing:.12em;text-transform:uppercase;
+    padding:3px 7px;border-radius:3px;pointer-events:none;white-space:nowrap;}
+}
+.warn{display:none;margin-top:9px;padding:8px 10px;border-radius:6px;
+  background:rgba(179,38,30,.09);border:1px solid rgba(179,38,30,.35);
+  font:500 10.5px/1.5 var(--body);color:#8C1D18;}
+.warn.on{display:block;}
+.warn b{font-weight:700;}
+
+.ed-foot{flex:none;padding:14px 20px 18px;border-top:1px solid var(--ui-rule);}
+.ed-foot .btn{width:100%;}
+
 @media print{
-  .cover-empty,.bento-empty,.info-photo .ph-empty{display:none !important;}
+  .cover-empty,.bento-empty,.info-photo .ph-empty,.over-flag{display:none !important;}
+  .is-over{outline:none !important;}
 }
 </style>
 </head>
@@ -153,6 +179,7 @@
           <div class="field">
             <label>Property address</label>
             <input type="text" data-field="address" placeholder="45 Crosby Street, Penthouse">
+            <div class="warn" id="warnAddr"><b>Too long.</b> The address has grown above the dark scrim on page 1, so the top of it may be unreadable.</div>
           </div>
           <div class="f-row">
             <div class="field">
@@ -185,6 +212,9 @@
           <div class="field">
             <label>Photo</label>
             <select id="infoPhoto"></select>
+            <div class="note">Drag the photo on page 3 to reframe it inside the crop.
+              <button type="button" class="linkish" id="btnResetPos">Re-centre</button>
+            </div>
           </div>
           <div class="field">
             <label>Price</label>
@@ -193,10 +223,12 @@
           <div class="field">
             <label>About the property</label>
             <textarea data-field="blurb" rows="5" placeholder="Perched above Crosby Street, this full-floor residence captures light on four exposures…"></textarea>
+            <div class="warn" id="warnBlurb"><b>Too long.</b> The end of this blurb is cut off on page 3.</div>
           </div>
           <div class="field">
             <label>Features — one per line</label>
             <textarea data-field="features" rows="6" placeholder="Blackened-steel fireplace&#10;Calacatta kitchen&#10;Private landscaped terrace"></textarea>
+            <div class="warn" id="warnFeats"><b>Too many.</b> The last features are cut off on page 3.</div>
           </div>
           <div class="f-row">
             <div class="field"><label>Beds</label><input type="text" data-field="beds" placeholder="4"></div>
@@ -209,16 +241,9 @@
         </div>
       </details>
 
-      <details class="ed-sec">
-        <summary>Document <span class="hint">8.5 &times; 11 in</span></summary>
-        <div class="sec-in">
-          <div class="field">
-            <label>Pages</label>
-            <input type="number" id="pageCount" min="1" max="40" value="3">
-          </div>
-        </div>
-      </details>
-
+    </div>
+    <div class="ed-foot">
+      <button class="btn sm ghost" id="btnPreview">Load preview — 3 Crosby Lane</button>
     </div>
   </aside>
 
@@ -244,11 +269,6 @@
 
 </div><!-- /app -->
 
-<section class="tool-about">
-  <span class="t-label">About this tool</span>
-  <p>Builds a property brochure on 8.5 &times; 11 pages &mdash; photography, copy, floorplans, and the details. Everything runs in the browser; nothing is uploaded.</p>
-  <p style="margin-top:10px"><em>In progress</em> &mdash; pages 1 and 2 are designed. Later pages render blank.</p>
-</section>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" integrity="sha384-HOvlOYPIs/zjoIkWUGXkVmXsjr8GuZLV+Q+rcPwmJOVZVpvTSXQChiN4t9Euv9Vc" crossorigin="anonymous"></script>
@@ -313,6 +333,7 @@ const state = {
   bentoOrder: [],  // image ids, the order they fill cells a..f
   // page 3
   infoPhotoId: null,
+  infoPos: { x: 50, y: 50 },   // object-position %, dragged by the agent
   price: '',
   blurb: '',
   features: '',
@@ -524,11 +545,54 @@ function renderInfo(page) {
           '</div>' +
         '</div>' +
       '</div>' +
-      '<div class="info-photo">' +
-        (photo ? '<img src="' + photo.url + '" alt="">'
+      '<div class="info-photo' + (photo ? ' has-img' : '') + '">' +
+        (photo ? '<img src="' + photo.url + '" alt="" style="object-position:' +
+                   state.infoPos.x + '% ' + state.infoPos.y + '%">'
                : '<div class="ph-empty">Pick a photo in the Property panel</div>') +
       '</div>' +
     '</div>';
+
+  const box = page.querySelector('.info-photo');
+  if (photo) box.addEventListener('pointerdown', e => beginPhotoDrag(e, box));
+}
+
+/* drag the page-3 photo around inside its crop.
+   object-position p% puts the image's overflow at -(overflow * p/100), so
+   moving it by d px means changing p by -d/overflow*100. Pointer deltas are
+   in screen px, so they're divided by the preview's scale first. */
+function beginPhotoDrag(e, box) {
+  const img = box.querySelector('img');
+  if (!img || !img.naturalWidth) return;
+  e.preventDefault();
+
+  const page = box.closest('.page');
+  const scale = page ? page.getBoundingClientRect().width / (8.5 * 96) : 1;
+  const bw = box.clientWidth, bh = box.clientHeight;
+  const cover = Math.max(bw / img.naturalWidth, bh / img.naturalHeight);
+  const overX = img.naturalWidth * cover - bw;
+  const overY = img.naturalHeight * cover - bh;
+
+  const start = { x: e.clientX, y: e.clientY, px: state.infoPos.x, py: state.infoPos.y };
+  box.classList.add('is-moving');
+  try { box.setPointerCapture(e.pointerId); } catch (_) {}
+
+  const move = ev => {
+    const dx = (ev.clientX - start.x) / scale;
+    const dy = (ev.clientY - start.y) / scale;
+    if (overX > 0.5) state.infoPos.x = Math.max(0, Math.min(100, start.px - (dx / overX) * 100));
+    if (overY > 0.5) state.infoPos.y = Math.max(0, Math.min(100, start.py - (dy / overY) * 100));
+    img.style.objectPosition = state.infoPos.x + '% ' + state.infoPos.y + '%';
+  };
+  const done = ev => {
+    box.removeEventListener('pointermove', move);
+    box.removeEventListener('pointerup', done);
+    box.removeEventListener('pointercancel', done);
+    try { box.releasePointerCapture(ev.pointerId); } catch (_) {}
+    box.classList.remove('is-moving');
+  };
+  box.addEventListener('pointermove', move);
+  box.addEventListener('pointerup', done);
+  box.addEventListener('pointercancel', done);
 }
 
 function renderPage(page, i) {
@@ -538,7 +602,63 @@ function renderPage(page, i) {
   // pages 4+ stay blank for now
 }
 
-function redraw() { if (builder) builder.rebuild(); }
+function redraw() {
+  if (!builder) return;
+  builder.rebuild();
+  // setTimeout, not requestAnimationFrame: rAF is suspended while the tab
+  // isn't rendering, which would leave stale warnings on a background tab.
+  // Reading scrollHeight forces the layout we need anyway.
+  setTimeout(checkOverflow, 0);
+}
+
+/* ---------------- overflow warnings ----------------
+   Content regions are fixed-height with overflow:hidden, so too much copy
+   is silently clipped rather than breaking the layout. Measure after every
+   redraw and say so, on the page and in the panel. */
+function flag(el, label) {
+  if (!el) return;
+  el.classList.add('is-over');
+  const page = el.closest('.page');
+  if (!page) return;
+  const pr = page.getBoundingClientRect(), r = el.getBoundingClientRect();
+  const tag = document.createElement('div');
+  tag.className = 'over-flag';
+  tag.textContent = label;
+  tag.style.left = (r.left - pr.left) + 'px';
+  tag.style.top = Math.max(0, r.bottom - pr.top - 18) + 'px';
+  page.appendChild(tag);
+}
+
+function checkOverflow() {
+  document.querySelectorAll('.over-flag').forEach(n => n.remove());
+  document.querySelectorAll('.is-over').forEach(n => n.classList.remove('is-over'));
+
+  // multi-column lists overflow sideways into a third column, so the
+  // horizontal axis has to be checked too — scrollHeight alone misses it
+  const over = el => !!el && (el.scrollHeight > el.clientHeight + 1 ||
+                              el.scrollWidth > el.clientWidth + 1);
+  const blurb = document.querySelector('.info-blurb');
+  const feats = document.querySelector('.info-feats');
+  const blurbOver = over(blurb), featsOver = over(feats);
+  if (blurbOver) flag(blurb, 'Blurb clipped');
+  if (featsOver) flag(feats, 'Features clipped');
+
+  // page 1: has the address grown up out of the bottom scrim?
+  let addrOver = false;
+  const head = document.querySelector('.cover-head');
+  if (head) {
+    const page = head.closest('.page');
+    const pr = page.getBoundingClientRect();
+    const scrimTop = pr.top + pr.height * (1 - parseFloat(
+      getComputedStyle(document.documentElement).getPropertyValue('--mask-bot')) / 100);
+    addrOver = head.getBoundingClientRect().top < scrimTop;
+    if (addrOver) flag(head, 'Above the scrim');
+  }
+
+  $('#warnBlurb').classList.toggle('on', blurbOver);
+  $('#warnFeats').classList.toggle('on', featsOver);
+  $('#warnAddr').classList.toggle('on', addrOver);
+}
 
 /* ---------------- editor UI ---------------- */
 function updateBentoNote() {
@@ -668,6 +788,54 @@ document.querySelectorAll('[data-field]').forEach(el => {
 });
 
 $('#btnShuffle').addEventListener('click', shuffleGallery);
+$('#btnResetPos').addEventListener('click', () => {
+  state.infoPos = { x: 50, y: 50 };
+  redraw();
+});
+
+/* ---------------- sample data ----------------
+   Real photography from photos/3-crosby-lane, invented listing copy.
+   Images are same-origin paths, not data URLs, so this stays cheap. */
+const PREVIEW = {
+  photos: [0, 3, 6, 9, 12, 15, 18, 21],
+  address: '3 Crosby Lane',
+  city: 'Rye', state: 'NY', zip: '10580',
+  price: '$4,275,000',
+  blurb: 'Set behind a stone wall on a quiet lane, this shingle-and-clapboard ' +
+    'colonial opens to a double-height entry and a great room that runs the depth ' +
+    'of the house. Every principal room faces the rear garden, and the kitchen ' +
+    'gives onto a covered porch built for long dinners.',
+  features: ['Chef\'s kitchen with double island', 'Covered bluestone porch',
+    'Primary suite with dual dressing rooms', 'Wood-burning fireplace',
+    'Finished lower level with gym', 'Whole-house generator',
+    'Irrigated landscaped grounds', 'Attached two-car garage'].join('\n'),
+  beds: '5', baths: '4.5', parking: '2', sqft: '4,180'
+};
+
+$('#btnPreview').addEventListener('click', () => {
+  state.images = PREVIEW.photos.map(n => ({
+    id: ++uid,
+    name: '3-crosby-' + n + '.webp',
+    url: '../../photos/3-crosby-lane/img/' + n + '-e-f.webp'
+  }));
+  state.heroId = state.images[0].id;
+  state.infoPhotoId = state.images[state.images.length - 1].id;
+  state.infoPos = { x: 50, y: 50 };
+  state.bentoOrder = [];
+  state.bentoVariant = 0;
+
+  ['address', 'city', 'state', 'zip', 'price', 'blurb', 'features',
+   'beds', 'baths', 'parking', 'sqft'].forEach(k => {
+    state[k] = PREVIEW[k];
+    const el = document.querySelector('[data-field=' + k + ']');
+    if (el) el.value = PREVIEW[k];
+  });
+
+  syncGallery();
+  renderImgList();
+  updateBentoNote();
+  redraw();
+});
 $('#infoPhoto').addEventListener('change', e => {
   state.infoPhotoId = e.target.value ? parseInt(e.target.value, 10) : null;
   redraw();
@@ -676,6 +844,8 @@ $('#infoPhoto').addEventListener('change', e => {
 builder = Builder.init({ pages: 3, label: 'Page', render: renderPage });
 renderImgList();
 updateBentoNote();
+// webfont metrics change block heights, so re-measure once they land
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(checkOverflow);
 </script>
 
 <style>
@@ -696,6 +866,10 @@ updateBentoNote();
   transition:background .15s,border-color .15s,color .15s;}
 .img-x:hover{background:var(--danger,#B3261E);border-color:var(--danger,#B3261E);color:#fff;}
 .img-hero:focus-visible,.img-x:focus-visible{outline:2px solid var(--sky);outline-offset:2px;}
+.linkish{border:0;background:none;padding:0;margin-left:5px;cursor:pointer;
+  font:400 10px var(--ui-mono);color:var(--sky2);text-decoration:underline;text-underline-offset:2px;}
+.linkish:hover{color:var(--navy);}
+.linkish:focus-visible{outline:2px solid var(--sky);outline-offset:2px;}
 </style>
 </body>
 </html>
