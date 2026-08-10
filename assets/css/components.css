@@ -98,7 +98,10 @@ a.tile,button.tile{cursor:pointer}
    Paper-dominant editorial layout: light tool cards (navy ink on paper),
    navy reserved as a deliberate accent for the website bars. */
 .home{
-  max-width:1200px;margin-inline:auto;
+  /* width:100% is load-bearing — `margin-inline:auto` cancels the flex
+     stretch body would otherwise give <main>, leaving it intrinsically
+     sized. Without it the tool grid collapses to a single column. */
+  width:100%;max-width:1200px;margin-inline:auto;
   padding-top:clamp(28px,4vw,52px);
   padding-bottom:clamp(48px,8vw,96px);
 }
@@ -116,11 +119,14 @@ a.tile,button.tile{cursor:pointer}
   text-transform:uppercase;color:var(--ink-soft);
 }
 
-/* tools — a row of light paper cards at a fixed size. Hover/focus is a
-   colour + weight shift only; nothing grows, moves, or reflows. */
-.tool-row{display:flex;gap:16px}
+/* tools — a wrapping grid of light paper cards. Cells are equal width and
+   flow onto as many rows as the count needs. Hover/focus is a colour shift
+   only; nothing grows, moves, or reflows — in particular the name's font
+   weight is fixed, since changing it re-measures the serif and rewraps the
+   text inside the tile. */
+.tool-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(184px,1fr));gap:16px}
 .tool{
-  flex:1 1 0;min-width:0;position:relative;overflow:hidden;
+  min-width:0;position:relative;overflow:hidden;
   background:var(--paper);border:1px solid var(--rule);border-radius:10px;
   padding:18px 18px 18px 20px;min-height:122px;
   display:flex;flex-direction:column;justify-content:flex-end;
@@ -130,12 +136,11 @@ a.tile,button.tile{cursor:pointer}
 .tool .tool-name{
   font-family:var(--serif);font-weight:300;font-size:19px;line-height:1.1;
   margin-top:8px;color:var(--ink);
-  transition:font-weight var(--dur-1) var(--ease),color var(--dur-1) var(--ease);
+  transition:color var(--dur-1) var(--ease);
 }
 .tool:hover,.tool:focus-visible{
   border-color:var(--ink);background:var(--paper-2);outline:none;
 }
-.tool:hover .tool-name,.tool:focus-visible .tool-name{font-weight:400}
 .tool:hover .t-mono,.tool:focus-visible .t-mono{color:var(--ink)}
 .tool:focus-visible{box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--sky)}
 
@@ -215,9 +220,10 @@ a.tile,button.tile{cursor:pointer}
   .shuffle-bar{justify-content:flex-start}
 }
 
-/* responsive: 2-up then 1-up tool cards */
-@media (max-width:860px){ .tool-row{flex-wrap:wrap} .tool{flex:1 1 calc(50% - 8px)} }
-@media (max-width:520px){ .tool{flex:1 1 100%} }
+/* responsive: the grid's auto-fill handles the wide end on its own; below
+   860px force 2-up, then 1-up, so cards don't get too narrow to read. */
+@media (max-width:860px){ .tool-row{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:520px){ .tool-row{grid-template-columns:minmax(0,1fr)} }
 
 /* reveal-on-scroll initial state is set by motion.js (not CSS) so content
    is visible when JS is disabled */
