@@ -26,28 +26,31 @@
    sizes. Page geometry lives in assets/css/builder.css.
    ============================================================ */
 :root{
-  --pad:.6in;              /* page margin, matches the type specimen */
-  --mask-top:20%;          /* navy scrim over the top of the hero */
-  --mask-bot:5%;
+  --pad:.6in;              /* page margin */
+  --mask-top:20%;          /* navy scrim down from the top edge */
+  --mask-bot:5%;           /* navy scrim up from the bottom edge */
+  --bento-gap:.06in;       /* white gutter between bento cells */
 }
 
-/* ---------- COVER (page 1) ---------- */
+/* ---------- PAGE 1 — COVER ---------- */
 .cover{position:absolute;inset:0;overflow:hidden;background:var(--navy);}
 .cover-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
 
-/* the scrim: navy fading out of the top ~20% and up from the bottom ~5% */
+/* Two scrims, each a clean 100% -> 0 opacity fade over its own band.
+   Stop order matters: a later stop with a smaller percentage gets clamped
+   up to the previous one, which turns the fade into a hard cut. */
 .cover-mask{position:absolute;inset:0;pointer-events:none;
   background:
-    linear-gradient(to bottom, rgba(0,39,58,.82) 0%, rgba(0,39,58,.55) 45%, rgba(0,39,58,0) var(--mask-top)),
-    linear-gradient(to top,   rgba(0,39,58,.70) 0%, rgba(0,39,58,0) var(--mask-bot));
+    linear-gradient(to bottom, rgba(0,39,58,1) 0%, rgba(0,39,58,0) var(--mask-top)),
+    linear-gradient(to top,    rgba(0,39,58,1) 0%, rgba(0,39,58,0) var(--mask-bot));
 }
 
-/* empty state — only on screen, never prints */
 .cover-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   border:1.5pt dashed rgba(229,229,229,.35);margin:.35in;
   font:800 9pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:rgba(229,229,229,.55);text-align:center;padding:0 .5in;}
 
-.cover-head{position:absolute;left:var(--pad);right:var(--pad);top:.75in;}
+/* address block sits in the bottom third */
+.cover-head{position:absolute;left:var(--pad);right:var(--pad);bottom:.75in;}
 .cv-addr{font:700 34pt/1.06 var(--serif);color:#fff;text-align:left;
          text-wrap:balance;overflow-wrap:break-word;}
 .cv-city{font:800 11pt var(--sans);letter-spacing:.10em;text-transform:uppercase;color:#fff;
@@ -55,11 +58,20 @@
 .cv-mono{margin-top:.30in;text-align:center;}
 .cv-mono img{height:.62in;width:auto;display:inline-block;}
 
-@media screen{
-  .cover-empty[hidden]{display:none;}
-}
+/* ---------- PAGE 2 — BENTO GALLERY ---------- */
+.bento{position:absolute;inset:0;display:grid;
+  grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(6,1fr);
+  gap:var(--bento-gap);background:#fff;overflow:hidden;}
+.bento-cell{position:relative;overflow:hidden;background:var(--navy);}
+.bento-cell img{width:100%;height:100%;object-fit:cover;display:block;}
+
+.bento-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:var(--navy);
+  font:800 9pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:rgba(229,229,229,.55);
+  text-align:center;padding:0 .8in;line-height:1.7;}
+
 @media print{
-  .cover-empty{display:none !important;}
+  .cover-empty,.bento-empty{display:none !important;}
 }
 </style>
 </head>
@@ -78,11 +90,11 @@
         <div class="sec-in">
           <div class="drop" id="imgDrop" tabindex="0" role="button" aria-label="Add images">
             <div class="d-big">Drop photos</div>
-            <div class="d-sub">or click to browse — JPG, PNG, WebP. Add as many as you like.</div>
+            <div class="d-sub">or click to browse</div>
           </div>
           <input type="file" id="imgFile" accept="image/*" multiple hidden>
           <div id="imgList"></div>
-          <div class="sec-note" id="imgNote">No images yet. The first one you add becomes the hero automatically.</div>
+          <div class="sec-note" id="imgNote">The first photo you add becomes the hero.</div>
         </div>
       </details>
 
@@ -92,7 +104,6 @@
           <div class="field">
             <label>Property address</label>
             <input type="text" data-field="address" placeholder="45 Crosby Street, Penthouse">
-            <div class="note">Playfair 700 · 34pt. Wraps to a second line when long.</div>
           </div>
           <div class="f-row">
             <div class="field">
@@ -104,7 +115,14 @@
               <input type="text" data-field="state" placeholder="NY">
             </div>
           </div>
-          <div class="sec-note">Nunito Sans 800 · 11pt · .10em tracking, one line under the address.</div>
+        </div>
+      </details>
+
+      <details class="ed-sec" open>
+        <summary>Gallery <span class="hint">page 2</span></summary>
+        <div class="sec-in">
+          <div class="sec-note" id="bentoNote">Add 2&ndash;6 photos.</div>
+          <button class="btn sm" id="btnShuffle" style="margin-top:10px;width:100%">Shuffle layout</button>
         </div>
       </details>
 
@@ -113,8 +131,7 @@
         <div class="sec-in">
           <div class="field">
             <label>Pages</label>
-            <input type="number" id="pageCount" min="1" max="40" value="1">
-            <div class="note">Only page 1 is designed so far. Extra pages render blank.</div>
+            <input type="number" id="pageCount" min="1" max="40" value="2">
           </div>
         </div>
       </details>
@@ -147,7 +164,7 @@
 <section class="tool-about">
   <span class="t-label">About this tool</span>
   <p>Builds a property brochure on 8.5 &times; 11 pages &mdash; photography, copy, floorplans, and the details. Everything runs in the browser; nothing is uploaded.</p>
-  <p style="margin-top:10px"><em>In progress</em> &mdash; page 1 (the cover) is designed. Remaining pages render blank.</p>
+  <p style="margin-top:10px"><em>In progress</em> &mdash; pages 1 and 2 are designed. Later pages render blank.</p>
 </section>
 </main>
 
@@ -159,32 +176,109 @@
 'use strict';
 const $ = s => document.querySelector(s);
 
+const GALLERY_MIN = 2, GALLERY_MAX = 6;
+
+/* ============================================================
+   BENTO LAYOUTS
+   Each variant is six rows of six characters on a 6x6 grid;
+   the letter is the cell index (a = image 1). Shuffle picks a
+   random variant for the current image count AND reshuffles
+   which image lands in which cell.
+   ============================================================ */
+const BENTO = {
+  2: [
+    ['aaabbb','aaabbb','aaabbb','aaabbb','aaabbb','aaabbb'],
+    ['aaaaaa','aaaaaa','aaaaaa','bbbbbb','bbbbbb','bbbbbb'],
+    ['aaaabb','aaaabb','aaaabb','aaaabb','aaaabb','aaaabb'],
+    ['aaaaaa','aaaaaa','aaaaaa','aaaaaa','bbbbbb','bbbbbb']
+  ],
+  3: [
+    ['aaabbb','aaabbb','aaabbb','aaaccc','aaaccc','aaaccc'],
+    ['aaaaaa','aaaaaa','aaaaaa','bbbccc','bbbccc','bbbccc'],
+    ['aabbcc','aabbcc','aabbcc','aabbcc','aabbcc','aabbcc'],
+    ['aaaaaa','aaaaaa','aaaaaa','aaaaaa','bbbccc','bbbccc']
+  ],
+  4: [
+    ['aaabbb','aaabbb','aaabbb','cccddd','cccddd','cccddd'],
+    ['aaabbb','aaabbb','aaaccc','aaaccc','aaaddd','aaaddd'],
+    ['aaaaaa','aaaaaa','aaaaaa','aaaaaa','bbccdd','bbccdd'],
+    ['aabbcc','aabbcc','aabbcc','dddddd','dddddd','dddddd']
+  ],
+  5: [
+    ['aaaabb','aaaabb','aaaacc','aaaacc','dddeee','dddeee'],
+    ['aaabbb','aaabbb','aaabbb','ccddee','ccddee','ccddee'],
+    ['aaaaaa','aaaaaa','bbbccc','bbbccc','dddeee','dddeee'],
+    ['aabbcc','aabbcc','aabbcc','ddddee','ddddee','ddddee']
+  ],
+  6: [
+    ['aabbcc','aabbcc','aabbcc','ddeeff','ddeeff','ddeeff'],
+    ['aaaabb','aaaabb','aaaacc','aaaacc','ddeeff','ddeeff'],
+    ['aaabbb','aaabbb','cccddd','cccddd','eeefff','eeefff'],
+    ['aabbcc','aabbcc','ddddee','ddddee','ddddff','ddddff']
+  ]
+};
+
 /* ---------------- state ---------------- */
 const state = {
   images: [],      // {id, name, url}
   heroId: null,
   address: '',
   city: '',
-  state: ''
+  state: '',
+  bentoVariant: 0, // index into BENTO[count]
+  bentoOrder: []   // image ids, the order they fill cells a..f
 };
 let uid = 0;
 let builder = null;
 
+/* ---------------- helpers ---------------- */
+const heroImage = () => state.images.find(i => i.id === state.heroId) || null;
+const escapeHtml = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const cityLine = () => [state.city, state.state].filter(Boolean).join(', ');
+
+// images used on page 2, in their shuffled order, capped at GALLERY_MAX
+function galleryImages() {
+  const byId = new Map(state.images.map(i => [i.id, i]));
+  const ordered = state.bentoOrder.map(id => byId.get(id)).filter(Boolean);
+  state.images.forEach(i => { if (!ordered.includes(i)) ordered.push(i); });
+  return ordered.slice(0, GALLERY_MAX);
+}
+
+// keep the shuffle state valid whenever the image set changes
+function syncGallery() {
+  const ids = state.images.map(i => i.id);
+  state.bentoOrder = state.bentoOrder.filter(id => ids.includes(id));
+  ids.forEach(id => { if (!state.bentoOrder.includes(id)) state.bentoOrder.push(id); });
+  const n = Math.min(state.images.length, GALLERY_MAX);
+  const variants = BENTO[n];
+  if (variants && state.bentoVariant >= variants.length) state.bentoVariant = 0;
+}
+
+function shuffleGallery() {
+  const n = Math.min(state.images.length, GALLERY_MAX);
+  if (n < GALLERY_MIN) return;
+  const order = galleryImages().map(i => i.id);
+  // Fisher-Yates
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  const rest = state.images.map(i => i.id).filter(id => !order.includes(id));
+  state.bentoOrder = order.concat(rest);
+
+  // pick a different variant than the current one when there's a choice
+  const variants = BENTO[n];
+  if (variants && variants.length > 1) {
+    let v;
+    do { v = Math.floor(Math.random() * variants.length); } while (v === state.bentoVariant);
+    state.bentoVariant = v;
+  }
+  redraw();
+  updateBentoNote();
+}
+
 /* ---------------- page rendering ---------------- */
-function heroImage() {
-  return state.images.find(i => i.id === state.heroId) || null;
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-}
-
-function cityLine() {
-  return [state.city, state.state].filter(Boolean).join(', ');
-}
-
-function renderPage(page, i) {
-  if (i !== 0) return;                 // pages 2+ stay blank for now
+function renderCover(page) {
   const hero = heroImage();
   const city = cityLine();
   page.innerHTML =
@@ -200,9 +294,63 @@ function renderPage(page, i) {
     '</div>';
 }
 
+function renderGallery(page) {
+  const imgs = galleryImages();
+  if (imgs.length < GALLERY_MIN) {
+    page.innerHTML = '<div class="bento-empty">Add at least ' + GALLERY_MIN + ' photos<br>for the gallery page</div>';
+    return;
+  }
+  const variants = BENTO[imgs.length];
+  const areas = variants[Math.min(state.bentoVariant, variants.length - 1)];
+
+  // Built via DOM, not an HTML string: grid-template-areas rows are
+  // quoted CSS strings, and those quotes terminate a style="" attribute.
+  const grid = document.createElement('div');
+  grid.className = 'bento';
+  grid.style.gridTemplateAreas = areas.map(r => '"' + r.split('').join(' ') + '"').join(' ');
+
+  imgs.forEach((img, i) => {
+    const cell = document.createElement('div');
+    cell.className = 'bento-cell';
+    cell.style.gridArea = String.fromCharCode(97 + i);
+    const el = document.createElement('img');
+    el.src = img.url;
+    el.alt = '';
+    cell.appendChild(el);
+    grid.appendChild(cell);
+  });
+
+  page.replaceChildren(grid);
+}
+
+function renderPage(page, i) {
+  if (i === 0) renderCover(page);
+  else if (i === 1) renderGallery(page);
+  // pages 3+ stay blank for now
+}
+
 function redraw() { if (builder) builder.rebuild(); }
 
-/* ---------------- image list ---------------- */
+/* ---------------- editor UI ---------------- */
+function updateBentoNote() {
+  const n = Math.min(state.images.length, GALLERY_MAX);
+  const note = $('#bentoNote'), btn = $('#btnShuffle');
+  if (n < GALLERY_MIN) {
+    note.textContent = 'Add ' + GALLERY_MIN + '–' + GALLERY_MAX + ' photos.';
+    btn.disabled = true;
+    btn.style.opacity = '.45';
+    btn.style.cursor = 'not-allowed';
+  } else {
+    const extra = state.images.length > GALLERY_MAX
+      ? ' The first ' + GALLERY_MAX + ' after shuffling are used.' : '';
+    note.textContent = n + ' photos in the gallery. Layout ' + (state.bentoVariant + 1) +
+                       ' of ' + BENTO[n].length + '.' + extra;
+    btn.disabled = false;
+    btn.style.opacity = '';
+    btn.style.cursor = '';
+  }
+}
+
 function renderImgList() {
   const host = $('#imgList');
   host.innerHTML = '';
@@ -223,22 +371,19 @@ function renderImgList() {
     heroBtn.type = 'button';
     heroBtn.className = 'img-hero';
     heroBtn.textContent = img.id === state.heroId ? 'Hero' : 'Set hero';
-    heroBtn.title = img.id === state.heroId ? 'This image is the cover hero' : 'Use this image as the cover hero';
-    heroBtn.addEventListener('click', () => {
-      state.heroId = img.id;
-      renderImgList();
-      redraw();
-    });
+    heroBtn.addEventListener('click', () => { state.heroId = img.id; renderImgList(); redraw(); });
 
     const del = document.createElement('button');
     del.type = 'button';
     del.className = 'img-x';
     del.innerHTML = '&#10005;';
-    del.title = 'Remove this image';
+    del.title = 'Remove';
     del.addEventListener('click', () => {
       state.images = state.images.filter(x => x.id !== img.id);
       if (state.heroId === img.id) state.heroId = state.images.length ? state.images[0].id : null;
+      syncGallery();
       renderImgList();
+      updateBentoNote();
       redraw();
     });
 
@@ -247,8 +392,8 @@ function renderImgList() {
   });
 
   $('#imgNote').textContent = state.images.length
-    ? state.images.length + ' image' + (state.images.length > 1 ? 's' : '') + '. The hero fills the cover, full bleed.'
-    : 'No images yet. The first one you add becomes the hero automatically.';
+    ? state.images.length + ' photo' + (state.images.length > 1 ? 's' : '') + '.'
+    : 'The first photo you add becomes the hero.';
 }
 
 function addFiles(files) {
@@ -258,7 +403,9 @@ function addFiles(files) {
       const img = { id: ++uid, name: f.name, url: e.target.result };
       state.images.push(img);
       if (!state.heroId) state.heroId = img.id;
+      syncGallery();
       renderImgList();
+      updateBentoNote();
       redraw();
     };
     reader.readAsDataURL(f);
@@ -282,8 +429,11 @@ document.querySelectorAll('[data-field]').forEach(el => {
   el.addEventListener('input', () => { state[el.dataset.field] = el.value; redraw(); });
 });
 
-builder = Builder.init({ pages: 1, label: 'Page', render: renderPage });
+$('#btnShuffle').addEventListener('click', shuffleGallery);
+
+builder = Builder.init({ pages: 2, label: 'Page', render: renderPage });
 renderImgList();
+updateBentoNote();
 </script>
 
 <style>
