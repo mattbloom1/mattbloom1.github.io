@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brochure Type &amp; Colour Specimen — GVC</title>
+<meta name="description" content="Print specimen of the GVC brand typefaces and palette at real 8.5x11 sizes, for designing the brochure.">
+<link rel="icon" href="../../assets/logos/monogram.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Playfair+Display:ital,wght@0,400..800;1,400..800&family=Raleway:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   GVC BROCHURE — TYPE & COLOUR SPECIMEN
+   A reference sheet, not a tool. Everything here is set in real
+   print units (pt / in) on an 8.5x11 page, so what you measure on
+   paper is what the browser will actually render.
+
+   Not linked from the home page — it's a design aid for building
+   tools/brochure/.
+   ============================================================ */
+:root{
+  --navy:#00273A; --sky:#53C7DC; --sky2:#00A1C4; --ow:#E5E5E5;
+  --well:#E7E4DC; --rule:#D3D4D0; --soft:#33525F;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'Nunito Sans','Segoe UI',sans-serif;
+  --body:'Raleway','Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+html,body{background:var(--well);}
+body{font-family:var(--body);color:var(--navy);}
+
+#sheets{display:flex;flex-direction:column;align-items:center;gap:24px;padding:24px;}
+.pg-tag{font:400 10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--soft);margin-bottom:7px;}
+.page{width:8.5in;height:11in;background:#fff;box-shadow:0 8px 40px rgba(10,40,55,.18);
+      padding:.55in .6in;position:relative;overflow:hidden;}
+
+/* ---- specimen furniture ---- */
+.hdr{display:flex;align-items:baseline;justify-content:space-between;
+     border-bottom:1.5pt solid var(--navy);padding-bottom:7pt;margin-bottom:16pt;}
+.hdr h1{font:900 9pt var(--sans);letter-spacing:.2em;text-transform:uppercase;}
+.hdr .pg{font:400 7.5pt var(--mono);color:var(--soft);}
+.blk{margin-bottom:15pt;}
+.blk:last-child{margin-bottom:0;}
+.lbl{font:900 7pt var(--sans);letter-spacing:.17em;text-transform:uppercase;color:var(--sky2);
+     border-bottom:.5pt solid var(--rule);padding-bottom:3pt;margin-bottom:8pt;}
+.spec{font:400 6.8pt var(--mono);color:var(--soft);letter-spacing:.02em;}
+.note{font:300 8pt var(--body);color:var(--soft);line-height:1.5;margin-top:5pt;max-width:46em;}
+.row{display:flex;align-items:baseline;gap:11pt;margin-bottom:6pt;}
+.row .spec{flex:none;width:112pt;padding-top:2pt;}
+.row .smp{flex:1;min-width:0;}
+
+/* ---- families ---- */
+.fam{border-left:2pt solid var(--sky);padding-left:11pt;margin-bottom:14pt;}
+.fam-name{font:400 21pt var(--serif);line-height:1.05;}
+.fam-name.s2{font:900 17pt var(--sans);letter-spacing:.02em;}
+.fam-name.s3{font:500 19pt var(--body);}
+.fam-role{font:400 7pt var(--mono);color:var(--soft);margin-top:3pt;letter-spacing:.04em;}
+.ramp{margin-top:7pt;}
+.ramp div{font-size:12.5pt;line-height:1.5;}
+
+/* ---- colour ---- */
+.sw-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9pt;}
+.sw{border:.5pt solid var(--rule);}
+.sw .chip{height:52pt;display:flex;align-items:flex-end;padding:5pt 6pt;}
+.sw .meta{padding:6pt;}
+.sw .nm{font:900 7.5pt var(--sans);letter-spacing:.13em;text-transform:uppercase;}
+.sw .v{font:400 6.6pt var(--mono);color:var(--soft);line-height:1.65;margin-top:3pt;}
+.sw .risk{font:400 6.4pt var(--mono);margin-top:4pt;padding-top:4pt;border-top:.5pt solid var(--rule);line-height:1.5;}
+.risk.ok{color:#1B7A4B;} .risk.watch{color:#A8621B;}
+
+/* ---- reversed panel ---- */
+.rev{background:var(--navy);color:var(--ow);padding:13pt 15pt;}
+.rev .lbl{color:var(--sky);border-bottom-color:rgba(229,229,229,.28);}
+.rev .spec{color:rgba(229,229,229,.72);}
+.rev .note{color:rgba(229,229,229,.82);}
+
+/* ---- measure / paragraph tests ---- */
+.para{max-width:none;}
+.para p{margin-bottom:5pt;}
+.two-col{column-count:2;column-gap:.32in;}
+.tr-demo span{display:block;font:900 10pt var(--sans);text-transform:uppercase;margin-bottom:4pt;}
+
+@page{size:letter portrait;margin:0;}
+@media print{
+  html,body{background:#fff;}
+  #sheets{padding:0;gap:0;display:block;}
+  .pg-tag{display:none;}
+  .page{box-shadow:none;break-after:page;page-break-after:always;}
+  .page:last-child{break-after:auto;page-break-after:auto;}
+}
+</style>
+</head>
+<body>
+<div id="sheets">
+
+<!-- ============================ PAGE 1 — THE FAMILIES ============================ -->
+<div>
+<div class="pg-tag">Page 1 · 8.5 × 11 in · the three families</div>
+<section class="page">
+  <div class="hdr"><h1>GVC Brochure — Type Specimen</h1><span class="pg">01 · Families</span></div>
+
+  <div class="blk">
+    <div class="lbl">The three families — same as the Showsheet Generator</div>
+
+    <div class="fam">
+      <div class="fam-name">Playfair Display</div>
+      <div class="fam-role">SERIF · display, addresses, pull quotes · stands in for Superior Title · Google Fonts, 400–800 + italic</div>
+      <div class="ramp">
+        <div style="font-family:var(--serif);font-weight:400">400 Regular — 45 Crosby Street, Penthouse</div>
+        <div style="font-family:var(--serif);font-weight:500">500 Medium — 45 Crosby Street, Penthouse</div>
+        <div style="font-family:var(--serif);font-weight:600">600 SemiBold — 45 Crosby Street, Penthouse</div>
+        <div style="font-family:var(--serif);font-weight:700">700 Bold — 45 Crosby Street, Penthouse</div>
+        <div style="font-family:var(--serif);font-weight:400;font-style:italic">400 Italic — 45 Crosby Street, Penthouse</div>
+      </div>
+    </div>
+
+    <div class="fam">
+      <div class="fam-name s2">NUNITO SANS</div>
+      <div class="fam-role">SANS · labels, eyebrows, footers — always caps + wide tracking · Google Fonts variable, 200–1000</div>
+      <div class="ramp">
+        <div style="font-family:var(--sans);font-weight:300;letter-spacing:.16em;text-transform:uppercase">300 LIGHT — TRIBECA · LOFT</div>
+        <div style="font-family:var(--sans);font-weight:600;letter-spacing:.16em;text-transform:uppercase">600 SEMIBOLD — TRIBECA · LOFT</div>
+        <div style="font-family:var(--sans);font-weight:800;letter-spacing:.16em;text-transform:uppercase">800 EXTRABOLD — TRIBECA · LOFT</div>
+        <div style="font-family:var(--sans);font-weight:900;letter-spacing:.16em;text-transform:uppercase">900 BLACK — TRIBECA · LOFT</div>
+      </div>
+    </div>
+
+    <div class="fam">
+      <div class="fam-name s3">Raleway</div>
+      <div class="fam-role">BODY · descriptions, specs, running copy · Google Fonts, 300–800 + italic</div>
+      <div class="ramp">
+        <div style="font-family:var(--body);font-weight:300">300 Light — Four bedrooms over two floors</div>
+        <div style="font-family:var(--body);font-weight:400">400 Regular — Four bedrooms over two floors</div>
+        <div style="font-family:var(--body);font-weight:500">500 Medium — Four bedrooms over two floors</div>
+        <div style="font-family:var(--body);font-weight:600">600 SemiBold — Four bedrooms over two floors</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <div class="lbl">Numerals — check these, they carry the price</div>
+    <div class="row"><span class="spec">Playfair 400 · 22pt</span>
+      <span class="smp" style="font:400 22pt var(--serif)">$8,950,000 · 4 BD · 3.5 BA · 3,240 SF</span></div>
+    <div class="row"><span class="spec">Nunito 800 · 15pt · .06em</span>
+      <span class="smp" style="font:800 15pt var(--sans);letter-spacing:.06em">$8,950,000 · 4 BD · 3.5 BA</span></div>
+    <div class="row"><span class="spec">Raleway 500 · 13pt</span>
+      <span class="smp" style="font:500 13pt var(--body)">$8,950,000 · 4 BD · 3.5 BA · 3,240 SF</span></div>
+    <div class="note">All three are lining figures at a common width, so prices will align in a column without tabular-figure tricks. Playfair's are the most characterful and the least even — worth a look at small sizes before committing it to a spec table.</div>
+  </div>
+</section>
+</div>
+
+<!-- ============================ PAGE 2 — SIZES AT PRINT SCALE ============================ -->
+<div>
+<div class="pg-tag">Page 2 · 8.5 × 11 in · real print sizes</div>
+<section class="page">
+  <div class="hdr"><h1>Sizes at Print Scale</h1><span class="pg">02 · Scale</span></div>
+
+  <div class="blk">
+    <div class="lbl">Display — headlines, addresses, cover type</div>
+    <div class="row"><span class="spec">Playfair 400 · 42/44pt</span><span class="smp" style="font:400 42pt/44pt var(--serif)">45 Crosby</span></div>
+    <div class="row"><span class="spec">Playfair 400 · 30/33pt</span><span class="smp" style="font:400 30pt/33pt var(--serif)">45 Crosby Street</span></div>
+    <div class="row"><span class="spec">Playfair 500 · 21/25pt</span><span class="smp" style="font:500 21pt/25pt var(--serif)">Penthouse, Downtown Manhattan</span></div>
+    <div class="row"><span class="spec">Playfair 400 it · 15/21pt</span><span class="smp" style="font:italic 400 15pt/21pt var(--serif)">A full-floor loft with light on four sides.</span></div>
+  </div>
+
+  <div class="blk">
+    <div class="lbl">Labels &amp; eyebrows — Nunito caps, tracked wide</div>
+    <div class="row"><span class="spec">900 · 11pt · .20em</span><span class="smp" style="font:900 11pt var(--sans);letter-spacing:.20em">THE RESIDENCE</span></div>
+    <div class="row"><span class="spec">800 · 9pt · .18em</span><span class="smp" style="font:800 9pt var(--sans);letter-spacing:.18em">FLOOR PLAN &amp; DIMENSIONS</span></div>
+    <div class="row"><span class="spec">800 · 7.5pt · .16em</span><span class="smp" style="font:800 7.5pt var(--sans);letter-spacing:.16em">BUILDING AMENITIES</span></div>
+    <div class="row"><span class="spec">600 · 6.5pt · .14em</span><span class="smp" style="font:600 6.5pt var(--sans);letter-spacing:.14em">EXCLUSIVELY REPRESENTED BY</span></div>
+    <div class="note"><strong>6.5pt is the floor.</strong> Below that, tracked caps start to break up in print and the counters fill in on coated stock. Keep disclaimers at 6pt minimum and set them in Raleway, not tracked Nunito.</div>
+  </div>
+
+  <div class="blk">
+    <div class="lbl">Body copy — the sizes you'll actually set paragraphs in</div>
+    <div class="para">
+      <div class="row"><span class="spec">Raleway 300 · 11/16pt</span><span class="smp" style="font:300 11pt/16pt var(--body)">Perched above Crosby Street, this full-floor residence captures light on four exposures through oversized casement windows original to the 1897 building.</span></div>
+      <div class="row"><span class="spec">Raleway 400 · 9.5/14pt</span><span class="smp" style="font:400 9.5pt/14pt var(--body)">Perched above Crosby Street, this full-floor residence captures light on four exposures through oversized casement windows original to the 1897 building. The great room runs the full width of the floor plate.</span></div>
+      <div class="row"><span class="spec">Raleway 400 · 8.5/12.5pt</span><span class="smp" style="font:400 8.5pt/12.5pt var(--body)">Perched above Crosby Street, this full-floor residence captures light on four exposures through oversized casement windows original to the 1897 building. The great room runs the full width of the floor plate, anchored by a blackened-steel fireplace.</span></div>
+      <div class="row"><span class="spec">Raleway 400 · 7.5/11pt</span><span class="smp" style="font:400 7.5pt/11pt var(--body)">Perched above Crosby Street, this full-floor residence captures light on four exposures through oversized casement windows original to the 1897 building. The great room runs the full width of the floor plate, anchored by a blackened-steel fireplace and flanked by two service pantries.</span></div>
+    </div>
+    <div class="note"><strong>9.5/14pt is the sweet spot</strong> for a two-column 8.5 × 11. At .6in margins and a .32in gutter each column is 3.49in — roughly 66 characters at 9.5pt, right in the comfortable 55–75 range.</div>
+  </div>
+
+  <div class="blk">
+    <div class="lbl">Two-column test — 9.5/14pt Raleway 400 at the real measure</div>
+    <div class="two-col" style="font:400 9.5pt/14pt var(--body);text-align:justify;hyphens:auto">
+      <p>Perched above Crosby Street, this full-floor residence captures light on four exposures through oversized casement windows original to the 1897 building. The great room runs the full width of the floor plate, anchored by a blackened-steel fireplace.</p>
+      <p>The kitchen is fitted with honed Calacatta counters, an integrated Sub-Zero and Wolf suite, and a breakfast banquette set into the southern bay. A separate service entrance opens to the pantry and laundry.</p>
+    </div>
+    <div class="note">Justified with hyphenation on. If the rag looks better to you unjustified, say so — left-aligned is safer for variable-length descriptions, since justification exaggerates bad line breaks when the copy length changes.</div>
+  </div>
+</section>
+</div>
+
+<!-- ============================ PAGE 3 — COLOUR & CMYK ============================ -->
+<div>
+<div class="pg-tag">Page 3 · 8.5 × 11 in · palette, CMYK risk, reversed type</div>
+<section class="page">
+  <div class="hdr"><h1>Palette &amp; CMYK Behaviour</h1><span class="pg">03 · Colour</span></div>
+
+  <div class="blk">
+    <div class="lbl">Brand palette — with naive CMYK and press risk</div>
+    <div class="sw-grid">
+      <div class="sw">
+        <div class="chip" style="background:#00273A"></div>
+        <div class="meta">
+          <div class="nm">Navy</div>
+          <div class="v">#00273A<br>RGB 0 · 39 · 58<br>~C100 M33 Y0 K77</div>
+          <div class="risk watch">WATCH — deep blues shift most. Expect it lighter and flatter on press. Get a proof.</div>
+        </div>
+      </div>
+      <div class="sw">
+        <div class="chip" style="background:#53C7DC"></div>
+        <div class="meta">
+          <div class="nm">Sky</div>
+          <div class="v">#53C7DC<br>RGB 83 · 199 · 220<br>~C62 M10 Y0 K14</div>
+          <div class="risk ok">SAFE — cyan is a press primary. Should convert almost untouched.</div>
+        </div>
+      </div>
+      <div class="sw">
+        <div class="chip" style="background:#00A1C4"></div>
+        <div class="meta">
+          <div class="nm">Sky II</div>
+          <div class="v">#00A1C4<br>RGB 0 · 161 · 196<br>~C100 M18 Y0 K23</div>
+          <div class="risk ok">SAFE — sits close to pure cyan. Minor shift at most.</div>
+        </div>
+      </div>
+      <div class="sw">
+        <div class="chip" style="background:#E5E5E5"></div>
+        <div class="meta">
+          <div class="nm">Off-White</div>
+          <div class="v">#E5E5E5<br>RGB 229 · 229 · 229<br>~C0 M0 Y0 K10</div>
+          <div class="risk watch">WATCH — must stay K-only. A 4-colour build of a light grey will look mottled.</div>
+        </div>
+      </div>
+    </div>
+    <div class="note"><strong>The CMYK values above are naive arithmetic conversions, not profile conversions — treat them as starting points only.</strong> The real numbers come from converting against your printer's ICC profile (commonly US Web Coated SWOP v2). Ask them which profile and which PDF/X flavour they want before you build the file.</div>
+  </div>
+
+  <div class="blk rev">
+    <div class="lbl">Reversed out of navy — check this on paper, not screen</div>
+    <div style="font:400 26pt/30pt var(--serif);color:var(--ow);margin-bottom:7pt">45 Crosby Street</div>
+    <div style="font:800 8pt var(--sans);letter-spacing:.18em;color:var(--sky);margin-bottom:8pt">EXCLUSIVELY REPRESENTED BY THE GVC TEAM</div>
+    <div style="font:300 9.5pt/14pt var(--body);color:var(--ow);max-width:46em">Light text on a dark ground gains apparent weight in print — ink spreads slightly into the paper. Reversed body copy usually needs to go up one weight step and one size step versus the same text on white. Below about 8pt, reversed Raleway Light starts to fill in on uncoated stock.</div>
+  </div>
+
+  <div class="blk">
+    <div class="lbl">Black text — the single biggest press gotcha</div>
+    <div class="row"><span class="spec">100% K (correct)</span><span class="smp" style="font:400 10pt var(--body);color:#000">Four bedrooms over two floors, with a private landscaped terrace.</span></div>
+    <div class="row"><span class="spec">Navy (correct — brand)</span><span class="smp" style="font:400 10pt var(--body);color:var(--navy)">Four bedrooms over two floors, with a private landscaped terrace.</span></div>
+    <div class="note">Body copy must end up as <strong>100% K only</strong> — a single ink. A naive RGB→CMYK conversion builds pure black from all four plates, and small text in four-colour black shows coloured fringing when the plates are a hair out of register. A conversion-settings problem rather than a design one, but the thing most likely to bite us — worth proving on a physical proof first.</div>
+  </div>
+
+  <div class="blk">
+    <div class="lbl">Tracking reference — Nunito caps</div>
+    <div class="tr-demo">
+      <span style="letter-spacing:0">NO TRACKING — TOO TIGHT FOR CAPS</span>
+      <span style="letter-spacing:.10em">.10em — USABLE, STILL SNUG</span>
+      <span style="letter-spacing:.16em">.16em — THE HOUSE DEFAULT</span>
+      <span style="letter-spacing:.22em">.22em — COVER / HERO LABELS</span>
+      <span style="letter-spacing:.30em">.30em — TOO LOOSE BELOW 10PT</span>
+    </div>
+    <div class="note">The showsheet uses .14em–.20em throughout. Staying inside that band will keep the brochure feeling like part of the same system.</div>
+  </div>
+</section>
+</div>
+
+</div>
+</body>
+</html>
