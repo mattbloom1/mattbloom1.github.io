@@ -160,8 +160,9 @@
 .ag-eyebrow{font:800 11pt var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--sky);}
 .ag-title{font:700 30pt/1.05 var(--serif);color:#fff;margin-top:.1in;}
 .ag-cards{flex:1;min-height:0;display:flex;gap:.45in;margin-top:.42in;}
-.ag-card{flex:1;min-width:0;display:flex;flex-direction:column;}
-.ag-shot{width:100%;aspect-ratio:4/5;background:rgba(255,255,255,.07);position:relative;overflow:hidden;}
+/* max-width keeps a lone agent's square headshot from filling the page */
+.ag-card{flex:1;min-width:0;max-width:3.45in;display:flex;flex-direction:column;}
+.ag-shot{width:100%;aspect-ratio:1/1;background:rgba(255,255,255,.07);position:relative;overflow:hidden;}
 .ag-shot img{width:100%;height:100%;object-fit:cover;display:block;}
 .ag-shot .mono-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.22;}
 .ag-shot .mono-ph img{height:38%;width:auto;object-fit:contain;}
@@ -411,6 +412,10 @@ const ROSTER = [
   {id:'nicole-melveney', name:'Nicole Melveney', title:'Licensed Real Estate Sales Associate',  phone:'732.567.5375', email:'nicole.melveney@elliman.com'},
   {id:'jessica-wolf',    name:'Jessica Wolf',    title:'Licensed Real Estate Salesperson',      phone:'847.414.7841', email:'jessica.wolf@elliman.com'}
 ];
+// Headshots live in assets/agents/, extracted from the base64 blobs the
+// showsheet carries inline. Uploading one overrides the default.
+ROSTER.forEach(a => { a.shot = '../../assets/agents/' + a.id + '.jpg'; });
+const headshotFor = a => state.headshots[a.id] || a.shot;
 const MAX_AGENTS = 2;
 
 /* Bento layouts — six rows of six characters on a 6x6 grid; the letter is
@@ -776,7 +781,7 @@ function renderAgent(page) {
       '<div class="ag-title">' + title + '</div>' +
       '<div class="ag-cards">' +
         (list.length ? list.map(a => {
-          const shot = state.headshots[a.id];
+          const shot = headshotFor(a);
           return '<div class="ag-card">' +
             '<div class="ag-shot">' +
               (shot ? '<img src="' + shot + '" alt="">'
@@ -1071,16 +1076,21 @@ function renderShots() {
   const host = $('#shotList');
   host.innerHTML = '';
   agentObjs().forEach(a => {
-    const wrap = document.createElement('div');
-    wrap.className = 'shot-row';
-    const d = document.createElement('div');
-    d.className = 'drop' + (state.headshots[a.id] ? ' loaded' : '');
-    d.style.marginTop = '8px';
-    d.innerHTML = '<div class="d-big">' + escapeHtml(a.name.split(' ')[0]) + '’s headshot</div>' +
-                  '<div class="d-sub">' + (state.headshots[a.id] ? 'loaded — click to replace' : 'click to browse') + '</div>';
+    const custom = !!state.headshots[a.id];
+    const row = document.createElement('div');
+    row.className = 'img-row';
+
+    const thumb = document.createElement('img');
+    thumb.className = 'img-thumb shot-thumb';
+    thumb.src = headshotFor(a); thumb.alt = '';
+
+    const mid = document.createElement('div');
+    mid.className = 'img-mid';
+    mid.innerHTML = '<div class="img-name">' + escapeHtml(a.name) + '</div>' +
+                    '<div class="img-auto">' + (custom ? 'custom headshot' : 'team headshot') + '</div>';
+
     const inp = document.createElement('input');
     inp.type = 'file'; inp.accept = 'image/*'; inp.hidden = true;
-    d.addEventListener('click', () => inp.click());
     inp.addEventListener('change', () => {
       const f = inp.files && inp.files[0];
       if (!f) return;
@@ -1088,8 +1098,17 @@ function renderShots() {
       r.onload = e => { state.headshots[a.id] = e.target.result; renderShots(); redraw(); };
       r.readAsDataURL(f);
     });
-    wrap.append(d, inp);
-    host.appendChild(wrap);
+
+    const btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'shot-btn';
+    btn.textContent = custom ? 'Revert' : 'Replace';
+    btn.addEventListener('click', () => {
+      if (custom) { delete state.headshots[a.id]; renderShots(); redraw(); }
+      else inp.click();
+    });
+
+    row.append(thumb, mid, btn, inp);
+    host.appendChild(row);
   });
 }
 
@@ -1280,6 +1299,12 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(checkOverf
 .ros.on{background:var(--navy);border-color:var(--navy);}
 .ros.on .ros-nm,.ros.on .ros-tt{color:var(--ow);}
 .ros:focus-visible{outline:2px solid var(--sky);outline-offset:2px;}
+.shot-thumb{width:34px;height:34px;border-radius:50%;object-fit:cover;}
+.shot-btn{flex:none;border:1px solid var(--ui-rule);background:#fff;border-radius:999px;
+  font:800 8.5px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ui-ink-soft);
+  padding:5px 10px;cursor:pointer;transition:background .15s,color .15s,border-color .15s;}
+.shot-btn:hover{border-color:var(--navy);background:var(--navy);color:var(--ow);}
+.shot-btn:focus-visible{outline:2px solid var(--sky);outline-offset:2px;}
 .linkish{border:0;background:none;padding:0;margin-left:5px;cursor:pointer;
   font:400 10px var(--ui-mono);color:var(--sky2);text-decoration:underline;text-underline-offset:2px;}
 .linkish:hover{color:var(--navy);}
