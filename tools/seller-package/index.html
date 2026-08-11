@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Seller Package Builder — Matt Bloomfield</title>
-<meta name="description" content="Build a print-ready 8.5x11 seller package for The GVC Team.">
-<meta property="og:title" content="Seller Package Builder — Matt Bloomfield">
-<meta property="og:description" content="Build a print-ready 8.5x11 seller package for The GVC Team.">
+<title>Seller Pitch &amp; CMA Builder — Matt Bloomfield</title>
+<meta name="description" content="Build a print-ready 8.5x11 listing presentation and CMA for The GVC Team.">
+<meta property="og:title" content="Seller Pitch &amp; CMA Builder — Matt Bloomfield">
+<meta property="og:description" content="Build a print-ready 8.5x11 listing presentation and CMA for The GVC Team.">
 <meta property="og:url" content="https://matthewgvc.github.io/tools/seller-package/">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
@@ -15,14 +15,68 @@
 <link rel="apple-touch-icon" sizes="180x180" href="../../assets/logos/apple-touch-icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=JetBrains+Mono&family=Nunito+Sans:opsz,wght@6..12,200..1000&family=Playfair+Display:ital,wght@0,400..800;1,400..800&family=Raleway:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Nunito+Sans:opsz,wght@6..12,200..1000&family=Playfair+Display:ital,wght@0,400..800;1,400..800&family=Raleway:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/css/tokens.css">
 <link rel="stylesheet" href="../../assets/css/base.css">
 <link rel="stylesheet" href="../../assets/css/builder.css">
+<link rel="stylesheet" href="../../assets/css/pitch.css">
+<style>
+/* ============================================================
+   SELLER PITCH & CMA — deck-specific page styles
+   Shared furniture lives in assets/css/pitch.css.
+   ============================================================ */
+
+/* p3 — about GVC, agent alongside */
+.about{display:flex;gap:.42in;flex:1;min-height:0;}
+.about .ph{width:2.85in;flex:none;align-self:stretch;}
+.about .txt{flex:1;min-width:0;display:flex;flex-direction:column;}
+.mission{margin-top:auto;padding-top:.22in;border-top:1pt solid var(--sky);
+  font:italic 300 11.5pt/17pt var(--body);color:var(--navy);}
+
+/* p5 — property breakdown */
+.pb-hero{height:2.75in;flex:none;margin-bottom:.26in;}
+.pb-grid{display:flex;gap:.42in;flex:1;min-height:0;}
+.pb-col{flex:1;min-width:0;display:flex;flex-direction:column;}
+.spec{display:flex;align-items:baseline;justify-content:space-between;gap:.16in;
+  padding:.1in 0;border-bottom:.75pt solid var(--rule);}
+.spec .k{font:800 7pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:rgba(0,39,58,.55);}
+.spec .v{font:600 10pt var(--body);color:var(--navy);text-align:right;font-variant-numeric:tabular-nums;}
+.feat{list-style:none;margin:0;padding:0;}
+.feat li{position:relative;padding:.055in 0 .055in .22in;font:300 9.5pt/14pt var(--body);color:var(--navy);}
+.feat li::before{content:'';position:absolute;left:0;top:.105in;width:.075in;height:.075in;background:var(--sky);}
+
+/* p6 — past sales map */
+.map-note{flex:none;margin-top:.16in;font:300 9pt/13.5pt var(--body);color:rgba(0,39,58,.7);}
+
+/* p8 — listing strategy */
+.strat-note{margin-top:auto;padding-top:.22in;border-top:.75pt solid var(--rule);
+  font:300 9.5pt/14pt var(--body);color:rgba(0,39,58,.78);}
+
+/* p11 — digital reach */
+.vids{display:grid;grid-template-columns:1fr 1fr;gap:.26in;flex:1;min-height:0;}
+.vid{display:flex;flex-direction:column;min-height:0;}
+.vid .ph{flex:1;min-height:0;position:relative;}
+.vid .play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:.52in;height:.52in;border-radius:50%;background:rgba(255,255,255,.92);
+  display:flex;align-items:center;justify-content:center;}
+.vid .play::after{content:'';border-left:.15in solid var(--navy);
+  border-top:.09in solid transparent;border-bottom:.09in solid transparent;margin-left:.04in;}
+.vid .vt{flex:none;margin-top:.11in;font:800 8pt var(--sans);letter-spacing:.1em;text-transform:uppercase;color:#fff;}
+.vid .vu{flex:none;margin-top:.04in;font:400 7.5pt var(--ui-mono);color:rgba(229,229,229,.65);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+/* p12 — contact */
+.links{display:grid;grid-template-columns:1fr 1fr;gap:.14in .42in;margin-top:auto;
+  padding-top:.26in;border-top:1pt solid var(--rule-rev);}
+.links a,.links span{font:300 9.5pt/1.5 var(--body);color:var(--ow);text-decoration:none;
+  display:flex;align-items:baseline;gap:.1in;min-width:0;}
+.links .lk{font:800 7pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--sky);flex:none;width:.95in;}
+.links .lv{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+</style>
 </head>
 <body data-root="../../" data-nav="tools">
 <main>
-<h1 class="visually-hidden">Seller Package Builder</h1>
+<h1 class="visually-hidden">Seller Pitch &amp; CMA Builder</h1>
 
 <div id="app">
 
@@ -31,49 +85,153 @@
     <div class="ed-body">
 
       <details class="ed-sec" open>
-        <summary>Document <span class="hint">8.5 &times; 11 in</span></summary>
+        <summary>Property <span class="hint">cover + page 5</span></summary>
         <div class="sec-in">
-          <div class="field">
-            <label>Pages</label>
-            <input type="number" id="pageCount" min="1" max="40" value="4">
-            <div class="note">Blank US Letter portrait pages. Layout comes later.</div>
+          <div class="field"><label>Address</label><input type="text" data-f="address" placeholder="45 Crosby Street, Penthouse"></div>
+          <div class="f-row">
+            <div class="field"><label>City</label><input type="text" data-f="city" placeholder="New York"></div>
+            <div class="field"><label>State</label><input type="text" data-f="state" placeholder="NY"></div>
+            <div class="field"><label>ZIP</label><input type="text" data-f="zip" placeholder="10012"></div>
           </div>
-          <div class="field">
-            <label>Document title</label>
-            <input type="text" data-field="docTitle" placeholder="Seller Package — 45 Crosby St, PH">
+          <div class="f-row">
+            <div class="field"><label>Beds</label><input type="text" data-f="beds" placeholder="3"></div>
+            <div class="field"><label>Baths</label><input type="text" data-f="baths" placeholder="2.5"></div>
+            <div class="field"><label>Sq ft</label><input type="text" data-f="sqft" placeholder="2,410"></div>
           </div>
+          <div class="f-row">
+            <div class="field"><label>Type</label><input type="text" data-f="ptype" placeholder="Condominium"></div>
+            <div class="field"><label>Year built</label><input type="text" data-f="year" placeholder="1899"></div>
+          </div>
+          <div class="f-row">
+            <div class="field"><label>Taxes / yr</label><input type="text" data-f="taxes" placeholder="18,400"></div>
+            <div class="field"><label>Common charges / mo</label><input type="text" data-f="cc" placeholder="2,150"></div>
+          </div>
+          <div class="field"><label>Property description</label>
+            <textarea data-f="blurb" rows="4" placeholder="Two sentences on what makes this home sell."></textarea></div>
+          <div class="field"><label>Key features <span style="text-transform:none;letter-spacing:0">(one per line)</span></label>
+            <textarea data-f="features" rows="5" placeholder="Private keyed elevator&#10;Chef's kitchen, Wolf &amp; Sub-Zero"></textarea></div>
+          <div class="warn" id="warnProperty" hidden></div>
         </div>
       </details>
 
       <details class="ed-sec">
-        <summary>Property</summary>
+        <summary>Client &amp; cover</summary>
         <div class="sec-in">
-          <div class="field"><label>Address</label><input type="text" data-field="address" placeholder="45 Crosby St, Penthouse"></div>
-          <div class="sec-note">Fields TBD &mdash; add them here once the seller-package spec is defined.</div>
+          <div class="field"><label>Prepared for</label><input type="text" data-f="client" placeholder="Mr. &amp; Mrs. Harrington"></div>
+          <div class="field"><label>Date</label><input type="text" data-f="date" placeholder="August 2026"></div>
+          <div class="field"><label>Website shown in footers</label><input type="text" data-f="site" placeholder="gvcrealestateteam.com"></div>
         </div>
       </details>
 
       <details class="ed-sec">
-        <summary>Marketing Plan</summary>
+        <summary>Photos</summary>
         <div class="sec-in">
-          <div class="sec-note">Fields TBD &mdash; add them here once the seller-package spec is defined.</div>
+          <div class="drop" id="dropPhotos" tabindex="0" role="button">
+            <div class="d-big">Drop photos</div>
+            <div class="d-sub">First is the cover, second is the property hero</div>
+          </div>
+          <input type="file" id="filePhotos" accept="image/*" multiple hidden>
+          <div class="thumbs" id="thumbsPhotos"></div>
+          <div class="sec-note">Order sets placement: 1 cover &middot; 2 property hero &middot; 3 about-us portrait &middot; 4&ndash;7 video stills.</div>
+          <div class="drop" id="dropMap" tabindex="0" role="button" style="margin-top:14px">
+            <div class="d-big">Drop past-sales map</div>
+            <div class="d-sub">Export one from Map Studio</div>
+          </div>
+          <input type="file" id="fileMap" accept="image/*" hidden>
+          <div class="thumbs" id="thumbsMap"></div>
         </div>
       </details>
 
       <details class="ed-sec">
-        <summary>Pricing &amp; Terms</summary>
+        <summary>Comparable sales</summary>
         <div class="sec-in">
-          <div class="sec-note">Fields TBD &mdash; add them here once the seller-package spec is defined.</div>
+          <div class="rowlist" id="compList"></div>
+          <button class="btn sm ghost" id="addComp" style="margin-top:10px">Add comparable</button>
+          <div class="sec-note">Address &middot; sold price &middot; sq ft &middot; beds/baths &middot; sold date. Eight fit on the page.</div>
+          <div class="warn" id="warnComps" hidden></div>
         </div>
       </details>
 
       <details class="ed-sec">
-        <summary>Agents</summary>
+        <summary>Listing strategy</summary>
         <div class="sec-in">
-          <div class="sec-note">Fields TBD &mdash; add them here once the seller-package spec is defined.</div>
+          <div class="f-row">
+            <div class="field"><label>Conservative</label><input type="text" data-f="priceLow" placeholder="3,450,000"></div>
+            <div class="field"><label>Target</label><input type="text" data-f="priceMid" placeholder="3,695,000"></div>
+            <div class="field"><label>Aspirational</label><input type="text" data-f="priceHigh" placeholder="3,950,000"></div>
+          </div>
+          <div class="field"><label>Conservative — what it buys you</label>
+            <textarea data-f="noteLow" rows="2" placeholder="Fastest path to contract."></textarea></div>
+          <div class="field"><label>Target — what it buys you</label>
+            <textarea data-f="noteMid" rows="2" placeholder="Where the comps support us."></textarea></div>
+          <div class="field"><label>Aspirational — what it buys you</label>
+            <textarea data-f="noteHigh" rows="2" placeholder="Tests the ceiling; longer runway."></textarea></div>
+          <div class="field"><label>Our recommendation</label>
+            <textarea data-f="stratNote" rows="3" placeholder="Why we would go out at the target number."></textarea></div>
+          <div class="warn" id="warnStrategy" hidden></div>
         </div>
       </details>
 
+      <details class="ed-sec">
+        <summary>Sales &amp; marketing plan</summary>
+        <div class="sec-in">
+          <div class="field"><label>Plan steps <span style="text-transform:none;letter-spacing:0">(one per line: Title | detail)</span></label>
+            <textarea data-f="plan" rows="9"></textarea></div>
+          <div class="sec-note">Placeholder copy is loaded &mdash; paste your own over it. Six steps fit the page.</div>
+          <div class="warn" id="warnPlan" hidden></div>
+        </div>
+      </details>
+
+      <details class="ed-sec">
+        <summary>Reviews</summary>
+        <div class="sec-in">
+          <div class="field"><label>Reviews <span style="text-transform:none;letter-spacing:0">(one per line: quote | name)</span></label>
+            <textarea data-f="reviews" rows="7"></textarea></div>
+          <div class="warn" id="warnReviews" hidden></div>
+        </div>
+      </details>
+
+      <details class="ed-sec">
+        <summary>Digital reach</summary>
+        <div class="sec-in">
+          <div class="f-row">
+            <div class="field"><label>Monthly impressions</label><input type="text" data-f="reachImp" placeholder="1.2M"></div>
+            <div class="field"><label>Followers</label><input type="text" data-f="reachFol" placeholder="48K"></div>
+          </div>
+          <div class="f-row">
+            <div class="field"><label>Syndicated sites</label><input type="text" data-f="reachSyn" placeholder="120+"></div>
+            <div class="field"><label>Avg. video views</label><input type="text" data-f="reachVid" placeholder="35K"></div>
+          </div>
+          <div class="field"><label>Video examples <span style="text-transform:none;letter-spacing:0">(one per line: Title | url)</span></label>
+            <textarea data-f="videos" rows="5"></textarea></div>
+        </div>
+      </details>
+
+      <details class="ed-sec">
+        <summary>Useful links</summary>
+        <div class="sec-in">
+          <div class="field"><label>Links <span style="text-transform:none;letter-spacing:0">(one per line: Label | value)</span></label>
+            <textarea data-f="links" rows="6"></textarea></div>
+          <div class="warn" id="warnLinks" hidden></div>
+        </div>
+      </details>
+
+      <details class="ed-sec" open>
+        <summary>Agents <span class="hint">max 2</span></summary>
+        <div class="sec-in">
+          <div id="rosterPick"></div>
+          <div class="sec-note">Pulls name, title, phone, email and headshot from the shared roster.</div>
+        </div>
+      </details>
+
+      <details class="ed-sec">
+        <summary>Preview</summary>
+        <div class="sec-in">
+          <button class="btn sm" id="btnLoadPreview">Load preview — 45 Crosby (sample)</button>
+          <div class="sec-note">Fills every field with sample content so you can see the whole deck.</div>
+          <div class="warn" id="warnGeneral" hidden></div>
+        </div>
+      </details>
 
     </div>
   </aside>
@@ -99,20 +257,476 @@
   </div>
 
 </div><!-- /app -->
-
-<section class="tool-about">
-  <span class="t-label">About this tool</span>
-  <p>Builds a seller-facing package on 8.5 &times; 11 pages &mdash; marketing plan, pricing, and what happens between listing and close. Everything runs in the browser; nothing is uploaded.</p>
-  <p style="margin-top:10px"><em>Work in progress</em> &mdash; this is the shell only: the left panel and a blank 8.5&nbsp;&times;&nbsp;11 preview. Page design and the auto-fill blocks land once the specs are settled.</p>
-</section>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" integrity="sha384-HOvlOYPIs/zjoIkWUGXkVmXsjr8GuZLV+Q+rcPwmJOVZVpvTSXQChiN4t9Euv9Vc" crossorigin="anonymous"></script>
 <script src="../../assets/js/chrome.js"></script>
 <script src="../../assets/js/motion.js"></script>
 <script src="../../assets/js/builder.js"></script>
+<script src="../../assets/js/roster.js"></script>
+<script src="../../assets/js/pitch.js"></script>
+<script src="../brochure/icons.js"></script>
 <script>
-  Builder.init({ pages: 4, label: 'Page' });
+'use strict';
+const P = window.Pitch, esc = P.esc;
+const DECK = 'Seller Pitch & CMA';
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const state = {
+  address:'', city:'', state:'', zip:'',
+  beds:'', baths:'', sqft:'', ptype:'', year:'', taxes:'', cc:'',
+  blurb:'', features:'',
+  client:'', date:'', site:'gvcrealestateteam.com',
+  photos:[], map:null,
+  comps:[],
+  priceLow:'', priceMid:'', priceHigh:'',
+  noteLow:'', noteMid:'', noteHigh:'', stratNote:'',
+  plan:'', reviews:'', videos:'', links:'',
+  reachImp:'', reachFol:'', reachSyn:'', reachVid:'',
+  agents:[]
+};
+
+/* Default copy — the parts that are GVC boilerplate rather than
+   per-client. Overwrite in the panel; these are only a starting point. */
+const DEFAULT_PLAN = [
+  'Professional photography | A full shoot with our in-house photographer — stills, twilight exteriors and detail work, delivered inside 48 hours.',
+  'Film & motion | A cinematic walkthrough cut for social, plus vertical edits for Reels and TikTok.',
+  'Staging & styling | Our design team advises room by room, and we coordinate the stagers.',
+  'Launch & syndication | Douglas Elliman, StreetEasy, Zillow, Realtor.com and 120+ syndicated partners on day one.',
+  'Targeted advertising | Paid social and search aimed at buyer profiles matched to this home, not a generic radius.',
+  'Broker & buyer events | A broker open plus private appointments through the Elliman agent network.'
+].join('\n');
+
+const DEFAULT_REVIEWS = [
+  'They priced it right, marketed it beautifully, and we were in contract in eleven days. | Sarah & Michael D.',
+  'The level of preparation they brought to our first meeting told us everything. | James R.',
+  'Every question answered within the hour, from listing through closing. | The Okonkwo Family'
+].join('\n');
+
+const DEFAULT_LINKS = [
+  'Our listings | gvcrealestateteam.com/listings',
+  'Instagram | @gvcrealestateteam',
+  'YouTube | youtube.com/@gvcrealestateteam',
+  'Douglas Elliman | elliman.com',
+  'Market reports | gvcrealestateteam.com/market',
+  'Book a call | gvcrealestateteam.com/contact'
+].join('\n');
+
+const DEFAULT_VIDEOS = [
+  'Property film — 45 Crosby | youtu.be/gvc-crosby',
+  'Neighborhood tour — SoHo | youtu.be/gvc-soho',
+  'Listing reel — vertical cut | instagram.com/reel/gvc',
+  'Broker open recap | youtu.be/gvc-open'
+].join('\n');
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+const headshotFor = a => a.photo;
+const agents = () => P.agentsOf(state);
+const pairs = txt => String(txt || '').split('\n')
+  .map(l => l.trim()).filter(Boolean)
+  .map(l => { const i = l.indexOf('|'); return i < 0 ? [l, ''] : [l.slice(0, i).trim(), l.slice(i + 1).trim()]; });
+const listOf = txt => String(txt || '').split('\n').map(l => l.trim()).filter(Boolean);
+
+function cityLine() {
+  const t = [state.city, state.state].filter(Boolean).join(', ');
+  return [t, state.zip].filter(Boolean).join(' ');
+}
+function photo(i) { return state.photos[i] ? state.photos[i].url : null; }
+
+/* ============================================================
+   PAGE LIST — order here drives the deck and the contents page
+   ============================================================ */
+const PAGES = [
+  { key:'cover',   title:'Cover' },
+  { key:'toc',     title:'Contents' },
+  { key:'about',   title:'About The GVC Team' },
+  { key:'studio',  title:'In-House Marketing & Design' },
+  { key:'property',title:'Your Property' },
+  { key:'map',     title:'Where We Have Sold' },
+  { key:'comps',   title:'Comparable Sales' },
+  { key:'strategy',title:'Listing Strategy' },
+  { key:'plan',    title:'Sales & Marketing Plan' },
+  { key:'reviews', title:'What Our Clients Say' },
+  { key:'reach',   title:'Digital Reach' },
+  { key:'contact', title:'Next Steps' }
+];
+const OF = PAGES.length;
+
+/* ============================================================
+   PAGE RENDERERS
+   ============================================================ */
+function pgCover() {
+  return P.cover({
+    kind:'Listing Presentation & Market Analysis',
+    title: state.address || 'Property Address',
+    subtitle: cityLine(),
+    preparedFor: state.client,
+    date: state.date,
+    image: photo(0),
+    agent: agents()[0],
+    site: state.site
+  });
+}
+
+function pgToc(n) {
+  return P.page({ deck:DECK, n, of:OF, site:state.site,
+    title:'Contents',
+    sub:'What we will cover, and where to find it.',
+    body: P.toc(PAGES.slice(1).map((p, i) => ({ page:i + 2, title:p.title })))
+  });
+}
+
+function pgAbout(n) {
+  const a = agents()[0];
+  const body =
+    '<div class="about">' +
+      '<div class="ph">' + (photo(2)
+        ? '<img src="' + photo(2) + '" alt="">'
+        : '<div class="empty-note on-white">Photo 3<br>goes here</div>') + '</div>' +
+      '<div class="txt">' +
+        '<div class="copy">' +
+          '<p style="margin:0 0 .16in">The Gasdaska Verdiglione Conlon Team is a full-service real estate ' +
+          'team at Douglas Elliman, working across New York City, New Jersey and Florida. We are ' +
+          'brokers, but we are also a production company: photography, film, design and marketing ' +
+          'all sit in-house, which is why our listings look the way they do.</p>' +
+          (a ? '<p style="margin:0 0 .16in"><strong>' + esc(a.name) + '</strong> — ' + esc(a.title) +
+               ' — will be your point of contact from our first meeting through closing.</p>' : '') +
+          '<p style="margin:0">We take on a deliberately small number of listings at a time. ' +
+          'That is the whole model: fewer clients, more attention, and a marketing push behind ' +
+          'every single home we represent.</p>' +
+        '</div>' +
+        '<div class="stat-row" style="margin-top:.3in">' +
+          '<div class="stat"><div class="v">$1B+</div><div class="l">Career sales</div></div>' +
+          '<div class="stat"><div class="v">3</div><div class="l">States served</div></div>' +
+        '</div>' +
+        '<div class="mission">&ldquo;Represent every home as though it were the only one we had.&rdquo;</div>' +
+      '</div>' +
+    '</div>';
+  return P.page({ deck:DECK, n, of:OF, site:state.site,
+    title:'About The GVC Team', sub:'Who you are hiring, and how we work.', body });
+}
+
+function pgStudio(n) {
+  const items = [
+    ['camera','Photography','Our own photographer shoots every listing — stills, twilight and detail work, back inside 48 hours.'],
+    ['clapper','Film & motion','Cinematic walkthroughs plus vertical cuts built for Reels, TikTok and YouTube.'],
+    ['pen','Graphic design','Brochures, floor plans, showsheets and mailers, all designed in-house to one standard.'],
+    ['megaphone','Paid media','Social and search campaigns aimed at matched buyer profiles, managed and reported weekly.'],
+    ['globe','Web & syndication','Listing pages, email campaigns and 120+ syndicated partners from day one.'],
+    ['users','Client care','A dedicated operations manager keeps the paperwork and the calendar moving.']
+  ];
+  const body =
+    '<div class="lede">Most teams hire this out. We do not — which means faster turnarounds, ' +
+    'one consistent look, and no third party deciding how your home is presented.</div>' +
+    '<div class="cards c3">' + items.map(([ic, h, p]) =>
+      '<div class="card">' + (window.icon ? window.icon(ic, 'ci') : '') +
+      '<h3>' + esc(h) + '</h3><p>' + esc(p) + '</p></div>').join('') + '</div>';
+  return P.page({ deck:DECK, n, of:OF, site:state.site,
+    title:'In-House Marketing &amp; Design'.replace('&amp;','&'),
+    sub:'Six disciplines under one roof, all of them ours.', body });
+}
+
+function pgProperty(n) {
+  const specs = [
+    ['Property type', state.ptype], ['Bedrooms', state.beds], ['Bathrooms', state.baths],
+    ['Interior', state.sqft ? state.sqft + ' sq ft' : ''], ['Year built', state.year],
+    ['Taxes', state.taxes ? P.money(state.taxes) + ' / yr' : ''],
+    ['Common charges', state.cc ? P.money(state.cc) + ' / mo' : '']
+  ].filter(r => r[1]);
+  const feats = listOf(state.features);
+  const body =
+    '<div class="ph pb-hero">' + (photo(1)
+      ? '<img src="' + photo(1) + '" alt="">'
+      : '<div class="empty-note on-white">Photo 2 — property hero</div>') + '</div>' +
+    (state.blurb ? '<div class="copy" style="margin-bottom:.24in">' + P.lines(state.blurb) + '</div>' : '') +
+    '<div class="pb-grid">' +
+      '<div class="pb-col">' +
+        '<div class="rh-t" style="font:800 7pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:rgba(0,39,58,.5);margin-bottom:.1in">The Details</div>' +
+        specs.map(([k, v]) => '<div class="spec"><span class="k">' + esc(k) + '</span><span class="v">' + esc(v) + '</span></div>').join('') +
+      '</div>' +
+      '<div class="pb-col">' +
+        '<div class="rh-t" style="font:800 7pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:rgba(0,39,58,.5);margin-bottom:.1in">Key Features</div>' +
+        '<ul class="feat">' + feats.map(f => '<li>' + esc(f) + '</li>').join('') + '</ul>' +
+      '</div>' +
+    '</div>';
+  return P.page({ deck:DECK, n, of:OF, site:state.site,
+    title: state.address || 'Your Property', sub: cityLine(), body });
+}
+
+function pgMap(n) {
+  const body =
+    '<div class="map-wrap">' + (state.map
+      ? '<img src="' + state.map.url + '" alt="">'
+      : '<div class="empty-note on-white">Drop a map export<br>in the Photos panel</div>') + '</div>' +
+    '<div class="map-note">Every pin is a home we listed or sold. We do not farm a single ZIP code — ' +
+    'we follow our clients, which is how we end up with a working knowledge of the blocks that matter to you.</div>';
+  return P.page({ deck:DECK, n, of:OF, site:state.site,
+    title:'Where We Have Sold', sub:'Recent transactions across the tri-state area and Florida.', body });
+}
+
+function pgComps(n) {
+  const rows = state.comps.filter(c => c.address);
+  const sub = { address: state.address || 'Subject property', price:'', sqft: state.sqft,
+                bb: [state.beds, state.baths].filter(Boolean).join(' / '), date:'Subject' };
+  const tr = (c, isSub) =>
+    '<tr' + (isSub ? ' class="subject"' : '') + '>' +
+      '<td class="adr">' + esc(c.address) + (c.note ? '<span class="meta">' + esc(c.note) + '</span>' : '') + '</td>' +
+      '<td class="num">' + (c.price ? P.money(c.price) : '—') + '</td>' +
+      '<td class="num">' + (c.sqft ? esc(c.sqft) : '—') + '</td>' +
+      '<td class="num">' + (c.price && P.num(c.sqft) ? P.money(P.num(c.price) / P.num(c.sqft)) : '—') + '</td>' +
+      '<td class="num">' + (c.bb || '—') + '</td>' +
+      '<td class="num">' + esc(c.date || '—') + '</td>' +
+    '</tr>';
+  const body =
+    '<table class="tbl" id="compTable"><thead><tr>' +
+      '<th>Address</th><th class="num">Sold</th><th class="num">Sq ft</th>' +
+      '<th class="num">$ / sq ft</th><th class="num">Bed / Bath</th><th class="num">Date</th>' +
+    '</tr></thead><tbody>' + tr(sub, true) + rows.map(c => tr(c, false)).join('') + '</tbody></table>' +
+    (rows.length ? '' : '<div class="empty-note on-white" style="position:relative;margin-top:.6in">Add comparables in the panel</div>');
+  return P.page({ deck:DECK, n, of:OF, site:state.site,
+    title:'Comparable Sales', sub:'What buyers actually paid for homes like yours.', body });
+}
+
+function pgStrategy(n) {
+  const b = (lab, val, note, mid) =>
+    '<div class="band' + (mid ? ' mid' : '') + '">' +
+      '<div class="bl">' + esc(lab) + '</div>' +
+      '<div class="bv">' + (val ? P.money(val) : '—') + '</div>' +
+      (note ? '<div class="bn">' + esc(note) + '</div>' : '') +
+    '</div>';
+  const body =
+    '<div class="bands">' +
+      b('Conservative', state.priceLow, state.noteLow, false) +
+      b('Target', state.priceMid, state.noteMid, true) +
+      b('Aspirational', state.priceHigh, state.noteHigh, false) +
+    '</div>' +
+    '<div class="copy">Price is the single biggest lever we control. Go out too high and the ' +
+    'listing goes stale — buyers read days-on-market before they read the description. Go out ' +
+    'too low and you leave money on the table. The three numbers above are the honest range the ' +
+    'comparables support.</div>' +
+    (state.stratNote ? '<div class="strat-note"><strong>Our recommendation.</strong> ' + P.lines(state.stratNote) + '</div>' : '');
+  return P.page({ deck:DECK, n, of:OF, site:state.site,
+    title:'Listing Strategy', sub:'Three ways to go to market, and what each one costs you.', body });
+}
+
+function pgPlan(n) {
+  const steps = pairs(state.plan);
+  const body = '<div class="steps" id="planSteps">' + steps.map(([t, d], i) =>
+    '<div class="step"><div class="sn">' + (i + 1) + '</div><div>' +
+      '<div class="st">' + esc(t) + '</div>' +
+      (d ? '<div class="sd">' + esc(d) + '</div>' : '') +
+    '</div></div>').join('') + '</div>';
+  return P.page({ deck:DECK, n, of:OF, site:state.site,
+    title:'Sales &amp; Marketing Plan'.replace('&amp;','&'),
+    sub:'What happens, and when, once you sign.', body });
+}
+
+function pgReviews(n) {
+  const rs = pairs(state.reviews);
+  const body = '<div class="quotes" id="quoteList">' + rs.map(([q, who]) =>
+    '<div class="quote"><div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>' +
+    '<p>&ldquo;' + esc(q) + '&rdquo;</p>' +
+    (who ? '<div class="who">' + esc(who) + '</div>' : '') + '</div>').join('') + '</div>';
+  return P.page({ deck:DECK, n, of:OF, site:state.site,
+    title:'What Our Clients Say', sub:'Unedited, and happy to put you in touch with any of them.', body });
+}
+
+function pgReach(n) {
+  const vids = pairs(state.videos).slice(0, 4);
+  const body =
+    '<div class="stat-row">' +
+      '<div class="stat"><div class="v">' + esc(state.reachImp || '—') + '</div><div class="l">Monthly impressions</div></div>' +
+      '<div class="stat"><div class="v">' + esc(state.reachFol || '—') + '</div><div class="l">Followers</div></div>' +
+      '<div class="stat"><div class="v">' + esc(state.reachSyn || '—') + '</div><div class="l">Syndicated sites</div></div>' +
+      '<div class="stat"><div class="v">' + esc(state.reachVid || '—') + '</div><div class="l">Avg. video views</div></div>' +
+    '</div>' +
+    '<div class="vids">' + vids.map((v, i) =>
+      '<div class="vid"><div class="ph">' +
+        (photo(3 + i) ? '<img src="' + photo(3 + i) + '" alt="">' : '') +
+        '<div class="play"></div></div>' +
+        '<div class="vt">' + esc(v[0]) + '</div>' +
+        (v[1] ? '<div class="vu">' + esc(v[1]) + '</div>' : '') +
+      '</div>').join('') + '</div>';
+  return P.page({ deck:DECK, n, of:OF, site:state.site, reversed:true,
+    title:'Digital Reach', sub:'Where your home shows up, and how many people see it.', body });
+}
+
+function pgContact(n) {
+  const ls = pairs(state.links);
+  const body =
+    '<div class="lede">If this reads right to you, the next step is simple: we agree on a number, ' +
+    'we book the shoot, and we are on the market inside two weeks.</div>' +
+    P.agentCards(agents(), headshotFor) +
+    '<div class="links">' + ls.map(([k, v]) =>
+      '<span><span class="lk">' + esc(k) + '</span><span class="lv">' + esc(v) + '</span></span>').join('') + '</div>';
+  return P.page({ deck:DECK, n, of:OF, site:state.site, reversed:true,
+    title:'Next Steps', sub:'', body });
+}
+
+const RENDER = {
+  cover:pgCover, toc:pgToc, about:pgAbout, studio:pgStudio, property:pgProperty,
+  map:pgMap, comps:pgComps, strategy:pgStrategy, plan:pgPlan, reviews:pgReviews,
+  reach:pgReach, contact:pgContact
+};
+
+/* ============================================================
+   WIRING
+   ============================================================ */
+let builder = null;
+
+function redraw() {
+  if (!builder) return;
+  builder.rebuild();
+  // setTimeout, not rAF: rAF is suspended while the tab is not rendering,
+  // which silently skips the overflow check.
+  setTimeout(checkAll, 0);
+}
+
+const RULES = [
+  { key:'comps',    box:'warnComps',   msg:'Comparable sales run past the page — remove one, or shorten the longest address.' },
+  { key:'plan',     box:'warnPlan',    msg:'The marketing plan runs past the page — trim a step or shorten the detail lines.' },
+  { key:'reviews',  box:'warnReviews', msg:'Reviews run past the page — drop one, or shorten the longest quote.' },
+  { key:'property', box:'warnProperty',msg:'The property page is over-full — shorten the description or cut a feature.' },
+  { key:'strategy', box:'warnStrategy',msg:'The strategy page is over-full — shorten the recommendation.' },
+  { key:'contact',  box:'warnLinks',   msg:'Useful links run past the page — six is the limit.' }
+];
+function checkAll() {
+  P.checkOverflow(document.getElementById('pages'), RULES, 'warnGeneral');
+}
+
+function bindFields() {
+  document.querySelectorAll('[data-f]').forEach(el => {
+    const k = el.dataset.f;
+    el.value = state[k] || '';
+    el.addEventListener('input', () => { state[k] = el.value; redraw(); });
+  });
+}
+
+/* comps are a repeating row, so they get their own tiny list editor */
+function renderComps() {
+  const host = document.getElementById('compList');
+  host.innerHTML = '';
+  state.comps.forEach((c, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'rw';
+    const mk = (ph, key, w) => {
+      const inp = document.createElement('input');
+      inp.type = 'text'; inp.placeholder = ph; inp.value = c[key] || '';
+      if (w) inp.style.flex = '0 0 ' + w;
+      inp.addEventListener('input', () => { c[key] = inp.value; redraw(); });
+      return inp;
+    };
+    wrap.appendChild(mk('Address', 'address'));
+    wrap.appendChild(mk('Sold $', 'price', '68px'));
+    wrap.appendChild(mk('Sq ft', 'sqft', '52px'));
+    wrap.appendChild(mk('Bd/Ba', 'bb', '52px'));
+    wrap.appendChild(mk('Date', 'date', '58px'));
+    const x = document.createElement('button');
+    x.type = 'button'; x.className = 'x'; x.textContent = '×';
+    x.addEventListener('click', () => { state.comps.splice(i, 1); renderComps(); redraw(); });
+    wrap.appendChild(x);
+    host.appendChild(wrap);
+  });
+}
+
+function renderThumbs(hostId, arr, onRemove) {
+  const host = document.getElementById(hostId);
+  host.innerHTML = '';
+  arr.forEach((p, i) => {
+    const d = document.createElement('div');
+    d.className = 'thumb';
+    const img = document.createElement('img'); img.src = p.url; img.alt = '';
+    const b = document.createElement('button'); b.type = 'button'; b.textContent = '×';
+    b.addEventListener('click', () => { onRemove(i); });
+    d.appendChild(img); d.appendChild(b); host.appendChild(d);
+  });
+}
+
+function loadPreview() {
+  Object.assign(state, {
+    address:'45 Crosby Street, Penthouse', city:'New York', state:'NY', zip:'10012',
+    beds:'3', baths:'2.5', sqft:'2,410', ptype:'Condominium', year:'1899',
+    taxes:'18400', cc:'2150',
+    blurb:'A full-floor penthouse in a cast-iron SoHo loft building, with 12-foot ceilings, ' +
+          'four exposures and a 900-square-foot planted terrace. Converted in 2019 and barely lived in since.',
+    features:'Private keyed elevator, opens into the great room\nChef’s kitchen — Wolf range, Sub-Zero, honed marble\n900 sq ft landscaped terrace with irrigation\nOriginal cast-iron columns, restored\nPrimary suite with dressing room\nVented washer / dryer in unit\nCentral heat and cooling, zoned\nStorage unit conveys',
+    client:'Mr. & Mrs. Harrington', date:'August 2026',
+    comps:[
+      {address:'62 Greene Street, 4W', price:'3550000', sqft:'2280', bb:'3 / 2.5', date:'Jun 2026'},
+      {address:'110 Mercer Street, PH', price:'4100000', sqft:'2610', bb:'3 / 3', date:'May 2026'},
+      {address:'28 Wooster Street, 3', price:'3275000', sqft:'2190', bb:'3 / 2', date:'Apr 2026'},
+      {address:'155 Grand Street, 6A', price:'3690000', sqft:'2400', bb:'3 / 2.5', date:'Mar 2026'},
+      {address:'80 Greene Street, 5', price:'3425000', sqft:'2340', bb:'3 / 2.5', date:'Feb 2026'}
+    ],
+    priceLow:'3450000', priceMid:'3695000', priceHigh:'3950000',
+    noteLow:'Fastest path to contract — likely multiple offers inside three weeks.',
+    noteMid:'Where the comparables land. Our recommendation.',
+    noteHigh:'Tests the ceiling. Expect a longer runway and a probable adjustment.',
+    stratNote:'We would list at $3,695,000. It sits just under the psychological $3.7M ' +
+              'search break, it is defensible against 155 Grand, and it leaves room to hold firm in negotiation.',
+    reachImp:'1.2M', reachFol:'48K', reachSyn:'120+', reachVid:'35K',
+    agents:['john-gasdaska','tj-verdiglione']
+  });
+  document.querySelectorAll('[data-f]').forEach(el => { el.value = state[el.dataset.f] || ''; });
+  renderComps(); paintRoster(); redraw();
+}
+
+let paintRoster = () => {};
+
+document.addEventListener('DOMContentLoaded', () => {
+  state.plan = DEFAULT_PLAN;
+  state.reviews = DEFAULT_REVIEWS;
+  state.links = DEFAULT_LINKS;
+  state.videos = DEFAULT_VIDEOS;
+
+  bindFields();
+  renderComps();
+
+  P.wireDrop(document.getElementById('dropPhotos'), document.getElementById('filePhotos'), files => {
+    state.photos = state.photos.concat(files);
+    paintPhotos(); redraw();
+  });
+  P.wireDrop(document.getElementById('dropMap'), document.getElementById('fileMap'), files => {
+    state.map = files[0];
+    paintMap(); redraw();
+  });
+
+  paintRoster = P.wireRoster(document.getElementById('rosterPick'), state, 2, redraw);
+
+  document.getElementById('addComp').addEventListener('click', () => {
+    state.comps.push({ address:'', price:'', sqft:'', bb:'', date:'' });
+    renderComps(); redraw();
+  });
+  document.getElementById('btnLoadPreview').addEventListener('click', loadPreview);
+
+  builder = Builder.init({
+    pages: PAGES.length,
+    label: 'Page',
+    render: (page, i) => {
+      page.innerHTML = RENDER[PAGES[i].key](i + 1);
+      // tag the rendered page so the overflow check can name it
+      const pg = page.querySelector('.pg');
+      if (pg) { pg.dataset.key = PAGES[i].key; pg.dataset.n = String(i + 1); }
+    }
+  });
+  document.fonts && document.fonts.ready.then(() => setTimeout(checkAll, 0));
+  setTimeout(checkAll, 0);
+});
+
+function paintPhotos() {
+  renderThumbs('thumbsPhotos', state.photos, i => {
+    state.photos.splice(i, 1); paintPhotos(); redraw();
+  });
+}
+function paintMap() {
+  renderThumbs('thumbsMap', state.map ? [state.map] : [], () => {
+    state.map = null; paintMap(); redraw();
+  });
+}
 </script>
 </body>
 </html>

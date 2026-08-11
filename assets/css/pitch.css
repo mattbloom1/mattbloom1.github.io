@@ -1,0 +1,210 @@
+/* ============================================================
+   GVC PITCH DECKS — shared page design
+   Used by tools/seller-package/ (Seller Pitch & CMA) and
+   tools/buyer-package/. Layered on top of builder.css, which owns
+   the editor chrome and the 8.5x11 page geometry.
+
+   Type is set in pt so the design canvas matches real print sizes.
+   Sizes follow tools/brochure/type-sample.html: 9.5/14pt Raleway for
+   body copy, 6.5pt floor for tracked caps.
+   ============================================================ */
+:root{
+  --pad:.62in;             /* page margin */
+  --rule:rgba(0,39,58,.14);
+  --rule-rev:rgba(83,199,220,.35);
+}
+
+/* ---------- shared furniture ---------- */
+.pg{position:absolute;inset:0;display:flex;flex-direction:column;background:#fff;overflow:hidden;}
+.pg.rev{background:var(--navy);color:var(--ow);}
+
+.ico{display:block;}
+.ico svg{width:100%;height:100%;display:block;stroke:currentColor;fill:none;
+  stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+
+/* running head — every interior page carries it */
+.rh{flex:none;display:flex;align-items:baseline;justify-content:space-between;gap:.3in;
+  padding:.44in var(--pad) 0;}
+.rh .rh-t{font:800 8pt var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--sky2);}
+.rh .rh-n{font:800 8pt var(--sans);letter-spacing:.14em;color:rgba(0,39,58,.42);}
+.pg.rev .rh .rh-t{color:var(--sky);}
+.pg.rev .rh .rh-n{color:rgba(229,229,229,.5);}
+
+.pg-h{flex:none;padding:.16in var(--pad) 0;}
+.pg-h h2{margin:0;font:700 27pt/1.06 var(--serif);color:var(--navy);text-wrap:balance;}
+.pg.rev .pg-h h2{color:#fff;}
+.pg-h .sub{margin-top:.09in;font:300 10pt/1.5 var(--body);color:rgba(0,39,58,.66);max-width:5.6in;}
+.pg.rev .pg-h .sub{color:rgba(229,229,229,.75);}
+.pg-h::after{content:'';display:block;height:1.4pt;background:var(--sky);width:.62in;margin-top:.16in;}
+
+.pg-body{flex:1;min-height:0;padding:.26in var(--pad) .44in;display:flex;flex-direction:column;overflow:hidden;}
+
+.pg-foot{flex:none;padding:0 var(--pad) .34in;display:flex;align-items:center;justify-content:space-between;gap:.3in;}
+.pg-foot .site{font:800 7.5pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:rgba(0,39,58,.5);}
+.pg-foot img{height:.3in;width:auto;display:block;}
+.pg.rev .pg-foot .site{color:rgba(229,229,229,.6);}
+
+/* ---------- cover ---------- */
+.cv{position:absolute;inset:0;overflow:hidden;background:var(--navy);}
+.cv-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
+/* Two scrims, each a clean 100% -> 0 fade over its own band. Stop order
+   matters: a later stop with a smaller percentage is clamped up to the
+   previous one, which turns the fade into a hard cut. */
+.cv-mask{position:absolute;inset:0;pointer-events:none;
+  background:
+    linear-gradient(to bottom, rgba(0,39,58,1) 0%, rgba(0,39,58,0) 22%),
+    linear-gradient(to top,    rgba(0,39,58,1) 0%, rgba(0,39,58,0) 52%);}
+.cv-kind{position:absolute;top:.7in;left:0;right:0;text-align:center;
+  font:800 9pt var(--sans);letter-spacing:.3em;text-transform:uppercase;color:var(--sky);}
+.cv-head{position:absolute;left:var(--pad);right:var(--pad);bottom:1.5in;text-align:center;}
+.cv-ttl{font:700 33pt/1.07 var(--serif);color:#fff;text-wrap:balance;overflow-wrap:break-word;}
+.cv-sub{margin-top:.13in;font:800 10.5pt var(--sans);letter-spacing:.10em;text-transform:uppercase;color:var(--ow);}
+.cv-for{margin-top:.22in;font:300 10.5pt/1.5 var(--body);color:rgba(229,229,229,.82);}
+.cv-bar{position:absolute;left:0;right:0;bottom:0;height:1.02in;background:rgba(0,39,58,.92);
+  border-top:1pt solid var(--rule-rev);display:flex;align-items:center;justify-content:space-between;
+  gap:.24in;padding:0 var(--pad);}
+.cv-bar .cb-l{min-width:0;}
+.cv-bar .cb-nm{font:700 12pt var(--serif);color:#fff;line-height:1.2;}
+.cv-bar .cb-ct{font:300 8pt/1.45 var(--body);color:rgba(229,229,229,.8);}
+.cv-bar img{height:.46in;width:auto;display:block;flex:none;}
+.cv-bar .cb-r{font:800 8pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:#fff;text-align:right;}
+
+/* ---------- table of contents ---------- */
+.toc{list-style:none;margin:0;padding:0;column-gap:.5in;}
+.toc li{display:flex;align-items:baseline;gap:.14in;padding:.115in 0;border-bottom:.75pt solid var(--rule);}
+.toc .n{font:800 8.5pt var(--sans);letter-spacing:.1em;color:var(--sky2);width:.34in;flex:none;}
+.toc .t{font:400 11.5pt var(--body);color:var(--navy);}
+.toc .d{flex:1;border-bottom:.75pt dotted rgba(0,39,58,.28);margin:0 .06in;transform:translateY(-.03in);}
+.toc .p{font:800 9pt var(--sans);color:rgba(0,39,58,.55);}
+
+/* ---------- generic content blocks ---------- */
+.lede{font:300 12pt/1.62 var(--body);color:var(--navy);margin-bottom:.24in;max-width:6.4in;}
+.pg.rev .lede{color:var(--ow);}
+.copy{font:300 9.5pt/14pt var(--body);color:var(--navy);}
+.pg.rev .copy{color:var(--ow);}
+.cols2{columns:2;column-gap:.42in;}
+
+.stat-row{display:flex;gap:.3in;margin:.1in 0 .26in;}
+.stat{flex:1;min-width:0;border-top:1.4pt solid var(--sky);padding-top:.11in;}
+.stat .v{font:700 23pt/1 var(--serif);color:var(--navy);}
+.stat .l{margin-top:.06in;font:800 6.8pt var(--sans);letter-spacing:.15em;text-transform:uppercase;color:rgba(0,39,58,.55);line-height:1.5;}
+.pg.rev .stat .v{color:#fff;}
+.pg.rev .stat .l{color:rgba(229,229,229,.7);}
+
+.cards{display:grid;gap:.26in;}
+.cards.c2{grid-template-columns:1fr 1fr;}
+.cards.c3{grid-template-columns:repeat(3,1fr);}
+.card{border:.75pt solid var(--rule);padding:.2in;min-width:0;}
+.pg.rev .card{border-color:var(--rule-rev);}
+.card .ci{width:.26in;height:.26in;color:var(--sky2);margin-bottom:.1in;}
+.pg.rev .card .ci{color:var(--sky);}
+.card h3{margin:0 0 .07in;font:800 8pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--navy);}
+.pg.rev .card h3{color:#fff;}
+.card p{margin:0;font:300 9pt/13.5pt var(--body);color:rgba(0,39,58,.78);}
+.pg.rev .card p{color:rgba(229,229,229,.8);}
+
+/* numbered process steps */
+/* flex:none on the children is load-bearing: flex items shrink by default,
+   so an over-long list would quietly squash itself instead of overflowing,
+   and the overflow warning would never fire. */
+.steps{display:flex;flex-direction:column;gap:.16in;}
+.step{flex:none;display:flex;gap:.2in;align-items:flex-start;padding-bottom:.16in;border-bottom:.75pt solid var(--rule);}
+.step:last-child{border-bottom:0;}
+.step .sn{flex:none;width:.42in;height:.42in;border-radius:50%;background:var(--navy);color:#fff;
+  display:flex;align-items:center;justify-content:center;font:800 11pt var(--sans);}
+.step .st{font:800 9.5pt var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--navy);}
+.step .sd{margin-top:.05in;font:300 9.5pt/14pt var(--body);color:rgba(0,39,58,.75);}
+.pg.rev .step{border-color:var(--rule-rev);}
+.pg.rev .step .sn{background:var(--sky);color:var(--navy);}
+.pg.rev .step .st{color:#fff;}
+.pg.rev .step .sd{color:rgba(229,229,229,.8);}
+
+/* data table — comps, closing costs, net sheet */
+table.tbl{width:100%;border-collapse:collapse;font:400 9pt var(--body);}
+table.tbl th{font:800 6.8pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:rgba(0,39,58,.55);
+  text-align:left;padding:0 .1in .08in 0;border-bottom:1pt solid var(--navy);white-space:nowrap;}
+table.tbl td{padding:.09in .1in .09in 0;border-bottom:.75pt solid var(--rule);color:var(--navy);vertical-align:top;}
+table.tbl .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;}
+table.tbl tr.subject td{background:rgba(83,199,220,.16);font-weight:600;}
+table.tbl .adr{font-weight:600;}
+table.tbl .meta{display:block;font-size:7.5pt;color:rgba(0,39,58,.55);margin-top:.02in;}
+
+/* pricing bands — low / target / high */
+.bands{display:grid;grid-template-columns:repeat(3,1fr);gap:.24in;margin-bottom:.28in;}
+.band{border:.75pt solid var(--rule);padding:.22in .18in;text-align:center;}
+.band.mid{background:var(--navy);border-color:var(--navy);}
+.band .bl{font:800 7pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:rgba(0,39,58,.55);}
+.band .bv{margin-top:.08in;font:700 21pt/1 var(--serif);color:var(--navy);}
+.band .bn{margin-top:.1in;font:300 8.5pt/12.5pt var(--body);color:rgba(0,39,58,.7);}
+.band.mid .bl{color:var(--sky);}
+.band.mid .bv,.band.mid .bn{color:#fff;}
+.band.mid .bn{color:rgba(229,229,229,.82);}
+
+/* reviews */
+.quotes{display:flex;flex-direction:column;gap:.26in;}
+.quote{flex:none;border-left:1.6pt solid var(--sky);padding-left:.22in;}
+.quote p{margin:0;font:italic 300 11pt/16.5pt var(--body);color:var(--navy);}
+.quote .who{margin-top:.1in;font:800 7.5pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:rgba(0,39,58,.55);}
+.pg.rev .quote p{color:var(--ow);}
+.pg.rev .quote .who{color:rgba(229,229,229,.65);}
+.stars{color:var(--sky2);letter-spacing:.06em;font-size:10pt;}
+
+/* photo blocks */
+.ph{position:relative;overflow:hidden;background:rgba(0,39,58,.06);}
+.ph img{width:100%;height:100%;object-fit:cover;display:block;}
+.pg.rev .ph{background:rgba(255,255,255,.07);}
+
+/* agent cards — mirrors the brochure's page 6 */
+.ag-row{display:flex;gap:.4in;}
+.ag-c{flex:1;min-width:0;max-width:3.2in;text-align:center;}
+.ag-c .shot{width:100%;aspect-ratio:1/1;overflow:hidden;}
+.ag-c .shot img{width:100%;height:100%;object-fit:cover;display:block;}
+.ag-c .nm{margin-top:.16in;font:700 16pt/1.15 var(--serif);color:#fff;}
+.ag-c .tt{margin-top:.06in;font:800 6.8pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--sky);line-height:1.5;}
+.ag-c .ct{margin-top:.09in;font:300 8.5pt/1.6 var(--body);color:var(--ow);}
+
+/* map + marker legend */
+.map-wrap{flex:1;min-height:0;position:relative;overflow:hidden;background:rgba(0,39,58,.06);}
+.map-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
+.legend{flex:none;display:flex;flex-wrap:wrap;gap:.1in .3in;margin-top:.18in;}
+.legend span{font:300 8.5pt var(--body);color:rgba(0,39,58,.75);display:flex;align-items:baseline;gap:.07in;}
+.legend i{width:.09in;height:.09in;border-radius:50%;background:var(--sky2);display:block;flex:none;transform:translateY(-.01in);}
+
+/* ============================================================
+   EDITOR-SIDE BITS (left panel) — screen only
+   ============================================================ */
+.ros{display:flex;align-items:baseline;justify-content:space-between;gap:8px;width:100%;
+  border:1px solid var(--ui-rule);background:#fff;border-radius:7px;padding:8px 11px;margin-top:7px;cursor:pointer;
+  text-align:left;transition:background .16s,border-color .16s;}
+.ros-nm{font:600 11.5px var(--body);color:var(--navy);}
+.ros-tt{font:400 9.5px var(--ui-mono);color:var(--ui-ink-soft);}
+.ros:hover{border-color:var(--sky);}
+.ros.on{background:var(--navy);border-color:var(--navy);}
+.ros.on .ros-nm,.ros.on .ros-tt{color:var(--ow);}
+.ros:focus-visible{outline:2px solid var(--sky);outline-offset:2px;}
+
+.warn{margin-top:10px;padding:9px 11px;border-radius:6px;background:#FFF4E5;border:1px solid #E8C99B;
+  font:400 10.5px/1.6 var(--ui-mono);color:#6B4A12;}
+.warn .warn-item + .warn-item{margin-top:5px;}
+
+.thumbs{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;}
+.thumb{position:relative;width:62px;height:62px;border:1px solid var(--ui-rule);border-radius:6px;overflow:hidden;background:#fff;}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.thumb button{position:absolute;top:2px;right:2px;width:16px;height:16px;border:0;border-radius:50%;
+  background:rgba(0,39,58,.8);color:#fff;font:700 10px var(--sans);line-height:1;cursor:pointer;padding:0;}
+.img-auto{font:400 9px var(--ui-mono);color:var(--ui-ink-soft);margin-top:2px;}
+
+.rowlist{margin-top:10px;}
+.rowlist .rw{display:flex;gap:6px;align-items:flex-start;margin-top:6px;}
+.rowlist .rw > *{min-width:0;}
+.rowlist .rw input{flex:1;border:1px solid var(--ui-rule);background:#fff;padding:6px 8px;
+  font:500 11.5px var(--body);color:var(--navy);border-radius:5px;outline:none;}
+.rowlist .rw input:focus{border-color:var(--sky);outline:2px solid var(--sky);outline-offset:1px;}
+.rowlist .rw .x{flex:none;width:26px;border:1px solid var(--ui-rule);background:#fff;border-radius:5px;
+  color:var(--ui-ink-soft);cursor:pointer;font:700 12px var(--sans);}
+.rowlist .rw .x:hover{border-color:var(--navy);background:var(--navy);color:#fff;}
+
+/* ---------- print ---------- */
+@media print{
+  .pg,.cv{position:absolute;}
+}
