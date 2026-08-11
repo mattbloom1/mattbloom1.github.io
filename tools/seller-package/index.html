@@ -132,25 +132,31 @@
   color:rgba(0,39,58,.5);display:block;}
 .band.mid .bsr div{color:rgba(229,229,229,.85);}
 .band.mid .bsr b{color:var(--sky);}
-/* the starred recommendation, as in the reference */
-.band.mid::before{content:'\2605';position:absolute;left:50%;top:-.19in;transform:translateX(-50%);
-  font-size:13pt;line-height:1;color:var(--sky);}
 .strat-note{margin-top:.28in;padding-top:.22in;border-top:.75pt solid var(--rule);
   font:300 9.5pt/14pt var(--body);color:rgba(0,39,58,.78);}
 /* the reference closes this page on a property shot — it takes whatever
    height is left once the bands and the note are placed */
 .strat-ph{flex:1;min-height:1.6in;margin-top:.28in;}
 
-/* p9 — sales & marketing plan, three phases */
+/* p9 — sales & marketing plan, three phases.
+   Each phase carries its own accent, darkest to lightest as the listing moves
+   from pre-launch through to on-going, so the three columns read as a sequence
+   rather than three unrelated lists. The bullets pick up the same colour. */
 .plan3{display:flex;gap:.3in;flex:1;min-height:0;}
 .plan3 .ph3{flex:1;min-width:0;display:flex;flex-direction:column;}
 .plan3 .ph3-h{flex:none;font:800 11pt var(--sans);letter-spacing:.03em;text-transform:uppercase;
-  color:var(--navy);padding-bottom:.1in;border-bottom:1.4pt solid var(--sky);margin-bottom:.16in;}
+  color:var(--navy);padding-bottom:.1in;border-bottom:2pt solid var(--sky);margin-bottom:.16in;}
+.plan3 .ph3.p1 .ph3-h{border-bottom-color:var(--navy);}
+.plan3 .ph3.p2 .ph3-h{border-bottom-color:var(--sky2);}
+.plan3 .ph3.p3 .ph3-h{border-bottom-color:var(--sky);}
 .plan3 .grp{margin-bottom:.16in;}
 .plan3 .grp-t{font:800 7pt var(--sans);letter-spacing:.13em;text-transform:uppercase;color:rgba(0,39,58,.55);margin-bottom:.06in;}
 .plan3 ul{list-style:none;margin:0;padding:0;}
 .plan3 li{padding:.05in 0 .05in .16in;position:relative;font:300 8.8pt/13pt var(--body);color:var(--navy);}
 .plan3 li::before{content:'';position:absolute;left:0;top:.095in;width:.06in;height:.06in;background:var(--sky2);}
+.plan3 .ph3.p1 li::before{background:var(--navy);}
+.plan3 .ph3.p2 li::before{background:var(--sky2);}
+.plan3 .ph3.p3 li::before{background:var(--sky);}
 
 /* p10 — preparing your home: the seller checklist, two icon-headed columns.
    Boxes are printed empty on purpose — the seller ticks them by hand. */
@@ -169,6 +175,16 @@
 /* p11 — testimonials, editorial block quotes. space-evenly, not
    space-between: between pins the first and last quote hard against the top
    and bottom edges of the text block. */
+/* the review-count badge. A flex item rather than absolutely positioned: the
+   page body clips its overflow, and a floating badge would land on top of the
+   first quote's closing mark. Sits right-aligned above the quotes. */
+.rev-badge{flex:none;align-self:flex-end;display:flex;align-items:center;gap:.13in;
+  background:var(--navy);padding:.1in .19in;margin-bottom:.2in;}
+.rev-badge .rb-stars{color:var(--sky);font-size:9.5pt;line-height:1;letter-spacing:.06em;}
+.rev-badge .rb-n{font:700 14pt/1 var(--serif);color:#fff;}
+.rev-badge .rb-l{font:800 7pt var(--sans);letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(229,229,229,.85);}
+
 .quotes{display:flex;flex-direction:column;justify-content:space-evenly;gap:.26in;flex:1;min-height:0;}
 /* border-left:0 overrides the shared rule in pitch.css — the quote is framed
    by the pair of marks now, not by a rule down the side. */
@@ -270,7 +286,7 @@
     </div>
     <div class="ed-body">
 
-      <details class="ed-sec" open>
+      <details class="ed-sec">
         <summary>Property <span class="hint">cover + page 5</span></summary>
         <div class="sec-in">
           <div class="field"><label>Address</label><input type="text" data-f="address" placeholder="45 Crosby Street, Penthouse"></div>
@@ -354,7 +370,7 @@
         </div>
       </details>
 
-      <details class="ed-sec" open>
+      <details class="ed-sec">
         <summary>Agents <span class="hint">max 2</span></summary>
         <div class="sec-in">
           <div id="rosterPick"></div>
@@ -509,10 +525,25 @@ const PREP = [
    With neither `qr` nor `url`, the card prints a "video link needed"
    placeholder rather than a dead code.
    ============================================================ */
+/* Paths must be repo-relative, not G:\ paths — the published site is served
+   from GitHub Pages, where nobody has the shared drive mounted, and a browser
+   cannot read a local drive from an http page anyway. The six assets have been
+   copied into assets/videos/ and compressed for print.
+
+   `url` is used rather than `qr`: these strings were decoded from the team's
+   own QR PNGs, so they scan to exactly the same place, but drawn as vector
+   they stay sharp at any print size. The original PNGs are committed
+   alongside if you would rather use them — set `qr` and clear `url`. */
 const VIDEOS = [
-  { title:'200 East 57th St #9A, NY',     photo:'', qr:'', url:'' },
-  { title:'105 Norfolk St, Tower 15, NY', photo:'', qr:'', url:'' },
-  { title:'243 W 60th St #8A, NY',        photo:'', qr:'', url:'' }
+  { title:'14 Ridge Road, Rumson, NJ 07760',
+    photo:'../../assets/videos/14-ridge-road.jpg',
+    qr:'', url:'https://youtube.com/shorts/CHApl_TPuz0?feature=shared' },
+  { title:'205 Parkway, Point Pleasant Beach, NJ 08742',
+    photo:'../../assets/videos/205-parkway.jpg',
+    qr:'', url:'https://www.youtube.com/shorts/pvdRa6qlZ0U' },
+  { title:'105 Norfolk Street, Tower 15, NY 10002',
+    photo:'../../assets/videos/105-norfolk.jpg',
+    qr:'', url:'https://www.youtube.com/watch?v=ENtscLOAae8' }
 ];
 
 const VIDEO_COPY = [
@@ -816,7 +847,7 @@ function pgStrategy(n) {
     '<div class="strat-note">Price is the single biggest lever we control. Go out too high and the ' +
     'listing goes stale &mdash; buyers read days-on-market before they read the description. Go out too ' +
     'low and you leave money on the table. The three numbers above are the honest range the comparables ' +
-    'support, and the starred one is where we would go to market.</div>' +
+    'support, and the highlighted one is where we would go to market.</div>' +
     '<div class="ph strat-ph"' + (slot('strategy') ? ' data-pos="strategy"' : '') + '>' + (slot('strategy')
       ? '<img src="' + slot('strategy') + '" alt="" style="object-position:' +
           posFor('strategy').x + '% ' + posFor('strategy').y + '%">'
@@ -830,7 +861,8 @@ function pgStrategy(n) {
 function pgPlan(n) {
   const rows = planRows(DEFAULT_PLAN);
   const phases = ['Pre-Launch', 'Launch', 'On-Going'];
-  const col = phase => {
+  /* p1/p2/p3 carry the phase accent — navy, mid, then light */
+  const col = (phase, i) => {
     const rs = rows.filter(r => r[0] === phase);
     const groups = [];
     rs.forEach(r => {
@@ -838,7 +870,7 @@ function pgPlan(n) {
       if (!g) { g = { name: r[1], items: [] }; groups.push(g); }
       g.items.push(r[2] + (r[3] ? ' — ' + r[3] : ''));
     });
-    return '<div class="ph3"><div class="ph3-h">' + phase + '</div>' +
+    return '<div class="ph3 p' + (i + 1) + '"><div class="ph3-h">' + phase + '</div>' +
       groups.map(g => '<div class="grp"><div class="grp-t">' + g.name + '</div><ul>' +
         g.items.map(t => '<li>' + t + '</li>').join('') + '</ul></div>').join('') + '</div>';
   };
@@ -863,7 +895,13 @@ function pgPrep(n) {
 /* Static GVC boilerplate — curated from client testimonials, not editor-driven. */
 function pgReviews(n) {
   const rs = pairs(DEFAULT_REVIEWS);
-  const body = '<div class="quotes">' + rs.map(([q, who]) =>
+  const body =
+    '<div class="rev-badge">' +
+      '<div class="rb-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>' +
+      '<div class="rb-n">50+</div>' +
+      '<div class="rb-l">5-star reviews</div>' +
+    '</div>' +
+    '<div class="quotes">' + rs.map(([q, who]) =>
     '<div class="quote"><p>' + esc(q) + '</p>' +
     (who ? '<div class="who">' + esc(who) + '</div>' : '') + '</div>').join('') + '</div>';
   return P.page({ deck:DECK, n, of:OF, site:state.site,
