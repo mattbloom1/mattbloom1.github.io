@@ -43,7 +43,6 @@ body{font-family:var(--body);color:var(--navy);}
 .ed-top{flex:none;position:sticky;top:0;z-index:3;
   padding:14px 20px;border-bottom:1px solid var(--ui-rule);background:#fff;}
 .ed-top .btn{width:100%;}
-.ed-top .sec-note{margin-top:7px;}
 
 /* ================= EDITOR SECTIONS ================= */
 details.ed-sec{border-bottom:1px solid var(--ui-rule);}
@@ -156,7 +155,7 @@ details.ed-sec summary .hint{margin-left:auto;font:400 10px var(--ui-mono);lette
 @page{size:letter portrait;margin:0;}
 @media print{
   html,body{background:#fff;}
-  .masthead,.site-foot,.tool-about,#editor,#stageBar,.pg-tag{display:none !important;}
+  .masthead,#editor,#stageBar,.pg-tag{display:none !important;}
   #app{display:block;height:auto;overflow:visible;}
   #stage{height:auto;overflow:visible;background:#fff;}
   #pages{padding:0 !important;display:block !important;gap:0 !important;}

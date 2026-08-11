@@ -242,7 +242,7 @@
             </select>
           </div>
           <div id="imgList"></div>
-          <div class="sec-note" id="imgNote">Photos you add are placed automatically. Override any one with its dropdown.</div>
+          <div class="sec-note" id="imgNote"></div>
         </div>
       </details>
 
@@ -262,21 +262,6 @@
         </div>
       </details>
 
-      <details class="ed-sec">
-        <summary>Agents <span class="hint">pages 1 &amp; 6</span></summary>
-        <div class="sec-in">
-          <div id="rosterPick"></div>
-          <div id="shotList"></div>
-          <div class="field">
-            <label>Team statement</label>
-            <textarea data-field="agentBio" rows="4"></textarea>
-          </div>
-          <div class="field">
-            <label>Website</label>
-            <input type="text" data-field="site" placeholder="gvcrealestateteam.com">
-          </div>
-        </div>
-      </details>
 
       <details class="ed-sec">
         <summary>Gallery <span class="hint">page 2</span></summary>
@@ -362,6 +347,22 @@
         </div>
       </details>
 
+      <details class="ed-sec">
+        <summary>Agents <span class="hint">pages 1 &amp; 6</span></summary>
+        <div class="sec-in">
+          <div id="rosterPick"></div>
+          <div id="shotList"></div>
+          <div class="field">
+            <label>Team statement</label>
+            <textarea data-field="agentBio" rows="4"></textarea>
+          </div>
+          <div class="field">
+            <label>Website</label>
+            <input type="text" data-field="site" placeholder="gvcrealestateteam.com">
+          </div>
+        </div>
+      </details>
+
     </div>
   </aside>
 
@@ -371,11 +372,6 @@
   </main>
 
   <div id="stageBar">
-    <span class="zlab">Preview</span>
-    <span class="zlab">Paper</span>
-    <div class="seg" role="group" aria-label="Paper size">
-      <button type="button" class="on" disabled>US Letter &middot; 8.5 &times; 11</button>
-    </div>
     <div class="sp"></div>
     <span class="zlab" id="zoomInfo"></span>
     <button class="btn sm ghost" id="btnZoom">Zoom 100%</button>
@@ -1040,8 +1036,8 @@ function renderImgList() {
     host.appendChild(row);
   });
   $('#imgNote').textContent = state.images.length
-    ? state.images.length + ' photos. Override any placement with its dropdown.'
-    : 'Photos you add are placed automatically. Override any one with its dropdown.';
+    ? state.images.length + (state.images.length === 1 ? ' photo' : ' photos')
+    : '';
 }
 
 /* Same .ag-chip picker as the Showsheet and the packages — styles in builder.css. */
