@@ -161,10 +161,12 @@
 .ag-title{font:700 30pt/1.05 var(--serif);color:#fff;margin-top:.1in;}
 .ag-cards{flex:1;min-height:0;display:flex;gap:.45in;margin-top:.42in;}
 /* max-width keeps a lone agent's square headshot from filling the page */
-.ag-card{flex:1;min-width:0;max-width:3.45in;display:flex;flex-direction:column;}
-.ag-shot{width:100%;aspect-ratio:1/1;background:rgba(255,255,255,.07);position:relative;overflow:hidden;}
+.ag-card{flex:1;min-width:0;max-width:3.45in;display:flex;flex-direction:column;text-align:center;}
+/* headshots are transparent cutouts, so no panel behind them — the figure
+   stands straight on the navy */
+.ag-shot{width:100%;aspect-ratio:1/1;position:relative;overflow:hidden;}
 .ag-shot img{width:100%;height:100%;object-fit:cover;display:block;}
-.ag-shot .mono-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.22;}
+.ag-shot .mono-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.22;background:rgba(255,255,255,.07);}
 .ag-shot .mono-ph img{height:38%;width:auto;object-fit:contain;}
 .ag-name{font:700 19pt/1.15 var(--serif);color:#fff;margin-top:.2in;}
 .ag-role{font:800 7pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--sky);margin-top:.07in;line-height:1.5;}
@@ -393,6 +395,7 @@
 <script src="../../assets/js/chrome.js"></script>
 <script src="../../assets/js/motion.js"></script>
 <script src="../../assets/js/builder.js"></script>
+<script src="../../assets/js/roster.js"></script>
 <script src="icons.js"></script>
 <script>
 'use strict';
@@ -404,19 +407,10 @@ const MONO = '../../assets/logos/monogram-white.svg';
    Selecting an agent fills the page 1 footer and the agent page,
    so contact details are never retyped.
    ============================================================ */
-const ROSTER = [
-  {id:'john-gasdaska',   name:'John Gasdaska',   title:'Licensed Associate Real Estate Broker', phone:'646.345.7350', email:'john.gasdaska@elliman.com'},
-  {id:'tj-verdiglione',  name:'TJ Verdiglione',  title:'Licensed Real Estate Salesperson',      phone:'732.425.7477', email:'thomas.verdiglione@elliman.com'},
-  {id:'jonathan-conlon', name:'Jonathan Conlon', title:'Licensed Associate Real Estate Broker', phone:'347.564.2440', email:'jonathan.conlon@elliman.com'},
-  {id:'katie-cook',      name:'Katie Cook',      title:'Licensed Real Estate Salesperson',      phone:'516.319.9732', email:'katie.cook@elliman.com'},
-  {id:'nicole-melveney', name:'Nicole Melveney', title:'Licensed Real Estate Sales Associate',  phone:'732.567.5375', email:'nicole.melveney@elliman.com'},
-  {id:'jessica-wolf',    name:'Jessica Wolf',    title:'Licensed Real Estate Salesperson',      phone:'847.414.7841', email:'jessica.wolf@elliman.com'},
-  {id:'marli-silver',    name:'Marli Silver',    title:'Licensed Real Estate Salesperson',      phone:'',             email:'marli.silver@elliman.com'}
-];
-// Headshots live in assets/agents/, extracted from the base64 blobs the
-// showsheet carries inline. Uploading one overrides the default.
-ROSTER.forEach(a => { a.shot = '../../assets/agents/' + a.id + '.jpg'; });
-const headshotFor = a => state.headshots[a.id] || a.shot;
+const ROSTER = window.GVC_ROSTER;
+// Headshots come from the roster as transparent PNGs, so they sit on the
+// navy agent page without a white box behind them.
+const headshotFor = a => state.headshots[a.id] || a.photo;
 const MAX_AGENTS = 2;
 
 /* Bento layouts — six rows of six characters on a 6x6 grid; the letter is
