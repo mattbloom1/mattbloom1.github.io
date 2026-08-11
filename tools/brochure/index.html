@@ -410,7 +410,8 @@ const ROSTER = [
   {id:'jonathan-conlon', name:'Jonathan Conlon', title:'Licensed Associate Real Estate Broker', phone:'347.564.2440', email:'jonathan.conlon@elliman.com'},
   {id:'katie-cook',      name:'Katie Cook',      title:'Licensed Real Estate Salesperson',      phone:'516.319.9732', email:'katie.cook@elliman.com'},
   {id:'nicole-melveney', name:'Nicole Melveney', title:'Licensed Real Estate Sales Associate',  phone:'732.567.5375', email:'nicole.melveney@elliman.com'},
-  {id:'jessica-wolf',    name:'Jessica Wolf',    title:'Licensed Real Estate Salesperson',      phone:'847.414.7841', email:'jessica.wolf@elliman.com'}
+  {id:'jessica-wolf',    name:'Jessica Wolf',    title:'Licensed Real Estate Salesperson',      phone:'847.414.7841', email:'jessica.wolf@elliman.com'},
+  {id:'marli-silver',    name:'Marli Silver',    title:'Licensed Real Estate Salesperson',      phone:'',             email:'marli.silver@elliman.com'}
 ];
 // Headshots live in assets/agents/, extracted from the base64 blobs the
 // showsheet carries inline. Uploading one overrides the default.
@@ -789,7 +790,7 @@ function renderAgent(page) {
             '</div>' +
             '<div class="ag-name">' + escapeHtml(a.name) + '</div>' +
             '<div class="ag-role">' + escapeHtml(a.title) + '</div>' +
-            '<div class="ag-contact">' + escapeHtml(a.phone) + '<br>' + escapeHtml(a.email) + '</div>' +
+            '<div class="ag-contact">' + [a.phone, a.email].filter(Boolean).map(escapeHtml).join('<br>') + '</div>' +
           '</div>';
         }).join('') : '<div class="ag-card"><div class="ag-shot">' +
             '<div class="empty-note">Pick an agent<br>in the Agents panel</div></div></div>') +
@@ -1061,7 +1062,7 @@ function renderRoster() {
     row.type = 'button';
     row.className = 'ros' + (on ? ' on' : '');
     row.innerHTML = '<span class="ros-nm">' + escapeHtml(a.name) + '</span>' +
-                    '<span class="ros-tt">' + escapeHtml(a.phone) + '</span>';
+                    '<span class="ros-tt">' + escapeHtml(a.phone || a.email) + '</span>';
     row.addEventListener('click', () => {
       if (on) state.agents = state.agents.filter(id => id !== a.id);
       else if (state.agents.length < MAX_AGENTS) state.agents.push(a.id);
