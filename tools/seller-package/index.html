@@ -64,9 +64,11 @@
    inherited .ph rules would clip the shadow and crop the head. */
 /* the row has to be explicitly minmax(0,1fr), not the default auto: an auto
    row sizes to the cutout's intrinsic height, so .ph's height:100% would have
-   nothing definite to resolve against and the block would overflow. */
-.duo{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:minmax(0,1fr);
-  gap:.3in;height:3in;flex:none;margin-bottom:.24in;}
+   nothing definite to resolve against and the block would overflow.
+   Height is tuned to the cutouts' ~1:1 subject so contain barely letterboxes —
+   any surplus lands above the head, which is what reads as a dead margin. */
+.duo{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:minmax(0,1fr);
+  gap:.26in;height:2.5in;flex:none;margin-bottom:.24in;}
 /* grid, not flex: an <img> is a replaced element, so height:auto makes it
    claim its intrinsic height and it wins over flex-basis, pushing the caption
    off the bottom of the box. An explicit 1fr row plus height:100% pins it. */
@@ -144,17 +146,11 @@
 .plan3 .ph3{flex:1;min-width:0;display:flex;flex-direction:column;}
 .plan3 .ph3-h{flex:none;font:800 11pt var(--sans);letter-spacing:.03em;text-transform:uppercase;
   color:var(--navy);padding-bottom:.1in;border-bottom:1.4pt solid var(--sky);margin-bottom:.16in;}
-/* Groups spread down the column so the block fills the page. The spread lives
-   on an inner wrapper, not on .ph3 itself — otherwise the phase heading gets
-   pushed away from its own first group. The gap is the floor, so adding plan
-   items tightens the spread instead of overflowing. */
-.plan3 .grps{flex:1;min-height:0;display:flex;flex-direction:column;
-  justify-content:space-between;gap:.2in;}
-.plan3 .grp-t{font:800 7pt var(--sans);letter-spacing:.13em;text-transform:uppercase;color:rgba(0,39,58,.55);margin-bottom:.11in;}
+.plan3 .grp{margin-bottom:.16in;}
+.plan3 .grp-t{font:800 7pt var(--sans);letter-spacing:.13em;text-transform:uppercase;color:rgba(0,39,58,.55);margin-bottom:.06in;}
 .plan3 ul{list-style:none;margin:0;padding:0;}
-.plan3 li{padding:.135in 0 .135in .16in;position:relative;font:300 8.8pt/13pt var(--body);color:var(--navy);}
-.plan3 li + li{border-top:.5pt solid rgba(0,39,58,.09);}
-.plan3 li::before{content:'';position:absolute;left:0;top:.18in;width:.06in;height:.06in;background:var(--sky2);}
+.plan3 li{padding:.05in 0 .05in .16in;position:relative;font:300 8.8pt/13pt var(--body);color:var(--navy);}
+.plan3 li::before{content:'';position:absolute;left:0;top:.095in;width:.06in;height:.06in;background:var(--sky2);}
 
 /* p10 — preparing your home: the seller checklist, two icon-headed columns.
    Boxes are printed empty on purpose — the seller ticks them by hand. */
@@ -174,9 +170,14 @@
    space-between: between pins the first and last quote hard against the top
    and bottom edges of the text block. */
 .quotes{display:flex;flex-direction:column;justify-content:space-evenly;gap:.26in;flex:1;min-height:0;}
-.quote{flex:none;position:relative;padding-left:.52in;}
+/* border-left:0 overrides the shared rule in pitch.css — the quote is framed
+   by the pair of marks now, not by a rule down the side. */
+.quote{flex:none;position:relative;border-left:0;padding-left:.52in;padding-right:.6in;}
 .quote::before{content:'\201C';position:absolute;left:0;top:-.1in;font:700 46pt/1 var(--serif);color:var(--sky);}
-.quote p{margin:0;font:italic 400 15pt/23pt var(--body);color:var(--navy);}
+/* closing mark hangs off the end of the text block, into the right padding */
+.quote p{position:relative;margin:0;font:italic 400 15pt/23pt var(--body);color:var(--navy);}
+.quote p::after{content:'\201D';position:absolute;right:-.56in;bottom:-.26in;
+  font:700 56pt/1 var(--serif);color:var(--sky);}
 .quote .who{margin-top:.12in;font:800 8pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:rgba(0,39,58,.55);}
 
 /* p12 — professional videos: copy column beside three listing films */
@@ -193,7 +194,7 @@
   text-transform:uppercase;color:#fff;}
 .vid .vqr{position:absolute;top:.13in;right:.13in;width:.72in;height:.72in;
   background:#fff;padding:.045in;}
-.vid .vqr svg{width:100%;height:100%;display:block;}
+.vid .vqr svg,.vid .vqr img{width:100%;height:100%;display:block;object-fit:contain;}
 .vid .vqr.todo{display:flex;align-items:center;justify-content:center;text-align:center;
   font:800 5.4pt/1.35 var(--sans);letter-spacing:.06em;text-transform:uppercase;color:rgba(0,39,58,.55);}
 
@@ -213,13 +214,15 @@
    have something solid to sit against. */
 .pg[data-key="contact"] .ag-row{gap:.55in;flex:none;justify-content:center;}
 .ag-c{flex:0 1 2.5in;max-width:2.5in;text-align:left;}
-.ag-c .shot{position:relative;width:100%;aspect-ratio:4/5;overflow:hidden;
+/* Square panel, deliberately: the cutouts' subjects are all ~1:1, so a 4:5
+   portrait panel made contain letterbox by 20% and object-position:bottom
+   dumped every bit of it above the head. Matching the panel to the subject
+   removes the gap without cover-cropping anyone's arms — the roster framings
+   vary too much for that to be safe. The band overlaps the chest. */
+.ag-c .shot{position:relative;width:100%;aspect-ratio:1/1;overflow:hidden;
   background:linear-gradient(#F4F3EF,#E4E2DC);box-shadow:0 .14in .3in rgba(0,0,0,.4);}
-/* contain, not cover: these are full cutouts of varying framing, and cover
-   crops heads off. The bottom padding clears the name band so the figure
-   stands on it instead of disappearing behind it. */
-.ag-c .shot img{width:100%;height:100%;display:block;box-sizing:border-box;
-  padding:.1in .1in .4in;object-fit:contain;object-position:50% 100%;}
+.ag-c .shot img{width:100%;height:100%;display:block;
+  object-fit:contain;object-position:50% 100%;}
 .ag-c .shot .band{position:absolute;left:0;right:0;bottom:0;padding:.1in .15in;
   background:rgba(0,39,58,.9);}
 .ag-c .shot .band .bnm{font:700 13pt/1.15 var(--serif);color:#fff;}
@@ -486,16 +489,30 @@ const PREP = [
    'Clear stairs and halls;Store excess furniture;Clear counters and stove;Make closets neat and tidy']
 ];
 
-/* ------------------------------------------------------------
-   PROFESSIONAL VIDEOS — real GVC listing films. `url` drives the
-   printed QR code; leave it empty and the card prints a placeholder
-   instead of a dead QR. `photo` is a path under photos/ (or blank to
-   use a dropped photo from the Videos slots in the panel).
-   ------------------------------------------------------------ */
+/* ============================================================
+   PROFESSIONAL VIDEOS  (page 12)  —  EDIT THIS BLOCK
+   ------------------------------------------------------------
+   One entry per card, top to bottom. All four fields are optional
+   except `title`.
+
+     title  The address printed on the band across the bottom.
+     photo  Path to the listing photo, relative to this file.
+            e.g. '../../photos/videos/200-e-57th.jpg'
+            Leave '' to fall back to a photo dropped into the
+            "Video N still" slot in the Photos panel.
+     qr     Path to a QR image you already have, same style of path.
+            Use this if you would rather drop in your own PNGs.
+     url    A video link. If `qr` is empty and this is set, the page
+            draws the QR itself as vector art, which stays sharp at
+            any print size — this is the better option of the two.
+
+   With neither `qr` nor `url`, the card prints a "video link needed"
+   placeholder rather than a dead code.
+   ============================================================ */
 const VIDEOS = [
-  { title:'200 East 57th St #9A, NY',      url:'', photo:'' },
-  { title:'105 Norfolk St, Tower 15, NY',  url:'', photo:'' },
-  { title:'243 W 60th St #8A, NY',         url:'', photo:'' }
+  { title:'200 East 57th St #9A, NY',     photo:'', qr:'', url:'' },
+  { title:'105 Norfolk St, Tower 15, NY', photo:'', qr:'', url:'' },
+  { title:'243 W 60th St #8A, NY',        photo:'', qr:'', url:'' }
 ];
 
 const VIDEO_COPY = [
@@ -611,20 +628,22 @@ function pgToc(n) {
   });
 }
 
-/* Company page. The copy is fixed GVC boilerplate, but the two portraits
-   follow whichever agents are picked in the panel — the deck goes out under
-   their names, so the faces at the top have to match. */
+/* Company page — entirely static, including the faces. The three co-founders
+   are always shown here regardless of which agents are picked for the listing;
+   this page is about the firm, not about who is presenting it. */
+const FOUNDERS = ['john-gasdaska', 'tj-verdiglione', 'jonathan-conlon'];
+
 function pgAbout(n) {
-  const list = agents();
-  const duo = list.length
-    ? '<div class="duo">' + list.slice(0, 2).map((a, i) =>
-        '<div class="ph" data-pos="about' + i + '">' +
-          '<img src="' + headshotFor(a) + '" alt="" style="object-position:' +
-            posFor('about' + i).x + '% ' + posFor('about' + i).y + '%">' +
-          '<div class="cap">' + esc(a.name) + '</div>' +
-        '</div>').join('') + '</div>'
-    : '<div class="duo"><div class="ph"><div class="empty-note on-white">Pick your agents<br>in the Agents panel</div></div>' +
-      '<div class="ph"><div class="empty-note on-white">&nbsp;</div></div></div>';
+  const duo =
+    '<div class="duo">' + FOUNDERS.map((id, i) => {
+      const a = window.GVC_AGENT(id);
+      if (!a) return '';
+      return '<div class="ph" data-pos="about' + i + '">' +
+        '<img src="' + headshotFor(a) + '" alt="" style="object-position:' +
+          posFor('about' + i).x + '% ' + posFor('about' + i).y + '%">' +
+        '<div class="cap">' + esc(a.name) + '</div>' +
+      '</div>';
+    }).join('') + '</div>';
   const body =
     duo +
     '<div class="dline"><b>Over $2 Billion</b> Sold</div>' +
@@ -819,9 +838,9 @@ function pgPlan(n) {
       if (!g) { g = { name: r[1], items: [] }; groups.push(g); }
       g.items.push(r[2] + (r[3] ? ' — ' + r[3] : ''));
     });
-    return '<div class="ph3"><div class="ph3-h">' + phase + '</div><div class="grps">' +
+    return '<div class="ph3"><div class="ph3-h">' + phase + '</div>' +
       groups.map(g => '<div class="grp"><div class="grp-t">' + g.name + '</div><ul>' +
-        g.items.map(t => '<li>' + t + '</li>').join('') + '</ul></div>').join('') + '</div></div>';
+        g.items.map(t => '<li>' + t + '</li>').join('') + '</ul></div>').join('') + '</div>';
   };
   const body = '<div class="plan3">' + phases.map(col).join('') + '</div>';
   return P.page({ deck:DECK, n, of:OF, site:state.site,
@@ -851,21 +870,24 @@ function pgReviews(n) {
     title:'What Our Clients Say', body });
 }
 
-/* Three real listing films. The photo comes from the Videos slots in the panel
-   (drag on the page to reframe); the QR is generated from VIDEOS[i].url, and
-   prints a placeholder rather than a dead code while that url is blank. */
+/* Three real listing films — all three cards are driven by the VIDEOS block
+   near the top of this file. Photo falls back to the panel's Video N slot so a
+   dropped photo still works; QR prefers a supplied image, else draws itself
+   from the url, else prints a placeholder rather than a dead code. */
 function pgVideos(n) {
   const body =
     '<div class="pv">' +
       '<div class="pv-copy">' + VIDEO_COPY.map(p => '<p>' + p + '</p>').join('') + '</div>' +
       '<div class="pv-list">' + VIDEOS.slice(0, 3).map((v, i) => {
         const key = 'video' + (i + 1), img = v.photo || slot(key);
-        const qr = qrSvg(v.url);
+        const code = v.qr
+          ? '<img src="' + v.qr + '" alt="">'
+          : qrSvg(v.url);
         return '<div class="vid"' + (img ? ' data-pos="' + key + '"' : '') + '>' +
           (img
             ? '<img src="' + img + '" alt="" style="object-position:' + posFor(key).x + '% ' + posFor(key).y + '%">'
             : '<div class="empty-note on-white">Tag a photo &ldquo;' + esc('Video ' + (i + 1) + ' still') + '&rdquo;</div>') +
-          '<div class="vqr' + (qr ? '' : ' todo') + '">' + (qr || 'Video<br>link<br>needed') + '</div>' +
+          '<div class="vqr' + (code ? '' : ' todo') + '">' + (code || 'Video<br>link<br>needed') + '</div>' +
           '<div class="vt">' + esc(v.title) + '</div>' +
         '</div>';
       }).join('') + '</div>' +
