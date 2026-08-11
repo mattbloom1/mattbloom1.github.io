@@ -56,12 +56,28 @@
 .dline b{font-weight:700;}
 .dline.sm{font-size:15pt;margin:.22in 0 .14in;}
 
-/* p3 — about GVC: agent duo, headline stat, copy, value blocks */
-.duo{display:grid;grid-template-columns:1fr 1fr;gap:.18in;height:2.15in;flex:none;margin-bottom:.2in;}
-.duo .ph{height:100%;}
-.duo .cap{position:absolute;left:0;right:0;bottom:0;padding:.08in .13in;
-  background:rgba(0,39,58,.82);font:800 7.5pt var(--sans);letter-spacing:.1em;
-  text-transform:uppercase;color:#fff;}
+/* p3 — about GVC: agent duo, headline stat, copy, value blocks.
+   The roster headshots are transparent cutouts, so these sit on the bare page
+   with a silhouette shadow rather than in a grey box: filter:drop-shadow
+   follows the alpha channel, so the shadow traces the person instead of
+   boxing them. That needs overflow:visible and object-fit:contain — the
+   inherited .ph rules would clip the shadow and crop the head. */
+/* the row has to be explicitly minmax(0,1fr), not the default auto: an auto
+   row sizes to the cutout's intrinsic height, so .ph's height:100% would have
+   nothing definite to resolve against and the block would overflow. */
+.duo{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:minmax(0,1fr);
+  gap:.3in;height:3in;flex:none;margin-bottom:.24in;}
+/* grid, not flex: an <img> is a replaced element, so height:auto makes it
+   claim its intrinsic height and it wins over flex-basis, pushing the caption
+   off the bottom of the box. An explicit 1fr row plus height:100% pins it. */
+.duo .ph{height:100%;display:grid;grid-template-rows:minmax(0,1fr) auto;
+  background:none;overflow:visible;}
+.duo .ph img{width:100%;height:100%;min-height:0;
+  object-fit:contain;object-position:50% 100%;
+  filter:drop-shadow(.02in .05in .07in rgba(0,39,58,.34));}
+.duo .cap{position:static;flex:none;margin-top:.13in;padding-top:.1in;text-align:center;
+  border-top:1pt solid var(--sky);
+  font:800 8pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--navy);}
 .about-copy{font:300 9.3pt/14pt var(--body);color:var(--navy);text-align:center;margin-bottom:.22in;}
 .about-copy b{font-weight:700;}
 
