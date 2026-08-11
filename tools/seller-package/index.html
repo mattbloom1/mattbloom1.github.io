@@ -26,12 +26,27 @@
    Shared furniture lives in assets/css/pitch.css.
    ============================================================ */
 
-/* p3 — about GVC, agent alongside */
+/* p3 — about GVC, static team copy, two real headshots */
 .about{display:flex;gap:.42in;flex:1;min-height:0;}
-.about .ph{width:2.85in;flex:none;align-self:stretch;}
+.about .duo{width:2.85in;flex:none;align-self:stretch;display:flex;flex-direction:column;gap:.14in;}
+.about .duo .ph{flex:1;min-height:0;}
+.about .duo .ph .cap{position:absolute;left:0;right:0;bottom:0;padding:.09in .14in;
+  background:rgba(0,39,58,.82);font:800 7pt var(--sans);letter-spacing:.1em;text-transform:uppercase;color:#fff;}
 .about .txt{flex:1;min-width:0;display:flex;flex-direction:column;}
+.about .values{list-style:none;margin:0 0 .16in;padding:0;}
+.about .values li{padding:.09in 0;border-bottom:.75pt solid var(--rule);font:300 9.5pt/14pt var(--body);color:var(--navy);}
+.about .values li:last-child{border-bottom:0;}
+.about .values b{font:800 8pt var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--navy);
+  display:block;margin-bottom:.03in;}
 .mission{margin-top:auto;padding-top:.22in;border-top:1pt solid var(--sky);
   font:italic 300 11.5pt/17pt var(--body);color:var(--navy);}
+
+/* p4 — in-house studio, real team grid */
+.crew{display:grid;grid-template-columns:repeat(4,1fr);gap:.2in;margin-bottom:.26in;}
+.crew .c{text-align:center;}
+.crew .ph{aspect-ratio:1/1;margin-bottom:.1in;}
+.crew .nm{font:700 9.5pt var(--serif);color:var(--navy);}
+.crew .tt{margin-top:.02in;font:400 7.5pt/1.4 var(--body);color:rgba(0,39,58,.6);}
 
 /* p5 — property breakdown */
 .pb-hero{height:2.75in;flex:none;margin-bottom:.26in;}
@@ -45,12 +60,31 @@
 .feat li{position:relative;padding:.055in 0 .055in .22in;font:300 9.5pt/14pt var(--body);color:var(--navy);}
 .feat li::before{content:'';position:absolute;left:0;top:.105in;width:.075in;height:.075in;background:var(--sky);}
 
-/* p6 — past sales map */
-.map-note{flex:none;margin-top:.16in;font:300 9pt/13.5pt var(--body);color:rgba(0,39,58,.7);}
+/* p7 — comps table, more breathing room + small glyphs in the numeric heads */
+#compTable th .hi{width:9pt;height:9pt;display:inline-block;vertical-align:-1.5pt;margin-right:.04in;color:rgba(0,39,58,.5);}
+#compTable td{padding-top:.16in;padding-bottom:.16in;}
 
 /* p8 — listing strategy */
 .strat-note{margin-top:auto;padding-top:.22in;border-top:.75pt solid var(--rule);
   font:300 9.5pt/14pt var(--body);color:rgba(0,39,58,.78);}
+
+/* p9 — sales & marketing plan, three phases */
+.plan3{display:flex;gap:.3in;flex:1;min-height:0;}
+.plan3 .ph3{flex:1;min-width:0;display:flex;flex-direction:column;}
+.plan3 .ph3-h{flex:none;font:800 11pt var(--sans);letter-spacing:.03em;text-transform:uppercase;
+  color:var(--navy);padding-bottom:.1in;border-bottom:1.4pt solid var(--sky);margin-bottom:.16in;}
+.plan3 .grp{margin-bottom:.16in;}
+.plan3 .grp-t{font:800 7pt var(--sans);letter-spacing:.13em;text-transform:uppercase;color:rgba(0,39,58,.55);margin-bottom:.06in;}
+.plan3 ul{list-style:none;margin:0;padding:0;}
+.plan3 li{padding:.05in 0 .05in .16in;position:relative;font:300 8.8pt/13pt var(--body);color:var(--navy);}
+.plan3 li::before{content:'';position:absolute;left:0;top:.095in;width:.06in;height:.06in;background:var(--sky2);}
+
+/* p10 — testimonials, editorial block quotes */
+.quotes{display:flex;flex-direction:column;gap:.24in;}
+.quote{flex:none;position:relative;padding-left:.36in;}
+.quote::before{content:'\201C';position:absolute;left:0;top:-.06in;font:700 30pt/1 var(--serif);color:var(--sky2);}
+.quote p{margin:0;font:italic 400 11.5pt/17pt var(--body);color:var(--navy);}
+.quote .who{margin-top:.08in;font:800 7.5pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:rgba(0,39,58,.55);}
 
 /* p11 — digital reach */
 .vids{display:grid;grid-template-columns:1fr 1fr;gap:.26in;flex:1;min-height:0;}
@@ -66,12 +100,18 @@
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 
 /* p12 — contact */
-.links{display:grid;grid-template-columns:1fr 1fr;gap:.14in .42in;margin-top:auto;
-  padding-top:.26in;border-top:1pt solid var(--rule-rev);}
-.links a,.links span{font:300 9.5pt/1.5 var(--body);color:var(--ow);text-decoration:none;
-  display:flex;align-items:baseline;gap:.1in;min-width:0;}
+.ag-c .shot{position:relative;box-shadow:0 .1in .22in rgba(0,0,0,.35);}
+.ag-c .shot .band{position:absolute;left:0;right:0;bottom:0;padding:.1in .14in;
+  background:rgba(0,39,58,.82);text-align:left;}
+.ag-c .shot .band .bnm{font:700 12pt var(--serif);color:#fff;}
+.linkgrp{margin-top:.2in;}
+.linkgrp:first-of-type{margin-top:auto;padding-top:.26in;border-top:1pt solid var(--rule-rev);}
+.linkgrp-t{font:800 7pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--sky);margin-bottom:.1in;}
+.links{display:grid;grid-template-columns:1fr 1fr;gap:.12in .42in;}
+.links span{font:300 9.5pt/1.5 var(--body);color:var(--ow);display:flex;align-items:baseline;gap:.1in;min-width:0;}
 .links .lk{font:800 7pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--sky);flex:none;width:.95in;}
 .links .lv{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.states{margin-top:.2in;font:800 7.5pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:rgba(229,229,229,.6);}
 </style>
 </head>
 <body data-root="../../" data-nav="tools">
@@ -124,7 +164,6 @@
         <div class="sec-in">
           <div class="field"><label>Prepared for</label><input type="text" data-f="client" placeholder="Mr. &amp; Mrs. Harrington"></div>
           <div class="field"><label>Date</label><input type="text" data-f="date" placeholder="August 2026"></div>
-          <div class="field"><label>Website shown in footers</label><input type="text" data-f="site" placeholder="gvcrealestateteam.com"></div>
         </div>
       </details>
 
@@ -138,8 +177,9 @@
           <input type="file" id="filePhotos" accept="image/*" multiple hidden>
           <div id="imgList"></div>
           <div class="sec-note">Every photo has a role. Leave one on <em>Auto</em> and it fills the next
-            empty slot in order &mdash; cover, property hero, about-us portrait, then the four video
-            stills. Pin one to a role and the auto pass will not move it.</div>
+            empty slot in order &mdash; cover, property hero, then the four video stills.
+            Pin one to a role and the auto pass will not move it. On the page, drag any
+            photo to reframe it inside its box.</div>
           <div class="drop" id="dropMap" tabindex="0" role="button" style="margin-top:14px">
             <div class="d-big">Drop past-sales map</div>
             <div class="d-sub">Export one from Map Studio</div>
@@ -176,50 +216,6 @@
           <div class="field"><label>Our recommendation</label>
             <textarea data-f="stratNote" rows="3" placeholder="Why we would go out at the target number."></textarea></div>
           <div class="warn" id="warnStrategy" hidden></div>
-        </div>
-      </details>
-
-      <details class="ed-sec">
-        <summary>Sales &amp; marketing plan</summary>
-        <div class="sec-in">
-          <div class="field"><label>Plan steps <span style="text-transform:none;letter-spacing:0">(one per line: Title | detail)</span></label>
-            <textarea data-f="plan" rows="9"></textarea></div>
-          <div class="sec-note">Placeholder copy is loaded &mdash; paste your own over it. Six steps fit the page.</div>
-          <div class="warn" id="warnPlan" hidden></div>
-        </div>
-      </details>
-
-      <details class="ed-sec">
-        <summary>Reviews</summary>
-        <div class="sec-in">
-          <div class="field"><label>Reviews <span style="text-transform:none;letter-spacing:0">(one per line: quote | name)</span></label>
-            <textarea data-f="reviews" rows="7"></textarea></div>
-          <div class="warn" id="warnReviews" hidden></div>
-        </div>
-      </details>
-
-      <details class="ed-sec">
-        <summary>Digital reach</summary>
-        <div class="sec-in">
-          <div class="f-row">
-            <div class="field"><label>Monthly impressions</label><input type="text" data-f="reachImp" placeholder="1.2M"></div>
-            <div class="field"><label>Followers</label><input type="text" data-f="reachFol" placeholder="48K"></div>
-          </div>
-          <div class="f-row">
-            <div class="field"><label>Syndicated sites</label><input type="text" data-f="reachSyn" placeholder="120+"></div>
-            <div class="field"><label>Avg. video views</label><input type="text" data-f="reachVid" placeholder="35K"></div>
-          </div>
-          <div class="field"><label>Video examples <span style="text-transform:none;letter-spacing:0">(one per line: Title | url)</span></label>
-            <textarea data-f="videos" rows="5"></textarea></div>
-        </div>
-      </details>
-
-      <details class="ed-sec">
-        <summary>Useful links</summary>
-        <div class="sec-in">
-          <div class="field"><label>Links <span style="text-transform:none;letter-spacing:0">(one per line: Label | value)</span></label>
-            <textarea data-f="links" rows="6"></textarea></div>
-          <div class="warn" id="warnLinks" hidden></div>
         </div>
       </details>
 
@@ -290,35 +286,51 @@ const state = {
   comps:[],
   priceLow:'', priceMid:'', priceHigh:'',
   noteLow:'', noteMid:'', noteHigh:'', stratNote:'',
-  plan:'', reviews:'', videos:'', links:'',
-  reachImp:'', reachFol:'', reachSyn:'', reachVid:'',
-  agents:[]
+  agents:[],
+  pos:{}
 };
 
 /* Default copy — the parts that are GVC boilerplate rather than
-   per-client. Overwrite in the panel; these are only a starting point. */
+   per-client. Overwrite in the panel; these are only a starting point.
+   Plan rows are Phase | Group | Title | detail — the phase groups the row
+   into one of the three columns on the page. */
 const DEFAULT_PLAN = [
-  'Professional photography | A full shoot with our in-house photographer — stills, twilight exteriors and detail work, delivered inside 48 hours.',
-  'Film & motion | A cinematic walkthrough cut for social, plus vertical edits for Reels and TikTok.',
-  'Staging & styling | Our design team advises room by room, and we coordinate the stagers.',
-  'Launch & syndication | Douglas Elliman, StreetEasy, Zillow, Realtor.com and 120+ syndicated partners on day one.',
-  'Targeted advertising | Paid social and search aimed at buyer profiles matched to this home, not a generic radius.',
-  'Broker & buyer events | A broker open plus private appointments through the Elliman agent network.'
+  'Pre-Launch | Media Creation | Custom photography | A full shoot with our in-house photographer, timed to the property at its best.',
+  'Pre-Launch | Media Creation | Professional floor plan | Produced in-house for every listing.',
+  'Pre-Launch | Media Creation | Property video | A cinematic walkthrough cut for the launch and for social.',
+  'Pre-Launch | Property Info | Verify all pertinent information | Confirmed against the deed, offering plan and building records before anything goes out.',
+  'Pre-Launch | Pre-Launch Marketing | Elliman &amp; REBNY notice | Immediate notice to all Elliman brokers, REBNY members and co-broke firms.',
+  'Pre-Launch | Pre-Launch Marketing | Teaser announcement | Social teaser ahead of the public listing date.',
+  'Launch | Digital Launch | Elliman.com listing | Posted with professional photos, floor plan, description and all marketing information.',
+  'Launch | Digital Launch | Brokerage &amp; contact announcement | Emailed to the entire brokerage community and our private contact lists.',
+  'Launch | Digital Launch | StreetEasy syndication | Posted with full professional details and marketing information.',
+  'Launch | Print Marketing | Marketing sheet | A professional sheet detailing the property, distributed to agents and prospective buyers.',
+  'Launch | Print Marketing | Print placements | Placed in appropriate print publications.',
+  'Launch | Print Marketing | Just Listed cards | Sent to targeted buildings in the surrounding area.',
+  'On-Going | Communication | Weekly seller updates | Market traffic feedback, both buyer and web, delivered on a weekly cadence.',
+  'On-Going | Communication | Offer qualification | Every offer qualified before it is presented.',
+  'On-Going | Communication | Showings &amp; open houses | Scheduled as needed, public or broker-specific.',
+  'On-Going | Communication | Comparable tracking | Continued tracking of similar sales, so pricing stays defensible.',
+  'On-Going | Ongoing Marketing | Bi-weekly email blasts | Sent to the entire brokerage community.',
+  'On-Going | Ongoing Marketing | Continued print &amp; web ads | As needed through the life of the listing.'
 ].join('\n');
 
 const DEFAULT_REVIEWS = [
-  'They priced it right, marketed it beautifully, and we were in contract in eleven days. | Sarah & Michael D.',
-  'The level of preparation they brought to our first meeting told us everything. | James R.',
-  'Every question answered within the hour, from listing through closing. | The Okonkwo Family'
+  'John and his associates at Gasdaska Conlon are top notch professionals. It was a very smooth, easy and overall enjoyable experience working with them to buy and sell our apartment in NYC. | Conor Hagen',
+  'The whole team is a pleasure to work with. Super responsive, knowledgeable and helpful. They helped us with both buying and selling and did a fantastic job. Highly recommend!! | Jenny Sharfstein Kane',
+  'Working with the Gasdaska Conlon team wasn’t about selling our apartment — it was about peace of mind, working with consummate professionals through every challenge that came our way. | Joe Bachana',
+  'John Gasdaska and Jonathan Conlon are truly outstanding. They listened carefully, found us the perfect match, and later achieved an excellent outcome in a very short time, despite a challenging market. | Gary Watson'
 ].join('\n');
 
 const DEFAULT_LINKS = [
   'Our listings | gvcrealestateteam.com/listings',
-  'Instagram | @gvcrealestateteam',
-  'YouTube | youtube.com/@gvcrealestateteam',
   'Douglas Elliman | elliman.com',
   'Market reports | gvcrealestateteam.com/market',
   'Book a call | gvcrealestateteam.com/contact'
+].join('\n');
+const DEFAULT_SOCIAL = [
+  'Instagram | @gvcrealestateteam',
+  'YouTube | youtube.com/@gvcrealestateteam'
 ].join('\n');
 
 const DEFAULT_VIDEOS = [
@@ -337,6 +349,12 @@ const pairs = txt => String(txt || '').split('\n')
   .map(l => l.trim()).filter(Boolean)
   .map(l => { const i = l.indexOf('|'); return i < 0 ? [l, ''] : [l.slice(0, i).trim(), l.slice(i + 1).trim()]; });
 const listOf = txt => String(txt || '').split('\n').map(l => l.trim()).filter(Boolean);
+/* plan rows are Phase | Group | Title | detail */
+const planRows = txt => listOf(txt).map(l => l.split('|').map(s => s.trim()));
+/* Lazily creates the crop position for a photo slot, so a render function
+   can always read state.pos.<key>.x/.y even before the drag helper wires
+   the box after paint. */
+function posFor(key) { return state.pos[key] || (state.pos[key] = { x: 50, y: 50 }); }
 
 function cityLine() {
   const t = [state.city, state.state].filter(Boolean).join(', ');
@@ -348,14 +366,13 @@ const ROLES = [
   ['auto',    'Auto'],
   ['cover',   'Cover'],
   ['hero',    'Property hero'],
-  ['portrait','About us'],
   ['video1',  'Video 1'],
   ['video2',  'Video 2'],
   ['video3',  'Video 3'],
   ['video4',  'Video 4'],
   ['exclude', 'Unused']
 ];
-const SLOTS = ['cover','hero','portrait','video1','video2','video3','video4'];
+const SLOTS = ['cover','hero','video1','video2','video3','video4'];
 let assign = {}, uid = 0;
 function reassign() { assign = P.assignRoles(state.photos, SLOTS); }
 function slot(name) { return assign[name] ? assign[name].url : null; }
@@ -390,8 +407,8 @@ function pgCover() {
     preparedFor: state.client,
     date: state.date,
     image: slot('cover'),
-    agent: agents()[0],
-    site: state.site
+    pos: posFor('cover'),
+    agents: agents()
   });
 }
 
@@ -403,54 +420,65 @@ function pgToc(n) {
   });
 }
 
+/* Static company page — who the team is, not who is listed on this deck.
+   Real headshots, fixed copy; nothing here reads from the editor panel. */
 function pgAbout(n) {
-  const a = agents()[0];
   const body =
     '<div class="about">' +
-      '<div class="ph">' + (slot('portrait')
-        ? '<img src="' + slot('portrait') + '" alt="">'
-        : '<div class="empty-note on-white">Tag a photo<br>&ldquo;About us&rdquo;</div>') + '</div>' +
+      '<div class="duo">' +
+        '<div class="ph"><img src="../../assets/team/john-gasdaska.jpg" alt=""><div class="cap">John Gasdaska</div></div>' +
+        '<div class="ph"><img src="../../assets/team/tj-verdiglione.jpg" alt=""><div class="cap">TJ Verdiglione</div></div>' +
+      '</div>' +
       '<div class="txt">' +
         '<div class="copy">' +
-          '<p style="margin:0 0 .16in">The Gasdaska Verdiglione Conlon Team is a full-service real estate ' +
-          'team at Douglas Elliman, working across New York City, New Jersey and Florida. We are ' +
-          'brokers, but we are also a production company: photography, film, design and marketing ' +
-          'all sit in-house, which is why our listings look the way they do.</p>' +
-          (a ? '<p style="margin:0 0 .16in"><strong>' + esc(a.name) + '</strong> — ' + esc(a.title) +
-               ' — will be your point of contact from our first meeting through closing.</p>' : '') +
-          '<p style="margin:0">We take on a deliberately small number of listings at a time. ' +
-          'That is the whole model: fewer clients, more attention, and a marketing push behind ' +
-          'every single home we represent.</p>' +
+          '<p style="margin:0 0 .16in">The Gasdaska Verdiglione Conlon Team merged in 2024 to form one ' +
+          'full-service real estate team at Douglas Elliman, working across New York City, New Jersey ' +
+          'and Florida. We are brokers, but we are also a production company: photography, film, ' +
+          'design and marketing all sit in-house, which is why our listings look the way they do.</p>' +
         '</div>' +
-        '<div class="stat-row" style="margin-top:.3in">' +
-          '<div class="stat"><div class="v">$1B+</div><div class="l">Career sales</div></div>' +
+        '<ul class="values">' +
+          '<li><b>Ethical &amp; client-centric</b>We come from diverse backgrounds but share the same values &mdash; integrity, and putting our client&rsquo;s interests first.</li>' +
+          '<li><b>Excellence through experience</b>50+ years of combined experience across the team, consistently recognized as top producers.</li>' +
+          '<li><b>Personalized listings</b>Every listing gets a customized strategy built on attention to detail and market knowledge.</li>' +
+        '</ul>' +
+        '<div class="stat-row">' +
+          '<div class="stat"><div class="v">$2B+</div><div class="l">Career sales</div></div>' +
           '<div class="stat"><div class="v">3</div><div class="l">States served</div></div>' +
         '</div>' +
         '<div class="mission">&ldquo;Represent every home as though it were the only one we had.&rdquo;</div>' +
       '</div>' +
     '</div>';
   return P.page({ deck:DECK, n, of:OF, site:state.site,
-    title:'About The GVC Team', sub:'Who you are hiring, and how we work.', body });
+    title:'About The GVC Team', body });
 }
 
+/* Static company page — the real in-house team, not whichever agents are
+   picked for this listing. Nothing here reads from the editor panel. */
 function pgStudio(n) {
-  const items = [
-    ['camera','Photography','Our own photographer shoots every listing — stills, twilight and detail work, back inside 48 hours.'],
-    ['clapper','Film & motion','Cinematic walkthroughs plus vertical cuts built for Reels, TikTok and YouTube.'],
-    ['pen','Graphic design','Brochures, floor plans, showsheets and mailers, all designed in-house to one standard.'],
-    ['megaphone','Paid media','Social and search campaigns aimed at matched buyer profiles, managed and reported weekly.'],
-    ['globe','Web & syndication','Listing pages, email campaigns and 120+ syndicated partners from day one.'],
-    ['users','Client care','A dedicated operations manager keeps the paperwork and the calendar moving.']
+  const crew = [
+    ['ilin-graves',        'Ilin Graves-Stowe',   'Lead Graphic Designer'],
+    ['sydney-manno',       'Sydney Manno',         'Digital Marketing &amp; Social'],
+    ['matthew-bloomfield', 'Matthew Bloomfield',   'Creative Design Assistant'],
+    ['eric-elfstrom',      'Eric Elfstrom',        'Photographer &amp; Videographer']
+  ];
+  const cards = [
+    ['pen','Immersive visual design','Led by Ilin Graves-Stowe, we create stunning renderings and innovative visuals that bring properties to life and highlight every architectural detail.'],
+    ['megaphone','Digital strategy & social reach','Sydney Manno curates and executes cutting-edge campaigns to expand visibility and engage the right audience across every platform.'],
+    ['clapper','Cinematic storytelling','Eric Elfstrom produces breathtaking films and photography, capturing each home&rsquo;s essence and showcasing it at its absolute best.']
   ];
   const body =
-    '<div class="lede">Most teams hire this out. We do not — which means faster turnarounds, ' +
-    'one consistent look, and no third party deciding how your home is presented.</div>' +
-    '<div class="cards c3">' + items.map(([ic, h, p]) =>
+    '<div class="crew">' + crew.map(([id, nm, tt]) =>
+      '<div class="c"><div class="ph"><img src="../../assets/team/' + id + '.jpg" alt=""></div>' +
+      '<div class="nm">' + nm + '</div><div class="tt">' + tt + '</div></div>').join('') + '</div>' +
+    '<div class="copy" style="margin-bottom:.24in">Based in Boulder, Colorado, the GVC Team&rsquo;s ' +
+    'Marketing &amp; Design division is the creative force behind the brand &mdash; delivering ' +
+    'high-impact visual storytelling, strategic marketing and cutting-edge design that elevate every ' +
+    'listing to its highest potential.</div>' +
+    '<div class="cards c3">' + cards.map(([ic, h, p]) =>
       '<div class="card">' + (window.icon ? window.icon(ic, 'ci') : '') +
-      '<h3>' + esc(h) + '</h3><p>' + esc(p) + '</p></div>').join('') + '</div>';
+      '<h3>' + h + '</h3><p>' + p + '</p></div>').join('') + '</div>';
   return P.page({ deck:DECK, n, of:OF, site:state.site,
-    title:'In-House Marketing &amp; Design'.replace('&amp;','&'),
-    sub:'Six disciplines under one roof, all of them ours.', body });
+    title:'In-House Marketing &amp; Design'.replace('&amp;','&'), body });
 }
 
 function pgProperty(n) {
@@ -462,8 +490,8 @@ function pgProperty(n) {
   ].filter(r => r[1]);
   const feats = listOf(state.features);
   const body =
-    '<div class="ph pb-hero">' + (slot('hero')
-      ? '<img src="' + slot('hero') + '" alt="">'
+    '<div class="ph pb-hero"' + (slot('hero') ? ' data-pos="hero"' : '') + '>' + (slot('hero')
+      ? '<img src="' + slot('hero') + '" alt="" style="object-position:' + posFor('hero').x + '% ' + posFor('hero').y + '%">'
       : '<div class="empty-note on-white">Tag a photo &ldquo;Property hero&rdquo;</div>') + '</div>' +
     (state.blurb ? '<div class="copy" style="margin-bottom:.24in">' + P.lines(state.blurb) + '</div>' : '') +
     '<div class="pb-grid">' +
@@ -477,18 +505,16 @@ function pgProperty(n) {
       '</div>' +
     '</div>';
   return P.page({ deck:DECK, n, of:OF, site:state.site,
-    title: state.address || 'Your Property', sub: cityLine(), body });
+    title: state.address || 'Your Property', body });
 }
 
 function pgMap(n) {
   const body =
-    '<div class="map-wrap">' + (state.map
-      ? '<img src="' + state.map.url + '" alt="">'
-      : '<div class="empty-note on-white">Drop a map export<br>in the Photos panel</div>') + '</div>' +
-    '<div class="map-note">Every pin is a home we listed or sold. We do not farm a single ZIP code — ' +
-    'we follow our clients, which is how we end up with a working knowledge of the blocks that matter to you.</div>';
+    '<div class="map-wrap"' + (state.map ? ' data-pos="map"' : '') + '>' + (state.map
+      ? '<img src="' + state.map.url + '" alt="" style="object-position:' + posFor('map').x + '% ' + posFor('map').y + '%">'
+      : '<div class="empty-note on-white">Drop a map export<br>in the Photos panel</div>') + '</div>';
   return P.page({ deck:DECK, n, of:OF, site:state.site,
-    title:'Where We Have Sold', sub:'Recent transactions across the tri-state area and Florida.', body });
+    title:'Where We Have Sold', body });
 }
 
 function pgComps(n) {
@@ -506,12 +532,12 @@ function pgComps(n) {
     '</tr>';
   const body =
     '<table class="tbl" id="compTable"><thead><tr>' +
-      '<th>Address</th><th class="num">Sold</th><th class="num">Sq ft</th>' +
-      '<th class="num">$ / sq ft</th><th class="num">Bed / Bath</th><th class="num">Date</th>' +
+      '<th>Address</th><th class="num">Sold</th><th class="num">' + (window.icon ? window.icon('ruler','hi') : '') + 'Sq ft</th>' +
+      '<th class="num">$ / sq ft</th><th class="num">' + (window.icon ? window.icon('bed','hi') : '') + 'Bed / Bath</th><th class="num">Date</th>' +
     '</tr></thead><tbody>' + tr(sub, true) + rows.map(c => tr(c, false)).join('') + '</tbody></table>' +
     (rows.length ? '' : '<div class="empty-note on-white" style="position:relative;margin-top:.6in">Add comparables in the panel</div>');
   return P.page({ deck:DECK, n, of:OF, site:state.site,
-    title:'Comparable Sales', sub:'What buyers actually paid for homes like yours.', body });
+    title:'Comparable Sales', body });
 }
 
 function pgStrategy(n) {
@@ -533,61 +559,88 @@ function pgStrategy(n) {
     'comparables support.</div>' +
     (state.stratNote ? '<div class="strat-note"><strong>Our recommendation.</strong> ' + P.lines(state.stratNote) + '</div>' : '');
   return P.page({ deck:DECK, n, of:OF, site:state.site,
-    title:'Listing Strategy', sub:'Three ways to go to market, and what each one costs you.', body });
+    title:'Listing Strategy', body });
 }
 
+/* Static GVC boilerplate — pre-launch, launch and on-going, grouped from
+   DEFAULT_PLAN (Phase | Group | Title | detail). Not editor-driven. */
 function pgPlan(n) {
-  const steps = pairs(state.plan);
-  const body = '<div class="steps" id="planSteps">' + steps.map(([t, d], i) =>
-    '<div class="step"><div class="sn">' + (i + 1) + '</div><div>' +
-      '<div class="st">' + esc(t) + '</div>' +
-      (d ? '<div class="sd">' + esc(d) + '</div>' : '') +
-    '</div></div>').join('') + '</div>';
+  const rows = planRows(DEFAULT_PLAN);
+  const phases = ['Pre-Launch', 'Launch', 'On-Going'];
+  const col = phase => {
+    const rs = rows.filter(r => r[0] === phase);
+    const groups = [];
+    rs.forEach(r => {
+      let g = groups.filter(x => x.name === r[1])[0];
+      if (!g) { g = { name: r[1], items: [] }; groups.push(g); }
+      g.items.push(r[2] + (r[3] ? ' — ' + r[3] : ''));
+    });
+    return '<div class="ph3"><div class="ph3-h">' + phase + '</div>' +
+      groups.map(g => '<div class="grp"><div class="grp-t">' + g.name + '</div><ul>' +
+        g.items.map(t => '<li>' + t + '</li>').join('') + '</ul></div>').join('') + '</div>';
+  };
+  const body = '<div class="plan3">' + phases.map(col).join('') + '</div>';
   return P.page({ deck:DECK, n, of:OF, site:state.site,
-    title:'Sales &amp; Marketing Plan'.replace('&amp;','&'),
-    sub:'What happens, and when, once you sign.', body });
+    title:'Sales &amp; Marketing Plan'.replace('&amp;','&'), body });
 }
 
+/* Static GVC boilerplate — curated from client testimonials, not editor-driven. */
 function pgReviews(n) {
-  const rs = pairs(state.reviews);
-  const body = '<div class="quotes" id="quoteList">' + rs.map(([q, who]) =>
-    '<div class="quote"><div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>' +
-    '<p>&ldquo;' + esc(q) + '&rdquo;</p>' +
+  const rs = pairs(DEFAULT_REVIEWS);
+  const body = '<div class="quotes">' + rs.map(([q, who]) =>
+    '<div class="quote"><p>' + esc(q) + '</p>' +
     (who ? '<div class="who">' + esc(who) + '</div>' : '') + '</div>').join('') + '</div>';
   return P.page({ deck:DECK, n, of:OF, site:state.site,
-    title:'What Our Clients Say', sub:'Unedited, and happy to put you in touch with any of them.', body });
+    title:'What Our Clients Say', body });
 }
 
+/* Reach numbers and video examples are GVC boilerplate, not per-listing —
+   update the two consts below when the team's current stats change. */
 function pgReach(n) {
-  const vids = pairs(state.videos).slice(0, 4);
+  const REACH = { imp:'1.2M', fol:'48K', syn:'120+', vid:'35K' };
+  const vids = pairs(DEFAULT_VIDEOS).slice(0, 4);
   const body =
     '<div class="stat-row">' +
-      '<div class="stat"><div class="v">' + esc(state.reachImp || '—') + '</div><div class="l">Monthly impressions</div></div>' +
-      '<div class="stat"><div class="v">' + esc(state.reachFol || '—') + '</div><div class="l">Followers</div></div>' +
-      '<div class="stat"><div class="v">' + esc(state.reachSyn || '—') + '</div><div class="l">Syndicated sites</div></div>' +
-      '<div class="stat"><div class="v">' + esc(state.reachVid || '—') + '</div><div class="l">Avg. video views</div></div>' +
+      '<div class="stat"><div class="v">' + REACH.imp + '</div><div class="l">Monthly impressions</div></div>' +
+      '<div class="stat"><div class="v">' + REACH.fol + '</div><div class="l">Followers</div></div>' +
+      '<div class="stat"><div class="v">' + REACH.syn + '</div><div class="l">Syndicated sites</div></div>' +
+      '<div class="stat"><div class="v">' + REACH.vid + '</div><div class="l">Avg. video views</div></div>' +
     '</div>' +
-    '<div class="vids">' + vids.map((v, i) =>
-      '<div class="vid"><div class="ph">' +
-        (slot('video' + (i + 1)) ? '<img src="' + slot('video' + (i + 1)) + '" alt="">' : '') +
+    '<div class="vids">' + vids.map((v, i) => {
+      const key = 'video' + (i + 1);
+      return '<div class="vid"><div class="ph"' + (slot(key) ? ' data-pos="' + key + '"' : '') + '>' +
+        (slot(key) ? '<img src="' + slot(key) + '" alt="" style="object-position:' + posFor(key).x + '% ' + posFor(key).y + '%">' : '') +
         '<div class="play"></div></div>' +
         '<div class="vt">' + esc(v[0]) + '</div>' +
         (v[1] ? '<div class="vu">' + esc(v[1]) + '</div>' : '') +
-      '</div>').join('') + '</div>';
+      '</div>';
+    }).join('') + '</div>';
   return P.page({ deck:DECK, n, of:OF, site:state.site, reversed:true,
-    title:'Digital Reach', sub:'Where your home shows up, and how many people see it.', body });
+    title:'Digital Reach', body });
 }
 
 function pgContact(n) {
-  const ls = pairs(state.links);
+  const links = pairs(DEFAULT_LINKS), social = pairs(DEFAULT_SOCIAL);
+  const list = arr => arr.map(([k, v]) =>
+    '<span><span class="lk">' + esc(k) + '</span><span class="lv">' + esc(v) + '</span></span>').join('');
+  const list2 = agents();
+  const cards = list2.length
+    ? '<div class="ag-row">' + list2.map(a =>
+        '<div class="ag-c"><div class="shot"><img src="' + headshotFor(a) + '" alt="">' +
+          '<div class="band"><div class="bnm">' + esc(a.name) + '</div></div></div>' +
+          '<div class="tt">' + esc(a.title) + '</div>' +
+          '<div class="ct">' + [a.phone, a.email].filter(Boolean).map(esc).join('<br>') + '</div>' +
+        '</div>').join('') + '</div>'
+    : '<div class="ag-row"><div class="ag-c"><div class="shot"><div class="empty-note">Pick an agent<br>in the Agents panel</div></div></div></div>';
   const body =
     '<div class="lede">If this reads right to you, the next step is simple: we agree on a number, ' +
     'we book the shoot, and we are on the market inside two weeks.</div>' +
-    P.agentCards(agents(), headshotFor) +
-    '<div class="links">' + ls.map(([k, v]) =>
-      '<span><span class="lk">' + esc(k) + '</span><span class="lv">' + esc(v) + '</span></span>').join('') + '</div>';
+    cards +
+    '<div class="linkgrp"><div class="linkgrp-t">Social</div><div class="links">' + list(social) + '</div></div>' +
+    '<div class="linkgrp"><div class="linkgrp-t">Links</div><div class="links">' + list(links) + '</div></div>' +
+    '<div class="states">Licensed in New York &middot; New Jersey &middot; Florida</div>';
   return P.page({ deck:DECK, n, of:OF, site:state.site, reversed:true,
-    title:'Next Steps', sub:'', body });
+    title:'Next Steps', body });
 }
 
 const RENDER = {
@@ -606,6 +659,7 @@ function redraw() {
   reassign();
   builder.rebuild();
   paintPhotos();
+  P.wirePhotoDrag(document.getElementById('pages'), state.pos);
   // setTimeout, not rAF: rAF is suspended while the tab is not rendering,
   // which silently skips the overflow check.
   setTimeout(checkAll, 0);
@@ -613,11 +667,8 @@ function redraw() {
 
 const RULES = [
   { key:'comps',    box:'warnComps',   msg:'Comparable sales run past the page — remove one, or shorten the longest address.' },
-  { key:'plan',     box:'warnPlan',    msg:'The marketing plan runs past the page — trim a step or shorten the detail lines.' },
-  { key:'reviews',  box:'warnReviews', msg:'Reviews run past the page — drop one, or shorten the longest quote.' },
   { key:'property', box:'warnProperty',msg:'The property page is over-full — shorten the description or cut a feature.' },
-  { key:'strategy', box:'warnStrategy',msg:'The strategy page is over-full — shorten the recommendation.' },
-  { key:'contact',  box:'warnLinks',   msg:'Useful links run past the page — six is the limit.' }
+  { key:'strategy', box:'warnStrategy',msg:'The strategy page is over-full — shorten the recommendation.' }
 ];
 function checkAll() {
   P.checkOverflow(document.getElementById('pages'), RULES, 'warnGeneral');
@@ -693,7 +744,6 @@ function loadPreview() {
     noteHigh:'Tests the ceiling. Expect a longer runway and a probable adjustment.',
     stratNote:'We would list at $3,695,000. It sits just under the psychological $3.7M ' +
               'search break, it is defensible against 155 Grand, and it leaves room to hold firm in negotiation.',
-    reachImp:'1.2M', reachFol:'48K', reachSyn:'120+', reachVid:'35K',
     agents:['john-gasdaska','tj-verdiglione']
   });
   // real photography from photos/3-crosby-lane, invented listing copy
@@ -711,11 +761,6 @@ function loadPreview() {
 let paintRoster = () => {};
 
 document.addEventListener('DOMContentLoaded', () => {
-  state.plan = DEFAULT_PLAN;
-  state.reviews = DEFAULT_REVIEWS;
-  state.links = DEFAULT_LINKS;
-  state.videos = DEFAULT_VIDEOS;
-
   bindFields();
   renderComps();
 

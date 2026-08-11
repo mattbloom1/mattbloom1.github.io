@@ -22,27 +22,20 @@
 .ico svg{width:100%;height:100%;display:block;stroke:currentColor;fill:none;
   stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 
-/* running head — every interior page carries it */
-.rh{flex:none;display:flex;align-items:baseline;justify-content:space-between;gap:.3in;
-  padding:.44in var(--pad) 0;}
-.rh .rh-t{font:800 8pt var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--sky2);}
-.rh .rh-n{font:800 8pt var(--sans);letter-spacing:.14em;color:rgba(0,39,58,.42);}
-.pg.rev .rh .rh-t{color:var(--sky);}
-.pg.rev .rh .rh-n{color:rgba(229,229,229,.5);}
-
-.pg-h{flex:none;padding:.16in var(--pad) 0;}
+.pg-h{flex:none;padding:.5in var(--pad) 0;}
 .pg-h h2{margin:0;font:700 27pt/1.06 var(--serif);color:var(--navy);text-wrap:balance;}
 .pg.rev .pg-h h2{color:#fff;}
-.pg-h .sub{margin-top:.09in;font:300 10pt/1.5 var(--body);color:rgba(0,39,58,.66);max-width:5.6in;}
-.pg.rev .pg-h .sub{color:rgba(229,229,229,.75);}
 .pg-h::after{content:'';display:block;height:1.4pt;background:var(--sky);width:.62in;margin-top:.16in;}
 
 .pg-body{flex:1;min-height:0;padding:.26in var(--pad) .44in;display:flex;flex-direction:column;overflow:hidden;}
 
-.pg-foot{flex:none;padding:0 var(--pad) .34in;display:flex;align-items:center;justify-content:space-between;gap:.3in;}
+/* footer — site left, monogram fixed dead-center, page number bottom right */
+.pg-foot{flex:none;position:relative;padding:0 var(--pad) .34in;display:flex;align-items:center;justify-content:space-between;gap:.3in;}
 .pg-foot .site{font:800 7.5pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:rgba(0,39,58,.5);}
-.pg-foot img{height:.3in;width:auto;display:block;}
+.pg-foot .pg-n{font:800 8pt var(--sans);letter-spacing:.1em;color:rgba(0,39,58,.42);font-variant-numeric:tabular-nums;}
+.pg-foot .pg-mono{position:absolute;left:50%;bottom:.34in;transform:translateX(-50%);height:.3in;width:auto;display:block;}
 .pg.rev .pg-foot .site{color:rgba(229,229,229,.6);}
+.pg.rev .pg-foot .pg-n{color:rgba(229,229,229,.5);}
 
 /* ---------- cover ---------- */
 .cv{position:absolute;inset:0;overflow:hidden;background:var(--navy);}
@@ -60,14 +53,18 @@
 .cv-ttl{font:700 33pt/1.07 var(--serif);color:#fff;text-wrap:balance;overflow-wrap:break-word;}
 .cv-sub{margin-top:.13in;font:800 10.5pt var(--sans);letter-spacing:.10em;text-transform:uppercase;color:var(--ow);}
 .cv-for{margin-top:.22in;font:300 10.5pt/1.5 var(--body);color:rgba(229,229,229,.82);}
-.cv-bar{position:absolute;left:0;right:0;bottom:0;height:1.02in;background:rgba(0,39,58,.92);
+/* two agent blocks, one per side, monogram fixed dead-center against the
+   bar itself — not flexed between the side blocks, so it does not drift
+   if one side is empty or the two blocks are different lengths. */
+.cv-bar{position:relative;left:0;right:0;bottom:0;height:1.02in;background:rgba(0,39,58,.92);
   border-top:1pt solid var(--rule-rev);display:flex;align-items:center;justify-content:space-between;
   gap:.24in;padding:0 var(--pad);}
-.cv-bar .cb-l{min-width:0;}
+.cv-bar .cb-side{flex:1;min-width:0;}
+.cv-bar .cb-side.r{text-align:right;}
 .cv-bar .cb-nm{font:700 12pt var(--serif);color:#fff;line-height:1.2;}
 .cv-bar .cb-ct{font:300 8pt/1.45 var(--body);color:rgba(229,229,229,.8);}
-.cv-bar img{height:.46in;width:auto;display:block;flex:none;}
-.cv-bar .cb-r{font:800 8pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:#fff;text-align:right;}
+.cv-bar .cb-mono{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  height:.46in;width:auto;display:block;flex:none;}
 
 /* ---------- table of contents ---------- */
 .toc{list-style:none;margin:0;padding:0;column-gap:.5in;}
@@ -149,10 +146,12 @@ table.tbl .meta{display:block;font-size:7.5pt;color:rgba(0,39,58,.55);margin-top
 .pg.rev .quote .who{color:rgba(229,229,229,.65);}
 .stars{color:var(--sky2);letter-spacing:.06em;font-size:10pt;}
 
-/* photo blocks */
+/* photo blocks — draggable to reframe when they hold an image (data-pos) */
 .ph{position:relative;overflow:hidden;background:rgba(0,39,58,.06);}
 .ph img{width:100%;height:100%;object-fit:cover;display:block;}
 .pg.rev .ph{background:rgba(255,255,255,.07);}
+[data-pos]{cursor:grab;touch-action:none;}
+[data-pos].is-moving,[data-pos]:active{cursor:grabbing;}
 
 /* agent cards — mirrors the brochure's page 6 */
 .ag-row{display:flex;gap:.4in;}

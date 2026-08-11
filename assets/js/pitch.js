@@ -41,36 +41,45 @@
   }
 
   /* ---------- page furniture ---------- */
-  function runningHead(deckName, n, of) {
-    return '<div class="rh"><span class="rh-t">' + esc(deckName) + '</span>' +
-           '<span class="rh-n">' + n + ' / ' + of + '</span></div>';
+  function heading(title) {
+    return '<div class="pg-h"><h2>' + esc(title) + '</h2></div>';
   }
-  function heading(title, sub) {
-    return '<div class="pg-h"><h2>' + esc(title) + '</h2>' +
-           (sub ? '<div class="sub">' + esc(sub) + '</div>' : '') + '</div>';
-  }
-  function foot(site, reversed) {
+  /* Footer: site left, monogram dead-center, page number bottom right.
+     The monogram is centered against the full footer width regardless of
+     how long the site text or page number run, so it stays put page to page. */
+  function foot(site, reversed, n, of) {
     return '<div class="pg-foot"><span class="site">' + esc(site || '') + '</span>' +
-           '<img src="' + (reversed ? MONO : MONO_NAVY) + '" alt=""></div>';
+           '<img class="pg-mono" src="' + (reversed ? MONO : MONO_NAVY) + '" alt="">' +
+           '<span class="pg-n">' + n + ' / ' + of + '</span></div>';
   }
 
-  /* Standard interior page: running head, title, body, footer.
+  /* Standard interior page: title, body, footer.
      `key` lands on the wrapper so overflow rules can name a page and give
      a specific warning rather than a generic "something is too tall". */
   function page(o) {
     return '<div class="pg' + (o.reversed ? ' rev' : '') + '"' +
              (o.key ? ' data-key="' + esc(o.key) + '"' : '') + '>' +
-      runningHead(o.deck, o.n, o.of) +
-      heading(o.title, o.sub) +
+      heading(o.title) +
       '<div class="pg-body">' + o.body + '</div>' +
-      foot(o.site, o.reversed) +
+      foot(o.site, o.reversed, o.n, o.of) +
     '</div>';
   }
 
+  /* One or two agents, one on each side of the bar, monogram fixed dead-
+     center regardless of which (or how many) sides have content — it is
+     positioned against the bar itself, not flexed between the agent blocks. */
+  function agentBlock(a, align) {
+    if (!a) return '<div class="cb-side ' + align + '"></div>';
+    return '<div class="cb-side ' + align + '">' +
+      '<div class="cb-nm">' + esc(a.name) + '</div>' +
+      '<div class="cb-ct">' + [a.phone, a.email].filter(Boolean).map(esc).join(' &nbsp;·&nbsp; ') + '</div>' +
+    '</div>';
+  }
   function cover(o) {
-    const a = o.agent;
-    return '<div class="cv">' +
-      (o.image ? '<img class="cv-img" src="' + o.image + '" alt="">'
+    const a1 = o.agents && o.agents[0], a2 = o.agents && o.agents[1];
+    return '<div class="cv"' + (o.image ? ' data-pos="cover"' : '') + '>' +
+      (o.image ? '<img class="cv-img" src="' + o.image + '" alt="" style="object-position:' +
+                   (o.pos ? o.pos.x : 50) + '% ' + (o.pos ? o.pos.y : 50) + '%">'
                : '<div class="empty-note">Drop a cover photo<br>in the Photos panel</div>') +
       '<div class="cv-mask"></div>' +
       '<div class="cv-kind">' + esc(o.kind) + '</div>' +
@@ -81,13 +90,9 @@
             (o.date ? '<br>' + esc(o.date) : '') + '</div>' : '') +
       '</div>' +
       '<div class="cv-bar">' +
-        '<div class="cb-l">' +
-          '<div class="cb-nm">' + esc(a ? a.name : 'The GVC Team') + '</div>' +
-          '<div class="cb-ct">' + (a ? [a.phone, a.email].filter(Boolean).map(esc).join(' &nbsp;·&nbsp; ')
-                                     : 'Douglas Elliman Real Estate') + '</div>' +
-        '</div>' +
-        '<img src="' + MONO + '" alt="">' +
-        '<div class="cb-r">' + esc(o.site || '') + '</div>' +
+        agentBlock(a1, 'l') +
+        '<img class="cb-mono" src="' + MONO + '" alt="">' +
+        agentBlock(a2, 'r') +
       '</div>' +
     '</div>';
   }
@@ -255,6 +260,53 @@
     });
   }
 
+  /* ---------- reframe a photo inside its crop ----------
+     Mirrors the brochure's drag-to-reposition: object-position p% puts the
+     image's overflow at -(overflow * p/100), so moving it by d px means
+     changing p by -d/overflow*100. Pointer deltas are in screen px, so
+     they're divided by the preview's scale first. */
+  function beginPhotoDrag(e, box, pos) {
+    const img = box.querySelector('img');
+    if (!img || !img.naturalWidth) return;
+    e.preventDefault();
+    const page = box.closest('.pg, .cv');
+    const scale = page ? page.getBoundingClientRect().width / (8.5 * 96) : 1;
+    const bw = box.clientWidth, bh = box.clientHeight;
+    const cover = Math.max(bw / img.naturalWidth, bh / img.naturalHeight);
+    const overX = img.naturalWidth * cover - bw, overY = img.naturalHeight * cover - bh;
+    const start = { x: e.clientX, y: e.clientY, px: pos.x, py: pos.y };
+    box.classList.add('is-moving');
+    try { box.setPointerCapture(e.pointerId); } catch (_) {}
+
+    const move = ev => {
+      const dx = (ev.clientX - start.x) / scale, dy = (ev.clientY - start.y) / scale;
+      if (overX > 0.5) pos.x = Math.max(0, Math.min(100, start.px - (dx / overX) * 100));
+      if (overY > 0.5) pos.y = Math.max(0, Math.min(100, start.py - (dy / overY) * 100));
+      img.style.objectPosition = pos.x + '% ' + pos.y + '%';
+    };
+    const done = ev => {
+      box.removeEventListener('pointermove', move);
+      box.removeEventListener('pointerup', done);
+      box.removeEventListener('pointercancel', done);
+      try { box.releasePointerCapture(ev.pointerId); } catch (_) {}
+      box.classList.remove('is-moving');
+    };
+    box.addEventListener('pointermove', move);
+    box.addEventListener('pointerup', done);
+    box.addEventListener('pointercancel', done);
+  }
+
+  /* Call once per redraw, on the container holding the freshly-rendered
+     pages. Any element carrying data-pos="<key>" gets drag-to-reframe
+     wired against posStore[key] (created on first touch if missing). */
+  function wirePhotoDrag(root, posStore) {
+    root.querySelectorAll('[data-pos]').forEach(box => {
+      const key = box.dataset.pos;
+      if (!posStore[key]) posStore[key] = { x: 50, y: 50 };
+      box.addEventListener('pointerdown', e => beginPhotoDrag(e, box, posStore[key]));
+    });
+  }
+
   /* ---------- roster picker ---------- */
   function wireRoster(host, state, max, redraw) {
     function paint() {
@@ -289,8 +341,9 @@
   global.Pitch = {
     MONO, MONO_NAVY,
     esc, lines, money, moneyShort, num,
-    page, cover, heading, runningHead, foot, toc, agentCards,
+    page, cover, heading, foot, toc, agentCards,
     checkOverflow, overflowing, wireDrop, wireRoster, agentsOf,
-    assignRoles, renderPhotoList, autoLabelFor
+    assignRoles, renderPhotoList, autoLabelFor,
+    beginPhotoDrag, wirePhotoDrag
   };
 })(window);

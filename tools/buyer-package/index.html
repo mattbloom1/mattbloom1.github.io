@@ -198,8 +198,10 @@ const state = {
   client:'', date:'', area:'', site:'gvcrealestateteam.com',
   photos:[],
   steps:'', price:'', downPct:'20', rate:'', term:'30', lender:'',
-  costs:'', links:'', agents:[]
+  costs:'', links:'', agents:[],
+  pos:{}
 };
+function posFor(key) { return state.pos[key] || (state.pos[key] = { x: 50, y: 50 }); }
 
 const DEFAULT_STEPS = [
   'Consultation | We sit down, agree on what you are looking for, and set a realistic budget and timeline.',
@@ -293,8 +295,8 @@ function pgCover() {
     preparedFor: state.client,
     date: state.date,
     image: slot('cover'),
-    agent: agents()[0],
-    site: state.site
+    pos: posFor('cover'),
+    agents: agents()
   });
 }
 
@@ -308,8 +310,8 @@ function pgWhy(n) {
   const a = agents()[0];
   const body =
     '<div class="why">' +
-      '<div class="ph">' + (slot('portrait')
-        ? '<img src="' + slot('portrait') + '" alt="">'
+      '<div class="ph"' + (slot('portrait') ? ' data-pos="portrait"' : '') + '>' + (slot('portrait')
+        ? '<img src="' + slot('portrait') + '" alt="" style="object-position:' + posFor('portrait').x + '% ' + posFor('portrait').y + '%">'
         : '<div class="empty-note on-white">Tag a photo<br>&ldquo;Why us&rdquo;</div>') + '</div>' +
       '<div class="txt"><div class="copy">' +
         '<p style="margin:0 0 .16in">Buying is the side of the transaction where good representation is ' +
@@ -469,6 +471,7 @@ function redraw() {
   reassign();
   builder.rebuild();
   paintPhotos();
+  P.wirePhotoDrag(document.getElementById('pages'), state.pos);
   // setTimeout, not rAF: rAF is suspended while the tab is not rendering.
   setTimeout(checkAll, 0);
 }
