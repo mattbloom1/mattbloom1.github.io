@@ -30,6 +30,14 @@ body{font-family:var(--body);color:var(--navy);}
         background:var(--page);border-right:1px solid var(--ui-rule);display:flex;flex-direction:column;}
 .ed-body{flex:1;}
 
+/* ================= SAMPLE FILL =================
+   Every builder puts this in the same spot: pinned to the top of the
+   editor panel, above the sections, so it never scrolls out of reach. */
+.ed-top{flex:none;position:sticky;top:0;z-index:3;
+  padding:14px 20px;border-bottom:1px solid var(--ui-rule);background:#fff;}
+.ed-top .btn{width:100%;}
+.ed-top .sec-note{margin-top:7px;}
+
 /* ================= EDITOR SECTIONS ================= */
 details.ed-sec{border-bottom:1px solid var(--ui-rule);}
 details.ed-sec summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;padding:13px 20px;

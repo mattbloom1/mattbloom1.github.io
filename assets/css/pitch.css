@@ -207,11 +207,6 @@ table.tbl .meta{display:block;font-size:7.5pt;color:rgba(0,39,58,.55);margin-top
   color:var(--ui-ink-soft);cursor:pointer;font-size:10px;line-height:1;padding:0;}
 .img-x:hover{border-color:var(--navy);background:var(--navy);color:#fff;}
 
-/* sample-fill button sits above the sections, always reachable */
-.ed-top{padding:14px 20px;border-bottom:1px solid var(--ui-rule);background:#fff;}
-.ed-top .btn{width:100%;}
-.ed-top .sec-note{margin-top:7px;}
-
 .rowlist{margin-top:10px;}
 .rowlist .rw{display:flex;gap:6px;align-items:flex-start;margin-top:6px;}
 .rowlist .rw > *{min-width:0;}

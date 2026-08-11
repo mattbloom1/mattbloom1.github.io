@@ -49,6 +49,11 @@ body{font-family:var(--body);color:var(--navy);}
 /* sidebar runs the full height at left; the quick bar sits beside it, above the preview */
 #app{display:grid;grid-template-columns:430px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;height:calc(100vh - var(--mast-h, 64px));overflow:hidden;line-height:normal;}
 #main{display:contents;}
+/* sample fill — same spot in every builder: pinned to the top of the panel */
+.ed-top{flex:none;position:sticky;top:0;z-index:3;
+  padding:14px 20px;border-bottom:1px solid var(--ui-rule);background:#fff;}
+.ed-top .btn{width:100%;}
+.ed-top .sec-note{margin-top:7px;font:400 10px var(--ui-mono);color:var(--ui-ink-soft);line-height:1.6;}
 #editor{grid-column:1;grid-row:1 / 4;width:430px;min-width:430px;min-height:0;overflow-y:auto;background:var(--page);border-right:1px solid var(--ui-rule);display:flex;flex-direction:column;}
 .ed-body{flex:1;}
 /* every-listing quick bar — the only fully manual inputs live here */
@@ -468,6 +473,11 @@ body.bleed .crop{display:block;}
 <div id="main">
 <!-- ======================= EDITOR ======================= -->
 <aside id="editor">
+  <div class="ed-top">
+    <button class="btn sm" id="btnLoadPreview" hidden>Fill with sample info</button>
+    <div class="sec-note">Runs the bundled 555 W59th listing, photo and floorplan through the same
+      handlers as the drop zones. Overwrites what is in the panel.</div>
+  </div>
   <div class="ed-body">
 
   <details class="ed-sec" open>
@@ -598,7 +608,6 @@ body.bleed .crop{display:block;}
 <section class="tool-about">
   <span class="t-label">About this tool</span>
   <p>Generates print-ready listing showsheets for The GVC Team — A5 or US Letter (toggle under the preview). Drop a listing .docx, a photo, and a floorplan — building and unit data are extracted automatically and laid out on a two-sided sheet for print. Everything runs in the browser; nothing is uploaded.</p>
-  <button class="btn sm ghost" id="btnLoadPreview" style="margin-top:12px" hidden>Load preview — 555 W59th (sample)</button>
 </section>
 </main>
 <script id="unit-data" type="application/json"></script>

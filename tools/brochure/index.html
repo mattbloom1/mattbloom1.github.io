@@ -204,8 +204,6 @@
   font:500 10.5px/1.5 var(--body);color:#8C1D18;}
 .warn.on{display:block;}
 .warn b{font-weight:700;}
-.ed-foot{flex:none;padding:14px 20px 18px;border-top:1px solid var(--ui-rule);}
-.ed-foot .btn{width:100%;}
 
 @media print{
   .empty-note,.over-flag{display:none !important;}
@@ -221,6 +219,11 @@
 
   <!-- ======================= EDITOR ======================= -->
   <aside id="editor">
+    <div class="ed-top">
+      <button class="btn sm" id="btnPreview">Fill with sample info</button>
+      <div class="sec-note">Loads 3 Crosby Lane photography and invented listing copy so every
+        page shows populated. Overwrites what is in the panel.</div>
+    </div>
     <div class="ed-body">
 
       <details class="ed-sec" open>
@@ -362,9 +365,6 @@
         </div>
       </details>
 
-    </div>
-    <div class="ed-foot">
-      <button class="btn sm ghost" id="btnPreview">Load preview — 3 Crosby Lane</button>
     </div>
   </aside>
 
