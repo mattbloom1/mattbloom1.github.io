@@ -82,6 +82,11 @@
 
   <!-- ======================= EDITOR ======================= -->
   <aside id="editor">
+    <div class="ed-top">
+      <button class="btn sm" id="btnSample">Fill with sample info</button>
+      <div class="sec-note">Loads 3 Crosby Lane photography and a full set of invented listing
+        copy, so you can see every page populated. Overwrites what is in the panel.</div>
+    </div>
     <div class="ed-body">
 
       <details class="ed-sec" open>
@@ -131,8 +136,10 @@
             <div class="d-sub">First is the cover, second is the property hero</div>
           </div>
           <input type="file" id="filePhotos" accept="image/*" multiple hidden>
-          <div class="thumbs" id="thumbsPhotos"></div>
-          <div class="sec-note">Order sets placement: 1 cover &middot; 2 property hero &middot; 3 about-us portrait &middot; 4&ndash;7 video stills.</div>
+          <div id="imgList"></div>
+          <div class="sec-note">Every photo has a role. Leave one on <em>Auto</em> and it fills the next
+            empty slot in order &mdash; cover, property hero, about-us portrait, then the four video
+            stills. Pin one to a role and the auto pass will not move it.</div>
           <div class="drop" id="dropMap" tabindex="0" role="button" style="margin-top:14px">
             <div class="d-big">Drop past-sales map</div>
             <div class="d-sub">Export one from Map Studio</div>
@@ -224,11 +231,11 @@
         </div>
       </details>
 
-      <details class="ed-sec">
-        <summary>Preview</summary>
+            <details class="ed-sec">
+        <summary>Warnings</summary>
         <div class="sec-in">
-          <button class="btn sm" id="btnLoadPreview">Load preview — 45 Crosby (sample)</button>
-          <div class="sec-note">Fills every field with sample content so you can see the whole deck.</div>
+          <div class="sec-note">Anything that does not fit its page is reported here and in the
+            section it came from.</div>
           <div class="warn" id="warnGeneral" hidden></div>
         </div>
       </details>
@@ -335,7 +342,23 @@ function cityLine() {
   const t = [state.city, state.state].filter(Boolean).join(', ');
   return [t, state.zip].filter(Boolean).join(' ');
 }
-function photo(i) { return state.photos[i] ? state.photos[i].url : null; }
+/* Photo roles — 'auto' fills the slots below in order; a pinned photo is
+   left where the agent put it. Mirrors the brochure's behaviour. */
+const ROLES = [
+  ['auto',    'Auto'],
+  ['cover',   'Cover'],
+  ['hero',    'Property hero'],
+  ['portrait','About us'],
+  ['video1',  'Video 1'],
+  ['video2',  'Video 2'],
+  ['video3',  'Video 3'],
+  ['video4',  'Video 4'],
+  ['exclude', 'Unused']
+];
+const SLOTS = ['cover','hero','portrait','video1','video2','video3','video4'];
+let assign = {}, uid = 0;
+function reassign() { assign = P.assignRoles(state.photos, SLOTS); }
+function slot(name) { return assign[name] ? assign[name].url : null; }
 
 /* ============================================================
    PAGE LIST — order here drives the deck and the contents page
@@ -366,7 +389,7 @@ function pgCover() {
     subtitle: cityLine(),
     preparedFor: state.client,
     date: state.date,
-    image: photo(0),
+    image: slot('cover'),
     agent: agents()[0],
     site: state.site
   });
@@ -384,9 +407,9 @@ function pgAbout(n) {
   const a = agents()[0];
   const body =
     '<div class="about">' +
-      '<div class="ph">' + (photo(2)
-        ? '<img src="' + photo(2) + '" alt="">'
-        : '<div class="empty-note on-white">Photo 3<br>goes here</div>') + '</div>' +
+      '<div class="ph">' + (slot('portrait')
+        ? '<img src="' + slot('portrait') + '" alt="">'
+        : '<div class="empty-note on-white">Tag a photo<br>&ldquo;About us&rdquo;</div>') + '</div>' +
       '<div class="txt">' +
         '<div class="copy">' +
           '<p style="margin:0 0 .16in">The Gasdaska Verdiglione Conlon Team is a full-service real estate ' +
@@ -439,9 +462,9 @@ function pgProperty(n) {
   ].filter(r => r[1]);
   const feats = listOf(state.features);
   const body =
-    '<div class="ph pb-hero">' + (photo(1)
-      ? '<img src="' + photo(1) + '" alt="">'
-      : '<div class="empty-note on-white">Photo 2 — property hero</div>') + '</div>' +
+    '<div class="ph pb-hero">' + (slot('hero')
+      ? '<img src="' + slot('hero') + '" alt="">'
+      : '<div class="empty-note on-white">Tag a photo &ldquo;Property hero&rdquo;</div>') + '</div>' +
     (state.blurb ? '<div class="copy" style="margin-bottom:.24in">' + P.lines(state.blurb) + '</div>' : '') +
     '<div class="pb-grid">' +
       '<div class="pb-col">' +
@@ -546,7 +569,7 @@ function pgReach(n) {
     '</div>' +
     '<div class="vids">' + vids.map((v, i) =>
       '<div class="vid"><div class="ph">' +
-        (photo(3 + i) ? '<img src="' + photo(3 + i) + '" alt="">' : '') +
+        (slot('video' + (i + 1)) ? '<img src="' + slot('video' + (i + 1)) + '" alt="">' : '') +
         '<div class="play"></div></div>' +
         '<div class="vt">' + esc(v[0]) + '</div>' +
         (v[1] ? '<div class="vu">' + esc(v[1]) + '</div>' : '') +
@@ -580,7 +603,9 @@ let builder = null;
 
 function redraw() {
   if (!builder) return;
+  reassign();
   builder.rebuild();
+  paintPhotos();
   // setTimeout, not rAF: rAF is suspended while the tab is not rendering,
   // which silently skips the overflow check.
   setTimeout(checkAll, 0);
@@ -671,8 +696,16 @@ function loadPreview() {
     reachImp:'1.2M', reachFol:'48K', reachSyn:'120+', reachVid:'35K',
     agents:['john-gasdaska','tj-verdiglione']
   });
+  // real photography from photos/3-crosby-lane, invented listing copy
+  state.photos = [0, 3, 6, 9, 12, 15, 18].map(n => ({
+    id: ++uid,
+    name: '3-crosby-' + n + '.webp',
+    url: '../../photos/3-crosby-lane/img/' + n + '-e-f.webp',
+    role: 'auto'
+  }));
+  state.map = null;
   document.querySelectorAll('[data-f]').forEach(el => { el.value = state[el.dataset.f] || ''; });
-  renderComps(); paintRoster(); redraw();
+  renderComps(); paintRoster(); paintMap(); redraw();
 }
 
 let paintRoster = () => {};
@@ -687,8 +720,8 @@ document.addEventListener('DOMContentLoaded', () => {
   renderComps();
 
   P.wireDrop(document.getElementById('dropPhotos'), document.getElementById('filePhotos'), files => {
-    state.photos = state.photos.concat(files);
-    paintPhotos(); redraw();
+    files.forEach(f => state.photos.push({ id: ++uid, name: f.name, url: f.url, role: 'auto' }));
+    redraw();
   });
   P.wireDrop(document.getElementById('dropMap'), document.getElementById('fileMap'), files => {
     state.map = files[0];
@@ -701,7 +734,7 @@ document.addEventListener('DOMContentLoaded', () => {
     state.comps.push({ address:'', price:'', sqft:'', bb:'', date:'' });
     renderComps(); redraw();
   });
-  document.getElementById('btnLoadPreview').addEventListener('click', loadPreview);
+  document.getElementById('btnSample').addEventListener('click', loadPreview);
 
   builder = Builder.init({
     pages: PAGES.length,
@@ -718,8 +751,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function paintPhotos() {
-  renderThumbs('thumbsPhotos', state.photos, i => {
-    state.photos.splice(i, 1); paintPhotos(); redraw();
+  P.renderPhotoList(document.getElementById('imgList'), state.photos, ROLES, assign, {
+    onChange: redraw,
+    onRemove: img => { state.photos = state.photos.filter(x => x.id !== img.id); redraw(); }
   });
 }
 function paintMap() {

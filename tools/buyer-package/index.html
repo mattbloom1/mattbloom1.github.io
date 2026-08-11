@@ -62,6 +62,11 @@ table.tbl tr.total td{border-top:1.2pt solid var(--navy);border-bottom:0;
 
   <!-- ======================= EDITOR ======================= -->
   <aside id="editor">
+    <div class="ed-top">
+      <button class="btn sm" id="btnSample">Fill with sample info</button>
+      <div class="sec-note">Loads 3 Crosby Lane photography and a full set of invented client
+        details, so you can see every page populated. Overwrites what is in the panel.</div>
+    </div>
     <div class="ed-body">
 
       <details class="ed-sec" open>
@@ -82,7 +87,9 @@ table.tbl tr.total td{border-top:1.2pt solid var(--navy);border-bottom:0;
             <div class="d-sub">First is the cover, second sits beside &ldquo;Why GVC&rdquo;</div>
           </div>
           <input type="file" id="filePhotos" accept="image/*" multiple hidden>
-          <div class="thumbs" id="thumbsPhotos"></div>
+          <div id="imgList"></div>
+          <div class="sec-note">Leave a photo on <em>Auto</em> and it fills the next empty slot &mdash;
+            cover, then the portrait beside &ldquo;Why Work With Us&rdquo;. Pin one to a role to hold it there.</div>
         </div>
       </details>
 
@@ -141,10 +148,10 @@ table.tbl tr.total td{border-top:1.2pt solid var(--navy);border-bottom:0;
       </details>
 
       <details class="ed-sec">
-        <summary>Preview</summary>
+        <summary>Warnings</summary>
         <div class="sec-in">
-          <button class="btn sm" id="btnLoadPreview">Load preview (sample)</button>
-          <div class="sec-note">Fills every field with sample content so you can see the whole deck.</div>
+          <div class="sec-note">Anything that does not fit its page is reported here and in the
+            section it came from.</div>
           <div class="warn" id="warnGeneral" hidden></div>
         </div>
       </details>
@@ -229,7 +236,18 @@ const agents = () => P.agentsOf(state);
 const pairs = txt => String(txt || '').split('\n')
   .map(l => l.trim()).filter(Boolean)
   .map(l => { const i = l.indexOf('|'); return i < 0 ? [l, ''] : [l.slice(0, i).trim(), l.slice(i + 1).trim()]; });
-function photo(i) { return state.photos[i] ? state.photos[i].url : null; }
+/* Photo roles — 'auto' fills the slots below in order; a pinned photo stays
+   where the agent put it. Mirrors the brochure's behaviour. */
+const ROLES = [
+  ['auto',    'Auto'],
+  ['cover',   'Cover'],
+  ['portrait','Why us'],
+  ['exclude', 'Unused']
+];
+const SLOTS = ['cover','portrait'];
+let assign = {}, uid = 0;
+function reassign() { assign = P.assignRoles(state.photos, SLOTS); }
+function slot(name) { return assign[name] ? assign[name].url : null; }
 
 function loanAmount() { return P.num(state.price) * (1 - P.num(state.downPct) / 100); }
 
@@ -274,7 +292,7 @@ function pgCover() {
     subtitle: state.area,
     preparedFor: state.client,
     date: state.date,
-    image: photo(0),
+    image: slot('cover'),
     agent: agents()[0],
     site: state.site
   });
@@ -290,9 +308,9 @@ function pgWhy(n) {
   const a = agents()[0];
   const body =
     '<div class="why">' +
-      '<div class="ph">' + (photo(1)
-        ? '<img src="' + photo(1) + '" alt="">'
-        : '<div class="empty-note on-white">Photo 2<br>goes here</div>') + '</div>' +
+      '<div class="ph">' + (slot('portrait')
+        ? '<img src="' + slot('portrait') + '" alt="">'
+        : '<div class="empty-note on-white">Tag a photo<br>&ldquo;Why us&rdquo;</div>') + '</div>' +
       '<div class="txt"><div class="copy">' +
         '<p style="margin:0 0 .16in">Buying is the side of the transaction where good representation is ' +
         'hardest to see and matters most. Anyone can open a door. The value is in knowing which ' +
@@ -448,20 +466,17 @@ function checkAll() { P.checkOverflow(document.getElementById('pages'), RULES, '
 
 function redraw() {
   if (!builder) return;
+  reassign();
   builder.rebuild();
+  paintPhotos();
   // setTimeout, not rAF: rAF is suspended while the tab is not rendering.
   setTimeout(checkAll, 0);
 }
 
 function paintPhotos() {
-  const host = document.getElementById('thumbsPhotos');
-  host.innerHTML = '';
-  state.photos.forEach((p, i) => {
-    const d = document.createElement('div'); d.className = 'thumb';
-    const img = document.createElement('img'); img.src = p.url; img.alt = '';
-    const b = document.createElement('button'); b.type = 'button'; b.textContent = '×';
-    b.addEventListener('click', () => { state.photos.splice(i, 1); paintPhotos(); redraw(); });
-    d.appendChild(img); d.appendChild(b); host.appendChild(d);
+  P.renderPhotoList(document.getElementById('imgList'), state.photos, ROLES, assign, {
+    onChange: redraw,
+    onRemove: img => { state.photos = state.photos.filter(x => x.id !== img.id); redraw(); }
   });
 }
 
@@ -473,6 +488,13 @@ function loadPreview() {
            'compare their written estimates side by side, not their quoted rates over the phone.',
     agents:['katie-cook','marli-silver']
   });
+  // real photography from photos/3-crosby-lane, invented client details
+  state.photos = [0, 6].map(n => ({
+    id: ++uid,
+    name: '3-crosby-' + n + '.webp',
+    url: '../../photos/3-crosby-lane/img/' + n + '-e-f.webp',
+    role: 'auto'
+  }));
   document.querySelectorAll('[data-f]').forEach(el => { el.value = state[el.dataset.f] || ''; });
   paintRoster(); redraw();
 }
@@ -489,10 +511,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   P.wireDrop(document.getElementById('dropPhotos'), document.getElementById('filePhotos'), files => {
-    state.photos = state.photos.concat(files); paintPhotos(); redraw();
+    files.forEach(f => state.photos.push({ id: ++uid, name: f.name, url: f.url, role: 'auto' }));
+    redraw();
   });
   paintRoster = P.wireRoster(document.getElementById('rosterPick'), state, 2, redraw);
-  document.getElementById('btnLoadPreview').addEventListener('click', loadPreview);
+  document.getElementById('btnSample').addEventListener('click', loadPreview);
 
   builder = Builder.init({
     pages: PAGES.length,

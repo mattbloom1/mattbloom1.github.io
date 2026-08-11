@@ -187,6 +187,74 @@
     if (input) input.addEventListener('change', () => { take(input.files); input.value = ''; });
   }
 
+  /* ---------- photo roles ----------
+     Same idea as the brochure: every photo has a role. 'auto' lets the deck
+     fill slots in order; anything else is an explicit pin that the auto
+     pass will not touch or steal. 'exclude' keeps a photo out entirely. */
+  function assignRoles(photos, slots) {
+    const res = {}, taken = {};
+    photos.forEach(p => {
+      const r = p.role;
+      if (!r || r === 'auto') return;
+      taken[p.id] = 1;
+      if (r !== 'exclude' && !res[r]) res[r] = p;
+    });
+    const pool = photos.filter(p => !taken[p.id]);
+    slots.forEach(s => { if (!res[s] && pool.length) res[s] = pool.shift(); });
+    res._spare = pool;
+    return res;
+  }
+
+  /* The label shown under an auto photo, so the agent can see where it
+     actually landed without having to pin it. */
+  function autoLabelFor(img, assign, roles) {
+    if (img.role && img.role !== 'auto') return null;
+    const hit = Object.keys(assign).filter(k => k !== '_spare' && assign[k] === img)[0];
+    if (!hit) return 'Unused';
+    const row = roles.filter(r => r[0] === hit)[0];
+    return row ? row[1] : hit;
+  }
+
+  function renderPhotoList(host, photos, roles, assign, handlers) {
+    host.innerHTML = '';
+    photos.forEach(img => {
+      const row = document.createElement('div');
+      row.className = 'img-row';
+
+      const thumb = document.createElement('img');
+      thumb.className = 'img-thumb'; thumb.src = img.url; thumb.alt = '';
+
+      const mid = document.createElement('div');
+      mid.className = 'img-mid';
+      const name = document.createElement('div');
+      name.className = 'img-name'; name.textContent = img.name;
+      const auto = document.createElement('div');
+      auto.className = 'img-auto';
+      const lab = autoLabelFor(img, assign, roles);
+      auto.textContent = lab ? 'auto → ' + lab
+                        : (img.role === 'exclude' ? 'not used' : 'pinned');
+      mid.appendChild(name); mid.appendChild(auto);
+
+      const sel = document.createElement('select');
+      sel.className = 'img-role';
+      roles.forEach(r => {
+        const o = document.createElement('option');
+        o.value = r[0]; o.textContent = r[1];
+        sel.appendChild(o);
+      });
+      sel.value = img.role || 'auto';
+      sel.addEventListener('change', () => { img.role = sel.value; handlers.onChange(); });
+
+      const del = document.createElement('button');
+      del.type = 'button'; del.className = 'img-x'; del.innerHTML = '&#10005;'; del.title = 'Remove';
+      del.addEventListener('click', () => handlers.onRemove(img));
+
+      row.appendChild(thumb); row.appendChild(mid);
+      row.appendChild(sel); row.appendChild(del);
+      host.appendChild(row);
+    });
+  }
+
   /* ---------- roster picker ---------- */
   function wireRoster(host, state, max, redraw) {
     function paint() {
@@ -222,6 +290,7 @@
     MONO, MONO_NAVY,
     esc, lines, money, moneyShort, num,
     page, cover, heading, runningHead, foot, toc, agentCards,
-    checkOverflow, overflowing, wireDrop, wireRoster, agentsOf
+    checkOverflow, overflowing, wireDrop, wireRoster, agentsOf,
+    assignRoles, renderPhotoList, autoLabelFor
   };
 })(window);

@@ -194,6 +194,24 @@ table.tbl .meta{display:block;font-size:7.5pt;color:rgba(0,39,58,.55);margin-top
   background:rgba(0,39,58,.8);color:#fff;font:700 10px var(--sans);line-height:1;cursor:pointer;padding:0;}
 .img-auto{font:400 9px var(--ui-mono);color:var(--ui-ink-soft);margin-top:2px;}
 
+/* photo rows with a role picker */
+.img-row{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid var(--ui-rule);}
+.img-row:last-child{border-bottom:0;}
+.img-thumb{width:46px;height:46px;object-fit:cover;border-radius:5px;flex:none;background:#fff;}
+.img-mid{flex:1;min-width:0;}
+.img-name{font:500 11px var(--body);color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.img-role{flex:none;width:112px;border:1px solid var(--ui-rule);background:#fff;border-radius:5px;
+  padding:5px 6px;font:500 11px var(--body);color:var(--navy);outline:none;}
+.img-role:focus{border-color:var(--sky);outline:2px solid var(--sky);outline-offset:1px;}
+.img-x{flex:none;width:24px;height:24px;border:1px solid var(--ui-rule);background:#fff;border-radius:5px;
+  color:var(--ui-ink-soft);cursor:pointer;font-size:10px;line-height:1;padding:0;}
+.img-x:hover{border-color:var(--navy);background:var(--navy);color:#fff;}
+
+/* sample-fill button sits above the sections, always reachable */
+.ed-top{padding:14px 20px;border-bottom:1px solid var(--ui-rule);background:#fff;}
+.ed-top .btn{width:100%;}
+.ed-top .sec-note{margin-top:7px;}
+
 .rowlist{margin-top:10px;}
 .rowlist .rw{display:flex;gap:6px;align-items:flex-start;margin-top:6px;}
 .rowlist .rw > *{min-width:0;}
