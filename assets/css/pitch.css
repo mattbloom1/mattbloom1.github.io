@@ -56,7 +56,7 @@
 /* two agent blocks, one per side, monogram fixed dead-center against the
    bar itself — not flexed between the side blocks, so it does not drift
    if one side is empty or the two blocks are different lengths. */
-.cv-bar{position:relative;left:0;right:0;bottom:0;height:1.02in;background:rgba(0,39,58,.92);
+.cv-bar{position:absolute;left:0;right:0;bottom:0;height:1.02in;background:rgba(0,39,58,.92);
   border-top:1pt solid var(--rule-rev);display:flex;align-items:center;justify-content:space-between;
   gap:.24in;padding:0 var(--pad);}
 .cv-bar .cb-side{flex:1;min-width:0;}

@@ -26,27 +26,52 @@
    Shared furniture lives in assets/css/pitch.css.
    ============================================================ */
 
-/* p3 — about GVC, static team copy, two real headshots */
-.about{display:flex;gap:.42in;flex:1;min-height:0;}
-.about .duo{width:2.85in;flex:none;align-self:stretch;display:flex;flex-direction:column;gap:.14in;}
-.about .duo .ph{flex:1;min-height:0;}
-.about .duo .ph .cap{position:absolute;left:0;right:0;bottom:0;padding:.09in .14in;
-  background:rgba(0,39,58,.82);font:800 7pt var(--sans);letter-spacing:.1em;text-transform:uppercase;color:#fff;}
-.about .txt{flex:1;min-width:0;display:flex;flex-direction:column;}
-.about .values{list-style:none;margin:0 0 .16in;padding:0;}
-.about .values li{padding:.09in 0;border-bottom:.75pt solid var(--rule);font:300 9.5pt/14pt var(--body);color:var(--navy);}
-.about .values li:last-child{border-bottom:0;}
-.about .values b{font:800 8pt var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--navy);
-  display:block;margin-bottom:.03in;}
-.mission{margin-top:auto;padding-top:.22in;border-top:1pt solid var(--sky);
-  font:italic 300 11.5pt/17pt var(--body);color:var(--navy);}
+/* ---- shared: the reference deck's three-up colour blocks ---- */
+.tri{display:grid;grid-template-columns:repeat(3,1fr);gap:0;}
+.tri .tb{padding:.2in .18in;min-width:0;}
+.tri .tb.c1{background:var(--navy);}
+.tri .tb.c2{background:var(--sky2);}
+.tri .tb.c3{background:var(--sky);}
+.tri .tb .ci{width:.22in;height:.22in;color:#fff;margin-bottom:.09in;}
+.tri .tb.c3 .ci{color:var(--navy);}
+.tri .tb h4{margin:0 0 .08in;font:800 9.5pt/1.25 var(--sans);color:#fff;}
+.tri .tb.c3 h4{color:var(--navy);}
+.tri .tb p{margin:0;font:300 8.3pt/12.5pt var(--body);color:rgba(255,255,255,.9);}
+.tri .tb.c3 p{color:rgba(0,39,58,.82);}
+/* a quieter variant for short one-line claims */
+.tri.flat .tb{text-align:center;padding:.24in .18in;}
+.tri.flat .tb.c0{background:#EDEDEB;}
+.tri.flat .tb h4{margin:0;font:400 11pt/1.4 var(--body);color:#fff;}
+.tri.flat .tb.c0 h4,.tri.flat .tb.c3 h4{color:var(--navy);}
+.tri.flat .tb b{font-weight:800;}
+
+/* the two company pages are fixed-length copy, so spread their sections down
+   the page rather than letting them bunch under the title */
+.pg[data-key="about"] .pg-body,
+.pg[data-key="studio"] .pg-body{justify-content:space-between;}
+
+/* section rule + display line, mirrors "PRESENT YOUR PROPERTY RIGHT" */
+.dline{text-align:center;margin:.26in 0 .18in;font:400 19pt/1.15 var(--serif);color:var(--navy);
+  letter-spacing:.01em;}
+.dline b{font-weight:700;}
+.dline.sm{font-size:15pt;margin:.22in 0 .14in;}
+
+/* p3 — about GVC: agent duo, headline stat, copy, value blocks */
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:.18in;height:2.15in;flex:none;margin-bottom:.2in;}
+.duo .ph{height:100%;}
+.duo .cap{position:absolute;left:0;right:0;bottom:0;padding:.08in .13in;
+  background:rgba(0,39,58,.82);font:800 7.5pt var(--sans);letter-spacing:.1em;
+  text-transform:uppercase;color:#fff;}
+.about-copy{font:300 9.3pt/14pt var(--body);color:var(--navy);text-align:center;margin-bottom:.22in;}
+.about-copy b{font-weight:700;}
 
 /* p4 — in-house studio, real team grid */
-.crew{display:grid;grid-template-columns:repeat(4,1fr);gap:.2in;margin-bottom:.26in;}
-.crew .c{text-align:center;}
-.crew .ph{aspect-ratio:1/1;margin-bottom:.1in;}
-.crew .nm{font:700 9.5pt var(--serif);color:var(--navy);}
-.crew .tt{margin-top:.02in;font:400 7.5pt/1.4 var(--body);color:rgba(0,39,58,.6);}
+.crew{display:grid;grid-template-columns:repeat(4,1fr);gap:.18in;margin-bottom:.22in;flex:none;}
+.crew .c{text-align:center;min-width:0;}
+.crew .ph{aspect-ratio:1/1;margin-bottom:.09in;}
+.crew .nm{font:700 9.5pt/1.2 var(--serif);color:var(--navy);}
+.crew .tt{margin-top:.03in;font:800 6.4pt/1.45 var(--sans);letter-spacing:.1em;
+  text-transform:uppercase;color:rgba(0,39,58,.6);}
 
 /* p5 — property breakdown */
 .pb-hero{height:2.75in;flex:none;margin-bottom:.26in;}
@@ -64,9 +89,27 @@
 #compTable th .hi{width:9pt;height:9pt;display:inline-block;vertical-align:-1.5pt;margin-right:.04in;color:rgba(0,39,58,.5);}
 #compTable td{padding-top:.16in;padding-bottom:.16in;}
 
-/* p8 — listing strategy */
-.strat-note{margin-top:auto;padding-top:.22in;border-top:.75pt solid var(--rule);
+/* p8 — listing strategy. Each band carries the static strategy/risk pair
+   from the reference deck; only the three prices come from the panel. */
+.eval{text-align:center;font:700 10.5pt/15pt var(--body);color:var(--navy);
+  margin:0 0 .26in;padding:0 .3in;}
+.band{position:relative;}
+.band .bsr{margin-top:.14in;padding-top:.11in;border-top:.75pt solid var(--rule);text-align:left;}
+.band.mid .bsr{border-top-color:rgba(83,199,220,.4);}
+.band .bsr div{font:300 8.3pt/12.5pt var(--body);color:rgba(0,39,58,.75);}
+.band .bsr div + div{margin-top:.05in;}
+.band .bsr b{font:800 6.8pt var(--sans);letter-spacing:.13em;text-transform:uppercase;
+  color:rgba(0,39,58,.5);display:block;}
+.band.mid .bsr div{color:rgba(229,229,229,.85);}
+.band.mid .bsr b{color:var(--sky);}
+/* the starred recommendation, as in the reference */
+.band.mid::before{content:'\2605';position:absolute;left:50%;top:-.19in;transform:translateX(-50%);
+  font-size:13pt;line-height:1;color:var(--sky);}
+.strat-note{margin-top:.28in;padding-top:.22in;border-top:.75pt solid var(--rule);
   font:300 9.5pt/14pt var(--body);color:rgba(0,39,58,.78);}
+/* the reference closes this page on a property shot — it takes whatever
+   height is left once the bands and the note are placed */
+.strat-ph{flex:1;min-height:1.6in;margin-top:.28in;}
 
 /* p9 — sales & marketing plan, three phases */
 .plan3{display:flex;gap:.3in;flex:1;min-height:0;}
@@ -79,33 +122,54 @@
 .plan3 li{padding:.05in 0 .05in .16in;position:relative;font:300 8.8pt/13pt var(--body);color:var(--navy);}
 .plan3 li::before{content:'';position:absolute;left:0;top:.095in;width:.06in;height:.06in;background:var(--sky2);}
 
-/* p10 — testimonials, editorial block quotes */
-.quotes{display:flex;flex-direction:column;gap:.24in;}
-.quote{flex:none;position:relative;padding-left:.36in;}
-.quote::before{content:'\201C';position:absolute;left:0;top:-.06in;font:700 30pt/1 var(--serif);color:var(--sky2);}
-.quote p{margin:0;font:italic 400 11.5pt/17pt var(--body);color:var(--navy);}
-.quote .who{margin-top:.08in;font:800 7.5pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:rgba(0,39,58,.55);}
+/* p10 — preparing your home: the seller checklist, two icon-headed columns.
+   Boxes are printed empty on purpose — the seller ticks them by hand. */
+.prep{columns:2;column-gap:.55in;flex:1;min-height:0;}
+.prep .pgrp{break-inside:avoid;margin-bottom:.3in;}
+.prep .pgrp-h{display:flex;align-items:center;gap:.11in;margin-bottom:.13in;}
+.prep .pgrp-h .ci{width:.2in;height:.2in;flex:none;color:var(--navy);}
+.prep .pgrp-h span{font:800 9pt var(--sans);letter-spacing:.13em;text-transform:uppercase;color:var(--navy);}
+.prep ul{list-style:none;margin:0;padding:0;}
+.prep li{display:flex;align-items:flex-start;gap:.14in;padding:.072in 0;
+  font:300 10.5pt/15pt var(--body);color:var(--navy);}
+.prep li i{flex:none;width:.16in;height:.16in;border:.75pt solid rgba(0,39,58,.45);
+  display:block;margin-top:.028in;}
+.prep li em{font-style:normal;color:rgba(0,39,58,.55);}
 
-/* p11 — digital reach */
-.vids{display:grid;grid-template-columns:1fr 1fr;gap:.26in;flex:1;min-height:0;}
-.vid{display:flex;flex-direction:column;min-height:0;}
-.vid .ph{flex:1;min-height:0;position:relative;}
-.vid .play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-  width:.52in;height:.52in;border-radius:50%;background:rgba(255,255,255,.92);
-  display:flex;align-items:center;justify-content:center;}
-.vid .play::after{content:'';border-left:.15in solid var(--navy);
-  border-top:.09in solid transparent;border-bottom:.09in solid transparent;margin-left:.04in;}
-.vid .vt{flex:none;margin-top:.11in;font:800 8pt var(--sans);letter-spacing:.1em;text-transform:uppercase;color:#fff;}
-.vid .vu{flex:none;margin-top:.04in;font:400 7.5pt var(--ui-mono);color:rgba(229,229,229,.65);
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+/* p11 — testimonials, editorial block quotes. Spaced to fill the page. */
+.quotes{display:flex;flex-direction:column;justify-content:space-between;gap:.3in;flex:1;min-height:0;}
+.quote{flex:none;position:relative;padding-left:.52in;}
+.quote::before{content:'\201C';position:absolute;left:0;top:-.1in;font:700 46pt/1 var(--serif);color:var(--sky);}
+.quote p{margin:0;font:italic 400 15pt/23pt var(--body);color:var(--navy);}
+.quote .who{margin-top:.12in;font:800 8pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:rgba(0,39,58,.55);}
+
+/* p12 — professional videos: copy column beside three listing films */
+.pv{display:flex;gap:.4in;flex:1;min-height:0;}
+.pv .pv-copy{width:2.7in;flex:none;display:flex;flex-direction:column;justify-content:center;
+  border-top:1.2pt solid var(--sky);border-bottom:1.2pt solid var(--sky);padding:.24in 0;}
+.pv .pv-copy p{margin:0 0 .15in;font:300 9pt/13.5pt var(--body);color:var(--navy);text-align:justify;}
+.pv .pv-copy p:last-child{margin-bottom:0;}
+.pv .pv-list{flex:1;min-width:0;display:flex;flex-direction:column;gap:.16in;}
+.vid{flex:1;min-height:0;position:relative;overflow:hidden;background:rgba(0,39,58,.06);}
+.vid img{width:100%;height:100%;object-fit:cover;display:block;}
+.vid .vt{position:absolute;left:0;right:0;bottom:0;padding:.11in .16in;
+  background:rgba(0,39,58,.82);font:800 9pt var(--sans);letter-spacing:.08em;
+  text-transform:uppercase;color:#fff;}
+.vid .vqr{position:absolute;top:.13in;right:.13in;width:.72in;height:.72in;
+  background:#fff;padding:.045in;}
+.vid .vqr svg{width:100%;height:100%;display:block;}
+.vid .vqr.todo{display:flex;align-items:center;justify-content:center;text-align:center;
+  font:800 5.4pt/1.35 var(--sans);letter-spacing:.06em;text-transform:uppercase;color:rgba(0,39,58,.55);}
 
 /* p12 — contact */
 .ag-c .shot{position:relative;box-shadow:0 .1in .22in rgba(0,0,0,.35);}
 .ag-c .shot .band{position:absolute;left:0;right:0;bottom:0;padding:.1in .14in;
   background:rgba(0,39,58,.82);text-align:left;}
 .ag-c .shot .band .bnm{font:700 12pt var(--serif);color:#fff;}
-.linkgrp{margin-top:.2in;}
-.linkgrp:first-of-type{margin-top:auto;padding-top:.26in;border-top:1pt solid var(--rule-rev);}
+/* the whole contact block sits on the bottom margin. margin-top:auto has to
+   live on the wrapper: :first-of-type would match the lede, not the group. */
+.contact-foot{margin-top:auto;padding-top:.26in;border-top:1pt solid var(--rule-rev);}
+.linkgrp + .linkgrp{margin-top:.22in;}
 .linkgrp-t{font:800 7pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--sky);margin-bottom:.1in;}
 .links{display:grid;grid-template-columns:1fr 1fr;gap:.12in .42in;}
 .links span{font:300 9.5pt/1.5 var(--body);color:var(--ow);display:flex;align-items:baseline;gap:.1in;min-width:0;}
@@ -203,18 +267,12 @@
         <summary>Listing strategy</summary>
         <div class="sec-in">
           <div class="f-row">
-            <div class="field"><label>Conservative</label><input type="text" data-f="priceLow" placeholder="3,450,000"></div>
-            <div class="field"><label>Target</label><input type="text" data-f="priceMid" placeholder="3,695,000"></div>
-            <div class="field"><label>Aspirational</label><input type="text" data-f="priceHigh" placeholder="3,950,000"></div>
+            <div class="field"><label>Low range</label><input type="text" data-f="priceLow" placeholder="3,450,000"></div>
+            <div class="field"><label>Mid range</label><input type="text" data-f="priceMid" placeholder="3,695,000"></div>
+            <div class="field"><label>High range</label><input type="text" data-f="priceHigh" placeholder="3,950,000"></div>
           </div>
-          <div class="field"><label>Conservative — what it buys you</label>
-            <textarea data-f="noteLow" rows="2" placeholder="Fastest path to contract."></textarea></div>
-          <div class="field"><label>Target — what it buys you</label>
-            <textarea data-f="noteMid" rows="2" placeholder="Where the comps support us."></textarea></div>
-          <div class="field"><label>Aspirational — what it buys you</label>
-            <textarea data-f="noteHigh" rows="2" placeholder="Tests the ceiling; longer runway."></textarea></div>
-          <div class="field"><label>Our recommendation</label>
-            <textarea data-f="stratNote" rows="3" placeholder="Why we would go out at the target number."></textarea></div>
+          <div class="sec-note">Only the three numbers are yours to set &mdash; the strategy and risk
+            lines under each band are fixed copy.</div>
           <div class="warn" id="warnStrategy" hidden></div>
         </div>
       </details>
@@ -263,6 +321,7 @@
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" integrity="sha384-HOvlOYPIs/zjoIkWUGXkVmXsjr8GuZLV+Q+rcPwmJOVZVpvTSXQChiN4t9Euv9Vc" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js" integrity="sha384-lQXOAyZwHXE55JFyrOMB7nY2Wv+m5ZWNtJcHrd1rceRQXAYNLak8ukN5TjBTcIwz" crossorigin="anonymous"></script>
 <script src="../../assets/js/chrome.js"></script>
 <script src="../../assets/js/motion.js"></script>
 <script src="../../assets/js/builder.js"></script>
@@ -285,7 +344,6 @@ const state = {
   photos:[], map:null,
   comps:[],
   priceLow:'', priceMid:'', priceHigh:'',
-  noteLow:'', noteMid:'', noteHigh:'', stratNote:'',
   agents:[],
   pos:{}
 };
@@ -333,12 +391,57 @@ const DEFAULT_SOCIAL = [
   'YouTube | youtube.com/@gvcrealestateteam'
 ].join('\n');
 
-const DEFAULT_VIDEOS = [
-  'Property film — 45 Crosby | youtu.be/gvc-crosby',
-  'Neighborhood tour — SoHo | youtu.be/gvc-soho',
-  'Listing reel — vertical cut | instagram.com/reel/gvc',
-  'Broker open recap | youtu.be/gvc-open'
-].join('\n');
+/* ------------------------------------------------------------
+   PREPARING YOUR HOME — the seller checklist, verbatim from the
+   team's printed sales plan. Group | icon | items (semicolon-separated).
+   ------------------------------------------------------------ */
+const PREP = [
+  ['General Maintenance', 'box',
+   'Oil squeaky doors;Tighten doorknobs;Replace burned out lights;Clean and repair windows;' +
+   'Touch up chipped paint;Repair cracked plaster;Repair leaking taps and toilets'],
+  ['Cleaning', 'home',
+   'Shampoo carpets;Clean washer, dryer, and tubs;Clean furnace;Clean fridge and stove;' +
+   'Clean and freshen bathrooms'],
+  ['Showing Ready', 'pen',
+   'Clean and tidy entrance;Functional doorbell;Polish door hardware;' +
+   'Paint doors, railings, etc. <em>(as necessary)</em>'],
+  ['Curb Appeal 101', 'trees',
+   'Cut lawns;Trim shrubs and lawns;Weed and edge gardens;Pick up any litter;' +
+   'Clear walk and driveway of leaves;Repair gutters and eaves;Touch up exterior paint'],
+  ['That Extra Touch', 'sun',
+   'Be absent during showings;Turn on all lights;Light fireplace;Open drapes in the day time;' +
+   'Play quiet background music;Keep pets outdoors'],
+  ['Tidy and Organized', 'check',
+   'Clear stairs and halls;Store excess furniture;Clear counters and stove;Make closets neat and tidy']
+];
+
+/* ------------------------------------------------------------
+   PROFESSIONAL VIDEOS — real GVC listing films. `url` drives the
+   printed QR code; leave it empty and the card prints a placeholder
+   instead of a dead QR. `photo` is a path under photos/ (or blank to
+   use a dropped photo from the Videos slots in the panel).
+   ------------------------------------------------------------ */
+const VIDEOS = [
+  { title:'200 East 57th St #9A, NY',      url:'', photo:'' },
+  { title:'105 Norfolk St, Tower 15, NY',  url:'', photo:'' },
+  { title:'243 W 60th St #8A, NY',         url:'', photo:'' }
+];
+
+const VIDEO_COPY = [
+  'In the competitive landscape of New York City&rsquo;s real estate market, buyers have a wealth of ' +
+  'media to sift through, and there are only a few ways to stand out. Price, photography, and copy ' +
+  'writing are all important, but high-quality, professional video content has shown time and time ' +
+  'again to be the most impactful.',
+  'From stunning penthouses overlooking Manhattan&rsquo;s iconic skyline to loft-like homes nestled ' +
+  'in historic neighborhoods, each property tells a unique story.',
+  'Our team works with professional videographers whose skill and expertise capture the essence of ' +
+  'these spaces, utilizing cutting-edge equipment and techniques to highlight every architectural ' +
+  'detail and luxurious amenity. But don&rsquo;t take our word for it, watch examples of our listing ' +
+  'videos by scanning the QR codes on this page.',
+  'In a digital age where first impressions are everything, investing in top-tier video content is a ' +
+  'necessity for sellers looking to stand out in the bustling New York market, ultimately attracting ' +
+  'discerning buyers and maximizing property value.'
+];
 
 /* ============================================================
    HELPERS
@@ -356,6 +459,22 @@ const planRows = txt => listOf(txt).map(l => l.split('|').map(s => s.trim()));
    the box after paint. */
 function posFor(key) { return state.pos[key] || (state.pos[key] = { x: 50, y: 50 }); }
 
+/* QR as vector SVG so it stays crisp at any print size. Same approach as
+   the showsheet. Returns '' for an empty url or if the CDN script failed,
+   and the caller prints a placeholder instead. */
+function qrSvg(text) {
+  try {
+    if (!text || typeof qrcode === 'undefined') return '';
+    const qr = qrcode(0, 'M');
+    qr.addData(text); qr.make();
+    const n = qr.getModuleCount();
+    let d = '';
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (qr.isDark(r, c)) d += 'M' + c + ' ' + r + 'h1v1h-1z';
+    return '<svg viewBox="0 0 ' + n + ' ' + n + '" shape-rendering="crispEdges" ' +
+           'xmlns="http://www.w3.org/2000/svg"><path d="' + d + '" fill="#00273A"/></svg>';
+  } catch (e) { return ''; }
+}
+
 function cityLine() {
   const t = [state.city, state.state].filter(Boolean).join(', ');
   return [t, state.zip].filter(Boolean).join(' ');
@@ -366,13 +485,13 @@ const ROLES = [
   ['auto',    'Auto'],
   ['cover',   'Cover'],
   ['hero',    'Property hero'],
-  ['video1',  'Video 1'],
-  ['video2',  'Video 2'],
-  ['video3',  'Video 3'],
-  ['video4',  'Video 4'],
+  ['strategy','Strategy page'],
+  ['video1',  'Video 1 still'],
+  ['video2',  'Video 2 still'],
+  ['video3',  'Video 3 still'],
   ['exclude', 'Unused']
 ];
-const SLOTS = ['cover','hero','video1','video2','video3','video4'];
+const SLOTS = ['cover','hero','strategy','video1','video2','video3'];
 let assign = {}, uid = 0;
 function reassign() { assign = P.assignRoles(state.photos, SLOTS); }
 function slot(name) { return assign[name] ? assign[name].url : null; }
@@ -388,10 +507,11 @@ const PAGES = [
   { key:'property',title:'Your Property' },
   { key:'map',     title:'Where We Have Sold' },
   { key:'comps',   title:'Comparable Sales' },
-  { key:'strategy',title:'Listing Strategy' },
-  { key:'plan',    title:'Sales & Marketing Plan' },
+  { key:'strategy',title:'The Listing Strategy' },
+  { key:'plan',    title:'Marketing Plan' },
+  { key:'prep',    title:'Preparing Your Home' },
   { key:'reviews', title:'What Our Clients Say' },
-  { key:'reach',   title:'Digital Reach' },
+  { key:'videos',  title:'Professional Videos' },
   { key:'contact', title:'Next Steps' }
 ];
 const OF = PAGES.length;
@@ -420,65 +540,91 @@ function pgToc(n) {
   });
 }
 
-/* Static company page — who the team is, not who is listed on this deck.
-   Real headshots, fixed copy; nothing here reads from the editor panel. */
+/* Company page. The copy is fixed GVC boilerplate, but the two portraits
+   follow whichever agents are picked in the panel — the deck goes out under
+   their names, so the faces at the top have to match. */
 function pgAbout(n) {
+  const list = agents();
+  const duo = list.length
+    ? '<div class="duo">' + list.slice(0, 2).map((a, i) =>
+        '<div class="ph" data-pos="about' + i + '">' +
+          '<img src="' + headshotFor(a) + '" alt="" style="object-position:' +
+            posFor('about' + i).x + '% ' + posFor('about' + i).y + '%">' +
+          '<div class="cap">' + esc(a.name) + '</div>' +
+        '</div>').join('') + '</div>'
+    : '<div class="duo"><div class="ph"><div class="empty-note on-white">Pick your agents<br>in the Agents panel</div></div>' +
+      '<div class="ph"><div class="empty-note on-white">&nbsp;</div></div></div>';
   const body =
-    '<div class="about">' +
-      '<div class="duo">' +
-        '<div class="ph"><img src="../../assets/team/john-gasdaska.jpg" alt=""><div class="cap">John Gasdaska</div></div>' +
-        '<div class="ph"><img src="../../assets/team/tj-verdiglione.jpg" alt=""><div class="cap">TJ Verdiglione</div></div>' +
-      '</div>' +
-      '<div class="txt">' +
-        '<div class="copy">' +
-          '<p style="margin:0 0 .16in">The Gasdaska Verdiglione Conlon Team merged in 2024 to form one ' +
-          'full-service real estate team at Douglas Elliman, working across New York City, New Jersey ' +
-          'and Florida. We are brokers, but we are also a production company: photography, film, ' +
-          'design and marketing all sit in-house, which is why our listings look the way they do.</p>' +
-        '</div>' +
-        '<ul class="values">' +
-          '<li><b>Ethical &amp; client-centric</b>We come from diverse backgrounds but share the same values &mdash; integrity, and putting our client&rsquo;s interests first.</li>' +
-          '<li><b>Excellence through experience</b>50+ years of combined experience across the team, consistently recognized as top producers.</li>' +
-          '<li><b>Personalized listings</b>Every listing gets a customized strategy built on attention to detail and market knowledge.</li>' +
-        '</ul>' +
-        '<div class="stat-row">' +
-          '<div class="stat"><div class="v">$2B+</div><div class="l">Career sales</div></div>' +
-          '<div class="stat"><div class="v">3</div><div class="l">States served</div></div>' +
-        '</div>' +
-        '<div class="mission">&ldquo;Represent every home as though it were the only one we had.&rdquo;</div>' +
-      '</div>' +
+    duo +
+    '<div class="dline"><b>Over $2 Billion</b> Sold</div>' +
+    '<div class="about-copy">Driven by their shared commitment to <b>excellence</b>, <b>integrity</b>, ' +
+    '<b>innovation</b>, and <b>collaboration</b>, TJ, John, and Jonathan merged The Gasdaska Conlon Team ' +
+    'and The Verdiglione Group in 2024 to form The Gasdaska Verdiglione Conlon Team. Their diverse ' +
+    'knowledge, extensive experience, and unwavering commitment have earned them the trust of countless ' +
+    'clients and partners. Known for consistently delivering <b>exceptional results</b>, the team has ' +
+    'become a proven leader in <b>luxury residential transactions</b>, <b>major commercial deals</b>, and ' +
+    'significant <b>new development</b> and redevelopment projects across New York City, New Jersey, ' +
+    'and Florida.</div>' +
+    '<div class="tri">' +
+      '<div class="tb c1"><h4>Ethical and Client Centric</h4><p>Though we come from diverse backgrounds, ' +
+        'we have the same values &mdash; integrity, putting our client&rsquo;s best interests first, and ' +
+        'serving as advisors, not salespeople.</p></div>' +
+      '<div class="tb c2"><h4>Excellence Through Experience</h4><p>With 50+ years of combined experience ' +
+        'across our team, we have the knowledge required to stand as a pillar of excellence within the ' +
+        'industry. We are consistently recognized as top producers.</p></div>' +
+      '<div class="tb c3"><h4>Personalized Listings</h4><p>Each listing is unique, and we use our ' +
+        'meticulous attention to detail, creativity, and comprehensive market knowledge to craft a ' +
+        'customized strategy for selling your most precious asset: your home.</p></div>' +
+    '</div>' +
+    '<div class="dline sm">Present <b>Your Property</b> Right</div>' +
+    '<div class="tri flat">' +
+      '<div class="tb c0"><h4><b>Tailored Experience</b><br>for Each Client</h4></div>' +
+      '<div class="tb c3"><h4>Personalized Showings<br><b>No Lockboxes!</b></h4></div>' +
+      '<div class="tb c2"><h4>We <b>Gather Info Directly</b><br>from the Buyer</h4></div>' +
     '</div>';
   return P.page({ deck:DECK, n, of:OF, site:state.site,
-    title:'About The GVC Team', body });
+    title:'About Our Team', body });
 }
 
-/* Static company page — the real in-house team, not whichever agents are
-   picked for this listing. Nothing here reads from the editor panel. */
+/* The in-house marketing & design division. Static: these are the people who
+   produce the work regardless of which agent is listing the home. */
 function pgStudio(n) {
   const crew = [
-    ['ilin-graves',        'Ilin Graves-Stowe',   'Lead Graphic Designer'],
-    ['sydney-manno',       'Sydney Manno',         'Digital Marketing &amp; Social'],
-    ['matthew-bloomfield', 'Matthew Bloomfield',   'Creative Design Assistant'],
-    ['eric-elfstrom',      'Eric Elfstrom',        'Photographer &amp; Videographer']
-  ];
-  const cards = [
-    ['pen','Immersive visual design','Led by Ilin Graves-Stowe, we create stunning renderings and innovative visuals that bring properties to life and highlight every architectural detail.'],
-    ['megaphone','Digital strategy & social reach','Sydney Manno curates and executes cutting-edge campaigns to expand visibility and engage the right audience across every platform.'],
-    ['clapper','Cinematic storytelling','Eric Elfstrom produces breathtaking films and photography, capturing each home&rsquo;s essence and showcasing it at its absolute best.']
+    ['ilin-graves',        'Ilin Graves-Stowe',  'Lead Graphic Designer'],
+    ['sydney-manno',       'Sydney Manno',       'Digital Marketing &amp; Social Media Specialist'],
+    ['matthew-bloomfield', 'Matthew Bloomfield', 'Creative Design Assistant'],
+    ['eric-elfstrom',      'Eric Elfstrom',      'Photographer &amp; Videographer']
   ];
   const body =
-    '<div class="crew">' + crew.map(([id, nm, tt]) =>
-      '<div class="c"><div class="ph"><img src="../../assets/team/' + id + '.jpg" alt=""></div>' +
+    '<div class="crew">' + crew.map(([id, nm, tt], i) =>
+      '<div class="c"><div class="ph" data-pos="crew' + i + '">' +
+        '<img src="../../assets/team/' + id + '.jpg" alt="" style="object-position:' +
+          posFor('crew' + i).x + '% ' + posFor('crew' + i).y + '%"></div>' +
       '<div class="nm">' + nm + '</div><div class="tt">' + tt + '</div></div>').join('') + '</div>' +
-    '<div class="copy" style="margin-bottom:.24in">Based in Boulder, Colorado, the GVC Team&rsquo;s ' +
-    'Marketing &amp; Design division is the creative force behind the brand &mdash; delivering ' +
-    'high-impact visual storytelling, strategic marketing and cutting-edge design that elevate every ' +
-    'listing to its highest potential.</div>' +
-    '<div class="cards c3">' + cards.map(([ic, h, p]) =>
-      '<div class="card">' + (window.icon ? window.icon(ic, 'ci') : '') +
-      '<h3>' + h + '</h3><p>' + p + '</p></div>').join('') + '</div>';
+    '<div class="dline"><b>In-House</b> Design Team</div>' +
+    '<div class="about-copy">Based in Boulder, Colorado, the GVC Team&rsquo;s Marketing &amp; Design ' +
+    'division is the <b>creative force behind the brand</b>, delivering <b>high-impact visual ' +
+    'storytelling, strategic marketing, and cutting-edge design</b> that elevate luxury real estate to ' +
+    'its highest potential. From compelling digital campaigns and dynamic social media strategies to ' +
+    'world-class photography, videography, and branding, this team ensures that every property and new ' +
+    'development is positioned for <b>maximum exposure and success</b>.</div>' +
+    '<div class="dline sm">Our Marketing <b>Advantage</b></div>' +
+    '<div class="tri">' +
+      '<div class="tb c1">' + (window.icon ? window.icon('pen', 'ci') : '') +
+        '<h4>Immersive Visual Design</h4><p>Led by Ilin Graves, Graphic Designer &amp; 3D Artist, we ' +
+        'create stunning renderings and innovative visuals that bring properties to life and highlight ' +
+        'every architectural detail.</p></div>' +
+      '<div class="tb c2">' + (window.icon ? window.icon('megaphone', 'ci') : '') +
+        '<h4>Digital Strategy &amp; Social Media Reach</h4><p>Sydney Manno, Digital Marketing &amp; ' +
+        'Social Media Specialist, curates and executes cutting-edge campaigns to expand visibility and ' +
+        'engage the right audience across all platforms.</p></div>' +
+      '<div class="tb c3">' + (window.icon ? window.icon('clapper', 'ci') : '') +
+        '<h4>Cinematic Storytelling</h4><p>Eric Elfstrom, our Photographer &amp; Videographer, produces ' +
+        'breathtaking films and photography, capturing each home&rsquo;s essence and showcasing it at ' +
+        'its absolute best.</p></div>' +
+    '</div>';
   return P.page({ deck:DECK, n, of:OF, site:state.site,
-    title:'In-House Marketing &amp; Design'.replace('&amp;','&'), body });
+    title:'About Marketing', body });
 }
 
 function pgProperty(n) {
@@ -540,26 +686,41 @@ function pgComps(n) {
     title:'Comparable Sales', body });
 }
 
+/* Only the three prices come from the panel. The strategy/risk pairs and the
+   framing copy are fixed — they are the same argument on every listing. */
 function pgStrategy(n) {
-  const b = (lab, val, note, mid) =>
-    '<div class="band' + (mid ? ' mid' : '') + '">' +
-      '<div class="bl">' + esc(lab) + '</div>' +
-      '<div class="bv">' + (val ? P.money(val) : '—') + '</div>' +
-      (note ? '<div class="bn">' + esc(note) + '</div>' : '') +
-    '</div>';
+  const BANDS = [
+    ['Low Range', 'priceLow', false,
+     'Peak interest for a possible bidding war and sell quick', 'Leave money on the table'],
+    ['Mid Range', 'priceMid', true,
+     'Highest chance for multiple offers and quicker sale', 'Low risk'],
+    ['High Range', 'priceHigh', false,
+     'Possibly get more money', 'Increased time it takes to sell or significant price drop']
+  ];
   const body =
-    '<div class="bands">' +
-      b('Conservative', state.priceLow, state.noteLow, false) +
-      b('Target', state.priceMid, state.noteMid, true) +
-      b('Aspirational', state.priceHigh, state.noteHigh, false) +
-    '</div>' +
-    '<div class="copy">Price is the single biggest lever we control. Go out too high and the ' +
-    'listing goes stale — buyers read days-on-market before they read the description. Go out ' +
-    'too low and you leave money on the table. The three numbers above are the honest range the ' +
-    'comparables support.</div>' +
-    (state.stratNote ? '<div class="strat-note"><strong>Our recommendation.</strong> ' + P.lines(state.stratNote) + '</div>' : '');
+    '<div class="lede" style="text-align:center;max-width:none">A home priced right will attract a ' +
+    'greater number of interested buyers.</div>' +
+    '<div class="eval">After a personal consultation and a thorough assessment of your home, we will ' +
+    'provide you with our expert evaluation of its value.</div>' +
+    '<div class="bands">' + BANDS.map(([lab, key, mid, strat, risk]) =>
+      '<div class="band' + (mid ? ' mid' : '') + '">' +
+        '<div class="bl">' + lab + '</div>' +
+        '<div class="bv">' + (state[key] ? P.money(state[key]) : '$ —') + '</div>' +
+        '<div class="bsr">' +
+          '<div><b>Strategy</b>' + strat + '</div>' +
+          '<div><b>Risk</b>' + risk + '</div>' +
+        '</div>' +
+      '</div>').join('') + '</div>' +
+    '<div class="strat-note">Price is the single biggest lever we control. Go out too high and the ' +
+    'listing goes stale &mdash; buyers read days-on-market before they read the description. Go out too ' +
+    'low and you leave money on the table. The three numbers above are the honest range the comparables ' +
+    'support, and the starred one is where we would go to market.</div>' +
+    '<div class="ph strat-ph"' + (slot('strategy') ? ' data-pos="strategy"' : '') + '>' + (slot('strategy')
+      ? '<img src="' + slot('strategy') + '" alt="" style="object-position:' +
+          posFor('strategy').x + '% ' + posFor('strategy').y + '%">'
+      : '<div class="empty-note on-white">Tag a photo &ldquo;Strategy page&rdquo;</div>') + '</div>';
   return P.page({ deck:DECK, n, of:OF, site:state.site,
-    title:'Listing Strategy', body });
+    title:'The Listing Strategy', body });
 }
 
 /* Static GVC boilerplate — pre-launch, launch and on-going, grouped from
@@ -581,7 +742,22 @@ function pgPlan(n) {
   };
   const body = '<div class="plan3">' + phases.map(col).join('') + '</div>';
   return P.page({ deck:DECK, n, of:OF, site:state.site,
-    title:'Sales &amp; Marketing Plan'.replace('&amp;','&'), body });
+    title:'Marketing Plan', body });
+}
+
+/* The seller's own prep checklist. Boxes print empty — this page is meant to
+   be handed over and ticked off, so nothing here is editor-driven. */
+function pgPrep(n) {
+  const body =
+    '<div class="lede">The work below is what turns a good listing into a fast one. None of it is ' +
+    'expensive; all of it shows up in photographs and in showings.</div>' +
+    '<div class="prep">' + PREP.map(([name, ic, items]) =>
+      '<div class="pgrp"><div class="pgrp-h">' + (window.icon ? window.icon(ic, 'ci') : '') +
+        '<span>' + name + '</span></div><ul>' +
+        items.split(';').map(t => '<li><i></i><span>' + t + '</span></li>').join('') +
+      '</ul></div>').join('') + '</div>';
+  return P.page({ deck:DECK, n, of:OF, site:state.site,
+    title:'The Sales Plan', body });
 }
 
 /* Static GVC boilerplate — curated from client testimonials, not editor-driven. */
@@ -594,29 +770,27 @@ function pgReviews(n) {
     title:'What Our Clients Say', body });
 }
 
-/* Reach numbers and video examples are GVC boilerplate, not per-listing —
-   update the two consts below when the team's current stats change. */
-function pgReach(n) {
-  const REACH = { imp:'1.2M', fol:'48K', syn:'120+', vid:'35K' };
-  const vids = pairs(DEFAULT_VIDEOS).slice(0, 4);
+/* Three real listing films. The photo comes from the Videos slots in the panel
+   (drag on the page to reframe); the QR is generated from VIDEOS[i].url, and
+   prints a placeholder rather than a dead code while that url is blank. */
+function pgVideos(n) {
   const body =
-    '<div class="stat-row">' +
-      '<div class="stat"><div class="v">' + REACH.imp + '</div><div class="l">Monthly impressions</div></div>' +
-      '<div class="stat"><div class="v">' + REACH.fol + '</div><div class="l">Followers</div></div>' +
-      '<div class="stat"><div class="v">' + REACH.syn + '</div><div class="l">Syndicated sites</div></div>' +
-      '<div class="stat"><div class="v">' + REACH.vid + '</div><div class="l">Avg. video views</div></div>' +
-    '</div>' +
-    '<div class="vids">' + vids.map((v, i) => {
-      const key = 'video' + (i + 1);
-      return '<div class="vid"><div class="ph"' + (slot(key) ? ' data-pos="' + key + '"' : '') + '>' +
-        (slot(key) ? '<img src="' + slot(key) + '" alt="" style="object-position:' + posFor(key).x + '% ' + posFor(key).y + '%">' : '') +
-        '<div class="play"></div></div>' +
-        '<div class="vt">' + esc(v[0]) + '</div>' +
-        (v[1] ? '<div class="vu">' + esc(v[1]) + '</div>' : '') +
-      '</div>';
-    }).join('') + '</div>';
-  return P.page({ deck:DECK, n, of:OF, site:state.site, reversed:true,
-    title:'Digital Reach', body });
+    '<div class="pv">' +
+      '<div class="pv-copy">' + VIDEO_COPY.map(p => '<p>' + p + '</p>').join('') + '</div>' +
+      '<div class="pv-list">' + VIDEOS.slice(0, 3).map((v, i) => {
+        const key = 'video' + (i + 1), img = v.photo || slot(key);
+        const qr = qrSvg(v.url);
+        return '<div class="vid"' + (img ? ' data-pos="' + key + '"' : '') + '>' +
+          (img
+            ? '<img src="' + img + '" alt="" style="object-position:' + posFor(key).x + '% ' + posFor(key).y + '%">'
+            : '<div class="empty-note on-white">Tag a photo &ldquo;' + esc('Video ' + (i + 1) + ' still') + '&rdquo;</div>') +
+          '<div class="vqr' + (qr ? '' : ' todo') + '">' + (qr || 'Video<br>link<br>needed') + '</div>' +
+          '<div class="vt">' + esc(v.title) + '</div>' +
+        '</div>';
+      }).join('') + '</div>' +
+    '</div>';
+  return P.page({ deck:DECK, n, of:OF, site:state.site,
+    title:'Professional Videos', body });
 }
 
 function pgContact(n) {
@@ -636,17 +810,19 @@ function pgContact(n) {
     '<div class="lede">If this reads right to you, the next step is simple: we agree on a number, ' +
     'we book the shoot, and we are on the market inside two weeks.</div>' +
     cards +
-    '<div class="linkgrp"><div class="linkgrp-t">Social</div><div class="links">' + list(social) + '</div></div>' +
-    '<div class="linkgrp"><div class="linkgrp-t">Links</div><div class="links">' + list(links) + '</div></div>' +
-    '<div class="states">Licensed in New York &middot; New Jersey &middot; Florida</div>';
+    '<div class="contact-foot">' +
+      '<div class="linkgrp"><div class="linkgrp-t">Social</div><div class="links">' + list(social) + '</div></div>' +
+      '<div class="linkgrp"><div class="linkgrp-t">Links</div><div class="links">' + list(links) + '</div></div>' +
+      '<div class="states">Licensed in New York &middot; New Jersey &middot; Florida</div>' +
+    '</div>';
   return P.page({ deck:DECK, n, of:OF, site:state.site, reversed:true,
     title:'Next Steps', body });
 }
 
 const RENDER = {
   cover:pgCover, toc:pgToc, about:pgAbout, studio:pgStudio, property:pgProperty,
-  map:pgMap, comps:pgComps, strategy:pgStrategy, plan:pgPlan, reviews:pgReviews,
-  reach:pgReach, contact:pgContact
+  map:pgMap, comps:pgComps, strategy:pgStrategy, plan:pgPlan, prep:pgPrep,
+  reviews:pgReviews, videos:pgVideos, contact:pgContact
 };
 
 /* ============================================================
@@ -668,7 +844,7 @@ function redraw() {
 const RULES = [
   { key:'comps',    box:'warnComps',   msg:'Comparable sales run past the page — remove one, or shorten the longest address.' },
   { key:'property', box:'warnProperty',msg:'The property page is over-full — shorten the description or cut a feature.' },
-  { key:'strategy', box:'warnStrategy',msg:'The strategy page is over-full — shorten the recommendation.' }
+  { key:'strategy', box:'warnStrategy',msg:'The strategy page is over-full — a price is running onto a second line.' }
 ];
 function checkAll() {
   P.checkOverflow(document.getElementById('pages'), RULES, 'warnGeneral');
@@ -739,20 +915,17 @@ function loadPreview() {
       {address:'80 Greene Street, 5', price:'3425000', sqft:'2340', bb:'3 / 2.5', date:'Feb 2026'}
     ],
     priceLow:'3450000', priceMid:'3695000', priceHigh:'3950000',
-    noteLow:'Fastest path to contract — likely multiple offers inside three weeks.',
-    noteMid:'Where the comparables land. Our recommendation.',
-    noteHigh:'Tests the ceiling. Expect a longer runway and a probable adjustment.',
-    stratNote:'We would list at $3,695,000. It sits just under the psychological $3.7M ' +
-              'search break, it is defensible against 155 Grand, and it leaves room to hold firm in negotiation.',
     agents:['john-gasdaska','tj-verdiglione']
   });
-  // real photography from photos/3-crosby-lane, invented listing copy
-  state.photos = [0, 3, 6, 9, 12, 15, 18].map(n => ({
+  // real photography from photos/3-crosby-lane, invented listing copy.
+  // One per slot: cover, hero, strategy, then the three video stills.
+  state.photos = [0, 3, 6, 9, 12, 15].map(n => ({
     id: ++uid,
     name: '3-crosby-' + n + '.webp',
     url: '../../photos/3-crosby-lane/img/' + n + '-e-f.webp',
     role: 'auto'
   }));
+  state.pos = {};
   state.map = null;
   document.querySelectorAll('[data-f]').forEach(el => { el.value = state[el.dataset.f] || ''; });
   renderComps(); paintRoster(); paintMap(); redraw();
