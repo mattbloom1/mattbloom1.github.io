@@ -27,6 +27,10 @@
     })
     .catch(err => console.warn("monogram failed to load", err)); // masthead works without the mark
 
+  // Builder tools are full-height apps: the panel and the preview scroll
+  // independently and the page itself never does, so they opt out of the footer.
+  if (document.body.dataset.foot === "none") return;
+
   const foot = document.createElement("footer");
   foot.className = "site-foot";
   foot.innerHTML = `

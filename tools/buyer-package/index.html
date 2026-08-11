@@ -54,7 +54,7 @@ table.tbl tr.total td{border-top:1.2pt solid var(--navy);border-bottom:0;
 .links .lv{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 </style>
 </head>
-<body data-root="../../" data-nav="tools">
+<body data-root="../../" data-nav="tools" data-foot="none">
 <main>
 <h1 class="visually-hidden">Buyer Package Builder</h1>
 
@@ -64,13 +64,11 @@ table.tbl tr.total td{border-top:1.2pt solid var(--navy);border-bottom:0;
   <aside id="editor">
     <div class="ed-top">
       <button class="btn sm" id="btnSample">Fill with sample info</button>
-      <div class="sec-note">Loads 3 Crosby Lane photography and invented client details so every
-        page shows populated. Overwrites what is in the panel.</div>
     </div>
     <div class="ed-body">
 
-      <details class="ed-sec" open>
-        <summary>Client &amp; cover</summary>
+      <details class="ed-sec">
+        <summary>Client &amp; cover <span class="hint">cover + footers</span></summary>
         <div class="sec-in">
           <div class="field"><label>Prepared for</label><input type="text" data-f="client" placeholder="Priya &amp; Daniel Rao"></div>
           <div class="field"><label>Date</label><input type="text" data-f="date" placeholder="August 2026"></div>
@@ -80,7 +78,7 @@ table.tbl tr.total td{border-top:1.2pt solid var(--navy);border-bottom:0;
       </details>
 
       <details class="ed-sec">
-        <summary>Photos</summary>
+        <summary>Photos <span class="hint">cover + page 3</span></summary>
         <div class="sec-in">
           <div class="drop" id="dropPhotos" tabindex="0" role="button">
             <div class="d-big">Drop photos</div>
@@ -88,13 +86,11 @@ table.tbl tr.total td{border-top:1.2pt solid var(--navy);border-bottom:0;
           </div>
           <input type="file" id="filePhotos" accept="image/*" multiple hidden>
           <div id="imgList"></div>
-          <div class="sec-note">Leave a photo on <em>Auto</em> and it fills the next empty slot &mdash;
-            cover, then the portrait beside &ldquo;Why Work With Us&rdquo;. Pin one to a role to hold it there.</div>
         </div>
       </details>
 
       <details class="ed-sec">
-        <summary>The buying process</summary>
+        <summary>The buying process <span class="hint">page 4</span></summary>
         <div class="sec-in">
           <div class="field"><label>Steps <span style="text-transform:none;letter-spacing:0">(one per line: Title | detail)</span></label>
             <textarea data-f="steps" rows="9"></textarea></div>
@@ -103,7 +99,7 @@ table.tbl tr.total td{border-top:1.2pt solid var(--navy);border-bottom:0;
       </details>
 
       <details class="ed-sec">
-        <summary>Financing</summary>
+        <summary>Financing <span class="hint">page 5</span></summary>
         <div class="sec-in">
           <div class="f-row">
             <div class="field"><label>Target price</label><input type="text" data-f="price" placeholder="1,850,000"></div>
@@ -115,23 +111,22 @@ table.tbl tr.total td{border-top:1.2pt solid var(--navy);border-bottom:0;
           </div>
           <div class="field"><label>Lender notes</label>
             <textarea data-f="lender" rows="3" placeholder="Who to call, and what they will ask for."></textarea></div>
-          <div class="sec-note">Monthly payment and cash-to-close are calculated from these.</div>
           <div class="warn" id="warnFinance" hidden></div>
         </div>
       </details>
 
       <details class="ed-sec">
-        <summary>Closing costs</summary>
+        <summary>Closing costs <span class="hint">page 8</span></summary>
         <div class="sec-in">
           <div class="field"><label>Line items <span style="text-transform:none;letter-spacing:0">(one per line: Item | amount or %)</span></label>
             <textarea data-f="costs" rows="8"></textarea></div>
-          <div class="sec-note">A trailing % is taken against the purchase price. Write &ldquo;1.925% loan&rdquo; to charge it against the mortgage instead. Anything else is used as a flat figure.</div>
+          <div class="sec-note">A trailing % bills against the purchase price; &ldquo;1.925% loan&rdquo; bills against the mortgage.</div>
           <div class="warn" id="warnCosts" hidden></div>
         </div>
       </details>
 
       <details class="ed-sec">
-        <summary>Useful links</summary>
+        <summary>Useful links <span class="hint">page 10</span></summary>
         <div class="sec-in">
           <div class="field"><label>Links <span style="text-transform:none;letter-spacing:0">(one per line: Label | value)</span></label>
             <textarea data-f="links" rows="6"></textarea></div>
@@ -139,19 +134,16 @@ table.tbl tr.total td{border-top:1.2pt solid var(--navy);border-bottom:0;
         </div>
       </details>
 
-      <details class="ed-sec" open>
-        <summary>Agents <span class="hint">max 2</span></summary>
+      <details class="ed-sec">
+        <summary>Agents <span class="hint">max 2 &middot; pages 9 &amp; 10</span></summary>
         <div class="sec-in">
           <div id="rosterPick"></div>
-          <div class="sec-note">Pulls name, title, phone, email and headshot from the shared roster.</div>
         </div>
       </details>
 
       <details class="ed-sec">
         <summary>Warnings</summary>
         <div class="sec-in">
-          <div class="sec-note">Anything that does not fit its page is reported here and in the
-            section it came from.</div>
           <div class="warn" id="warnGeneral" hidden></div>
         </div>
       </details>
