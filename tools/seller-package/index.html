@@ -65,13 +65,25 @@
 .about-copy{font:300 9.3pt/14pt var(--body);color:var(--navy);text-align:center;margin-bottom:.22in;}
 .about-copy b{font-weight:700;}
 
-/* p4 — in-house studio, real team grid */
-.crew{display:grid;grid-template-columns:repeat(4,1fr);gap:.18in;margin-bottom:.22in;flex:none;}
-.crew .c{text-align:center;min-width:0;}
-.crew .ph{aspect-ratio:1/1;margin-bottom:.09in;}
-.crew .nm{font:700 9.5pt/1.2 var(--serif);color:var(--navy);}
-.crew .tt{margin-top:.03in;font:800 6.4pt/1.45 var(--sans);letter-spacing:.1em;
-  text-transform:uppercase;color:rgba(0,39,58,.6);}
+/* p4 — the marketing team as a flush 2x2 of members: each one is a square
+   photo paired with a coloured name panel, alternating so the colours
+   checkerboard across the block. Mirrors the reference deck. */
+.crew{display:grid;grid-template-columns:repeat(4,1fr);gap:0;flex:none;margin-bottom:.24in;}
+.crew .cell{position:relative;aspect-ratio:1/1;overflow:hidden;min-width:0;}
+.crew .cell.ph{background:rgba(0,39,58,.06);}
+.crew .cell.ph img{width:100%;height:100%;object-fit:cover;display:block;}
+.crew .cell.lab{display:flex;flex-direction:column;justify-content:center;padding:.14in .16in;}
+.crew .cell.lab.n1{background:var(--navy);}
+.crew .cell.lab.n2{background:var(--sky2);}
+.crew .cell.lab.n3{background:var(--sky);}
+.crew .cell.lab.n4{background:#EDEDEB;}
+.crew .cell.lab .nm{font:800 11pt/1.2 var(--sans);color:#fff;}
+.crew .cell.lab .tt{margin-top:.06in;font:400 8.5pt/1.35 var(--body);
+  text-transform:uppercase;letter-spacing:.04em;color:rgba(255,255,255,.85);}
+.crew .cell.lab.n3 .nm,.crew .cell.lab.n4 .nm{color:var(--navy);}
+.crew .cell.lab.n3 .tt,.crew .cell.lab.n4 .tt{color:rgba(0,39,58,.75);}
+/* right-hand members read outward, so their text hangs to the right */
+.crew .cell.lab.r{text-align:right;}
 
 /* p5 — property breakdown */
 .pb-hero{height:2.75in;flex:none;margin-bottom:.26in;}
@@ -116,11 +128,17 @@
 .plan3 .ph3{flex:1;min-width:0;display:flex;flex-direction:column;}
 .plan3 .ph3-h{flex:none;font:800 11pt var(--sans);letter-spacing:.03em;text-transform:uppercase;
   color:var(--navy);padding-bottom:.1in;border-bottom:1.4pt solid var(--sky);margin-bottom:.16in;}
-.plan3 .grp{margin-bottom:.16in;}
-.plan3 .grp-t{font:800 7pt var(--sans);letter-spacing:.13em;text-transform:uppercase;color:rgba(0,39,58,.55);margin-bottom:.06in;}
+/* Groups spread down the column so the block fills the page. The spread lives
+   on an inner wrapper, not on .ph3 itself — otherwise the phase heading gets
+   pushed away from its own first group. The gap is the floor, so adding plan
+   items tightens the spread instead of overflowing. */
+.plan3 .grps{flex:1;min-height:0;display:flex;flex-direction:column;
+  justify-content:space-between;gap:.2in;}
+.plan3 .grp-t{font:800 7pt var(--sans);letter-spacing:.13em;text-transform:uppercase;color:rgba(0,39,58,.55);margin-bottom:.11in;}
 .plan3 ul{list-style:none;margin:0;padding:0;}
-.plan3 li{padding:.05in 0 .05in .16in;position:relative;font:300 8.8pt/13pt var(--body);color:var(--navy);}
-.plan3 li::before{content:'';position:absolute;left:0;top:.095in;width:.06in;height:.06in;background:var(--sky2);}
+.plan3 li{padding:.135in 0 .135in .16in;position:relative;font:300 8.8pt/13pt var(--body);color:var(--navy);}
+.plan3 li + li{border-top:.5pt solid rgba(0,39,58,.09);}
+.plan3 li::before{content:'';position:absolute;left:0;top:.18in;width:.06in;height:.06in;background:var(--sky2);}
 
 /* p10 — preparing your home: the seller checklist, two icon-headed columns.
    Boxes are printed empty on purpose — the seller ticks them by hand. */
@@ -136,8 +154,10 @@
   display:block;margin-top:.028in;}
 .prep li em{font-style:normal;color:rgba(0,39,58,.55);}
 
-/* p11 — testimonials, editorial block quotes. Spaced to fill the page. */
-.quotes{display:flex;flex-direction:column;justify-content:space-between;gap:.3in;flex:1;min-height:0;}
+/* p11 — testimonials, editorial block quotes. space-evenly, not
+   space-between: between pins the first and last quote hard against the top
+   and bottom edges of the text block. */
+.quotes{display:flex;flex-direction:column;justify-content:space-evenly;gap:.26in;flex:1;min-height:0;}
 .quote{flex:none;position:relative;padding-left:.52in;}
 .quote::before{content:'\201C';position:absolute;left:0;top:-.1in;font:700 46pt/1 var(--serif);color:var(--sky);}
 .quote p{margin:0;font:italic 400 15pt/23pt var(--body);color:var(--navy);}
@@ -161,21 +181,61 @@
 .vid .vqr.todo{display:flex;align-items:center;justify-content:center;text-align:center;
   font:800 5.4pt/1.35 var(--sans);letter-spacing:.06em;text-transform:uppercase;color:rgba(0,39,58,.55);}
 
-/* p12 — contact */
-.ag-c .shot{position:relative;box-shadow:0 .1in .22in rgba(0,0,0,.35);}
-.ag-c .shot .band{position:absolute;left:0;right:0;bottom:0;padding:.1in .14in;
-  background:rgba(0,39,58,.82);text-align:left;}
-.ag-c .shot .band .bnm{font:700 12pt var(--serif);color:#fff;}
-/* the whole contact block sits on the bottom margin. margin-top:auto has to
-   live on the wrapper: :first-of-type would match the lede, not the group. */
-.contact-foot{margin-top:auto;padding-top:.26in;border-top:1pt solid var(--rule-rev);}
-.linkgrp + .linkgrp{margin-top:.22in;}
-.linkgrp-t{font:800 7pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--sky);margin-bottom:.1in;}
-.links{display:grid;grid-template-columns:1fr 1fr;gap:.12in .42in;}
-.links span{font:300 9.5pt/1.5 var(--body);color:var(--ow);display:flex;align-items:baseline;gap:.1in;min-width:0;}
-.links .lk{font:800 7pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--sky);flex:none;width:.95in;}
-.links .lv{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.states{margin-top:.2in;font:800 7.5pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:rgba(229,229,229,.6);}
+/* ============================================================
+   p13 — closing page
+   ============================================================ */
+.pg[data-key="contact"] .pg-body{justify-content:space-between;}
+
+/* the three things that happen next */
+.steps3{display:grid;grid-template-columns:repeat(3,1fr);gap:.42in;flex:none;}
+.steps3 .s{border-top:1.4pt solid var(--sky);padding-top:.15in;}
+.steps3 .sn{font:800 8pt var(--sans);letter-spacing:.18em;color:var(--sky);}
+.steps3 .st{margin-top:.1in;font:700 13pt/1.2 var(--serif);color:#fff;}
+.steps3 .sd{margin-top:.08in;font:300 8.8pt/13pt var(--body);color:rgba(229,229,229,.78);}
+
+/* agents. The cutout sits on a light panel so the shadow and the name band
+   have something solid to sit against. */
+.pg[data-key="contact"] .ag-row{gap:.55in;flex:none;justify-content:center;}
+.ag-c{flex:0 1 2.5in;max-width:2.5in;text-align:left;}
+.ag-c .shot{position:relative;width:100%;aspect-ratio:4/5;overflow:hidden;
+  background:linear-gradient(#F4F3EF,#E4E2DC);box-shadow:0 .14in .3in rgba(0,0,0,.4);}
+/* contain, not cover: these are full cutouts of varying framing, and cover
+   crops heads off. The bottom padding clears the name band so the figure
+   stands on it instead of disappearing behind it. */
+.ag-c .shot img{width:100%;height:100%;display:block;box-sizing:border-box;
+  padding:.1in .1in .4in;object-fit:contain;object-position:50% 100%;}
+.ag-c .shot .band{position:absolute;left:0;right:0;bottom:0;padding:.1in .15in;
+  background:rgba(0,39,58,.9);}
+.ag-c .shot .band .bnm{font:700 13pt/1.15 var(--serif);color:#fff;}
+.ag-c .tt{margin-top:.13in;font:800 6.8pt/1.5 var(--sans);letter-spacing:.14em;
+  text-transform:uppercase;color:var(--sky);}
+.ag-c .ct{margin-top:.07in;display:flex;flex-direction:column;gap:.02in;}
+.ag-c .ct span{font:300 9pt/1.5 var(--body);color:var(--ow);}
+
+/* footer: two link columns and the team-site QR on one baseline */
+.contact-foot{flex:none;display:flex;align-items:flex-start;gap:.42in;
+  padding-top:.26in;border-top:1pt solid var(--rule-rev);}
+.lcols{flex:1;min-width:0;display:grid;grid-template-columns:1fr 1fr;gap:.42in;}
+.lcol{min-width:0;}
+.lcol-t{font:800 7pt var(--sans);letter-spacing:.18em;text-transform:uppercase;
+  color:var(--sky);padding-bottom:.08in;margin-bottom:.1in;border-bottom:.75pt solid var(--rule-rev);}
+.lrow{display:flex;flex-direction:column;margin-bottom:.09in;min-width:0;}
+.lrow .lk{font:800 6.2pt var(--sans);letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(229,229,229,.5);}
+.lrow .lv{font:300 9pt/1.4 var(--body);color:var(--ow);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.cf-qr{flex:none;width:1in;text-align:center;}
+.cf-qr .qbox{width:1in;height:1in;background:#fff;padding:.05in;}
+.cf-qr .qbox svg{width:100%;height:100%;display:block;}
+.cf-qr .qcap{margin-top:.07in;font:800 6pt var(--sans);letter-spacing:.12em;
+  text-transform:uppercase;color:rgba(229,229,229,.6);}
+
+/* the three states we are licensed in */
+.states{flex:none;display:flex;justify-content:center;gap:.42in;margin-top:.24in;}
+.states span{position:relative;font:800 7.5pt var(--sans);letter-spacing:.18em;
+  text-transform:uppercase;color:rgba(229,229,229,.72);}
+.states span + span::before{content:'';position:absolute;left:-.21in;top:.035in;
+  width:.05in;height:.05in;background:var(--sky);}
 </style>
 </head>
 <body data-root="../../" data-nav="tools">
@@ -188,8 +248,6 @@
   <aside id="editor">
     <div class="ed-top">
       <button class="btn sm" id="btnSample">Fill with sample info</button>
-      <div class="sec-note">Loads 3 Crosby Lane photography and invented listing copy so every
-        page shows populated. Overwrites what is in the panel.</div>
     </div>
     <div class="ed-body">
 
@@ -240,10 +298,6 @@
           </div>
           <input type="file" id="filePhotos" accept="image/*" multiple hidden>
           <div id="imgList"></div>
-          <div class="sec-note">Every photo has a role. Leave one on <em>Auto</em> and it fills the next
-            empty slot in order &mdash; cover, property hero, then the four video stills.
-            Pin one to a role and the auto pass will not move it. On the page, drag any
-            photo to reframe it inside its box.</div>
           <div class="drop" id="dropMap" tabindex="0" role="button" style="margin-top:14px">
             <div class="d-big">Drop past-sales map</div>
             <div class="d-sub">Export one from Map Studio</div>
@@ -258,7 +312,6 @@
         <div class="sec-in">
           <div class="rowlist" id="compList"></div>
           <button class="btn sm ghost" id="addComp" style="margin-top:10px">Add comparable</button>
-          <div class="sec-note">Address &middot; sold price &middot; sq ft &middot; beds/baths &middot; sold date. Eight fit on the page.</div>
           <div class="warn" id="warnComps" hidden></div>
         </div>
       </details>
@@ -271,8 +324,13 @@
             <div class="field"><label>Mid range</label><input type="text" data-f="priceMid" placeholder="3,695,000"></div>
             <div class="field"><label>High range</label><input type="text" data-f="priceHigh" placeholder="3,950,000"></div>
           </div>
-          <div class="sec-note">Only the three numbers are yours to set &mdash; the strategy and risk
-            lines under each band are fixed copy.</div>
+          <div class="field"><label>Recommended range</label>
+            <div class="seg pick" id="recPick" role="group" aria-label="Recommended range">
+              <button type="button" data-rec="low">Low</button>
+              <button type="button" data-rec="mid">Mid</button>
+              <button type="button" data-rec="high">High</button>
+            </div>
+          </div>
           <div class="warn" id="warnStrategy" hidden></div>
         </div>
       </details>
@@ -281,15 +339,12 @@
         <summary>Agents <span class="hint">max 2</span></summary>
         <div class="sec-in">
           <div id="rosterPick"></div>
-          <div class="sec-note">Pulls name, title, phone, email and headshot from the shared roster.</div>
         </div>
       </details>
 
-            <details class="ed-sec">
+      <details class="ed-sec">
         <summary>Warnings</summary>
         <div class="sec-in">
-          <div class="sec-note">Anything that does not fit its page is reported here and in the
-            section it came from.</div>
           <div class="warn" id="warnGeneral" hidden></div>
         </div>
       </details>
@@ -343,7 +398,7 @@ const state = {
   client:'', date:'', site:'gvcrealestateteam.com',
   photos:[], map:null,
   comps:[],
-  priceLow:'', priceMid:'', priceHigh:'',
+  priceLow:'', priceMid:'', priceHigh:'', recBand:'mid',
   agents:[],
   pos:{}
 };
@@ -428,19 +483,19 @@ const VIDEOS = [
 ];
 
 const VIDEO_COPY = [
-  'In the competitive landscape of New York City&rsquo;s real estate market, buyers have a wealth of ' +
-  'media to sift through, and there are only a few ways to stand out. Price, photography, and copy ' +
-  'writing are all important, but high-quality, professional video content has shown time and time ' +
-  'again to be the most impactful.',
-  'From stunning penthouses overlooking Manhattan&rsquo;s iconic skyline to loft-like homes nestled ' +
-  'in historic neighborhoods, each property tells a unique story.',
+  'In the competitive landscape of the New Jersey real estate market, buyers have a wealth of media ' +
+  'to sift through, and there are only a few ways to stand out. Price, photography, and copy writing ' +
+  'are all important, but high-quality, professional video content has shown time and time again to ' +
+  'be the most impactful.',
+  'From center-hall colonials on tree-lined streets to waterfront homes with Manhattan skyline views, ' +
+  'each property tells a unique story.',
   'Our team works with professional videographers whose skill and expertise capture the essence of ' +
   'these spaces, utilizing cutting-edge equipment and techniques to highlight every architectural ' +
   'detail and luxurious amenity. But don&rsquo;t take our word for it, watch examples of our listing ' +
   'videos by scanning the QR codes on this page.',
   'In a digital age where first impressions are everything, investing in top-tier video content is a ' +
-  'necessity for sellers looking to stand out in the bustling New York market, ultimately attracting ' +
-  'discerning buyers and maximizing property value.'
+  'necessity for sellers looking to stand out across Bergen, Hudson and Essex County, ultimately ' +
+  'attracting discerning buyers and maximizing property value.'
 ];
 
 /* ============================================================
@@ -583,24 +638,35 @@ function pgAbout(n) {
       '<div class="tb c2"><h4>We <b>Gather Info Directly</b><br>from the Buyer</h4></div>' +
     '</div>';
   return P.page({ deck:DECK, n, of:OF, site:state.site,
-    title:'About Our Team', body });
+    title:'Our Team', body });
 }
 
 /* The in-house marketing & design division. Static: these are the people who
    produce the work regardless of which agent is listing the home. */
 function pgStudio(n) {
+  /* id, name, title, panel colour, and which side of its photo the panel sits
+     on — 'r' puts the panel left of the photo and right-aligns its text. */
   const crew = [
-    ['ilin-graves',        'Ilin Graves-Stowe',  'Lead Graphic Designer'],
-    ['sydney-manno',       'Sydney Manno',       'Digital Marketing &amp; Social Media Specialist'],
-    ['matthew-bloomfield', 'Matthew Bloomfield', 'Creative Design Assistant'],
-    ['eric-elfstrom',      'Eric Elfstrom',      'Photographer &amp; Videographer']
+    ['ilin-graves',        'Ilin Graves-Stowe',  'Lead Graphic Designer',                        'n1', 'l'],
+    ['sydney-manno',       'Sydney Manno',       'Digital Marketing &amp; Social Media Specialist','n2', 'r'],
+    ['matthew-bloomfield', 'Matthew Bloomfield', 'Creative Design Assistant',                    'n3', 'r'],
+    ['eric-elfstrom',      'Eric Elfstrom',      'Photographer &amp; Videographer',              'n4', 'l']
   ];
+  const photo = (id, i) =>
+    '<div class="cell ph" data-pos="crew' + i + '">' +
+      '<img src="../../assets/team/' + id + '.jpg" alt="" style="object-position:' +
+        posFor('crew' + i).x + '% ' + posFor('crew' + i).y + '%"></div>';
+  const label = (nm, tt, tone, side) =>
+    '<div class="cell lab ' + tone + (side === 'r' ? ' r' : '') + '">' +
+      '<div class="nm">' + nm + '</div><div class="tt">' + tt + '</div></div>';
+  const member = (c, i) => {
+    const [id, nm, tt, tone, side] = c;
+    return side === 'r'
+      ? label(nm, tt, tone, side) + photo(id, i)   // panel first, photo outboard
+      : photo(id, i) + label(nm, tt, tone, side);
+  };
   const body =
-    '<div class="crew">' + crew.map(([id, nm, tt], i) =>
-      '<div class="c"><div class="ph" data-pos="crew' + i + '">' +
-        '<img src="../../assets/team/' + id + '.jpg" alt="" style="object-position:' +
-          posFor('crew' + i).x + '% ' + posFor('crew' + i).y + '%"></div>' +
-      '<div class="nm">' + nm + '</div><div class="tt">' + tt + '</div></div>').join('') + '</div>' +
+    '<div class="crew">' + crew.map(member).join('') + '</div>' +
     '<div class="dline"><b>In-House</b> Design Team</div>' +
     '<div class="about-copy">Based in Boulder, Colorado, the GVC Team&rsquo;s Marketing &amp; Design ' +
     'division is the <b>creative force behind the brand</b>, delivering <b>high-impact visual ' +
@@ -624,7 +690,7 @@ function pgStudio(n) {
         'its absolute best.</p></div>' +
     '</div>';
   return P.page({ deck:DECK, n, of:OF, site:state.site,
-    title:'About Marketing', body });
+    title:'Marketing', body });
 }
 
 function pgProperty(n) {
@@ -686,24 +752,25 @@ function pgComps(n) {
     title:'Comparable Sales', body });
 }
 
-/* Only the three prices come from the panel. The strategy/risk pairs and the
-   framing copy are fixed — they are the same argument on every listing. */
+/* The three prices and which band is recommended come from the panel. The
+   strategy/risk pairs are fixed — the same argument on every listing. */
+const BANDS = [
+  ['low',  'Low Range',  'priceLow',
+   'Peak interest for a possible bidding war and sell quick', 'Leave money on the table'],
+  ['mid',  'Mid Range',  'priceMid',
+   'Highest chance for multiple offers and quicker sale', 'Low risk'],
+  ['high', 'High Range', 'priceHigh',
+   'Possibly get more money', 'Increased time it takes to sell or significant price drop']
+];
+
 function pgStrategy(n) {
-  const BANDS = [
-    ['Low Range', 'priceLow', false,
-     'Peak interest for a possible bidding war and sell quick', 'Leave money on the table'],
-    ['Mid Range', 'priceMid', true,
-     'Highest chance for multiple offers and quicker sale', 'Low risk'],
-    ['High Range', 'priceHigh', false,
-     'Possibly get more money', 'Increased time it takes to sell or significant price drop']
-  ];
   const body =
     '<div class="lede" style="text-align:center;max-width:none">A home priced right will attract a ' +
     'greater number of interested buyers.</div>' +
     '<div class="eval">After a personal consultation and a thorough assessment of your home, we will ' +
     'provide you with our expert evaluation of its value.</div>' +
-    '<div class="bands">' + BANDS.map(([lab, key, mid, strat, risk]) =>
-      '<div class="band' + (mid ? ' mid' : '') + '">' +
+    '<div class="bands">' + BANDS.map(([id, lab, key, strat, risk]) =>
+      '<div class="band' + (state.recBand === id ? ' mid' : '') + '">' +
         '<div class="bl">' + lab + '</div>' +
         '<div class="bv">' + (state[key] ? P.money(state[key]) : '$ —') + '</div>' +
         '<div class="bsr">' +
@@ -736,9 +803,9 @@ function pgPlan(n) {
       if (!g) { g = { name: r[1], items: [] }; groups.push(g); }
       g.items.push(r[2] + (r[3] ? ' — ' + r[3] : ''));
     });
-    return '<div class="ph3"><div class="ph3-h">' + phase + '</div>' +
+    return '<div class="ph3"><div class="ph3-h">' + phase + '</div><div class="grps">' +
       groups.map(g => '<div class="grp"><div class="grp-t">' + g.name + '</div><ul>' +
-        g.items.map(t => '<li>' + t + '</li>').join('') + '</ul></div>').join('') + '</div>';
+        g.items.map(t => '<li>' + t + '</li>').join('') + '</ul></div>').join('') + '</div></div>';
   };
   const body = '<div class="plan3">' + phases.map(col).join('') + '</div>';
   return P.page({ deck:DECK, n, of:OF, site:state.site,
@@ -749,8 +816,6 @@ function pgPlan(n) {
    be handed over and ticked off, so nothing here is editor-driven. */
 function pgPrep(n) {
   const body =
-    '<div class="lede">The work below is what turns a good listing into a fast one. None of it is ' +
-    'expensive; all of it shows up in photographs and in showings.</div>' +
     '<div class="prep">' + PREP.map(([name, ic, items]) =>
       '<div class="pgrp"><div class="pgrp-h">' + (window.icon ? window.icon(ic, 'ci') : '') +
         '<span>' + name + '</span></div><ul>' +
@@ -793,28 +858,55 @@ function pgVideos(n) {
     title:'Professional Videos', body });
 }
 
+/* Closing page. Three things that happen next, then the agents as proper
+   cards, then one tidy footer block. The headshots are transparent cutouts,
+   so each sits on its own light panel — that is what carries the drop shadow
+   and the name banner. A shadow on the bare cutout draws an empty rectangle. */
+const NEXT_STEPS = [
+  ['Agree on a number', 'We review the comparables together and settle on the range we go out at.'],
+  ['Book the shoot',    'Photography, floor plan and film scheduled, usually within the first week.'],
+  ['Go to market',      'Elliman, StreetEasy and the full syndication list on launch day.']
+];
+
 function pgContact(n) {
-  const links = pairs(DEFAULT_LINKS), social = pairs(DEFAULT_SOCIAL);
-  const list = arr => arr.map(([k, v]) =>
-    '<span><span class="lk">' + esc(k) + '</span><span class="lv">' + esc(v) + '</span></span>').join('');
-  const list2 = agents();
-  const cards = list2.length
-    ? '<div class="ag-row">' + list2.map(a =>
-        '<div class="ag-c"><div class="shot"><img src="' + headshotFor(a) + '" alt="">' +
-          '<div class="band"><div class="bnm">' + esc(a.name) + '</div></div></div>' +
+  const list = agents();
+  const cards = list.length
+    ? '<div class="ag-row">' + list.map(a =>
+        '<div class="ag-c">' +
+          '<div class="shot"><img src="' + headshotFor(a) + '" alt="">' +
+            '<div class="band"><div class="bnm">' + esc(a.name) + '</div></div>' +
+          '</div>' +
           '<div class="tt">' + esc(a.title) + '</div>' +
-          '<div class="ct">' + [a.phone, a.email].filter(Boolean).map(esc).join('<br>') + '</div>' +
+          '<div class="ct">' +
+            (a.phone ? '<span>' + esc(a.phone) + '</span>' : '') +
+            (a.email ? '<span>' + esc(a.email) + '</span>' : '') +
+          '</div>' +
         '</div>').join('') + '</div>'
-    : '<div class="ag-row"><div class="ag-c"><div class="shot"><div class="empty-note">Pick an agent<br>in the Agents panel</div></div></div></div>';
+    : '<div class="ag-row"><div class="ag-c"><div class="shot">' +
+      '<div class="empty-note">Pick an agent<br>in the Agents panel</div></div></div></div>';
+
+  const linkCol = (heading, arr) =>
+    '<div class="lcol"><div class="lcol-t">' + heading + '</div>' + arr.map(([k, v]) =>
+      '<div class="lrow"><span class="lk">' + esc(k) + '</span>' +
+      '<span class="lv">' + esc(v) + '</span></div>').join('') + '</div>';
+
+  const site = 'https://' + String(state.site || 'gvcrealestateteam.com').replace(/^https?:\/\//, '');
+  const qr = qrSvg(site);
+
   const body =
-    '<div class="lede">If this reads right to you, the next step is simple: we agree on a number, ' +
-    'we book the shoot, and we are on the market inside two weeks.</div>' +
+    '<div class="steps3">' + NEXT_STEPS.map(([t, d], i) =>
+      '<div class="s"><div class="sn">' + String(i + 1).padStart(2, '0') + '</div>' +
+      '<div class="st">' + t + '</div><div class="sd">' + d + '</div></div>').join('') + '</div>' +
     cards +
     '<div class="contact-foot">' +
-      '<div class="linkgrp"><div class="linkgrp-t">Social</div><div class="links">' + list(social) + '</div></div>' +
-      '<div class="linkgrp"><div class="linkgrp-t">Links</div><div class="links">' + list(links) + '</div></div>' +
-      '<div class="states">Licensed in New York &middot; New Jersey &middot; Florida</div>' +
-    '</div>';
+      '<div class="lcols">' +
+        linkCol('Social', pairs(DEFAULT_SOCIAL)) +
+        linkCol('Links', pairs(DEFAULT_LINKS)) +
+      '</div>' +
+      (qr ? '<div class="cf-qr"><div class="qbox">' + qr + '</div>' +
+            '<div class="qcap">Our team site</div></div>' : '') +
+    '</div>' +
+    '<div class="states"><span>New York</span><span>New Jersey</span><span>Florida</span></div>';
   return P.page({ deck:DECK, n, of:OF, site:state.site, reversed:true,
     title:'Next Steps', body });
 }
@@ -928,10 +1020,24 @@ function loadPreview() {
   state.pos = {};
   state.map = null;
   document.querySelectorAll('[data-f]').forEach(el => { el.value = state[el.dataset.f] || ''; });
-  renderComps(); paintRoster(); paintMap(); redraw();
+  renderComps(); paintRoster(); paintRec(); paintMap(); redraw();
 }
 
-let paintRoster = () => {};
+let paintRoster = () => {}, paintRec = () => {};
+
+/* Which of the three ranges carries the star. Returns a repaint function so
+   the sample loader can re-sync the buttons with state. */
+function wireRecPick() {
+  const host = document.getElementById('recPick');
+  const btns = [...host.querySelectorAll('button')];
+  const paint = () => btns.forEach(b => b.classList.toggle('on', b.dataset.rec === state.recBand));
+  btns.forEach(b => b.addEventListener('click', () => {
+    state.recBand = b.dataset.rec;
+    paint(); redraw();
+  }));
+  paint();
+  return paint;
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   bindFields();
@@ -953,6 +1059,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderComps(); redraw();
   });
   document.getElementById('btnSample').addEventListener('click', loadPreview);
+  paintRec = wireRecPick();
 
   builder = Builder.init({
     pages: PAGES.length,
