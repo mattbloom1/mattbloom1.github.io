@@ -478,7 +478,7 @@ body.bleed .crop{display:block;}
     <div class="sec-in">
       <div class="field"><label>Ownership</label>
         <div class="seg" id="ownSeg">
-          <button data-v="co-op">Co-op</button><button data-v="condo">Condo</button>
+          <button data-v="co-op">Co-op</button><button data-v="condo">Condo</button><button data-v="new-con">New Construction</button><button data-v="none">None</button>
         </div>
       </div>
       <div class="f-row">
@@ -708,10 +708,15 @@ function unitDisplay(u){
   if(!u) return '';
   return (/^[\w-]{1,7}$/.test(u.trim()) ? 'Residence ' + u.trim() : u.trim());
 }
-function ownLabel(){ return state.ownership === 'condo' ? 'CONDO' : 'CO-OP'; }
+function ownLabel(){
+  return {'co-op':'CO-OP', 'condo':'CONDO', 'new-con':'NEW CONSTRUCTION', 'none':''}[state.ownership] ?? 'CO-OP';
+}
 function chipHtml(){
   const place = state.neighborhood || state.borough || '';
-  return `<span class="b-own">${ownLabel()}${place?`<span class="dotsep">·</span>${esc(place).toUpperCase()}`:''}</span>`;
+  const lab = ownLabel();
+  if(!lab && !place) return '';
+  const sep = (lab && place) ? `<span class="dotsep">·</span>` : '';
+  return `<span class="b-own">${lab}${sep}${place?esc(place).toUpperCase():''}</span>`;
 }
 function statCells(){
   const cells = [];
@@ -846,7 +851,7 @@ function renderBack(){
   const carryHtml = carry ? `
     <div class="lg-total">
       <div class="lg-row"><span class="lg-lab">Est. Monthly Carrying</span><span class="lg-val">${fmtMoney(carry)}</span></div>
-      <div class="lg-foot">${state.ownership==='condo'?'Common charges, taxes & assessments':'Maintenance & assessments'}; excludes mortgage financing.</div>
+      <div class="lg-foot">${state.ownership==='co-op'?'Maintenance & assessments':'Common charges, taxes & assessments'}; excludes mortgage financing.</div>
     </div>` : '';
 
   const fp = state.floorplan
@@ -1179,9 +1184,9 @@ function syncBleed(){
 }
 function syncOwnership(){
   $$('#ownSeg button').forEach(b=>b.classList.toggle('on', b.dataset.v===state.ownership));
-  document.body.classList.toggle('is-condo', state.ownership==='condo');
+  document.body.classList.toggle('is-condo', state.ownership!=='co-op');
   $$('.coop-only').forEach(e=>e.style.display = state.ownership==='co-op'?'':'none');
-  $$('.condo-only').forEach(e=>e.style.display = state.ownership==='condo'?'':'none');
+  $$('.condo-only').forEach(e=>e.style.display = state.ownership==='co-op'?'none':'');
 }
 document.addEventListener('input', e=>{
   const f = e.target.dataset && e.target.dataset.field;
