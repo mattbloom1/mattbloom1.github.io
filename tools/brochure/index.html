@@ -171,18 +171,22 @@
 .ag-qr .qbox svg{width:100%;height:100%;display:block;}
 .ag-qr .qcap{margin-top:.06in;font:800 5.6pt var(--sans);letter-spacing:.1em;
   text-transform:uppercase;color:rgba(229,229,229,.6);}
-.ag-cards{flex:1;min-height:0;display:flex;gap:.45in;margin-top:.42in;justify-content:center;}
-/* max-width keeps a lone agent's square headshot from filling the page */
-.ag-card{flex:1;min-width:0;max-width:3.45in;display:flex;flex-direction:column;text-align:center;}
-/* headshots are transparent cutouts, so no panel behind them — the figure
-   stands straight on the navy */
-.ag-shot{width:100%;aspect-ratio:1/1;position:relative;overflow:hidden;}
-.ag-shot img{width:100%;height:100%;object-fit:cover;display:block;}
-.ag-shot .mono-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.22;background:rgba(255,255,255,.07);}
-.ag-shot .mono-ph img{height:38%;width:auto;object-fit:contain;}
-.ag-name{font:700 19pt/1.15 var(--serif);color:#fff;margin-top:.2in;}
-.ag-role{font:800 7pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--sky);margin-top:.07in;line-height:1.5;}
-.ag-contact{font:300 9pt/1.65 var(--body);color:var(--ow);margin-top:.11in;}
+/* agent cards — identical to the Seller Pitch & CMA and Buyer Package
+   closing pages: the cutout sits on a light panel so the shadow and the
+   name band have something solid to sit against. */
+.ag-row{flex:1;min-height:0;display:flex;gap:.45in;margin-top:.42in;justify-content:center;}
+.ag-c{flex:0 1 2.5in;max-width:2.5in;text-align:center;}
+.ag-c .shot{position:relative;width:100%;aspect-ratio:1/1;overflow:hidden;
+  background:linear-gradient(#F4F3EF,#E4E2DC);box-shadow:0 .14in .3in rgba(0,0,0,.4);}
+.ag-c .shot img{width:100%;height:100%;display:block;
+  object-fit:contain;object-position:50% 100%;}
+.ag-c .shot .band{position:absolute;left:0;right:0;bottom:0;padding:.1in .15in;
+  background:rgba(0,39,58,.9);text-align:center;}
+.ag-c .shot .band .bnm{font:700 13pt/1.15 var(--serif);color:#fff;}
+.ag-c .tt{margin-top:.13in;font:800 6.8pt/1.5 var(--sans);letter-spacing:.14em;
+  text-transform:uppercase;color:var(--sky);}
+.ag-c .ct{margin-top:.07in;display:flex;flex-direction:column;align-items:center;gap:.02in;}
+.ag-c .ct span{font:300 9pt/1.5 var(--body);color:var(--ow);}
 .ag-bio{flex:none;max-height:1.5in;overflow:hidden;font:300 9.5pt/15pt var(--body);
   color:var(--ow);margin-top:.34in;padding-top:.26in;border-top:.75pt solid rgba(83,199,220,.35);text-align:center;}
 .ag-foot{flex:none;margin-top:.3in;display:flex;align-items:center;justify-content:space-between;gap:.3in;}
@@ -831,19 +835,20 @@ function renderAgent(page) {
         (qr ? '<div class="ag-qr"><div class="qbox">' + qr + '</div>' +
               '<div class="qcap">Our team site</div></div>' : '') +
       '</div>' +
-      '<div class="ag-cards">' +
+      '<div class="ag-row">' +
         (list.length ? list.map(a => {
           const shot = headshotFor(a);
-          return '<div class="ag-card">' +
-            '<div class="ag-shot">' +
-              (shot ? '<img src="' + shot + '" alt="">'
-                    : '<div class="mono-ph"><img src="' + MONO + '" alt=""></div>') +
+          return '<div class="ag-c">' +
+            '<div class="shot">' +
+              (shot ? '<img src="' + shot + '" alt="">' : '') +
+              '<div class="band"><div class="bnm">' + escapeHtml(a.name) + '</div></div>' +
             '</div>' +
-            '<div class="ag-name">' + escapeHtml(a.name) + '</div>' +
-            '<div class="ag-role">' + escapeHtml(a.title) + '</div>' +
-            '<div class="ag-contact">' + [a.phone, a.email].filter(Boolean).map(escapeHtml).join('<br>') + '</div>' +
+            '<div class="tt">' + escapeHtml(a.title) + '</div>' +
+            '<div class="ct">' +
+              [a.phone, a.email].filter(Boolean).map(c => '<span>' + escapeHtml(c) + '</span>').join('') +
+            '</div>' +
           '</div>';
-        }).join('') : '<div class="ag-card"><div class="ag-shot">' +
+        }).join('') : '<div class="ag-c"><div class="shot">' +
             '<div class="empty-note">Pick an agent<br>in the Agents panel</div></div></div>') +
       '</div>' +
       '<div class="ag-bio">' + escapeHtml(state.agentBio) + '</div>' +

@@ -80,7 +80,23 @@ table.tbl tr.total td{border-top:1.2pt solid var(--navy);border-bottom:0;
 .cx-qr .qcap{margin-top:.06in;font:800 5.6pt var(--sans);letter-spacing:.1em;
   text-transform:uppercase;color:rgba(229,229,229,.6);}
 
-.pg[data-key="next"] .ag-row{justify-content:center;}
+/* agent cards — identical to the Seller Pitch & CMA's closing page: the
+   cutout sits on a light panel so the shadow and the name band have
+   something solid to sit against. This overrides pitch.css's shared
+   .ag-c (plain photo + name below), same as the seller deck does. */
+.pg[data-key="next"] .ag-row{gap:.55in;flex:none;justify-content:center;}
+.ag-c{flex:0 1 2.5in;max-width:2.5in;text-align:center;}
+.ag-c .shot{position:relative;width:100%;aspect-ratio:1/1;overflow:hidden;
+  background:linear-gradient(#F4F3EF,#E4E2DC);box-shadow:0 .14in .3in rgba(0,0,0,.4);}
+.ag-c .shot img{width:100%;height:100%;display:block;
+  object-fit:contain;object-position:50% 100%;}
+.ag-c .shot .band{position:absolute;left:0;right:0;bottom:0;padding:.1in .15in;
+  background:rgba(0,39,58,.9);text-align:center;}
+.ag-c .shot .band .bnm{font:700 13pt/1.15 var(--serif);color:#fff;}
+.ag-c .tt{margin-top:.13in;font:800 6.8pt/1.5 var(--sans);letter-spacing:.14em;
+  text-transform:uppercase;color:var(--sky);}
+.ag-c .ct{margin-top:.07in;display:flex;flex-direction:column;align-items:center;gap:.02in;}
+.ag-c .ct span{font:300 9pt/1.5 var(--body);color:var(--ow);}
 
 .nx-foot{flex:none;padding-top:.24in;border-top:1pt solid var(--rule-rev);}
 .nx-foot-t{font:800 7pt var(--sans);letter-spacing:.18em;text-transform:uppercase;
@@ -504,6 +520,22 @@ const NX_STATES = [
 ];
 
 function pgNext(n) {
+  const list = agents();
+  const cards = list.length
+    ? '<div class="ag-row">' + list.map(a =>
+        '<div class="ag-c">' +
+          '<div class="shot"><img src="' + headshotFor(a) + '" alt="">' +
+            '<div class="band"><div class="bnm">' + esc(a.name) + '</div></div>' +
+          '</div>' +
+          '<div class="tt">' + esc(a.title) + '</div>' +
+          '<div class="ct">' +
+            (a.phone ? '<span>' + esc(a.phone) + '</span>' : '') +
+            (a.email ? '<span>' + esc(a.email) + '</span>' : '') +
+          '</div>' +
+        '</div>').join('') + '</div>'
+    : '<div class="ag-row"><div class="ag-c"><div class="shot">' +
+      '<div class="empty-note">Pick an agent<br>in the Agents panel</div></div></div></div>';
+
   const ls = pairs(state.links);
   const site = 'https://' + String(state.site || 'gvcrealestateteam.com').replace(/^https?:\/\//, '');
   const qr = qrSvg(site);
@@ -513,7 +545,7 @@ function pgNext(n) {
       (qr ? '<div class="cx-qr"><div class="qbox">' + qr + '</div>' +
             '<div class="qcap">Our team site</div></div>' : '') +
     '</div>' +
-    P.agentCards(agents(), headshotFor) +
+    cards +
     '<div class="nx-foot"><div class="nx-foot-t">Links</div><div class="nx-links">' +
       ls.map(([k, v]) => {
         const isSocial = SOCIAL_PLATFORMS.indexOf(String(k).toLowerCase()) > -1;

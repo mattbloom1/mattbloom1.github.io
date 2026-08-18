@@ -28,7 +28,8 @@
 
 /* ---- shared: the reference deck's three-up colour blocks ---- */
 .tri{display:grid;grid-template-columns:repeat(3,1fr);gap:0;}
-.tri .tb{padding:.2in .18in;min-width:0;display:flex;flex-direction:column;justify-content:center;}
+.tri .tb{padding:.2in .18in;min-width:0;display:flex;flex-direction:column;justify-content:center;
+  align-items:center;text-align:center;}
 .tri .tb.c1{background:var(--navy);}
 .tri .tb.c2{background:var(--sky2);}
 .tri .tb.c3{background:var(--sky);}
@@ -147,7 +148,9 @@
 /* p9 footer — follow the plan, follow along: a small QR per channel */
 .plan-social{flex:none;margin-top:.22in;padding-top:.2in;border-top:.75pt solid var(--rule);
   display:flex;justify-content:center;gap:.55in;}
-.plan-social .ps{text-align:center;}
+/* fixed, equal width regardless of label length, so the three QR squares
+   themselves stay evenly spaced and centered on the page */
+.plan-social .ps{flex:none;width:1.5in;text-align:center;}
 .plan-social .ps .qbox{width:.82in;height:.82in;margin:0 auto;background:#fff;
   border:.75pt solid var(--rule);padding:.04in;}
 .plan-social .ps .qbox svg{width:100%;height:100%;display:block;}
@@ -172,11 +175,12 @@
 /* p11 — testimonials, editorial block quotes. space-evenly, not
    space-between: between pins the first and last quote hard against the top
    and bottom edges of the text block. */
-/* the review-count badge. A flex item rather than absolutely positioned: the
-   page body clips its overflow, and a floating badge would land on top of the
-   first quote's closing mark. Sits right-aligned above the quotes. */
-.rev-badge{flex:none;align-self:flex-end;display:flex;flex-direction:column;align-items:center;
-  gap:.06in;text-align:center;background:var(--navy);padding:.18in .24in;margin-bottom:.2in;}
+/* the review-count badge sits as a corner accent — same corner-inset
+   pattern as the closing page's team-site QR — so the quotes fill the
+   whole box top to bottom instead of being pushed down by a badge row. */
+.pg[data-key="reviews"] .pg-body{position:relative;}
+.rev-badge{position:absolute;top:0;right:0;display:flex;flex-direction:column;align-items:center;
+  gap:.06in;text-align:center;background:var(--navy);padding:.18in .24in;}
 .rev-badge .rb-qr{width:.62in;height:.62in;background:#fff;padding:.035in;margin-bottom:.04in;}
 .rev-badge .rb-qr svg{width:100%;height:100%;display:block;}
 .rev-badge .rb-stars{color:var(--sky);font-size:9.5pt;line-height:1;letter-spacing:.06em;}
@@ -186,8 +190,10 @@
 
 .quotes{display:flex;flex-direction:column;justify-content:space-evenly;gap:.26in;flex:1;min-height:0;}
 /* border-left:0 overrides the shared rule in pitch.css — the quote is framed
-   by the pair of marks now, not by a rule down the side. */
+   by the pair of marks now, not by a rule down the side. The first quote
+   gets extra right padding so its lines wrap clear of the corner badge. */
 .quote{flex:none;position:relative;border-left:0;padding-left:.52in;padding-right:.6in;}
+.quotes .quote:first-child{padding-right:1.7in;}
 .quote::before{content:'\201C';position:absolute;left:0;top:-.1in;font:700 46pt/1 var(--serif);color:var(--sky);}
 /* closing mark hangs off the end of the text block, into the right padding */
 .quote p{position:relative;margin:0;font:italic 400 15pt/23pt var(--body);color:var(--navy);}
@@ -495,9 +501,9 @@ const DEFAULT_SOCIAL = [
 /* p9 footer — one QR per channel, drawn as vector art so it stays sharp at
    any print size. label/handle are what's printed under the code. */
 const PLAN_SOCIAL = [
-  ['YouTube',  'youtube.com/@gvcrealestateteam',                 'https://youtube.com/@gvcrealestateteam'],
-  ['Instagram','@gvcrealestateteam',                             'https://instagram.com/gvcrealestateteam'],
-  ['LinkedIn', 'The GVC Real Estate Team',                       'https://www.linkedin.com/company/the-gvc-real-estate-team']
+  ['YouTube',  '@gvcrealestateteam',       'https://youtube.com/@gvcrealestateteam'],
+  ['Instagram','@gvcrealestateteam',       'https://instagram.com/gvcrealestateteam'],
+  ['LinkedIn', 'The GVC Real Estate Team', 'https://www.linkedin.com/company/the-gvc-real-estate-team']
 ];
 
 /* ------------------------------------------------------------
@@ -681,7 +687,7 @@ function pgToc(n) {
 /* Company page — entirely static, including the photo. The three co-founders
    are always named here regardless of which agents are picked for the
    listing; this page is about the firm, not about who is presenting it. */
-const FOUNDERS = ['john-gasdaska', 'tj-verdiglione', 'jonathan-conlon'];
+const FOUNDERS = ['jonathan-conlon', 'john-gasdaska', 'tj-verdiglione'];
 
 function pgAbout(n) {
   const names = FOUNDERS.map(id => { const a = window.GVC_AGENT(id); return a ? a.name : ''; }).filter(Boolean).join(' &middot; ');
