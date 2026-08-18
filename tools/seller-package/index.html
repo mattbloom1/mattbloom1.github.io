@@ -216,10 +216,23 @@
 /* ============================================================
    p13 — closing page
    ============================================================ */
-.pg[data-key="contact"] .pg-body{justify-content:space-between;}
+/* the standard title bar is dropped for this page in favour of the
+   centered "Thank You" treatment below, so the page reads as a close
+   rather than one more numbered section */
+.pg[data-key="contact"] .pg-h{display:none;}
+.pg[data-key="contact"] .pg-body{justify-content:space-between;padding-top:.5in;}
 
-/* the three things that happen next */
-.steps3{display:grid;grid-template-columns:repeat(3,1fr);gap:.42in;flex:none;}
+.cx-top{flex:none;text-align:center;margin-bottom:.32in;padding-bottom:.28in;
+  border-bottom:1pt solid var(--rule-rev);}
+.cx-top .cx-kicker{font:800 8pt var(--sans);letter-spacing:.28em;text-transform:uppercase;
+  color:var(--sky);}
+.cx-top .cx-thanks{margin-top:.1in;font:700 34pt/1.1 var(--serif);color:#fff;}
+
+/* the three things that happen next, framed as a soft glass panel so the
+   dark page gets one more layer instead of sitting flat */
+.steps3-wrap{flex:none;background:rgba(255,255,255,.05);border:1pt solid rgba(255,255,255,.12);
+  backdrop-filter:blur(6px);padding:.3in;}
+.steps3{display:grid;grid-template-columns:repeat(3,1fr);gap:.42in;}
 .steps3 .s{border-top:1.4pt solid var(--sky);padding-top:.15in;}
 .steps3 .sn{font:800 8pt var(--sans);letter-spacing:.18em;color:var(--sky);}
 .steps3 .st{margin-top:.1in;font:700 13pt/1.2 var(--serif);color:#fff;}
@@ -228,7 +241,7 @@
 /* agents. The cutout sits on a light panel so the shadow and the name band
    have something solid to sit against. */
 .pg[data-key="contact"] .ag-row{gap:.55in;flex:none;justify-content:center;}
-.ag-c{flex:0 1 2.5in;max-width:2.5in;text-align:left;}
+.ag-c{flex:0 1 2.5in;max-width:2.5in;text-align:center;}
 /* Square panel, deliberately: the cutouts' subjects are all ~1:1, so a 4:5
    portrait panel made contain letterbox by 20% and object-position:bottom
    dumped every bit of it above the head. Matching the panel to the subject
@@ -239,11 +252,11 @@
 .ag-c .shot img{width:100%;height:100%;display:block;
   object-fit:contain;object-position:50% 100%;}
 .ag-c .shot .band{position:absolute;left:0;right:0;bottom:0;padding:.1in .15in;
-  background:rgba(0,39,58,.9);}
+  background:rgba(0,39,58,.9);text-align:center;}
 .ag-c .shot .band .bnm{font:700 13pt/1.15 var(--serif);color:#fff;}
 .ag-c .tt{margin-top:.13in;font:800 6.8pt/1.5 var(--sans);letter-spacing:.14em;
   text-transform:uppercase;color:var(--sky);}
-.ag-c .ct{margin-top:.07in;display:flex;flex-direction:column;gap:.02in;}
+.ag-c .ct{margin-top:.07in;display:flex;flex-direction:column;align-items:center;gap:.02in;}
 .ag-c .ct span{font:300 9pt/1.5 var(--body);color:var(--ow);}
 
 /* footer: two link columns and the team-site QR on one baseline */
@@ -253,10 +266,15 @@
 .lcol{min-width:0;}
 .lcol-t{font:800 7pt var(--sans);letter-spacing:.18em;text-transform:uppercase;
   color:var(--sky);padding-bottom:.08in;margin-bottom:.1in;border-bottom:.75pt solid var(--rule-rev);}
-.lrow{display:flex;flex-direction:column;margin-bottom:.09in;min-width:0;}
-.lrow .lk{font:800 6.2pt var(--sans);letter-spacing:.14em;text-transform:uppercase;
+.lrow{display:flex;align-items:center;gap:.11in;margin-bottom:.09in;min-width:0;}
+/* small monogram badge — a lightweight stand-in for the platform's mark */
+.lrow .lb{flex:none;width:.26in;height:.26in;border-radius:50%;background:rgba(83,199,220,.16);
+  border:.75pt solid rgba(83,199,220,.4);display:flex;align-items:center;justify-content:center;
+  font:800 6.5pt var(--sans);letter-spacing:0;color:var(--sky);}
+.lrow .ltxt{min-width:0;}
+.lrow .lk{display:block;font:800 6.2pt var(--sans);letter-spacing:.14em;text-transform:uppercase;
   color:rgba(229,229,229,.5);}
-.lrow .lv{font:300 9pt/1.4 var(--body);color:var(--ow);
+.lrow .lv{display:block;font:300 9pt/1.4 var(--body);color:var(--ow);
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .cf-qr{flex:none;width:1in;text-align:center;}
 .cf-qr .qbox{width:1in;height:1in;background:#fff;padding:.05in;}
@@ -264,12 +282,16 @@
 .cf-qr .qcap{margin-top:.07in;font:800 6pt var(--sans);letter-spacing:.12em;
   text-transform:uppercase;color:rgba(229,229,229,.6);}
 
-/* the three states we are licensed in */
-.states{flex:none;display:flex;justify-content:center;gap:.42in;margin-top:.24in;}
-.states span{position:relative;font:800 7.5pt var(--sans);letter-spacing:.18em;
+/* the three states we are licensed in, each with its outline beneath —
+   the source art ships as flat-colour SVGs, so a full-white silhouette via
+   filter keeps every state visually consistent regardless of source colour */
+.states{flex:none;display:flex;justify-content:center;gap:.55in;margin-top:.26in;
+  padding-top:.22in;border-top:1pt solid var(--rule-rev);}
+.states .stc{text-align:center;}
+.states .stc img{display:block;margin:0 auto .08in;height:.5in;width:auto;
+  filter:brightness(0) invert(1);opacity:.28;}
+.states .stc span{font:800 7.5pt var(--sans);letter-spacing:.18em;
   text-transform:uppercase;color:rgba(229,229,229,.72);}
-.states span + span::before{content:'';position:absolute;left:-.21in;top:.035in;
-  width:.05in;height:.05in;background:var(--sky);}
 </style>
 </head>
 <body data-root="../../" data-nav="tools" data-foot="none">
@@ -634,7 +656,7 @@ const PAGES = [
   { key:'prep',    title:'Preparing Your Home' },
   { key:'reviews', title:'What Our Clients Say' },
   { key:'videos',  title:'Professional Videos' },
-  { key:'contact', title:'Next Steps' }
+  { key:'contact', title:'Thank You' }
 ];
 const OF = PAGES.length;
 
@@ -973,30 +995,44 @@ function pgContact(n) {
     : '<div class="ag-row"><div class="ag-c"><div class="shot">' +
       '<div class="empty-note">Pick an agent<br>in the Agents panel</div></div></div></div>';
 
-  const linkCol = (heading, arr) =>
+  /* the social column gets a two-letter monogram badge per platform —
+     lightweight, and it doesn't require shipping brand logo assets. The
+     plain links column stays as-is; an abbreviation of "Book a call" isn't
+     meaningful the way a platform initial is. */
+  const linkCol = (heading, arr, badges) =>
     '<div class="lcol"><div class="lcol-t">' + heading + '</div>' + arr.map(([k, v]) =>
-      '<div class="lrow"><span class="lk">' + esc(k) + '</span>' +
-      '<span class="lv">' + esc(v) + '</span></div>').join('') + '</div>';
+      '<div class="lrow">' +
+      (badges ? '<span class="lb">' + esc((k || '').slice(0, 2).toUpperCase()) + '</span>' : '') +
+      '<span class="ltxt"><span class="lk">' + esc(k) + '</span>' +
+      '<span class="lv">' + esc(v) + '</span></span></div>').join('') + '</div>';
 
   const site = 'https://' + String(state.site || 'gvcrealestateteam.com').replace(/^https?:\/\//, '');
   const qr = qrSvg(site);
 
+  const STATES = [
+    ['New York',    '../../assets/img/states/new-york.svg'],
+    ['New Jersey',  '../../assets/img/states/new-jersey.svg'],
+    ['Florida',     '../../assets/img/states/florida.svg']
+  ];
+
   const body =
-    '<div class="steps3">' + NEXT_STEPS.map(([t, d], i) =>
+    '<div class="cx-top"><div class="cx-kicker">The GVC Team</div><div class="cx-thanks">Thank You</div></div>' +
+    '<div class="steps3-wrap"><div class="steps3">' + NEXT_STEPS.map(([t, d], i) =>
       '<div class="s"><div class="sn">' + String(i + 1).padStart(2, '0') + '</div>' +
-      '<div class="st">' + t + '</div><div class="sd">' + d + '</div></div>').join('') + '</div>' +
+      '<div class="st">' + t + '</div><div class="sd">' + d + '</div></div>').join('') + '</div></div>' +
     cards +
     '<div class="contact-foot">' +
       '<div class="lcols">' +
-        linkCol('Social', pairs(DEFAULT_SOCIAL)) +
-        linkCol('Links', pairs(DEFAULT_LINKS)) +
+        linkCol('Social', pairs(DEFAULT_SOCIAL), true) +
+        linkCol('Links', pairs(DEFAULT_LINKS), false) +
       '</div>' +
       (qr ? '<div class="cf-qr"><div class="qbox">' + qr + '</div>' +
             '<div class="qcap">Our team site</div></div>' : '') +
     '</div>' +
-    '<div class="states"><span>New York</span><span>New Jersey</span><span>Florida</span></div>';
+    '<div class="states">' + STATES.map(([nm, icon]) =>
+      '<div class="stc"><img src="' + icon + '" alt=""><span>' + esc(nm) + '</span></div>').join('') + '</div>';
   return P.page({ deck:DECK, n, of:OF, site:state.site, reversed:true,
-    title:'Next Steps', body });
+    title:'Thank You', body });
 }
 
 const RENDER = {
