@@ -214,6 +214,26 @@
 .ag-c .ct span{font:300 9pt/1.5 var(--body);color:var(--ow);}
 .ag-bio{flex:none;max-height:1.5in;overflow:hidden;font:300 9.5pt/15pt var(--body);
   color:var(--ow);margin-top:.34in;padding-top:.26in;border-top:.75pt solid rgba(83,199,220,.35);text-align:center;}
+
+/* footer: two link columns, identical markup and values to the Seller
+   Pitch & CMA's and Buyer Package's closing pages — same class names, not
+   just matching styles. Not editable here (the brochure has no per-listing
+   social data), but that also means it can never drift from theirs. */
+.contact-foot{flex:none;margin-top:.34in;padding-top:.26in;border-top:1pt solid rgba(83,199,220,.35);}
+.lcols{display:grid;grid-template-columns:1fr 1fr;gap:.42in;}
+.lcol{min-width:0;}
+.lcol-t{font:800 7pt var(--sans);letter-spacing:.18em;text-transform:uppercase;
+  color:var(--sky);padding-bottom:.08in;margin-bottom:.1in;border-bottom:.75pt solid rgba(83,199,220,.35);}
+.lrow{display:flex;align-items:center;gap:.11in;margin-bottom:.09in;min-width:0;}
+.lrow .lb{flex:none;width:.26in;height:.26in;border-radius:50%;background:rgba(83,199,220,.16);
+  border:.75pt solid rgba(83,199,220,.4);display:flex;align-items:center;justify-content:center;
+  font:800 6.5pt var(--sans);letter-spacing:0;color:var(--sky);}
+.lrow .ltxt{min-width:0;}
+.lrow .lk{display:block;font:800 6.2pt var(--sans);letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(229,229,229,.5);}
+.lrow .lv{display:block;font:300 9pt/1.4 var(--body);color:var(--ow);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
 /* margin-bottom keeps clear of the page-footer's monogram, which floats up
    out of its own slim bar — same fix as the Seller Pitch and Buyer Package. */
 .ag-states{flex:none;display:flex;justify-content:center;gap:.55in;margin-top:.26in;margin-bottom:.34in;
@@ -856,6 +876,20 @@ const AG_STATES = [
   ['New Jersey', '../../assets/img/states/new-jersey.svg'],
   ['Florida',    '../../assets/img/states/florida.svg']
 ];
+/* identical content and order to the Seller Pitch & CMA and Buyer
+   Package's closing-page footer — not editable here (the brochure has
+   no per-listing social data), so it can't drift from theirs. */
+const AG_SOCIAL = [
+  ['Instagram', '@gvcrealestateteam'],
+  ['YouTube',   '@gvcrealestateteam'],
+  ['LinkedIn',  'The GVC Real Estate Team']
+];
+const AG_LINKS = [
+  ['Our listings',   'gvcrealestateteam.com/listings'],
+  ['Douglas Elliman','elliman.com'],
+  ['Market reports', 'gvcrealestateteam.com/market'],
+  ['Book a call',    'gvcrealestateteam.com/contact']
+];
 
 /* Closing page — the last page in the deck, styled like the Seller Pitch &
    CMA and Buyer Package's final page. */
@@ -888,6 +922,15 @@ function renderAgent(page, n, of) {
               '<div class="empty-note">Pick an agent<br>in the Agents panel</div></div></div>') +
         '</div>' +
         '<div class="ag-bio">' + escapeHtml(state.agentBio) + '</div>' +
+        '<div class="contact-foot"><div class="lcols">' +
+          '<div class="lcol"><div class="lcol-t">Social</div>' + AG_SOCIAL.map(([k, v]) =>
+            '<div class="lrow"><span class="lb">' + escapeHtml(k.slice(0, 2).toUpperCase()) + '</span>' +
+            '<span class="ltxt"><span class="lk">' + escapeHtml(k) + '</span>' +
+            '<span class="lv">' + escapeHtml(v) + '</span></span></div>').join('') + '</div>' +
+          '<div class="lcol"><div class="lcol-t">Links</div>' + AG_LINKS.map(([k, v]) =>
+            '<div class="lrow"><span class="ltxt"><span class="lk">' + escapeHtml(k) + '</span>' +
+            '<span class="lv">' + escapeHtml(v) + '</span></span></div>').join('') + '</div>' +
+        '</div></div>' +
         '<div class="ag-states">' + AG_STATES.map(([nm, icon]) =>
           '<div class="stc"><img src="' + icon + '" alt=""><span>' + escapeHtml(nm) + '</span></div>').join('') + '</div>' +
       '</div>' +

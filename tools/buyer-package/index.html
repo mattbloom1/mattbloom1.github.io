@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="../../assets/logos/apple-touch-icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Nunito+Sans:opsz,wght@6..12,200..1000&family=Playfair+Display:ital,wght@0,400..800;1,400..800&family=Raleway:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=JetBrains+Mono&family=Nunito+Sans:opsz,wght@6..12,200..1000&family=Playfair+Display:ital,wght@0,400..800;1,400..800&family=Raleway:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/css/tokens.css">
 <link rel="stylesheet" href="../../assets/css/base.css">
 <link rel="stylesheet" href="../../assets/css/builder.css">
@@ -98,18 +98,22 @@ table.tbl tr.total td{border-top:1.2pt solid var(--navy);border-bottom:0;
 .ag-c .ct{margin-top:.07in;display:flex;flex-direction:column;align-items:center;gap:.02in;}
 .ag-c .ct span{font:300 9pt/1.5 var(--body);color:var(--ow);}
 
-.nx-foot{flex:none;padding-top:.26in;border-top:1pt solid var(--rule-rev);}
-.nx-foot-t{font:800 7pt var(--sans);letter-spacing:.18em;text-transform:uppercase;
-  color:var(--sky);padding-bottom:.08in;margin-bottom:.14in;border-bottom:.75pt solid var(--rule-rev);}
-.nx-links{display:grid;grid-template-columns:1fr 1fr;gap:.1in .42in;}
-.nx-row{display:flex;align-items:center;gap:.11in;min-width:0;}
-.nx-row .lb{flex:none;width:.26in;height:.26in;border-radius:50%;background:rgba(83,199,220,.16);
+/* footer: two link columns, identical markup and values to the Seller
+   Pitch & CMA's closing page — same class names, not just matching styles,
+   so the two can never drift apart again. */
+.contact-foot{flex:none;padding-top:.26in;border-top:1pt solid var(--rule-rev);}
+.lcols{display:grid;grid-template-columns:1fr 1fr;gap:.42in;}
+.lcol{min-width:0;}
+.lcol-t{font:800 7pt var(--sans);letter-spacing:.18em;text-transform:uppercase;
+  color:var(--sky);padding-bottom:.08in;margin-bottom:.1in;border-bottom:.75pt solid var(--rule-rev);}
+.lrow{display:flex;align-items:center;gap:.11in;margin-bottom:.09in;min-width:0;}
+.lrow .lb{flex:none;width:.26in;height:.26in;border-radius:50%;background:rgba(83,199,220,.16);
   border:.75pt solid rgba(83,199,220,.4);display:flex;align-items:center;justify-content:center;
   font:800 6.5pt var(--sans);letter-spacing:0;color:var(--sky);}
-.nx-row .ltxt{min-width:0;}
-.nx-row .lk{display:block;font:800 6.2pt var(--sans);letter-spacing:.14em;text-transform:uppercase;
+.lrow .ltxt{min-width:0;}
+.lrow .lk{display:block;font:800 6.2pt var(--sans);letter-spacing:.14em;text-transform:uppercase;
   color:rgba(229,229,229,.5);}
-.nx-row .lv{display:block;font:300 9pt/1.4 var(--body);color:var(--ow);
+.lrow .lv{display:block;font:300 9pt/1.4 var(--body);color:var(--ow);
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 
 /* the three states we are licensed in, matching the Seller Pitch and
@@ -196,9 +200,9 @@ table.tbl tr.total td{border-top:1.2pt solid var(--navy);border-bottom:0;
       </details>
 
       <details class="ed-sec">
-        <summary>Useful links <span class="hint">page 9</span></summary>
+        <summary>Social &amp; links <span class="hint">page 9</span></summary>
         <div class="sec-in">
-          <div class="field"><label>Links <span style="text-transform:none;letter-spacing:0">(one per line: Label | value)</span></label>
+          <div class="field"><label>Social &amp; links <span style="text-transform:none;letter-spacing:0">(one per line: Label | value — Instagram, YouTube and LinkedIn go in the Social column)</span></label>
             <textarea data-f="links" rows="6"></textarea></div>
           <div class="warn" id="warnLinks" hidden></div>
         </div>
@@ -281,12 +285,16 @@ const DEFAULT_COSTS = [
   'Managing agent / board fees | 1500'
 ].join('\n');
 
+/* Same default content as the Seller Pitch & CMA's closing-page footer,
+   social entries first — kept in one editable field, but split into the
+   same Social/Links columns as the seller deck at render time. */
 const DEFAULT_LINKS = [
-  'Our listings | gvcrealestateteam.com/listings',
-  'Mortgage calculator | matthewgvc.github.io/tools/calculator/',
   'Instagram | @gvcrealestateteam',
+  'YouTube | @gvcrealestateteam',
+  'LinkedIn | The GVC Real Estate Team',
+  'Our listings | gvcrealestateteam.com/listings',
   'Douglas Elliman | elliman.com',
-  'Neighborhood guides | gvcrealestateteam.com/areas',
+  'Market reports | gvcrealestateteam.com/market',
   'Book a call | gvcrealestateteam.com/contact'
 ].join('\n');
 
@@ -536,7 +544,17 @@ function pgNext(n) {
     : '<div class="ag-row"><div class="ag-c"><div class="shot">' +
       '<div class="empty-note">Pick an agent<br>in the Agents panel</div></div></div></div>';
 
+  /* split the one editable field into Social/Links, same rule and same
+     column markup as the Seller Pitch & CMA's closing page. */
   const ls = pairs(state.links);
+  const isSocial = ([k]) => SOCIAL_PLATFORMS.indexOf(String(k).toLowerCase()) > -1;
+  const linkCol = (heading, arr, badges) =>
+    '<div class="lcol"><div class="lcol-t">' + heading + '</div>' + arr.map(([k, v]) =>
+      '<div class="lrow">' +
+      (badges ? '<span class="lb">' + esc((k || '').slice(0, 2).toUpperCase()) + '</span>' : '') +
+      '<span class="ltxt"><span class="lk">' + esc(k) + '</span>' +
+      '<span class="lv">' + esc(v) + '</span></span></div>').join('') + '</div>';
+
   const site = 'https://' + String(state.site || 'gvcrealestateteam.com').replace(/^https?:\/\//, '');
   const qr = qrSvg(site);
   const body =
@@ -546,14 +564,9 @@ function pgNext(n) {
             '<div class="qcap">Our team site</div></div>' : '') +
     '</div>' +
     cards +
-    '<div class="nx-foot"><div class="nx-foot-t">Links</div><div class="nx-links">' +
-      ls.map(([k, v]) => {
-        const isSocial = SOCIAL_PLATFORMS.indexOf(String(k).toLowerCase()) > -1;
-        return '<div class="nx-row">' +
-          (isSocial ? '<span class="lb">' + esc(k.slice(0, 2).toUpperCase()) + '</span>' : '') +
-          '<span class="ltxt"><span class="lk">' + esc(k) + '</span><span class="lv">' + esc(v) + '</span></span>' +
-        '</div>';
-      }).join('') +
+    '<div class="contact-foot"><div class="lcols">' +
+      linkCol('Social', ls.filter(isSocial), true) +
+      linkCol('Links', ls.filter(r => !isSocial(r)), false) +
     '</div></div>' +
     '<div class="nx-states">' + NX_STATES.map(([nm, icon]) =>
       '<div class="stc"><img src="' + icon + '" alt=""><span>' + esc(nm) + '</span></div>').join('') + '</div>';
@@ -573,7 +586,7 @@ const RULES = [
   { key:'process', box:'warnSteps',   msg:'The buying-process page is over-full: trim a step or shorten the detail lines.' },
   { key:'finance', box:'warnFinance', msg:'The financing page is over-full: shorten the lender notes.' },
   { key:'costs',   box:'warnCosts',   msg:'Closing costs run past the page: remove a line item.' },
-  { key:'next',    box:'warnLinks',   msg:'Useful links run past the page: six is the limit.' }
+  { key:'next',    box:'warnLinks',   msg:'The closing page is over-full: trim a social or link entry.' }
 ];
 function checkAll() { P.checkOverflow(document.getElementById('pages'), RULES, 'warnGeneral'); }
 
