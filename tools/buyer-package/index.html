@@ -30,6 +30,9 @@
 .why{display:flex;gap:.42in;flex:1;min-height:0;}
 .why .ph{width:2.85in;flex:none;align-self:stretch;}
 .why .txt{flex:1;min-width:0;display:flex;flex-direction:column;}
+/* copy on this page is a placeholder pending sign-off — strike it through
+   so it reads as "needs updating" rather than as finished text */
+.pg[data-key="why"] .copy{text-decoration:line-through;text-decoration-color:rgba(0,39,58,.4);}
 
 /* worksheet — blank rules the buyer fills in by hand */
 .ws{display:grid;grid-template-columns:1fr 1fr;gap:.1in .42in;}
@@ -41,17 +44,58 @@
   color:rgba(0,39,58,.55);width:1.15in;}
 .ws .wf i{flex:1;border-bottom:.75pt solid rgba(0,39,58,.35);height:.16in;display:block;}
 
+/* p5 — financing. The numbers here are illustrative until a lender signs
+   off on them, so a diagonal stamp keeps that from being missed in print. */
+.check-stamp{position:absolute;top:38%;left:50%;transform:translate(-50%,-50%) rotate(-18deg);
+  font:800 46pt/1 var(--sans);letter-spacing:.06em;color:rgba(198,50,50,.16);
+  white-space:nowrap;pointer-events:none;z-index:5;}
+
 /* costs table gets a total row */
 table.tbl tr.total td{border-top:1.2pt solid var(--navy);border-bottom:0;
   font-weight:700;padding-top:.11in;}
 .cost-note{margin-top:auto;padding-top:.2in;font:300 8.5pt/13pt var(--body);color:rgba(0,39,58,.62);}
 
-/* p10 — next steps */
-.links{display:grid;grid-template-columns:1fr 1fr;gap:.14in .42in;margin-top:auto;
-  padding-top:.26in;border-top:1pt solid var(--rule-rev);}
-.links span{font:300 9.5pt/1.5 var(--body);color:var(--ow);display:flex;align-items:baseline;gap:.1in;min-width:0;}
-.links .lk{font:800 7pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--sky);flex:none;width:.95in;}
-.links .lv{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+/* p6 — offer & negotiation: each card's contents centered rather than
+   left-set, to match the rest of the deck's card treatment */
+.pg[data-key="offer"] .card{text-align:center;}
+.pg[data-key="offer"] .card .ci{margin:0 auto .1in;}
+
+/* ============================================================
+   p9 — closing page (Team + Next Steps merged), mirrors the
+   Seller Pitch & CMA's closing page treatment.
+   ============================================================ */
+.pg[data-key="next"] .pg-h{display:none;}
+.pg[data-key="next"] .pg-body{justify-content:space-between;padding-top:.5in;}
+
+.cx-top{flex:none;text-align:center;margin-bottom:.32in;padding-bottom:.28in;
+  border-bottom:1pt solid var(--rule-rev);}
+.cx-top .cx-kicker{font:800 8pt var(--sans);letter-spacing:.28em;text-transform:uppercase;
+  color:var(--sky);}
+.cx-top .cx-thanks{margin-top:.1in;font:700 34pt/1.1 var(--serif);color:#fff;}
+
+.steps3-wrap{flex:none;background:rgba(255,255,255,.05);border:1pt solid rgba(255,255,255,.12);
+  backdrop-filter:blur(6px);padding:.3in;margin-bottom:.32in;}
+.steps3{display:grid;grid-template-columns:repeat(3,1fr);gap:.42in;}
+.steps3 .s{border-top:1.4pt solid var(--sky);padding-top:.15in;}
+.steps3 .sn{font:800 8pt var(--sans);letter-spacing:.18em;color:var(--sky);}
+.steps3 .st{margin-top:.1in;font:700 13pt/1.2 var(--serif);color:#fff;}
+.steps3 .sd{margin-top:.08in;font:300 8.8pt/13pt var(--body);color:rgba(229,229,229,.78);}
+
+.pg[data-key="next"] .ag-row{justify-content:center;}
+
+.nx-foot{flex:none;padding-top:.24in;border-top:1pt solid var(--rule-rev);}
+.nx-foot-t{font:800 7pt var(--sans);letter-spacing:.18em;text-transform:uppercase;
+  color:var(--sky);padding-bottom:.08in;margin-bottom:.14in;border-bottom:.75pt solid var(--rule-rev);}
+.nx-links{display:grid;grid-template-columns:1fr 1fr;gap:.1in .42in;}
+.nx-row{display:flex;align-items:center;gap:.11in;min-width:0;}
+.nx-row .lb{flex:none;width:.26in;height:.26in;border-radius:50%;background:rgba(83,199,220,.16);
+  border:.75pt solid rgba(83,199,220,.4);display:flex;align-items:center;justify-content:center;
+  font:800 6.5pt var(--sans);letter-spacing:0;color:var(--sky);}
+.nx-row .ltxt{min-width:0;}
+.nx-row .lk{display:block;font:800 6.2pt var(--sans);letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(229,229,229,.5);}
+.nx-row .lv{display:block;font:300 9pt/1.4 var(--body);color:var(--ow);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 </style>
 </head>
 <body data-root="../../" data-nav="tools" data-foot="none">
@@ -126,7 +170,7 @@ table.tbl tr.total td{border-top:1.2pt solid var(--navy);border-bottom:0;
       </details>
 
       <details class="ed-sec">
-        <summary>Useful links <span class="hint">page 10</span></summary>
+        <summary>Useful links <span class="hint">page 9</span></summary>
         <div class="sec-in">
           <div class="field"><label>Links <span style="text-transform:none;letter-spacing:0">(one per line: Label | value)</span></label>
             <textarea data-f="links" rows="6"></textarea></div>
@@ -135,7 +179,7 @@ table.tbl tr.total td{border-top:1.2pt solid var(--navy);border-bottom:0;
       </details>
 
       <details class="ed-sec">
-        <summary>Agents <span class="hint">max 2 &middot; pages 9 &amp; 10</span></summary>
+        <summary>Agents <span class="hint">max 2 &middot; page 9</span></summary>
         <div class="sec-in">
           <div id="rosterPick"></div>
         </div>
@@ -268,8 +312,7 @@ const PAGES = [
   { key:'criteria',title:'Your Search Criteria' },
   { key:'offer',   title:'Offer & Negotiation' },
   { key:'costs',   title:'Closing Costs' },
-  { key:'team',    title:'Your Team' },
-  { key:'next',    title:'Next Steps' }
+  { key:'next',    title:'Thank You' }
 ];
 const OF = PAGES.length;
 
@@ -304,14 +347,15 @@ function pgWhy(n) {
         '<p style="margin:0 0 .16in">Buying is the side of the transaction where good representation is ' +
         'hardest to see and matters most. Anyone can open a door. The value is in knowing which ' +
         'homes are overpriced, which buildings have problems, and how hard to push when it counts.</p>' +
-        (a ? '<p style="margin:0 0 .16in"><strong>' + esc(a.name) + '</strong> — ' + esc(a.title) +
-             ' — will handle your search personally.</p>' : '') +
+        (a ? '<p style="margin:0 0 .16in"><strong>' + esc(a.name) + '</strong>, ' + esc(a.title) +
+             ', will handle your search personally.</p>' : '') +
         '<p style="margin:0">We will tell you when a place is wrong for you, even when that costs ' +
         'us a commission. That is the whole relationship.</p>' +
       '</div>' +
       '<div class="stat-row" style="margin-top:.3in">' +
-        '<div class="stat"><div class="v">$1B+</div><div class="l">Career sales</div></div>' +
+        '<div class="stat"><div class="v">$3B+</div><div class="l">Career sales</div></div>' +
         '<div class="stat"><div class="v">3</div><div class="l">States served</div></div>' +
+        '<div class="stat"><div class="v">50+</div><div class="l">Years combined experience</div></div>' +
       '</div></div>' +
     '</div>';
   return P.page({ deck:DECK, n, of:OF, site:state.site,
@@ -333,6 +377,7 @@ function pgFinance(n) {
   const price = P.num(state.price);
   const down = price * (P.num(state.downPct) / 100);
   const body =
+    '<div class="check-stamp">CHECK ACCURACY</div>' +
     '<div class="stat-row">' +
       '<div class="stat"><div class="v">' + (price ? P.moneyShort(price) : '—') + '</div><div class="l">Target price</div></div>' +
       '<div class="stat"><div class="v">' + (down ? P.moneyShort(down) : '—') + '</div><div class="l">Down payment · ' + esc(state.downPct || '0') + '%</div></div>' +
@@ -348,7 +393,7 @@ function pgFinance(n) {
         'statements, and a list of your debts. Gather it once and the rest is quick.</p></div>' +
     '</div>' +
     (state.lender ? '<div class="copy">' + P.lines(state.lender) + '</div>' : '') +
-    '<div class="cost-note">Estimates only — principal and interest, excluding taxes, insurance and ' +
+    '<div class="cost-note">Estimates only: principal and interest, excluding taxes, insurance and ' +
     'common charges. Your lender&rsquo;s figures govern.</div>';
   return P.page({ deck:DECK, n, of:OF, site:state.site,
     title:'Financing', sub:'What you can borrow, and what it costs each month.', body });
@@ -357,7 +402,7 @@ function pgFinance(n) {
 function pgCriteria(n) {
   const field = lab => '<div class="wf"><span>' + esc(lab) + '</span><i></i></div>';
   const body =
-    '<div class="lede">Fill this in together at our first meeting — it is the brief we search against.</div>' +
+    '<div class="lede">Fill this in together at our first meeting. It is the brief we search against.</div>' +
     '<div class="ws">' +
       '<div class="wl">The essentials</div>' +
       field('Budget') + field('Timeline') + field('Bedrooms') + field('Bathrooms') +
@@ -418,38 +463,55 @@ function pgCosts(n) {
     title:'Closing Costs', sub:'What you need on hand beyond the down payment.', body });
 }
 
-function pgTeam(n) {
-  return P.page({ deck:DECK, n, of:OF, site:state.site, reversed:true,
-    title:'Your Team', sub:'', body:
-      '<div class="lede">One point of contact, backed by an in-house marketing, design and ' +
-      'operations team.</div>' + P.agentCards(agents(), headshotFor) });
-}
+/* Three things to do this week, styled the same way as the Seller Pitch's
+   closing-page steps. */
+const NEXT3 = [
+  ['Get pre-approved', 'Talk to a lender this week and get it in writing. Nothing else moves until this does.'],
+  ['Finish the worksheet', 'Lock in budget, timeline and the non-negotiables so we search against the same brief.'],
+  ['Send your first picks', 'The first three listings that catch your eye. We will tell you honestly which ones are right.']
+];
+/* platforms get the small monogram badge; a generic link like "Book a call"
+   does not, since a two-letter abbreviation of it isn't meaningful. */
+const SOCIAL_PLATFORMS = ['instagram', 'youtube', 'linkedin', 'facebook', 'tiktok', 'twitter', 'x'];
 
+/* Closing page — Team and Next Steps merged into one, styled like the
+   Seller Pitch & CMA's final page: a centered "Thank You" in place of a
+   plain title, the week's action items in a glass panel, then the team
+   and a spruced-up links footer. */
 function pgNext(n) {
   const ls = pairs(state.links);
   const body =
-    '<div class="lede">Three things to do this week: get pre-approved, finish the criteria worksheet, ' +
-    'and send us the first three listings that catch your eye. We will take it from there.</div>' +
+    '<div class="cx-top"><div class="cx-kicker">The GVC Team</div><div class="cx-thanks">Thank You</div></div>' +
+    '<div class="steps3-wrap"><div class="steps3">' + NEXT3.map(([t, d], i) =>
+      '<div class="s"><div class="sn">' + String(i + 1).padStart(2, '0') + '</div>' +
+      '<div class="st">' + esc(t) + '</div><div class="sd">' + esc(d) + '</div></div>').join('') + '</div></div>' +
     P.agentCards(agents(), headshotFor) +
-    '<div class="links">' + ls.map(([k, v]) =>
-      '<span><span class="lk">' + esc(k) + '</span><span class="lv">' + esc(v) + '</span></span>').join('') + '</div>';
+    '<div class="nx-foot"><div class="nx-foot-t">Links</div><div class="nx-links">' +
+      ls.map(([k, v]) => {
+        const isSocial = SOCIAL_PLATFORMS.indexOf(String(k).toLowerCase()) > -1;
+        return '<div class="nx-row">' +
+          (isSocial ? '<span class="lb">' + esc(k.slice(0, 2).toUpperCase()) + '</span>' : '') +
+          '<span class="ltxt"><span class="lk">' + esc(k) + '</span><span class="lv">' + esc(v) + '</span></span>' +
+        '</div>';
+      }).join('') +
+    '</div></div>';
   return P.page({ deck:DECK, n, of:OF, site:state.site, reversed:true,
-    title:'Next Steps', sub:'', body });
+    title:'Thank You', sub:'', body });
 }
 
 const RENDER = {
   cover:pgCover, toc:pgToc, why:pgWhy, process:pgProcess, finance:pgFinance,
-  criteria:pgCriteria, offer:pgOffer, costs:pgCosts, team:pgTeam, next:pgNext
+  criteria:pgCriteria, offer:pgOffer, costs:pgCosts, next:pgNext
 };
 
 /* ---------- wiring ---------- */
 let builder = null, paintRoster = () => {};
 
 const RULES = [
-  { key:'process', box:'warnSteps',   msg:'The buying-process page is over-full — trim a step or shorten the detail lines.' },
-  { key:'finance', box:'warnFinance', msg:'The financing page is over-full — shorten the lender notes.' },
-  { key:'costs',   box:'warnCosts',   msg:'Closing costs run past the page — remove a line item.' },
-  { key:'next',    box:'warnLinks',   msg:'Useful links run past the page — six is the limit.' }
+  { key:'process', box:'warnSteps',   msg:'The buying-process page is over-full: trim a step or shorten the detail lines.' },
+  { key:'finance', box:'warnFinance', msg:'The financing page is over-full: shorten the lender notes.' },
+  { key:'costs',   box:'warnCosts',   msg:'Closing costs run past the page: remove a line item.' },
+  { key:'next',    box:'warnLinks',   msg:'Useful links run past the page: six is the limit.' }
 ];
 function checkAll() { P.checkOverflow(document.getElementById('pages'), RULES, 'warnGeneral'); }
 
@@ -474,8 +536,8 @@ function loadPreview() {
   Object.assign(state, {
     client:'Priya & Daniel Rao', date:'August 2026', area:'SoHo & Tribeca, Manhattan',
     price:'1850000', downPct:'20', rate:'6.25', term:'30',
-    lender:'We work with three lenders we trust and will introduce you to all of them — ' +
-           'compare their written estimates side by side, not their quoted rates over the phone.',
+    lender:'We work with three lenders we trust and will introduce you to all of them. ' +
+           'Compare their written estimates side by side, not their quoted rates over the phone.',
     agents:['katie-cook','marli-silver']
   });
   // real photography from photos/3-crosby-lane, invented client details
