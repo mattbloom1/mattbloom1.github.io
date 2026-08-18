@@ -28,7 +28,7 @@
 
 /* ---- shared: the reference deck's three-up colour blocks ---- */
 .tri{display:grid;grid-template-columns:repeat(3,1fr);gap:0;}
-.tri .tb{padding:.2in .18in;min-width:0;}
+.tri .tb{padding:.2in .18in;min-width:0;display:flex;flex-direction:column;justify-content:center;}
 .tri .tb.c1{background:var(--navy);}
 .tri .tb.c2{background:var(--sky2);}
 .tri .tb.c3{background:var(--sky);}
@@ -56,30 +56,13 @@
 .dline b{font-weight:700;}
 .dline.sm{font-size:15pt;margin:.22in 0 .14in;}
 
-/* p3 — about GVC: agent duo, headline stat, copy, value blocks.
-   The roster headshots are transparent cutouts, so these sit on the bare page
-   with a silhouette shadow rather than in a grey box: filter:drop-shadow
-   follows the alpha channel, so the shadow traces the person instead of
-   boxing them. That needs overflow:visible and object-fit:contain — the
-   inherited .ph rules would clip the shadow and crop the head. */
-/* the row has to be explicitly minmax(0,1fr), not the default auto: an auto
-   row sizes to the cutout's intrinsic height, so .ph's height:100% would have
-   nothing definite to resolve against and the block would overflow.
-   Height is tuned to the cutouts' ~1:1 subject so contain barely letterboxes —
-   any surplus lands above the head, which is what reads as a dead margin. */
-.duo{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:minmax(0,1fr);
-  gap:.26in;height:2.5in;flex:none;margin-bottom:.24in;}
-/* grid, not flex: an <img> is a replaced element, so height:auto makes it
-   claim its intrinsic height and it wins over flex-basis, pushing the caption
-   off the bottom of the box. An explicit 1fr row plus height:100% pins it. */
-.duo .ph{height:100%;display:grid;grid-template-rows:minmax(0,1fr) auto;
-  background:none;overflow:visible;}
-.duo .ph img{width:100%;height:100%;min-height:0;
-  object-fit:contain;object-position:50% 100%;
-  filter:drop-shadow(.02in .05in .07in rgba(0,39,58,.34));}
-.duo .cap{position:static;flex:none;margin-top:.13in;padding-top:.1in;text-align:center;
-  border-top:1pt solid var(--sky);
-  font:800 8pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--navy);}
+/* p3 — about GVC: one wide founders photo, headline stat, copy, value blocks. */
+.duo{position:relative;height:2.5in;flex:none;margin-bottom:.24in;overflow:hidden;
+  background:linear-gradient(#F4F3EF,#E4E2DC);box-shadow:0 .1in .26in rgba(0,39,58,.22);}
+.duo img{width:100%;height:100%;display:block;object-fit:cover;}
+.duo .cap{position:absolute;left:0;right:0;bottom:0;padding:.12in .2in;
+  background:rgba(0,39,58,.82);text-align:center;
+  font:800 8pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:#fff;}
 .about-copy{font:300 9.3pt/14pt var(--body);color:var(--navy);text-align:center;margin-bottom:.22in;}
 .about-copy b{font-weight:700;}
 
@@ -654,22 +637,19 @@ function pgToc(n) {
   });
 }
 
-/* Company page — entirely static, including the faces. The three co-founders
-   are always shown here regardless of which agents are picked for the listing;
-   this page is about the firm, not about who is presenting it. */
+/* Company page — entirely static, including the photo. The three co-founders
+   are always named here regardless of which agents are picked for the
+   listing; this page is about the firm, not about who is presenting it. */
 const FOUNDERS = ['john-gasdaska', 'tj-verdiglione', 'jonathan-conlon'];
 
 function pgAbout(n) {
+  const names = FOUNDERS.map(id => { const a = window.GVC_AGENT(id); return a ? a.name : ''; }).filter(Boolean).join(' &middot; ');
   const duo =
-    '<div class="duo">' + FOUNDERS.map((id, i) => {
-      const a = window.GVC_AGENT(id);
-      if (!a) return '';
-      return '<div class="ph" data-pos="about' + i + '">' +
-        '<img src="' + headshotFor(a) + '" alt="" style="object-position:' +
-          posFor('about' + i).x + '% ' + posFor('about' + i).y + '%">' +
-        '<div class="cap">' + esc(a.name) + '</div>' +
-      '</div>';
-    }).join('') + '</div>';
+    '<div class="duo" data-pos="about0">' +
+      '<img src="../../assets/team/founders-lifestyle.jpg" alt="" style="object-position:' +
+        posFor('about0').x + '% ' + posFor('about0').y + '%">' +
+      '<div class="cap">' + names + '</div>' +
+    '</div>';
   const body =
     duo +
     '<div class="dline"><b>Over $2 Billion</b> Sold</div>' +
