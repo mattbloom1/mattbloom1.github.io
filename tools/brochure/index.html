@@ -59,16 +59,19 @@
 .cover-head{position:absolute;left:var(--pad);right:var(--pad);bottom:1.45in;text-align:center;}
 .cv-addr{font:700 34pt/1.06 var(--serif);color:#fff;text-wrap:balance;overflow-wrap:break-word;}
 .cv-city{font:800 11pt var(--sans);letter-spacing:.10em;text-transform:uppercase;color:#fff;margin-top:.11in;}
+.cv-site{font:300 9pt var(--body);color:rgba(229,229,229,.8);margin-top:.09in;}
+/* two agents flank a fixed centre monogram, mirroring the Seller Pitch and
+   Buyer Package covers — the logo is positioned against the bar itself, not
+   flexed between the agent blocks, so it holds centre with one agent or two. */
 .cover-foot{position:absolute;left:var(--pad);right:var(--pad);bottom:.5in;
-  display:flex;align-items:center;gap:.25in;padding-top:.17in;
+  display:flex;align-items:center;justify-content:space-between;gap:.25in;padding-top:.17in;
   border-top:.75pt solid rgba(229,229,229,.4);}
 .cf-agent{flex:1;min-width:0;}
-.cf-site{flex:1;min-width:0;text-align:right;}
-.cf-mono{flex:none;}
+.cf-agent.r{text-align:right;}
+.cf-mono{position:absolute;left:50%;top:.17in;transform:translateX(-50%);flex:none;}
 .cf-mono img{height:.46in;width:auto;display:block;}
 .cf-name{font:800 8.5pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:#fff;}
 .cf-meta{font:300 8.5pt/1.5 var(--body);color:rgba(229,229,229,.88);margin-top:.03in;}
-.cf-site span{font:800 8.5pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:#fff;}
 
 /* ---------- PAGE 2 — BENTO GALLERY ---------- */
 .bento{position:absolute;inset:0;display:grid;
@@ -95,8 +98,8 @@
 .info-eyebrow{font:800 11pt var(--sans);letter-spacing:.18em;text-transform:uppercase;color:#fff;}
 .info-tr{position:absolute;top:0;right:0;width:4.25in;height:2.5in;overflow:hidden;background:rgba(255,255,255,.05);}
 .info-tr img{width:100%;height:100%;object-fit:cover;display:block;}
-.info-price{position:absolute;top:2.5in;right:0;background:var(--sky);color:var(--navy);
-  padding:.13in var(--pad) .13in .26in;font:700 22pt/1 var(--serif);white-space:nowrap;}
+.info-price{position:absolute;top:2.5in;right:0;width:4.25in;background:var(--sky);color:var(--navy);
+  padding:.13in .1in;font:700 22pt/1 var(--serif);text-align:center;white-space:nowrap;}
 .info-price .po{font:800 10pt var(--sans);letter-spacing:.14em;text-transform:uppercase;}
 /* the blurb keeps clear of the top-right photo, so it stays in the left column */
 .info-blurb{margin-top:.28in;font:300 10.5pt/16pt var(--body);color:var(--ow);
@@ -154,12 +157,16 @@
 @media screen{ .loc-photo.has-img{cursor:grab;touch-action:none;user-select:none;}
   .loc-photo.is-moving{cursor:grabbing;} .loc-photo img{pointer-events:none;} }
 
-/* ---------- AGENT ---------- */
+/* ---------- AGENT / CLOSING PAGE ----------
+   The last page in the deck, styled to match the Seller Pitch & CMA and
+   Buyer Package's closing page: a centered "Thank You" in place of a plain
+   title, then the team, then a footer with the licensed states. */
 .ag{position:absolute;inset:0;background:var(--navy);color:var(--ow);
   display:flex;flex-direction:column;padding:.7in var(--pad) .5in;overflow:hidden;}
-.ag-eyebrow{font:800 11pt var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--sky);}
-.ag-title{font:700 30pt/1.05 var(--serif);color:#fff;margin-top:.1in;}
-.ag-cards{flex:1;min-height:0;display:flex;gap:.45in;margin-top:.42in;}
+.ag-top{flex:none;text-align:center;padding-bottom:.28in;border-bottom:1pt solid rgba(229,229,229,.25);}
+.ag-top .ag-kicker{font:800 8pt var(--sans);letter-spacing:.28em;text-transform:uppercase;color:var(--sky);}
+.ag-top .ag-thanks{margin-top:.1in;font:700 34pt/1.1 var(--serif);color:#fff;}
+.ag-cards{flex:1;min-height:0;display:flex;gap:.45in;margin-top:.42in;justify-content:center;}
 /* max-width keeps a lone agent's square headshot from filling the page */
 .ag-card{flex:1;min-width:0;max-width:3.45in;display:flex;flex-direction:column;text-align:center;}
 /* headshots are transparent cutouts, so no panel behind them — the figure
@@ -172,21 +179,36 @@
 .ag-role{font:800 7pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--sky);margin-top:.07in;line-height:1.5;}
 .ag-contact{font:300 9pt/1.65 var(--body);color:var(--ow);margin-top:.11in;}
 .ag-bio{flex:none;max-height:1.5in;overflow:hidden;font:300 9.5pt/15pt var(--body);
-  color:var(--ow);margin-top:.34in;padding-top:.26in;border-top:.75pt solid rgba(83,199,220,.35);}
+  color:var(--ow);margin-top:.34in;padding-top:.26in;border-top:.75pt solid rgba(83,199,220,.35);text-align:center;}
 .ag-foot{flex:none;margin-top:.3in;display:flex;align-items:center;justify-content:space-between;gap:.3in;}
 .ag-foot .site{font:800 8.5pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:#fff;}
 .ag-foot img{height:.44in;width:auto;display:block;}
+.ag-states{flex:none;display:flex;justify-content:center;gap:.5in;margin-top:.26in;
+  padding-top:.2in;border-top:1pt solid rgba(229,229,229,.25);}
+.ag-states .stc{text-align:center;}
+.ag-states .stc img{display:block;margin:0 auto .07in;height:.42in;width:auto;
+  filter:brightness(0) invert(1);opacity:.28;}
+.ag-states .stc span{font:800 7pt var(--sans);letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(229,229,229,.7);}
 
-/* ---------- MARKETING SPECS ---------- */
+/* ---------- MARKETING PROGRAMME ----------
+   Three phase-accented columns, mirroring the Seller Pitch & CMA's
+   Marketing Plan page, in place of the old two-column icon grid. */
 .mk{position:absolute;inset:0;background:#fff;display:flex;flex-direction:column;overflow:hidden;}
 .mk-body{flex:1;min-height:0;padding:.42in var(--pad) .3in;display:flex;flex-direction:column;}
 .mk-intro{font:300 10pt/15pt var(--body);color:var(--navy);max-width:6.6in;flex:none;max-height:.95in;overflow:hidden;}
-.mk-grid{margin-top:.32in;flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;
-  gap:.2in .45in;overflow:hidden;align-content:start;}
-.mk-item{display:flex;gap:.14in;min-width:0;}
-.mk-item .ico{width:.2in;height:.2in;color:var(--sky2);flex:none;margin-top:.025in;}
-.mk-item h4{font:800 8.5pt var(--sans);letter-spacing:.13em;text-transform:uppercase;color:var(--navy);}
-.mk-item p{font:300 8.5pt/13pt var(--body);color:var(--ui-ink-soft);margin-top:.03in;}
+.mk-grid{margin-top:.32in;flex:1;min-height:0;display:flex;gap:.36in;overflow:hidden;}
+.mk-col{flex:1;min-width:0;display:flex;flex-direction:column;}
+.mk-col-h{flex:none;height:2.2pt;margin-bottom:.2in;}
+.mk-col.c1 .mk-col-h{background:var(--navy);}
+.mk-col.c2 .mk-col-h{background:var(--sky2);}
+.mk-col.c3 .mk-col-h{background:var(--sky);}
+.mk-item{display:flex;gap:.12in;min-width:0;margin-bottom:.18in;}
+.mk-item .ico{width:.19in;height:.19in;color:var(--sky2);flex:none;margin-top:.02in;}
+.mk-col.c1 .mk-item .ico{color:var(--navy);}
+.mk-col.c3 .mk-item .ico{color:var(--sky);}
+.mk-item h4{font:800 8pt var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--navy);}
+.mk-item p{font:300 8pt/12.5pt var(--body);color:var(--ui-ink-soft);margin-top:.03in;}
 .mk-foot{flex:none;background:var(--navy);color:var(--ow);padding:.26in var(--pad);
   display:flex;align-items:center;justify-content:space-between;gap:.3in;}
 .mk-foot .l{font:800 8.5pt var(--sans);letter-spacing:.14em;text-transform:uppercase;}
@@ -348,7 +370,7 @@
       </details>
 
       <details class="ed-sec">
-        <summary>Agents <span class="hint">pages 1 &amp; 6</span></summary>
+        <summary>Agents <span class="hint">page 1 &amp; final page</span></summary>
         <div class="sec-in">
           <div id="rosterPick"></div>
           <div id="shotList"></div>
@@ -595,14 +617,25 @@ function pagePlan() {
   const plan = [{ t: 'cover' }, { t: 'gallery' }, { t: 'info' }];
   const fpPages = Math.max(1, Math.ceil(state.floorplans.length / 2));
   for (let i = 0; i < fpPages; i++) plan.push({ t: 'floorplan', from: i * 2, page: i + 1, of: fpPages });
-  plan.push({ t: 'location' }, { t: 'agent' }, { t: 'specs' });
+  plan.push({ t: 'location' }, { t: 'specs' }, { t: 'agent' });
   return plan;
 }
 
 /* ---------------- renderers ---------------- */
+/* one agent block, left or right; an absent agent still renders an empty
+   flex:1 side so the centre monogram never drifts off centre. */
+function cfAgent(a, side) {
+  if (!a) return '<div class="cf-agent ' + side + '"></div>';
+  const contact = [a.phone, a.email].filter(Boolean).map(escapeHtml).join(' &nbsp;·&nbsp; ');
+  return '<div class="cf-agent ' + side + '">' +
+    '<div class="cf-name">' + escapeHtml(a.name) + '</div>' +
+    (contact ? '<div class="cf-meta">' + contact + '</div>' : '') +
+  '</div>';
+}
+
 function renderCover(page) {
-  const hero = assign.hero, city = cityLine(), a = agentObjs()[0];
-  const contact = a ? [a.phone, a.email].filter(Boolean).map(escapeHtml).join(' &nbsp;·&nbsp; ') : '';
+  const hero = assign.hero, city = cityLine();
+  const [a1, a2] = agentObjs();
   page.innerHTML =
     '<div class="cover">' +
       (hero ? '<img class="cover-img" src="' + hero.url + '" alt="">' : '') +
@@ -611,14 +644,12 @@ function renderCover(page) {
       '<div class="cover-head">' +
         '<div class="cv-addr">' + (escapeHtml(state.address) || '&nbsp;') + '</div>' +
         (city ? '<div class="cv-city">' + escapeHtml(city) + '</div>' : '') +
+        (state.site ? '<div class="cv-site">' + escapeHtml(state.site) + '</div>' : '') +
       '</div>' +
       '<div class="cover-foot">' +
-        '<div class="cf-agent">' +
-          (a ? '<div class="cf-name">' + escapeHtml(a.name) + '</div>' : '') +
-          (contact ? '<div class="cf-meta">' + contact + '</div>' : '') +
-        '</div>' +
+        cfAgent(a1, 'l') +
         '<div class="cf-mono"><img src="' + MONO + '" alt=""></div>' +
-        '<div class="cf-site">' + (state.site ? '<span>' + escapeHtml(state.site) + '</span>' : '') + '</div>' +
+        cfAgent(a2, 'r') +
       '</div>' +
     '</div>';
 }
@@ -760,13 +791,19 @@ function renderLocation(page) {
   if (photo) box.addEventListener('pointerdown', e => beginPhotoDrag(e, box, state.locPos));
 }
 
+const AG_STATES = [
+  ['New York',   '../../assets/img/states/new-york.svg'],
+  ['New Jersey', '../../assets/img/states/new-jersey.svg'],
+  ['Florida',    '../../assets/img/states/florida.svg']
+];
+
+/* Closing page — the last page in the deck, styled like the Seller Pitch &
+   CMA and Buyer Package's final page. */
 function renderAgent(page) {
   const list = agentObjs();
-  const title = list.length > 1 ? 'Your Team' : 'Your Agent';
   page.innerHTML =
     '<div class="ag">' +
-      '<div class="ag-eyebrow">Represented By</div>' +
-      '<div class="ag-title">' + title + '</div>' +
+      '<div class="ag-top"><div class="ag-kicker">The GVC Team</div><div class="ag-thanks">Thank You</div></div>' +
       '<div class="ag-cards">' +
         (list.length ? list.map(a => {
           const shot = headshotFor(a);
@@ -785,6 +822,8 @@ function renderAgent(page) {
       '<div class="ag-bio">' + escapeHtml(state.agentBio) + '</div>' +
       '<div class="ag-foot"><span class="site">' + escapeHtml(state.site || '') + '</span>' +
         '<img src="' + MONO + '" alt=""></div>' +
+      '<div class="ag-states">' + AG_STATES.map(([nm, icon]) =>
+        '<div class="stc"><img src="' + icon + '" alt=""><span>' + escapeHtml(nm) + '</span></div>').join('') + '</div>' +
     '</div>';
 }
 
@@ -793,18 +832,26 @@ function renderSpecs(page) {
     const i = l.indexOf('|');
     return i === -1 ? [l.trim(), ''] : [l.slice(0, i).trim(), l.slice(i + 1).trim()];
   });
+  // three even columns, read top to bottom then across — mirrors the
+  // Seller Pitch & CMA's phase-accented Marketing Plan layout
+  const perCol = Math.ceil(items.length / 3) || 1;
+  const cols = [items.slice(0, perCol), items.slice(perCol, perCol * 2), items.slice(perCol * 2)];
+  const colHtml = (col, ci) =>
+    '<div class="mk-col c' + (ci + 1) + '"><div class="mk-col-h"></div>' +
+      col.map((it, i) => {
+        const gi = ci * perCol + i;
+        return '<div class="mk-item">' + icon(SPEC_ICONS[gi % SPEC_ICONS.length]) +
+          '<div class="txt"><h4>' + escapeHtml(it[0]) + '</h4>' +
+          (it[1] ? '<p>' + escapeHtml(it[1]) + '</p>' : '') + '</div></div>';
+      }).join('') +
+    '</div>';
   page.innerHTML =
     '<div class="mk">' +
       '<div class="sheet-head"><span class="t">Marketing Programme</span>' +
         '<span class="s">The GVC Team &nbsp;·&nbsp; Douglas Elliman</span></div>' +
       '<div class="mk-body">' +
         '<div class="mk-intro">' + escapeHtml(state.mkIntro) + '</div>' +
-        '<div class="mk-grid">' +
-          items.map((it, i) =>
-            '<div class="mk-item">' + icon(SPEC_ICONS[i % SPEC_ICONS.length]) +
-            '<div class="txt"><h4>' + escapeHtml(it[0]) + '</h4>' +
-            (it[1] ? '<p>' + escapeHtml(it[1]) + '</p>' : '') + '</div></div>').join('') +
-        '</div>' +
+        '<div class="mk-grid">' + cols.map(colHtml).join('') + '</div>' +
       '</div>' +
       '<div class="mk-foot"><span class="l">' + escapeHtml(state.site || '') + '</span>' +
         '<img src="' + MONO + '" alt=""></div>' +
@@ -1147,15 +1194,64 @@ function addFiles(files) {
   });
 }
 
-function addFloorplans(files) {
-  [...files].filter(f => f.type.startsWith('image/')).forEach(f => {
-    const reader = new FileReader();
-    reader.onload = e => {
-      state.floorplans.push({ id: ++uid, name: f.name, url: e.target.result, label: '' });
-      renderFpList(); redraw();
-    };
-    reader.readAsDataURL(f);
+function fileToImage(file) {
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => { URL.revokeObjectURL(url); res(img); };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('Could not read image')); };
+    img.src = url;
   });
+}
+function reencode(img, maxEdge, quality, srcY) {
+  srcY = srcY || 0;
+  const sw = img.naturalWidth, sh = img.naturalHeight - srcY;
+  const r = Math.min(1, maxEdge / Math.max(sw, sh));
+  const w = Math.round(sw * r), h = Math.round(sh * r);
+  const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+  const cx = cv.getContext('2d');
+  cx.fillStyle = '#fff'; cx.fillRect(0, 0, w, h);   // flatten transparency, normalize CMYK -> RGB
+  cx.drawImage(img, 0, srcY, sw, sh, 0, 0, w, h);
+  return cv.toDataURL('image/jpeg', quality);
+}
+/* Same header-band detection as the Showsheet: GVC floorplan exports lead
+   with a full-width navy title band, so find the white gap right below it
+   and crop it off. Returns 0 (no crop) when no band is present. */
+function floorplanHeaderY(img) {
+  try {
+    const W = img.naturalWidth, H = img.naturalHeight;
+    const scanH = Math.floor(H * 0.35);
+    const cv = document.createElement('canvas'); cv.width = W; cv.height = scanH;
+    const cx = cv.getContext('2d');
+    cx.drawImage(img, 0, 0, W, scanH, 0, 0, W, scanH);
+    const data = cx.getImageData(0, 0, W, scanH).data;
+    const darkFrac = y => {
+      let dark = 0, n = 0;
+      for (let x = 0; x < W; x += 8) {
+        const i = (y * W + x) * 4;
+        if (.299 * data[i] + .587 * data[i + 1] + .114 * data[i + 2] < 200) dark++;
+        n++;
+      }
+      return dark / n;
+    };
+    if (darkFrac(2) < .85 || darkFrac(Math.floor(H * 0.015)) < .85) return 0; // no navy band on top
+    for (let y = Math.floor(H * 0.02); y < scanH; y += 3) {
+      if (darkFrac(y) < .08) return y; // first white row after the band
+    }
+  } catch (e) {}
+  return 0;
+}
+
+async function addFloorplans(files) {
+  for (const f of [...files].filter(f => f.type.startsWith('image/'))) {
+    try {
+      const img = await fileToImage(f);
+      const cropY = floorplanHeaderY(img);
+      const url = reencode(img, 2400, .9, cropY);
+      state.floorplans.push({ id: ++uid, name: f.name, url, label: '' });
+      renderFpList(); redraw();
+    } catch (e) { /* unreadable file — skip it */ }
+  }
 }
 
 function wireDrop(dropSel, inputSel, handler) {
