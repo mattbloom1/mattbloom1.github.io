@@ -74,6 +74,13 @@
 .toc .d{flex:1;border-bottom:.75pt dotted rgba(0,39,58,.28);margin:0 .06in;transform:translateY(-.03in);}
 .toc .p{font:800 9pt var(--sans);color:rgba(0,39,58,.55);}
 
+/* placeholder shown in an empty photo/map/QR slot — screen only, so a
+   half-filled deck still prints clean. Same treatment as the brochure. */
+.empty-note{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font:800 8.5pt var(--sans);letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(229,229,229,.45);text-align:center;padding:0 .6in;line-height:1.7;}
+.empty-note.on-white{color:rgba(0,39,58,.32);}
+
 /* ---------- generic content blocks ---------- */
 .lede{font:300 12pt/1.62 var(--body);color:var(--navy);margin-bottom:.24in;max-width:6.4in;}
 .pg.rev .lede{color:var(--ow);}
@@ -211,4 +218,5 @@ table.tbl .meta{display:block;font-size:7.5pt;color:rgba(0,39,58,.55);margin-top
 /* ---------- print ---------- */
 @media print{
   .pg,.cv{position:absolute;}
+  .empty-note{display:none !important;}
 }

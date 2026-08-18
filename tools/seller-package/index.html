@@ -308,6 +308,24 @@
     <div class="ed-body">
 
       <details class="ed-sec">
+        <summary>Photos <span class="hint">cover + pages 5, 8 &amp; 12</span></summary>
+        <div class="sec-in">
+          <div class="drop" id="dropPhotos" tabindex="0" role="button">
+            <div class="d-big">Drop photos</div>
+            <div class="d-sub">First is the cover, second is the property hero</div>
+          </div>
+          <input type="file" id="filePhotos" accept="image/*" multiple hidden>
+          <div id="imgList"></div>
+          <div class="drop" id="dropMap" tabindex="0" role="button" style="margin-top:14px">
+            <div class="d-big">Drop past-sales map</div>
+            <div class="d-sub">Export one from <a href="../map-studio/" target="_blank" rel="noopener" onclick="event.stopPropagation()">Map Studio</a></div>
+          </div>
+          <input type="file" id="fileMap" accept="image/*" hidden>
+          <div class="thumbs" id="thumbsMap"></div>
+        </div>
+      </details>
+
+      <details class="ed-sec">
         <summary>Property <span class="hint">cover + pages 5 &amp; 7</span></summary>
         <div class="sec-in">
           <div class="field"><label>Address</label><input type="text" data-f="address" placeholder="45 Crosby Street, Penthouse"></div>
@@ -342,24 +360,6 @@
         <div class="sec-in">
           <div class="field"><label>Prepared for</label><input type="text" data-f="client" placeholder="Mr. &amp; Mrs. Harrington"></div>
           <div class="field"><label>Date</label><input type="text" data-f="date" placeholder="August 2026"></div>
-        </div>
-      </details>
-
-      <details class="ed-sec">
-        <summary>Photos <span class="hint">cover + pages 5, 8 &amp; 12</span></summary>
-        <div class="sec-in">
-          <div class="drop" id="dropPhotos" tabindex="0" role="button">
-            <div class="d-big">Drop photos</div>
-            <div class="d-sub">First is the cover, second is the property hero</div>
-          </div>
-          <input type="file" id="filePhotos" accept="image/*" multiple hidden>
-          <div id="imgList"></div>
-          <div class="drop" id="dropMap" tabindex="0" role="button" style="margin-top:14px">
-            <div class="d-big">Drop past-sales map</div>
-            <div class="d-sub">Export one from <a href="../map-studio/" target="_blank" rel="noopener" onclick="event.stopPropagation()">Map Studio</a></div>
-          </div>
-          <input type="file" id="fileMap" accept="image/*" hidden>
-          <div class="thumbs" id="thumbsMap"></div>
         </div>
       </details>
 

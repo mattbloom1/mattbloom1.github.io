@@ -26,9 +26,15 @@
    sizes. Page geometry lives in assets/css/builder.css.
    ============================================================ */
 :root{
-  --pad:.62in;             /* page margin — matches the Seller Pitch & CMA and Buyer Package */
-  --mask-top:15%;          /* navy scrim down from the top edge */
-  --mask-bot:40%;          /* navy scrim up from the bottom edge — carries the address */
+  /* every value here is the Seller Pitch & CMA / Buyer Package value —
+     see assets/css/pitch.css. The brochure does not load pitch.css (it
+     would collide with this deck's own .stat/.ph/.ag-c), so the shared
+     tokens and furniture are mirrored here instead. */
+  --pad:.62in;             /* page margin */
+  --rule:rgba(0,39,58,.14);
+  --rule-rev:rgba(83,199,220,.35);
+  --mask-top:22%;          /* navy scrim down from the top edge */
+  --mask-bot:52%;          /* navy scrim up from the bottom edge — carries the address */
   --bento-gap:.06in;       /* white gutter between bento cells */
 }
 
@@ -36,10 +42,16 @@
 .ico{display:block;}
 .ico svg{width:100%;height:100%;display:block;stroke:currentColor;fill:none;
   stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-.sheet-head{flex:none;background:var(--navy);color:#fff;
-  padding:.42in var(--pad) .34in;display:flex;align-items:baseline;justify-content:space-between;gap:.3in;}
-.sheet-head .t{font:800 12pt var(--sans);letter-spacing:.18em;text-transform:uppercase;}
-.sheet-head .s{font:300 9pt var(--body);color:rgba(229,229,229,.85);text-align:right;min-width:0;}
+/* ---------- SHARED PAGE HEADER + BODY ----------
+   Byte-for-byte the Seller Pitch & CMA's .pg-h / .pg-body, so a section
+   title reads identically across all three builders: 27pt Playfair over a
+   short sky rule, never a tracked-caps bar. `.rev` is the dark-page
+   variant, same suffix convention as the two packages. */
+.pg-h{flex:none;padding:.5in var(--pad) 0;}
+.pg-h h2{margin:0;font:700 27pt/1.06 var(--serif);color:var(--navy);text-wrap:balance;}
+.pg-h.rev h2{color:#fff;}
+.pg-h::after{content:'';display:block;height:1.4pt;background:var(--sky);width:.62in;margin-top:.16in;}
+.pg-body{flex:1;min-height:0;padding:.26in var(--pad) .44in;display:flex;flex-direction:column;overflow:hidden;}
 .empty-note{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   font:800 8.5pt var(--sans);letter-spacing:.16em;text-transform:uppercase;
   color:rgba(229,229,229,.45);text-align:center;padding:0 .6in;line-height:1.7;}
@@ -59,33 +71,38 @@
 .pg-foot.rev .site{color:rgba(229,229,229,.6);}
 .pg-foot.rev .pg-n{color:rgba(229,229,229,.5);}
 
-/* ---------- PAGE 1 — COVER ---------- */
-.cover{position:absolute;inset:0;overflow:hidden;background:var(--navy);}
-.cover-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
+/* ---------- PAGE 1 — COVER ----------
+   Identical to the Seller Pitch & CMA and Buyer Package covers: same
+   class names, same markup, same values as assets/css/pitch.css. The
+   scrim stops stay in custom properties because the overflow check reads
+   --mask-bot to tell whether the address has climbed out of the scrim. */
+.cv{position:absolute;inset:0;overflow:hidden;background:var(--navy);}
+.cv-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
 /* Two scrims, each a clean 100% -> 0 opacity fade over its own band.
    Stop order matters: a later stop with a smaller percentage gets clamped
    up to the previous one, which turns the fade into a hard cut. */
-.cover-mask{position:absolute;inset:0;pointer-events:none;
+.cv-mask{position:absolute;inset:0;pointer-events:none;
   background:
     linear-gradient(to bottom, rgba(0,39,58,1) 0%, rgba(0,39,58,0) var(--mask-top)),
-    linear-gradient(to top,    rgba(0,39,58,1) 0%, rgba(0,39,58,0) var(--mask-bot));
-}
-.cover-head{position:absolute;left:var(--pad);right:var(--pad);bottom:1.45in;text-align:center;}
-.cv-addr{font:700 34pt/1.06 var(--serif);color:#fff;text-wrap:balance;overflow-wrap:break-word;}
-.cv-city{font:800 11pt var(--sans);letter-spacing:.10em;text-transform:uppercase;color:#fff;margin-top:.11in;}
-.cv-site{font:300 9pt var(--body);color:rgba(229,229,229,.8);margin-top:.09in;}
-/* two agents flank a fixed centre monogram, mirroring the Seller Pitch and
-   Buyer Package covers — the logo is positioned against the bar itself, not
-   flexed between the agent blocks, so it holds centre with one agent or two. */
-.cover-foot{position:absolute;left:var(--pad);right:var(--pad);bottom:.5in;
-  display:flex;align-items:center;justify-content:space-between;gap:.25in;padding-top:.17in;
-  border-top:.75pt solid rgba(229,229,229,.4);}
-.cf-agent{flex:1;min-width:0;}
-.cf-agent.r{text-align:right;}
-.cf-mono{position:absolute;left:50%;top:.17in;transform:translateX(-50%);flex:none;}
-.cf-mono img{height:.46in;width:auto;display:block;}
-.cf-name{font:800 8.5pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:#fff;}
-.cf-meta{font:300 8.5pt/1.5 var(--body);color:rgba(229,229,229,.88);margin-top:.03in;}
+    linear-gradient(to top,    rgba(0,39,58,1) 0%, rgba(0,39,58,0) var(--mask-bot));}
+.cv-kind{position:absolute;top:.7in;left:0;right:0;text-align:center;
+  font:800 9pt var(--sans);letter-spacing:.3em;text-transform:uppercase;color:var(--sky);}
+.cv-head{position:absolute;left:var(--pad);right:var(--pad);bottom:1.5in;text-align:center;}
+.cv-ttl{font:700 33pt/1.07 var(--serif);color:#fff;text-wrap:balance;overflow-wrap:break-word;}
+.cv-sub{margin-top:.13in;font:800 10.5pt var(--sans);letter-spacing:.10em;text-transform:uppercase;color:var(--ow);}
+.cv-for{margin-top:.22in;font:300 10.5pt/1.5 var(--body);color:rgba(229,229,229,.82);}
+/* two agent blocks, one per side, monogram fixed dead-center against the
+   bar itself — not flexed between the side blocks, so it does not drift
+   if one side is empty or the two blocks are different lengths. */
+.cv-bar{position:absolute;left:0;right:0;bottom:0;height:1.02in;background:rgba(0,39,58,.92);
+  border-top:1pt solid var(--rule-rev);display:flex;align-items:center;justify-content:space-between;
+  gap:.24in;padding:0 var(--pad);}
+.cv-bar .cb-side{flex:1;min-width:0;}
+.cv-bar .cb-side.r{text-align:right;}
+.cv-bar .cb-nm{font:700 12pt var(--serif);color:#fff;line-height:1.2;}
+.cv-bar .cb-ct{font:300 8pt/1.45 var(--body);color:rgba(229,229,229,.8);}
+.cv-bar .cb-mono{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  height:.46in;width:auto;display:block;flex:none;}
 
 /* ---------- PAGE 2 — BENTO GALLERY ---------- */
 .bento{position:absolute;inset:0;display:grid;
@@ -112,15 +129,19 @@
 .info .pg-foot{position:absolute;left:0;right:0;bottom:0;padding-bottom:.16in;}
 .info .pg-foot .pg-mono{bottom:.16in;}
 .info-photo img{width:100%;height:100%;object-fit:cover;display:block;}
-.info-top{position:absolute;top:0;left:0;right:0;height:50%;padding:.6in var(--pad) 0;display:flex;flex-direction:column;}
-.info-eyebrow{font:800 11pt var(--sans);letter-spacing:.18em;text-transform:uppercase;color:#fff;}
+/* the header sits in the page's own top-left corner rather than in a
+   .pg-h strip, because the top-right photo overlaps that band — but it is
+   the same .pg-h markup and type, just width-limited so it wraps clear of
+   the photo instead of running under it. */
+.info-top{position:absolute;top:0;left:0;right:0;height:50%;display:flex;flex-direction:column;}
+.info-top .pg-h{width:4.2in;}
 .info-tr{position:absolute;top:0;right:0;width:4.25in;height:2.5in;overflow:hidden;background:rgba(255,255,255,.05);}
 .info-tr img{width:100%;height:100%;object-fit:cover;display:block;}
 .info-price{position:absolute;top:2.5in;right:0;width:4.25in;background:var(--sky);color:var(--navy);
   padding:.13in .1in;font:700 22pt/1 var(--serif);text-align:center;white-space:nowrap;}
 .info-price .po{font:800 10pt var(--sans);letter-spacing:.14em;text-transform:uppercase;}
 /* the blurb keeps clear of the top-right photo, so it stays in the left column */
-.info-blurb{margin-top:.28in;font:300 10.5pt/16pt var(--body);color:var(--ow);
+.info-blurb{margin:.28in 0 0 var(--pad);font:300 10.5pt/16pt var(--body);color:var(--ow);
   width:3.4in;flex:1;min-height:0;overflow:hidden;}
 .info-mid{position:absolute;top:50%;bottom:0;left:0;right:0;padding:.34in var(--pad) .5in;
   display:flex;gap:.5in;border-top:.75pt solid rgba(83,199,220,.35);}
@@ -144,25 +165,34 @@
 
 /* ---------- FLOOR PLANS ---------- */
 .fp{position:absolute;inset:0;background:#fff;display:flex;flex-direction:column;}
-.fp-body{flex:1;min-height:0;display:flex;flex-direction:column;gap:.3in;padding:.4in var(--pad) .3in;}
+.fp-body{gap:.3in;}
 .fp-item{flex:1;min-height:0;display:flex;flex-direction:column;}
+/* At 100% the plan is letterboxed whole inside the frame. Above that it is
+   scaled about the frame's centre and clipped by it, and the translate
+   pans the enlarged plan around — that is the crop. The transform is
+   written inline by the renderer from the plan's own zoom/tx/ty. */
 .fp-frame{flex:1;min-height:0;position:relative;display:flex;align-items:center;justify-content:center;
-  background:#F7F6F3;border:.75pt solid rgba(0,39,58,.15);overflow:hidden;}
-.fp-frame img{max-width:100%;max-height:100%;object-fit:contain;display:block;}
+  background:#F7F6F3;border:.75pt solid var(--rule);overflow:hidden;}
+.fp-frame img{max-width:100%;max-height:100%;object-fit:contain;display:block;transform-origin:50% 50%;}
+@media screen{
+  .fp-frame.has-img{cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;}
+  .fp-frame.is-moving{cursor:grabbing;}
+  .fp-frame img{pointer-events:none;-webkit-user-drag:none;}
+}
 .fp-cap{flex:none;font:800 8.5pt var(--sans);letter-spacing:.16em;text-transform:uppercase;
   color:var(--navy);margin-top:.13in;display:flex;justify-content:space-between;gap:.2in;}
 .fp-cap .sub{font:300 8.5pt var(--body);letter-spacing:0;text-transform:none;color:var(--ui-ink-soft);}
-.fp-note{flex:none;padding:0 var(--pad);margin-bottom:.16in;text-align:center;
+.fp-note{flex:none;padding:.16in 0 0;text-align:center;
   font:400 7.5pt var(--ui-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ui-ink-soft);}
 
 /* ---------- LOCATION ---------- */
 .loc{position:absolute;inset:0;background:var(--navy);color:var(--ow);display:flex;flex-direction:column;overflow:hidden;}
 .loc-photo{flex:none;height:42%;position:relative;overflow:hidden;background:rgba(255,255,255,.05);}
 .loc-photo img{width:100%;height:100%;object-fit:cover;display:block;}
-.loc-body{flex:1;min-height:0;padding:.42in var(--pad) .2in;display:flex;flex-direction:column;}
-.loc-eyebrow{font:800 11pt var(--sans);letter-spacing:.18em;text-transform:uppercase;color:#fff;}
-.loc-name{font:700 25pt/1.05 var(--serif);color:#fff;margin-top:.09in;}
-.loc-blurb{font:300 10pt/15pt var(--body);color:var(--ow);margin-top:.14in;max-width:6.6in;
+/* the photo eats the top of the page, so this page's .pg-h needs less
+   lead-in above it than a page that starts at the paper edge */
+.loc .pg-h{padding-top:.34in;}
+.loc-blurb{font:300 10pt/15pt var(--body);color:var(--ow);max-width:6.6in;
   max-height:.95in;overflow:hidden;}
 .loc-grid{margin-top:.28in;flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;
   gap:.24in .45in;overflow:hidden;align-content:start;}
@@ -244,24 +274,45 @@
 .ag-states .stc span{font:800 7.5pt var(--sans);letter-spacing:.18em;
   text-transform:uppercase;color:rgba(229,229,229,.72);}
 
-/* ---------- MARKETING PROGRAMME ----------
-   Three phase-accented columns, mirroring the Seller Pitch & CMA's
-   Marketing Plan page, in place of the old two-column icon grid. */
+/* ---------- MARKETING PLAN ----------
+   Copied verbatim from the Seller Pitch & CMA's page 9 (see
+   tools/seller-package/index.html) — same three phase columns, same
+   accents, same QR footer, same copy. The two pages are meant to be
+   indistinguishable, so edit them together.
+
+   Each phase carries its own accent, darkest to lightest as the listing
+   moves from pre-launch through to on-going, so the three columns read as
+   a sequence rather than three unrelated lists. The bullets pick up the
+   same colour. */
 .mk{position:absolute;inset:0;background:#fff;display:flex;flex-direction:column;overflow:hidden;}
-.mk-body{flex:1;min-height:0;padding:.42in var(--pad) .3in;display:flex;flex-direction:column;}
-.mk-intro{font:300 10pt/15pt var(--body);color:var(--navy);max-width:6.6in;flex:none;max-height:.95in;overflow:hidden;}
-.mk-grid{margin-top:.32in;flex:1;min-height:0;display:flex;gap:.36in;overflow:hidden;}
-.mk-col{flex:1;min-width:0;display:flex;flex-direction:column;}
-.mk-col-h{flex:none;height:2.2pt;margin-bottom:.2in;}
-.mk-col.c1 .mk-col-h{background:var(--navy);}
-.mk-col.c2 .mk-col-h{background:var(--sky2);}
-.mk-col.c3 .mk-col-h{background:var(--sky);}
-.mk-item{display:flex;gap:.12in;min-width:0;margin-bottom:.18in;}
-.mk-item .ico{width:.19in;height:.19in;color:var(--sky2);flex:none;margin-top:.02in;}
-.mk-col.c1 .mk-item .ico{color:var(--navy);}
-.mk-col.c3 .mk-item .ico{color:var(--sky);}
-.mk-item h4{font:800 8pt var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--navy);}
-.mk-item p{font:300 8pt/12.5pt var(--body);color:var(--ui-ink-soft);margin-top:.03in;}
+.plan3{display:flex;gap:.3in;flex:1;min-height:0;}
+.plan3 .ph3{flex:1;min-width:0;display:flex;flex-direction:column;}
+.plan3 .ph3-h{flex:none;font:800 11pt var(--sans);letter-spacing:.03em;text-transform:uppercase;
+  color:var(--navy);padding-bottom:.1in;border-bottom:2pt solid var(--sky);margin-bottom:.16in;}
+.plan3 .ph3.p1 .ph3-h{border-bottom-color:var(--navy);}
+.plan3 .ph3.p2 .ph3-h{border-bottom-color:var(--sky2);}
+.plan3 .ph3.p3 .ph3-h{border-bottom-color:var(--sky);}
+.plan3 .grp{margin-bottom:.16in;}
+.plan3 .grp-t{font:800 7pt var(--sans);letter-spacing:.13em;text-transform:uppercase;color:rgba(0,39,58,.55);margin-bottom:.06in;}
+.plan3 ul{list-style:none;margin:0;padding:0;}
+.plan3 li{padding:.05in 0 .05in .16in;position:relative;font:300 8.8pt/13pt var(--body);color:var(--navy);}
+.plan3 li::before{content:'';position:absolute;left:0;top:.095in;width:.06in;height:.06in;background:var(--sky2);}
+.plan3 .ph3.p1 li::before{background:var(--navy);}
+.plan3 .ph3.p2 li::before{background:var(--sky2);}
+.plan3 .ph3.p3 li::before{background:var(--sky);}
+
+/* footer — follow the plan, follow along: a small QR per channel */
+.plan-social{flex:none;margin-top:.22in;padding-top:.2in;border-top:.75pt solid var(--rule);
+  display:flex;justify-content:center;gap:.55in;}
+/* fixed, equal width regardless of label length, so the three QR squares
+   themselves stay evenly spaced and centered on the page */
+.plan-social .ps{flex:none;width:1.5in;text-align:center;}
+.plan-social .ps .qbox{width:.82in;height:.82in;margin:0 auto;background:#fff;
+  border:.75pt solid var(--rule);padding:.04in;}
+.plan-social .ps .qbox svg{width:100%;height:100%;display:block;}
+.plan-social .ps .pl{margin-top:.08in;font:800 6.8pt var(--sans);letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(0,39,58,.6);}
+.plan-social .ps .pv{margin-top:.02in;font:300 7.6pt var(--body);color:rgba(0,39,58,.5);}
 
 /* ---------- OVERFLOW WARNINGS (screen only) ---------- */
 @media screen{
@@ -270,11 +321,13 @@
     font:800 7pt var(--sans);letter-spacing:.12em;text-transform:uppercase;
     padding:3px 7px;border-radius:3px;pointer-events:none;white-space:nowrap;}
 }
-.warn{display:none;margin-top:9px;padding:8px 10px;border-radius:6px;
-  background:rgba(179,38,30,.09);border:1px solid rgba(179,38,30,.35);
-  font:500 10.5px/1.5 var(--body);color:#8C1D18;}
-.warn.on{display:block;}
+/* identical to the Seller Pitch & CMA and Buyer Package warning panel —
+   see assets/css/pitch.css. Shown/hidden with the `hidden` attribute, the
+   same convention those two use. */
+.warn{margin-top:10px;padding:9px 11px;border-radius:6px;background:#FFF4E5;border:1px solid #E8C99B;
+  font:400 10.5px/1.6 var(--ui-mono);color:#6B4A12;}
 .warn b{font-weight:700;}
+.warn .warn-item + .warn-item{margin-top:5px;}
 
 @media print{
   .empty-note,.over-flag{display:none !important;}
@@ -318,23 +371,6 @@
       </details>
 
       <details class="ed-sec">
-        <summary>Address <span class="hint">cover + floor plans</span></summary>
-        <div class="sec-in">
-          <div class="field">
-            <label>Property address</label>
-            <input type="text" data-field="address" placeholder="45 Crosby Street, Penthouse">
-            <div class="warn" id="warnAddr"><b>Too long.</b> The address has grown above the dark scrim on page 1, so the top of it may be unreadable.</div>
-          </div>
-          <div class="f-row">
-            <div class="field"><label>City</label><input type="text" data-field="city" placeholder="New York"></div>
-            <div class="field"><label>State</label><input type="text" data-field="state" placeholder="NY"></div>
-            <div class="field"><label>ZIP</label><input type="text" data-field="zip" placeholder="10012"></div>
-          </div>
-        </div>
-      </details>
-
-
-      <details class="ed-sec">
         <summary>Gallery <span class="hint">page 2</span></summary>
         <div class="sec-in">
           <div class="sec-note" id="bentoNote">Add 2 more photos.</div>
@@ -343,8 +379,18 @@
       </details>
 
       <details class="ed-sec">
-        <summary>Property <span class="hint">page 3 + floor plans</span></summary>
+        <summary>Property <span class="hint">cover, page 3 &amp; floor plans</span></summary>
         <div class="sec-in">
+          <div class="field">
+            <label>Property address</label>
+            <input type="text" data-field="address" placeholder="45 Crosby Street, Penthouse">
+            <div class="warn" id="warnAddr" hidden><b>Too long.</b> The address has grown above the dark scrim on page 1, so the top of it may be unreadable.</div>
+          </div>
+          <div class="f-row">
+            <div class="field"><label>City</label><input type="text" data-field="city" placeholder="New York"></div>
+            <div class="field"><label>State</label><input type="text" data-field="state" placeholder="NY"></div>
+            <div class="field"><label>ZIP</label><input type="text" data-field="zip" placeholder="10012"></div>
+          </div>
           <div class="field">
             <label>Price</label>
             <input type="text" data-field="price" placeholder="$8,950,000">
@@ -352,12 +398,12 @@
           <div class="field">
             <label>About the property</label>
             <textarea data-field="blurb" rows="5" placeholder="Perched above Crosby Street…"></textarea>
-            <div class="warn" id="warnBlurb"><b>Too long.</b> The end of this blurb is cut off on page 3.</div>
+            <div class="warn" id="warnBlurb" hidden><b>Too long.</b> The end of this blurb is cut off on page 3.</div>
           </div>
           <div class="field">
             <label>Features — one per line</label>
             <textarea data-field="features" rows="6" placeholder="Blackened-steel fireplace&#10;Calacatta kitchen"></textarea>
-            <div class="warn" id="warnFeats"><b>Too many.</b> The last features are cut off on page 3.</div>
+            <div class="warn" id="warnFeats" hidden><b>Too many.</b> The last features are cut off on page 3.</div>
           </div>
           <div class="f-row">
             <div class="field"><label>Beds</label><input type="text" data-field="beds" placeholder="4"></div>
@@ -378,10 +424,12 @@
         <div class="sec-in">
           <div class="drop" id="fpDrop" tabindex="0" role="button" aria-label="Add floor plans">
             <div class="d-big">Drop floor plans</div>
-            <div class="d-sub">two per page — label each below</div>
+            <div class="d-sub">two per page — white margins are cropped off automatically</div>
           </div>
           <input type="file" id="fpFile" accept="image/*" multiple hidden>
           <div id="fpList"></div>
+          <div class="sec-note">Each plan is trimmed to its drawing on import. Use <b>Crop</b> to
+            scale one up inside its frame, then drag it on the page to choose what shows.</div>
           <div class="field">
             <label>Footnote</label>
             <input type="text" data-field="fpNote" placeholder="Dimensions are approximate.">
@@ -405,20 +453,6 @@
       </details>
 
       <details class="ed-sec">
-        <summary>Marketing <span class="hint">specs page</span></summary>
-        <div class="sec-in">
-          <div class="field">
-            <label>Intro</label>
-            <textarea data-field="mkIntro" rows="3"></textarea>
-          </div>
-          <div class="field">
-            <label>Specs — one per line, "Title | Description"</label>
-            <textarea data-field="mkSpecs" rows="10"></textarea>
-          </div>
-        </div>
-      </details>
-
-      <details class="ed-sec">
         <summary>Agents <span class="hint">page 1, final page &amp; footers</span></summary>
         <div class="sec-in">
           <div id="rosterPick"></div>
@@ -431,6 +465,13 @@
             <label>Website</label>
             <input type="text" data-field="site" placeholder="gvcrealestateteam.com">
           </div>
+        </div>
+      </details>
+
+      <details class="ed-sec">
+        <summary>Warnings</summary>
+        <div class="sec-in">
+          <div class="warn" id="warnGeneral" hidden></div>
         </div>
       </details>
 
@@ -546,26 +587,42 @@ const state = {
   // location
   hood: '', hoodBlurb: '', locPos: { x: 50, y: 50 },
   amDining: '', amSchools: '', amTransit: '', amRec: '',
-  // marketing
-  mkIntro: 'Every GVC listing runs the same programme. Nothing here is an upsell — it is ' +
-    'what we do for each property we represent, from the first walkthrough to the closing table.',
-  mkSpecs: [
-    'Professional Photography | Full interior and exterior shoot, colour-corrected and retouched.',
-    'Twilight & Aerial | Dusk exteriors and licensed drone coverage where the property warrants it.',
-    'Floor Plans | Measured, drafted and published with every listing.',
-    '3D Virtual Tour | Matterport walkthrough hosted on the listing page.',
-    'Staging Consultation | A walkthrough with our stager before photography.',
-    'Print Collateral | Brochures, showsheets and mailers produced in house.',
-    'Digital Advertising | Targeted placement across search and social.',
-    'Email Campaigns | Announcements to our brokerage and buyer database.',
-    'Syndication | Elliman.com plus every major portal and aggregator.',
-    'Open Houses | Public and broker-only, staffed by the team.',
-    'Weekly Reporting | Traffic, feedback and pricing guidance in writing.',
-    'Closing Management | Coordination through contract, inspection and close.'
-  ].join('\n')
 };
-const SPEC_ICONS = ['camera','sun','ruler','box','home','printer','megaphone','mail',
-                    'globe','users','check','phone'];
+
+/* ============================================================
+   MARKETING PLAN — copied verbatim from the Seller Pitch & CMA.
+   Rows are Phase | Group | Title | detail; the phase groups the row into
+   one of the three columns on the page. Static GVC boilerplate, not
+   editor-driven, exactly as it is in the seller deck — if you change one
+   of the two pages, change the other.
+   ============================================================ */
+const DEFAULT_PLAN = [
+  'Pre-Launch | Media Creation | Custom photography | A full shoot with our in-house photographer, timed to the property at its best.',
+  'Pre-Launch | Media Creation | Professional floor plan | Produced in-house for every listing.',
+  'Pre-Launch | Media Creation | Property video | A cinematic walkthrough cut for the launch and for social.',
+  'Pre-Launch | Property Info | Verify all pertinent information | Confirmed against the deed, offering plan and building records before anything goes out.',
+  'Pre-Launch | Pre-Launch Marketing | Elliman &amp; REBNY notice | Immediate notice to all Elliman brokers, REBNY members and co-broke firms.',
+  'Pre-Launch | Pre-Launch Marketing | Teaser announcement | Social teaser ahead of the public listing date.',
+  'Launch | Digital Launch | Elliman.com listing | Posted with professional photos, floor plan, description and all marketing information.',
+  'Launch | Digital Launch | Brokerage &amp; contact announcement | Emailed to the entire brokerage community and our private contact lists.',
+  'Launch | Digital Launch | StreetEasy syndication | Posted with full professional details and marketing information.',
+  'Launch | Print Marketing | Marketing sheet | A professional sheet detailing the property, distributed to agents and prospective buyers.',
+  'Launch | Print Marketing | Print placements | Placed in appropriate print publications.',
+  'Launch | Print Marketing | Just Listed cards | Sent to targeted buildings in the surrounding area.',
+  'On-Going | Communication | Weekly seller updates | Market traffic feedback, both buyer and web, delivered on a weekly cadence.',
+  'On-Going | Communication | Offer qualification | Every offer qualified before it is presented.',
+  'On-Going | Communication | Showings &amp; open houses | Scheduled as needed, public or broker-specific.',
+  'On-Going | Communication | Comparable tracking | Continued tracking of similar sales, so pricing stays defensible.',
+  'On-Going | Ongoing Marketing | Bi-weekly email blasts | Sent to the entire brokerage community.',
+  'On-Going | Ongoing Marketing | Continued print &amp; web ads | As needed through the life of the listing.'
+].join('\n');
+
+/* one QR per channel under the plan — label/handle are what gets printed */
+const PLAN_SOCIAL = [
+  ['YouTube',  '@gvcrealestateteam',       'https://youtube.com/@gvcrealestateteam'],
+  ['Instagram','@gvcrealestateteam',       'https://instagram.com/gvcrealestateteam'],
+  ['LinkedIn', 'The GVC Real Estate Team', 'https://www.linkedin.com/company/the-gvc-real-estate-team']
+];
 
 let uid = 0, builder = null;
 let assign = { hero: null, infoTop: null, infoBottom: null, location: null, gallery: [] };
@@ -695,19 +752,20 @@ function pagePlan() {
   const plan = [{ t: 'cover' }, { t: 'gallery' }, { t: 'info' }];
   const fpPages = Math.max(1, Math.ceil(state.floorplans.length / 2));
   for (let i = 0; i < fpPages; i++) plan.push({ t: 'floorplan', from: i * 2, page: i + 1, of: fpPages });
-  plan.push({ t: 'location' }, { t: 'specs' }, { t: 'agent' });
+  plan.push({ t: 'location' }, { t: 'plan' }, { t: 'agent' });
   return plan;
 }
 
 /* ---------------- renderers ---------------- */
-/* one agent block, left or right; an absent agent still renders an empty
-   flex:1 side so the centre monogram never drifts off centre. */
-function cfAgent(a, side) {
-  if (!a) return '<div class="cf-agent ' + side + '"></div>';
-  const contact = [a.phone, a.email].filter(Boolean).map(escapeHtml).join(' &nbsp;·&nbsp; ');
-  return '<div class="cf-agent ' + side + '">' +
-    '<div class="cf-name">' + escapeHtml(a.name) + '</div>' +
-    (contact ? '<div class="cf-meta">' + contact + '</div>' : '') +
+/* Cover — the same markup Pitch.cover() emits for the Seller Pitch & CMA
+   and the Buyer Package, so all three covers are one design. One agent
+   block per side; an absent agent still renders an empty flex:1 side so
+   the centre monogram never drifts off centre. */
+function cbSide(a, side) {
+  if (!a) return '<div class="cb-side ' + side + '"></div>';
+  return '<div class="cb-side ' + side + '">' +
+    '<div class="cb-nm">' + escapeHtml(a.name) + '</div>' +
+    '<div class="cb-ct">' + [a.phone, a.email].filter(Boolean).map(escapeHtml).join(' &nbsp;·&nbsp; ') + '</div>' +
   '</div>';
 }
 
@@ -715,19 +773,20 @@ function renderCover(page) {
   const hero = assign.hero, city = cityLine();
   const [a1, a2] = agentObjs();
   page.innerHTML =
-    '<div class="cover">' +
-      (hero ? '<img class="cover-img" src="' + hero.url + '" alt="">' : '') +
-      '<div class="cover-mask"></div>' +
-      (hero ? '' : '<div class="empty-note">Add a photo — the cover takes the first one</div>') +
-      '<div class="cover-head">' +
-        '<div class="cv-addr">' + (escapeHtml(state.address) || '&nbsp;') + '</div>' +
-        (city ? '<div class="cv-city">' + escapeHtml(city) + '</div>' : '') +
-        (state.site ? '<div class="cv-site">' + escapeHtml(state.site) + '</div>' : '') +
+    '<div class="cv">' +
+      (hero ? '<img class="cv-img" src="' + hero.url + '" alt="">'
+            : '<div class="empty-note">Drop a cover photo<br>in the Photos panel</div>') +
+      '<div class="cv-mask"></div>' +
+      '<div class="cv-kind">Property Brochure</div>' +
+      '<div class="cv-head">' +
+        '<div class="cv-ttl">' + (escapeHtml(state.address) || '&nbsp;') + '</div>' +
+        (city ? '<div class="cv-sub">' + escapeHtml(city) + '</div>' : '') +
+        (state.site ? '<div class="cv-for">' + escapeHtml(state.site) + '</div>' : '') +
       '</div>' +
-      '<div class="cover-foot">' +
-        cfAgent(a1, 'l') +
-        '<div class="cf-mono"><img src="' + MONO + '" alt=""></div>' +
-        cfAgent(a2, 'r') +
+      '<div class="cv-bar">' +
+        cbSide(a1, 'l') +
+        '<img class="cb-mono" src="' + MONO + '" alt="">' +
+        cbSide(a2, 'r') +
       '</div>' +
     '</div>';
 }
@@ -783,7 +842,7 @@ function renderInfo(page, n, of) {
         '</div>' +
         (price ? '<div class="info-price">' + price + '</div>' : '') +
         '<div class="info-top">' +
-          '<div class="info-eyebrow">About Property</div>' +
+          '<div class="pg-h rev"><h2>The Property</h2></div>' +
           '<div class="info-blurb">' + escapeHtml(state.blurb) + '</div>' +
         '</div>' +
         '<div class="info-mid">' +
@@ -813,29 +872,41 @@ function renderInfo(page, n, of) {
   if (topPhoto) tr.addEventListener('pointerdown', e => beginPhotoDrag(e, tr, state.infoTopPos));
 }
 
+/* The crop transform for one plan. At zoom 1 the plan is letterboxed whole
+   inside its frame; above that it is enlarged about the frame centre and
+   clipped, and tx/ty pan the enlarged plan — percentages of the plan's own
+   un-transformed size, so they survive a re-render at any preview scale. */
+function fpTransform(fp) {
+  return 'transform:translate(' + (fp.tx || 0) + '%,' + (fp.ty || 0) + '%) scale(' + (fp.zoom || 1) + ')';
+}
+
 function renderFloorplan(page, spec, n, of) {
   const slice = state.floorplans.slice(spec.from, spec.from + 2);
   const items = slice.length ? slice : [null];
   page.innerHTML =
     '<div class="fp">' +
-      '<div class="sheet-head"><span class="t">Floor Plans</span>' +
-        '<span class="s">' + escapeHtml(state.address || '') +
-        (spec.of > 1 ? ' &nbsp;·&nbsp; ' + spec.page + ' of ' + spec.of : '') + '</span></div>' +
-      '<div class="fp-body">' +
+      '<div class="pg-h"><h2>Floor Plans</h2></div>' +
+      '<div class="pg-body fp-body">' +
         items.map((fp, i) =>
           '<div class="fp-item">' +
-            '<div class="fp-frame">' +
-              (fp ? '<img src="' + fp.url + '" alt="">'
+            '<div class="fp-frame' + (fp ? ' has-img' : '') + '" data-fp="' + (spec.from + i) + '">' +
+              (fp ? '<img src="' + fp.url + '" alt="" style="' + fpTransform(fp) + '">'
                   : '<div class="empty-note on-white">Drop a floor plan<br>in the Floor plans panel</div>') +
             '</div>' +
             (fp ? '<div class="fp-cap"><span>' + escapeHtml(fp.label || ('Level ' + (spec.from + i + 1))) +
                   '</span>' + (state.sqft ? '<span class="sub">' + escapeHtml(state.sqft) + ' sq ft total</span>' : '') +
                   '</div>' : '') +
           '</div>').join('') +
+        (state.fpNote ? '<div class="fp-note">' + escapeHtml(state.fpNote) + '</div>' : '') +
       '</div>' +
-      (state.fpNote ? '<div class="fp-note">' + escapeHtml(state.fpNote) + '</div>' : '') +
       pageFoot(n, of, false) +
     '</div>';
+
+  // drag inside the frame to pan a zoomed plan
+  page.querySelectorAll('.fp-frame.has-img').forEach(box => {
+    const fp = state.floorplans[parseInt(box.dataset.fp, 10)];
+    if (fp) box.addEventListener('pointerdown', e => beginFpDrag(e, box, fp));
+  });
 }
 
 function renderLocation(page, n, of) {
@@ -854,9 +925,8 @@ function renderLocation(page, n, of) {
                    state.locPos.x + '% ' + state.locPos.y + '%">'
                : '<div class="empty-note">Location photo</div>') +
       '</div>' +
-      '<div class="loc-body">' +
-        '<div class="loc-eyebrow">The Location</div>' +
-        '<div class="loc-name">' + (escapeHtml(state.hood) || '&nbsp;') + '</div>' +
+      '<div class="pg-h rev"><h2>' + (escapeHtml(state.hood) || 'The Location') + '</h2></div>' +
+      '<div class="pg-body loc-body">' +
         '<div class="loc-blurb">' + escapeHtml(state.hoodBlurb) + '</div>' +
         '<div class="loc-grid">' +
           cats.map(c =>
@@ -938,31 +1008,36 @@ function renderAgent(page, n, of) {
     '</div>';
 }
 
-function renderSpecs(page, n, of) {
-  const items = lines(state.mkSpecs).map(l => {
-    const i = l.indexOf('|');
-    return i === -1 ? [l.trim(), ''] : [l.slice(0, i).trim(), l.slice(i + 1).trim()];
-  });
-  // three even columns, read top to bottom then across — mirrors the
-  // Seller Pitch & CMA's phase-accented Marketing Plan layout
-  const perCol = Math.ceil(items.length / 3) || 1;
-  const cols = [items.slice(0, perCol), items.slice(perCol, perCol * 2), items.slice(perCol * 2)];
-  const colHtml = (col, ci) =>
-    '<div class="mk-col c' + (ci + 1) + '"><div class="mk-col-h"></div>' +
-      col.map((it, i) => {
-        const gi = ci * perCol + i;
-        return '<div class="mk-item">' + icon(SPEC_ICONS[gi % SPEC_ICONS.length]) +
-          '<div class="txt"><h4>' + escapeHtml(it[0]) + '</h4>' +
-          (it[1] ? '<p>' + escapeHtml(it[1]) + '</p>' : '') + '</div></div>';
-      }).join('') +
-    '</div>';
+/* Marketing Plan — the Seller Pitch & CMA's page 9, rebuilt here from the
+   same DEFAULT_PLAN rows with the same three phase columns and the same QR
+   footer, so the two pages print identically. */
+function renderPlan(page, n, of) {
+  const rows = lines(DEFAULT_PLAN).map(l => l.split('|').map(x => x.trim()));
+  const phases = ['Pre-Launch', 'Launch', 'On-Going'];
+  /* p1/p2/p3 carry the phase accent — navy, mid, then light */
+  const col = (phase, i) => {
+    const groups = [];
+    rows.filter(r => r[0] === phase).forEach(r => {
+      let g = groups.filter(x => x.name === r[1])[0];
+      if (!g) { g = { name: r[1], items: [] }; groups.push(g); }
+      g.items.push(r[2] + (r[3] ? ' — ' + r[3] : ''));
+    });
+    return '<div class="ph3 p' + (i + 1) + '"><div class="ph3-h">' + phase + '</div>' +
+      groups.map(g => '<div class="grp"><div class="grp-t">' + g.name + '</div><ul>' +
+        g.items.map(t => '<li>' + t + '</li>').join('') + '</ul></div>').join('') + '</div>';
+  };
+  const social = '<div class="plan-social">' + PLAN_SOCIAL.map(([label, handle, url]) =>
+    '<div class="ps">' +
+      '<div class="qbox">' + (qrSvg(url) || '') + '</div>' +
+      '<div class="pl">' + escapeHtml(label) + '</div>' +
+      '<div class="pv">' + escapeHtml(handle) + '</div>' +
+    '</div>').join('') + '</div>';
+
   page.innerHTML =
     '<div class="mk">' +
-      '<div class="sheet-head"><span class="t">Marketing Programme</span>' +
-        '<span class="s">The GVC Team &nbsp;·&nbsp; Douglas Elliman</span></div>' +
-      '<div class="mk-body">' +
-        '<div class="mk-intro">' + escapeHtml(state.mkIntro) + '</div>' +
-        '<div class="mk-grid">' + cols.map(colHtml).join('') + '</div>' +
+      '<div class="pg-h"><h2>Marketing Plan</h2></div>' +
+      '<div class="pg-body">' +
+        '<div class="plan3">' + phases.map(col).join('') + '</div>' + social +
       '</div>' +
       pageFoot(n, of, false) +
     '</div>';
@@ -979,7 +1054,7 @@ function renderPage(page, i) {
   else if (spec.t === 'floorplan') renderFloorplan(page, spec, n, of);
   else if (spec.t === 'location')  renderLocation(page, n, of);
   else if (spec.t === 'agent')     renderAgent(page, n, of);
-  else if (spec.t === 'specs')     renderSpecs(page, n, of);
+  else if (spec.t === 'plan')      renderPlan(page, n, of);
 }
 
 function redraw() {
@@ -996,15 +1071,25 @@ function redraw() {
 }
 
 /* ---------------- overflow warnings ---------------- */
+/* selector | flag printed on the page | its own warning box, if it has one |
+   the plain-English line collected into the Warnings section. Anything
+   without a box of its own falls through to #warnGeneral, exactly as the
+   Seller Pitch & CMA and Buyer Package do. */
 const OVER_TARGETS = [
-  ['.info-blurb',  'Blurb clipped',       '#warnBlurb'],
-  ['.info-feats',  'Features clipped',    '#warnFeats'],
-  ['.loc-blurb',   'Area text clipped',   null],
-  ['.loc-cat ul',  'Amenities clipped',   null],
-  ['.loc-grid',    'Categories clipped',  null],
-  ['.ag-bio',      'Statement clipped',   null],
-  ['.mk-intro',    'Intro clipped',       null],
-  ['.mk-grid',     'Specs clipped',       null]
+  ['.info-blurb',  'Blurb clipped',      '#warnBlurb',
+   'The property blurb is longer than page 3 can show. Trim it, or the end will be cut off in print.'],
+  ['.info-feats',  'Features clipped',   '#warnFeats',
+   'There are more features than page 3 can show. Remove a line or two.'],
+  ['.loc-blurb',   'Area text clipped',  null,
+   'The area description is longer than the Location page can show. Trim it, or the end will be cut off in print.'],
+  ['.loc-cat ul',  'Amenities clipped',  null,
+   'One of the Location lists is longer than fits. Remove a line or two.'],
+  ['.loc-grid',    'Categories clipped', null,
+   'The Location page has more categories than fit on it.'],
+  ['.ag-bio',      'Statement clipped',  null,
+   'The team statement is longer than the closing page can show.'],
+  ['.plan3',       'Plan clipped',       null,
+   'The Marketing Plan page is running long. Its copy is shared with the Seller Pitch & CMA \u2014 change it in both.']
 ];
 
 function flag(el, label) {
@@ -1027,16 +1112,17 @@ function checkOverflow() {
   // multi-column and grid regions overflow sideways, so both axes matter
   const over = el => !!el && (el.scrollHeight > el.clientHeight + 1 ||
                               el.scrollWidth > el.clientWidth + 1);
-  const hit = {};
+  const hit = {}, general = [];
   OVER_TARGETS.forEach(t => {
     let any = false;
     document.querySelectorAll(t[0]).forEach(el => { if (over(el)) { flag(el, t[1]); any = true; } });
     if (t[2]) hit[t[2]] = any;
+    else if (any && general.indexOf(t[3]) === -1) general.push(t[3]);
   });
 
   // page 1: has the address grown up out of the bottom scrim?
   let addrOver = false;
-  const head = document.querySelector('.cover-head');
+  const head = document.querySelector('.cv-head');
   if (head) {
     const page = head.closest('.page'), pr = page.getBoundingClientRect();
     const bot = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--mask-bot'));
@@ -1045,9 +1131,13 @@ function checkOverflow() {
     if (addrOver) flag(head, 'Above the scrim');
   }
 
-  $('#warnBlurb').classList.toggle('on', !!hit['#warnBlurb']);
-  $('#warnFeats').classList.toggle('on', !!hit['#warnFeats']);
-  $('#warnAddr').classList.toggle('on', addrOver);
+  $('#warnBlurb').hidden = !hit['#warnBlurb'];
+  $('#warnFeats').hidden = !hit['#warnFeats'];
+  $('#warnAddr').hidden = !addrOver;
+
+  const gen = $('#warnGeneral');
+  gen.innerHTML = general.map(m => '<div class="warn-item">' + escapeHtml(m) + '</div>').join('');
+  gen.hidden = !general.length;
 }
 
 /* ---------------- drag: swap bento cells ---------------- */
@@ -1125,6 +1215,60 @@ function beginPhotoDrag(e, box, pos) {
   box.addEventListener('pointermove', move);
   box.addEventListener('pointerup', done);
   box.addEventListener('pointercancel', done);
+}
+
+/* ---------------- drag: pan a zoomed floor plan ----------------
+   The plan is transformed, not object-positioned, so the pan is measured
+   against the image's own untransformed layout box (offsetWidth/Height)
+   and clamped so an edge can never be dragged inside the frame. */
+function fpClamp(fp, box) {
+  const img = box.querySelector('img');
+  if (!img || !img.offsetWidth) return;
+  const maxX = Math.max(0, (img.offsetWidth * fp.zoom - box.clientWidth) / 2 / img.offsetWidth * 100);
+  const maxY = Math.max(0, (img.offsetHeight * fp.zoom - box.clientHeight) / 2 / img.offsetHeight * 100);
+  fp.tx = Math.max(-maxX, Math.min(maxX, fp.tx || 0));
+  fp.ty = Math.max(-maxY, Math.min(maxY, fp.ty || 0));
+}
+
+function beginFpDrag(e, box, fp) {
+  const img = box.querySelector('img');
+  if (!img || !img.offsetWidth || (fp.zoom || 1) <= 1.001) return;
+  e.preventDefault();
+  const page = box.closest('.page');
+  const scale = page ? page.getBoundingClientRect().width / (8.5 * 96) : 1;
+  const start = { x: e.clientX, y: e.clientY, tx: fp.tx || 0, ty: fp.ty || 0 };
+  box.classList.add('is-moving');
+  try { box.setPointerCapture(e.pointerId); } catch (_) {}
+
+  const move = ev => {
+    fp.tx = start.tx + ((ev.clientX - start.x) / scale) / (img.offsetWidth * fp.zoom) * 100 * fp.zoom;
+    fp.ty = start.ty + ((ev.clientY - start.y) / scale) / (img.offsetHeight * fp.zoom) * 100 * fp.zoom;
+    fpClamp(fp, box);
+    img.style.transform = 'translate(' + fp.tx + '%,' + fp.ty + '%) scale(' + fp.zoom + ')';
+  };
+  const done = ev => {
+    box.removeEventListener('pointermove', move);
+    box.removeEventListener('pointerup', done);
+    box.removeEventListener('pointercancel', done);
+    try { box.releasePointerCapture(ev.pointerId); } catch (_) {}
+    box.classList.remove('is-moving');
+  };
+  box.addEventListener('pointermove', move);
+  box.addEventListener('pointerup', done);
+  box.addEventListener('pointercancel', done);
+}
+
+/* Re-clamp every plan's pan against its frame — called after a zoom
+   change, so zooming back out pulls the plan back inside the frame
+   instead of leaving a white wedge along one edge. */
+function clampAllFp() {
+  document.querySelectorAll('.fp-frame.has-img').forEach(box => {
+    const fp = state.floorplans[parseInt(box.dataset.fp, 10)];
+    if (!fp) return;
+    fpClamp(fp, box);
+    const img = box.querySelector('img');
+    if (img) img.style.transform = 'translate(' + fp.tx + '%,' + fp.ty + '%) scale(' + fp.zoom + ')';
+  });
 }
 
 /* ---------------- editor UI ---------------- */
@@ -1268,7 +1412,10 @@ function renderFpList() {
   host.innerHTML = '';
   state.floorplans.forEach((fp, i) => {
     const row = document.createElement('div');
-    row.className = 'img-row';
+    row.className = 'img-row fp-row';
+
+    const top = document.createElement('div');
+    top.className = 'fp-top';
     const thumb = document.createElement('img');
     thumb.className = 'img-thumb'; thumb.src = fp.url; thumb.alt = '';
     const inp = document.createElement('input');
@@ -1281,7 +1428,34 @@ function renderFpList() {
       state.floorplans = state.floorplans.filter(x => x.id !== fp.id);
       renderFpList(); redraw();
     });
-    row.append(thumb, inp, del);
+    top.append(thumb, inp, del);
+
+    // crop row: zoom in on the plan, then drag it around on the page
+    const crop = document.createElement('div');
+    crop.className = 'fp-crop';
+    const lab = document.createElement('span');
+    lab.className = 'fp-crop-l'; lab.textContent = 'Crop';
+    const rng = document.createElement('input');
+    rng.type = 'range'; rng.min = '100'; rng.max = '300'; rng.step = '1';
+    rng.value = String(Math.round((fp.zoom || 1) * 100));
+    rng.title = 'Scale the plan inside its frame, then drag it on the page to crop';
+    const val = document.createElement('span');
+    val.className = 'fp-crop-v'; val.textContent = rng.value + '%';
+    rng.addEventListener('input', () => {
+      fp.zoom = parseInt(rng.value, 10) / 100;
+      val.textContent = rng.value + '%';
+      clampAllFp();
+    });
+    const rst = document.createElement('button');
+    rst.type = 'button'; rst.className = 'shot-btn'; rst.textContent = 'Reset';
+    rst.addEventListener('click', () => {
+      fp.zoom = 1; fp.tx = 0; fp.ty = 0;
+      rng.value = '100'; val.textContent = '100%';
+      redraw();
+    });
+    crop.append(lab, rng, val, rst);
+
+    row.append(top, crop);
     host.appendChild(row);
   });
 }
@@ -1315,15 +1489,16 @@ function fileToImage(file) {
     img.src = url;
   });
 }
-function reencode(img, maxEdge, quality, srcY) {
-  srcY = srcY || 0;
-  const sw = img.naturalWidth, sh = img.naturalHeight - srcY;
+/* rect is a source-pixel crop box; omit it for the whole image */
+function reencode(img, maxEdge, quality, rect) {
+  const sx = rect ? rect.x : 0, sy = rect ? rect.y : 0;
+  const sw = rect ? rect.w : img.naturalWidth, sh = rect ? rect.h : img.naturalHeight;
   const r = Math.min(1, maxEdge / Math.max(sw, sh));
   const w = Math.round(sw * r), h = Math.round(sh * r);
   const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
   const cx = cv.getContext('2d');
   cx.fillStyle = '#fff'; cx.fillRect(0, 0, w, h);   // flatten transparency, normalize CMYK -> RGB
-  cx.drawImage(img, 0, srcY, sw, sh, 0, 0, w, h);
+  cx.drawImage(img, sx, sy, sw, sh, 0, 0, w, h);
   return cv.toDataURL('image/jpeg', quality);
 }
 /* Same header-band detection as the Showsheet: GVC floorplan exports lead
@@ -1354,13 +1529,57 @@ function floorplanHeaderY(img) {
   return 0;
 }
 
+/* Auto-crop: floor-plan exports are mostly white margin, which makes the
+   drawing print small inside its frame. Find the bounding box of anything
+   that isn't paper-white, keep a hair of margin, and crop to that.
+
+   The scan runs on a downsampled copy — a 4000px plan does not need
+   per-pixel accuracy to find its own edges, and the full-size read is slow.
+   If the box comes back implausibly tight (a stray speck, a blank scan) the
+   crop is abandoned and the plan comes through whole. */
+function autoTrimRect(img, startY) {
+  const W = img.naturalWidth, y0 = startY || 0, H = img.naturalHeight - y0;
+  const whole = { x: 0, y: y0, w: W, h: H };
+  if (W < 8 || H < 8) return whole;
+  try {
+    const s = Math.min(1, 700 / Math.max(W, H));
+    const w = Math.max(1, Math.round(W * s)), h = Math.max(1, Math.round(H * s));
+    const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+    const cx = cv.getContext('2d', { willReadFrequently: true });
+    cx.fillStyle = '#fff'; cx.fillRect(0, 0, w, h);
+    cx.drawImage(img, 0, y0, W, H, 0, 0, w, h);
+    const d = cx.getImageData(0, 0, w, h).data;
+    let minX = w, minY = h, maxX = -1, maxY = -1;
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const i = (y * w + x) * 4;
+        if (.299 * d[i] + .587 * d[i + 1] + .114 * d[i + 2] < 242) {
+          if (x < minX) minX = x;
+          if (x > maxX) maxX = x;
+          if (y < minY) minY = y;
+          if (y > maxY) maxY = y;
+        }
+      }
+    }
+    if (maxX < 0) return whole;                       // nothing but paper
+    const pad = Math.round(Math.max(w, h) * .012);
+    minX = Math.max(0, minX - pad); minY = Math.max(0, minY - pad);
+    maxX = Math.min(w - 1, maxX + pad); maxY = Math.min(h - 1, maxY + pad);
+    const rx = Math.floor(minX / s), ry = Math.floor(minY / s);
+    const rw = Math.min(W - rx, Math.ceil((maxX - minX + 1) / s));
+    const rh = Math.min(H - ry, Math.ceil((maxY - minY + 1) / s));
+    if (rw < W * .25 || rh < H * .25) return whole;   // too tight to trust
+    return { x: rx, y: y0 + ry, w: rw, h: rh };
+  } catch (e) { return whole; }
+}
+
 async function addFloorplans(files) {
   for (const f of [...files].filter(f => f.type.startsWith('image/'))) {
     try {
       const img = await fileToImage(f);
-      const cropY = floorplanHeaderY(img);
-      const url = reencode(img, 2400, .9, cropY);
-      state.floorplans.push({ id: ++uid, name: f.name, url, label: '' });
+      const rect = autoTrimRect(img, floorplanHeaderY(img));
+      const url = reencode(img, 2400, .9, rect);
+      state.floorplans.push({ id: ++uid, name: f.name, url, label: '', zoom: 1, tx: 0, ty: 0 });
       renderFpList(); redraw();
     } catch (e) { /* unreadable file — skip it */ }
   }
@@ -1439,8 +1658,10 @@ $('#btnPreview').addEventListener('click', () => {
     probe.src = img.url;
   });
   state.floorplans = [
-    { id: ++uid, name: 'floorplan.jpg', url: '../showsheet/sample/floorplan.jpg', label: 'First Floor' },
-    { id: ++uid, name: 'floorplan.jpg', url: '../showsheet/sample/floorplan.jpg', label: 'Second Floor' }
+    { id: ++uid, name: 'floorplan.jpg', url: '../showsheet/sample/floorplan.jpg',
+      label: 'First Floor', zoom: 1, tx: 0, ty: 0 },
+    { id: ++uid, name: 'floorplan.jpg', url: '../showsheet/sample/floorplan.jpg',
+      label: 'Second Floor', zoom: 1, tx: 0, ty: 0 }
   ];
   state.agents = PREVIEW.agents.slice();
   state.bentoOrder = []; state.bentoVariant = 0;
@@ -1485,6 +1706,14 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(checkOverf
 .fp-label{flex:1;min-width:0;border:1px solid var(--ui-rule);border-radius:6px;background:#fff;
   font:500 11px var(--body);color:var(--navy);padding:6px 8px;}
 .fp-label:focus{outline:2px solid var(--sky);outline-offset:1px;}
+/* a floor-plan row is two lines: name on top, crop control under it */
+.fp-row{flex-direction:column;align-items:stretch;gap:8px;}
+.fp-top{display:flex;align-items:center;gap:9px;}
+.fp-crop{display:flex;align-items:center;gap:8px;}
+.fp-crop-l{flex:none;font:800 9px var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--ui-ink-soft);}
+.fp-crop input[type=range]{flex:1;min-width:0;accent-color:var(--sky2);height:16px;}
+.fp-crop input[type=range]:focus-visible{outline:2px solid var(--sky);outline-offset:2px;}
+.fp-crop-v{flex:none;width:34px;text-align:right;font:400 10px var(--ui-mono);color:var(--ui-ink-soft);}
 .img-x{flex:none;border:1px solid var(--ui-rule);background:#fff;color:var(--ui-ink-soft);
   font:800 10px/1 var(--sans);width:20px;height:20px;border-radius:50%;cursor:pointer;padding:0;
   transition:background .15s,border-color .15s,color .15s;}
