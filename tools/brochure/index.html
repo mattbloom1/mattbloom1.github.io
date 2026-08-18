@@ -161,9 +161,15 @@
    The last page in the deck, styled to match the Seller Pitch & CMA and
    Buyer Package's closing page: a centered "Thank You" in place of a plain
    title, then the team, then a footer with the licensed states. */
+/* padding and the space-between rhythm are the Seller Pitch & CMA and
+   Buyer Package closing page's exactly, not the brochure's own --pad
+   (.6in vs their .62in) — this page borrows their spacing system wholesale
+   rather than the rest of the brochure's. */
 .ag{position:absolute;inset:0;background:var(--navy);color:var(--ow);
-  display:flex;flex-direction:column;padding:.7in var(--pad) .5in;overflow:hidden;}
-.ag-top{position:relative;flex:none;text-align:center;padding-bottom:.28in;border-bottom:1pt solid rgba(229,229,229,.25);}
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:.5in .62in .34in;overflow:hidden;}
+.ag-top{position:relative;flex:none;text-align:center;margin-bottom:.34in;
+  padding-bottom:.28in;border-bottom:1pt solid rgba(83,199,220,.35);}
 .ag-top .ag-kicker{font:800 8pt var(--sans);letter-spacing:.28em;text-transform:uppercase;color:var(--sky);}
 .ag-top .ag-thanks{margin-top:.1in;font:700 34pt/1.1 var(--serif);color:#fff;}
 .ag-qr{position:absolute;top:0;right:0;width:.85in;text-align:center;}
@@ -174,7 +180,7 @@
 /* agent cards — identical to the Seller Pitch & CMA and Buyer Package
    closing pages: the cutout sits on a light panel so the shadow and the
    name band have something solid to sit against. */
-.ag-row{flex:1;min-height:0;display:flex;gap:.45in;margin-top:.42in;justify-content:center;}
+.ag-row{flex:none;display:flex;gap:.55in;justify-content:center;}
 .ag-c{flex:0 1 2.5in;max-width:2.5in;text-align:center;}
 .ag-c .shot{position:relative;width:100%;aspect-ratio:1/1;overflow:hidden;
   background:linear-gradient(#F4F3EF,#E4E2DC);box-shadow:0 .14in .3in rgba(0,0,0,.4);}
@@ -189,16 +195,17 @@
 .ag-c .ct span{font:300 9pt/1.5 var(--body);color:var(--ow);}
 .ag-bio{flex:none;max-height:1.5in;overflow:hidden;font:300 9.5pt/15pt var(--body);
   color:var(--ow);margin-top:.34in;padding-top:.26in;border-top:.75pt solid rgba(83,199,220,.35);text-align:center;}
-.ag-foot{flex:none;margin-top:.3in;display:flex;align-items:center;justify-content:space-between;gap:.3in;}
+.ag-foot{flex:none;margin-top:.34in;padding-top:.26in;border-top:1pt solid rgba(83,199,220,.35);
+  display:flex;align-items:center;justify-content:space-between;gap:.3in;}
 .ag-foot .site{font:800 8.5pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:#fff;}
 .ag-foot img{height:.44in;width:auto;display:block;}
-.ag-states{flex:none;display:flex;justify-content:center;gap:.5in;margin-top:.26in;
-  padding-top:.2in;border-top:1pt solid rgba(229,229,229,.25);}
+.ag-states{flex:none;display:flex;justify-content:center;gap:.55in;margin-top:.26in;
+  padding-top:.22in;border-top:1pt solid rgba(83,199,220,.35);}
 .ag-states .stc{text-align:center;}
-.ag-states .stc img{display:block;margin:0 auto .07in;height:.42in;width:auto;
+.ag-states .stc img{display:block;margin:0 auto .08in;height:.5in;width:auto;
   filter:brightness(0) invert(1);opacity:.28;}
-.ag-states .stc span{font:800 7pt var(--sans);letter-spacing:.16em;
-  text-transform:uppercase;color:rgba(229,229,229,.7);}
+.ag-states .stc span{font:800 7.5pt var(--sans);letter-spacing:.18em;
+  text-transform:uppercase;color:rgba(229,229,229,.72);}
 
 /* ---------- MARKETING PROGRAMME ----------
    Three phase-accented columns, mirroring the Seller Pitch & CMA's
