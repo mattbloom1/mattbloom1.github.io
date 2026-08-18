@@ -292,11 +292,10 @@
       </details>
 
       <details class="ed-sec">
-        <summary>Client &amp; cover <span class="hint">cover + footers</span></summary>
+        <summary>Client &amp; cover <span class="hint">cover</span></summary>
         <div class="sec-in">
           <div class="field"><label>Prepared for</label><input type="text" data-f="client" placeholder="Mr. &amp; Mrs. Harrington"></div>
           <div class="field"><label>Date</label><input type="text" data-f="date" placeholder="August 2026"></div>
-          <div class="field"><label>Website shown in footers</label><input type="text" data-f="site" placeholder="gvcrealestateteam.com"></div>
         </div>
       </details>
 
@@ -376,6 +375,11 @@
 const P = window.Pitch, esc = P.esc;
 const DECK = 'Seller Pitch & CMA';
 
+/* The website printed in every footer. Not editable — the footer, the
+   social handles and the links are all fixed team boilerplate in all three
+   builders, so none of them can print a wrong one. */
+const SITE = 'gvcrealestateteam.com';
+
 /* ============================================================
    STATE
    ============================================================ */
@@ -383,7 +387,7 @@ const state = {
   address:'', city:'', state:'', zip:'',
   beds:'', baths:'', sqft:'', ptype:'', year:'', taxes:'', cc:'',
   blurb:'', features:'',
-  client:'', date:'', site:'gvcrealestateteam.com',
+  client:'', date:'',
   photos:[], map:null,
   comps:[],
   priceLow:'', priceMid:'', priceHigh:'', recBand:'mid',
@@ -614,7 +618,7 @@ function pgCover() {
 }
 
 function pgToc(n) {
-  return P.page({ deck:DECK, n, of:OF, site:state.site,
+  return P.page({ deck:DECK, n, of:OF, site:SITE,
     title:'Contents',
     body: P.toc(PAGES.slice(1).map((p, i) => ({ page:i + 2, title:p.title })))
   });
@@ -661,7 +665,7 @@ function pgAbout(n) {
       '<div class="tb c3"><h4>Personalized Showings<br><b>No Lockboxes!</b></h4></div>' +
       '<div class="tb c2"><h4>We <b>Gather Info Directly</b><br>from the Buyer</h4></div>' +
     '</div>';
-  return P.page({ deck:DECK, n, of:OF, site:state.site,
+  return P.page({ deck:DECK, n, of:OF, site:SITE,
     title:'Our Team', body });
 }
 
@@ -713,7 +717,7 @@ function pgStudio(n) {
         'breathtaking films and photography, capturing each home&rsquo;s essence and showcasing it at ' +
         'its absolute best.</p></div>' +
     '</div>';
-  return P.page({ deck:DECK, n, of:OF, site:state.site,
+  return P.page({ deck:DECK, n, of:OF, site:SITE,
     title:'Marketing', body });
 }
 
@@ -740,7 +744,7 @@ function pgProperty(n) {
         '<ul class="feat">' + feats.map(f => '<li>' + esc(f) + '</li>').join('') + '</ul>' +
       '</div>' +
     '</div>';
-  return P.page({ deck:DECK, n, of:OF, site:state.site,
+  return P.page({ deck:DECK, n, of:OF, site:SITE,
     title: state.address || 'Your Property', body });
 }
 
@@ -749,7 +753,7 @@ function pgMap(n) {
     '<div class="map-wrap"' + (state.map ? ' data-pos="map"' : '') + '>' + (state.map
       ? '<img src="' + state.map.url + '" alt="" style="object-position:' + posFor('map').x + '% ' + posFor('map').y + '%">'
       : '<div class="empty-note on-white">Drop a map export<br>in the Photos panel</div>') + '</div>';
-  return P.page({ deck:DECK, n, of:OF, site:state.site,
+  return P.page({ deck:DECK, n, of:OF, site:SITE,
     title:'Where We Have Sold', body });
 }
 
@@ -772,7 +776,7 @@ function pgComps(n) {
       '<th class="num">$ / sq ft</th><th class="num">' + (window.icon ? window.icon('bed','hi') : '') + 'Bed / Bath</th><th class="num">Date</th>' +
     '</tr></thead><tbody>' + tr(sub, true) + rows.map(c => tr(c, false)).join('') + '</tbody></table>' +
     (rows.length ? '' : '<div class="empty-note on-white" style="position:relative;margin-top:.6in">Add comparables in the panel</div>');
-  return P.page({ deck:DECK, n, of:OF, site:state.site,
+  return P.page({ deck:DECK, n, of:OF, site:SITE,
     title:'Comparable Sales', body });
 }
 
@@ -810,7 +814,7 @@ function pgStrategy(n) {
       ? '<img src="' + slot('strategy') + '" alt="" style="object-position:' +
           posFor('strategy').x + '% ' + posFor('strategy').y + '%">'
       : '<div class="empty-note on-white">Tag a photo &ldquo;Strategy page&rdquo;</div>') + '</div>';
-  return P.page({ deck:DECK, n, of:OF, site:state.site,
+  return P.page({ deck:DECK, n, of:OF, site:SITE,
     title:'The Listing Strategy', body });
 }
 
@@ -841,7 +845,7 @@ function pgPlan(n) {
     '</div>';
   }).join('') + '</div>';
   const body = '<div class="plan3">' + phases.map(col).join('') + '</div>' + social;
-  return P.page({ deck:DECK, n, of:OF, site:state.site,
+  return P.page({ deck:DECK, n, of:OF, site:SITE,
     title:'Marketing Plan', body });
 }
 
@@ -854,7 +858,7 @@ function pgPrep(n) {
         '<span>' + name + '</span></div><ul>' +
         items.split(';').map(t => '<li><i></i><span>' + t + '</span></li>').join('') +
       '</ul></div>').join('') + '</div>';
-  return P.page({ deck:DECK, n, of:OF, site:state.site,
+  return P.page({ deck:DECK, n, of:OF, site:SITE,
     title:'The Sales Plan', body });
 }
 
@@ -874,7 +878,7 @@ function pgReviews(n) {
     '<div class="quotes">' + rs.map(([q, who]) =>
     '<div class="quote"><p>' + esc(q) + '</p>' +
     (who ? '<div class="who">' + esc(who) + '</div>' : '') + '</div>').join('') + '</div>';
-  return P.page({ deck:DECK, n, of:OF, site:state.site,
+  return P.page({ deck:DECK, n, of:OF, site:SITE,
     title:'What Our Clients Say', body });
 }
 
@@ -900,7 +904,7 @@ function pgVideos(n) {
         '</div>';
       }).join('') + '</div>' +
     '</div>';
-  return P.page({ deck:DECK, n, of:OF, site:state.site,
+  return P.page({ deck:DECK, n, of:OF, site:SITE,
     title:'Professional Videos', body });
 }
 
@@ -917,7 +921,7 @@ const STATES = [
 /* Closing page. Every block on it is built by the shared helpers, so this
    page and the Buyer Package's and the Brochure's are one design. */
 function pgContact(n) {
-  const site = 'https://' + String(state.site || 'gvcrealestateteam.com').replace(/^https?:\/\//, '');
+  const site = 'https://' + SITE;
   const qr = qrSvg(site);
   const body =
     '<div class="cx-top">' +
@@ -931,7 +935,7 @@ function pgContact(n) {
     '</div>' +
     '<div class="states">' + STATES.map(([nm, art]) =>
       '<div class="stc"><img src="' + art + '" alt=""><span>' + esc(nm) + '</span></div>').join('') + '</div>';
-  return P.page({ deck:DECK, n, of:OF, site:state.site, reversed:true, cls:'close',
+  return P.page({ deck:DECK, n, of:OF, site:SITE, reversed:true, cls:'close',
     title:'Thank You', body });
 }
 

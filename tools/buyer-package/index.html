@@ -44,8 +44,10 @@
   color:rgba(0,39,58,.55);width:1.15in;}
 .ws .wf i{flex:1;border-bottom:.75pt solid rgba(0,39,58,.35);height:.16in;display:block;}
 
-/* p5 — financing. The numbers here are illustrative until a lender signs
-   off on them, so a diagonal stamp keeps that from being missed in print. */
+/* Pages whose figures are illustrative until somebody signs off on them
+   carry a diagonal stamp, so that never gets missed in print: the
+   financing estimate (until a lender confirms it), and the search criteria
+   worksheet (which is filled in by hand and quoted back later). */
 .check-stamp{position:absolute;top:38%;left:50%;transform:translate(-50%,-50%) rotate(-18deg);
   font:800 46pt/1 var(--sans);letter-spacing:.06em;color:rgba(198,50,50,.16);
   white-space:nowrap;pointer-events:none;z-index:5;}
@@ -55,7 +57,14 @@ table.tbl tr.total td{border-top:1.2pt solid var(--navy);border-bottom:0;
   font-weight:700;padding-top:.11in;}
 .cost-note{margin-top:auto;padding-top:.2in;font:300 8.5pt/13pt var(--body);color:rgba(0,39,58,.62);}
 
-/* p7 — offer & negotiation: each card's contents centered rather than
+/* comps table — same treatment as the Seller Pitch & CMA's page 7, so a
+   buyer looking at comparables sees the table their seller counterpart
+   would. Small glyphs in the numeric heads, roomier rows. */
+#compTable th .hi{width:9pt;height:9pt;display:inline-block;vertical-align:-1.5pt;margin-right:.04in;color:rgba(0,39,58,.5);}
+#compTable td{padding-top:.16in;padding-bottom:.16in;}
+.comps-note{margin-top:auto;padding-top:.2in;font:300 8.5pt/13pt var(--body);color:rgba(0,39,58,.62);}
+
+/* offer & negotiation: each card's contents centered rather than
    left-set, to match the rest of the deck's card treatment */
 .pg[data-key="offer"] .card{text-align:center;}
 .pg[data-key="offer"] .card .ci{margin:0 auto .1in;}
@@ -97,12 +106,11 @@ table.tbl tr.total td{border-top:1.2pt solid var(--navy);border-bottom:0;
       </details>
 
       <details class="ed-sec">
-        <summary>Client &amp; cover <span class="hint">cover + footers</span></summary>
+        <summary>Client &amp; cover <span class="hint">cover</span></summary>
         <div class="sec-in">
           <div class="field"><label>Prepared for</label><input type="text" data-f="client" placeholder="Priya &amp; Daniel Rao"></div>
           <div class="field"><label>Date</label><input type="text" data-f="date" placeholder="August 2026"></div>
           <div class="field"><label>Market / area</label><input type="text" data-f="area" placeholder="SoHo &amp; Tribeca, Manhattan"></div>
-          <div class="field"><label>Website shown in footers</label><input type="text" data-f="site" placeholder="gvcrealestateteam.com"></div>
         </div>
       </details>
 
@@ -133,21 +141,29 @@ table.tbl tr.total td{border-top:1.2pt solid var(--navy);border-bottom:0;
       </details>
 
       <details class="ed-sec">
-        <summary>Closing costs <span class="hint">page 8</span></summary>
+        <summary>Comparable sales <span class="hint">optional page</span></summary>
+        <div class="sec-in">
+          <div class="field"><label>Include this page</label>
+            <div class="seg pick" id="compsPick" role="group" aria-label="Include the comparable sales page">
+              <button type="button" data-comps="1">Include</button>
+              <button type="button" data-comps="0">Leave out</button>
+            </div>
+          </div>
+          <div class="rowlist" id="compList"></div>
+          <button class="btn sm ghost" id="addComp" style="margin-top:10px">Add comparable</button>
+          <div class="sec-note">What the buyer is bidding against. Leave the page out and the deck
+            renumbers itself, contents page included.</div>
+          <div class="warn" id="warnComps" hidden></div>
+        </div>
+      </details>
+
+      <details class="ed-sec">
+        <summary>Closing costs <span class="hint">closing costs page</span></summary>
         <div class="sec-in">
           <div class="field"><label>Line items <span style="text-transform:none;letter-spacing:0">(one per line: Item | amount or %)</span></label>
             <textarea data-f="costs" rows="8"></textarea></div>
           <div class="sec-note">A trailing % bills against the purchase price; &ldquo;1.925% loan&rdquo; bills against the mortgage.</div>
           <div class="warn" id="warnCosts" hidden></div>
-        </div>
-      </details>
-
-      <details class="ed-sec">
-        <summary>Social &amp; links <span class="hint">page 9</span></summary>
-        <div class="sec-in">
-          <div class="field"><label>Social &amp; links <span style="text-transform:none;letter-spacing:0">(one per line: Label | value — Instagram, YouTube and LinkedIn go in the Social column)</span></label>
-            <textarea data-f="links" rows="6"></textarea></div>
-          <div class="warn" id="warnLinks" hidden></div>
         </div>
       </details>
 
@@ -200,12 +216,17 @@ const P = window.Pitch, esc = P.esc;
 const DECK = 'Buyer Package';
 
 const state = {
-  client:'', date:'', area:'', site:'gvcrealestateteam.com',
+  client:'', date:'', area:'',
   photos:[],
   steps:'', price:'', downPct:'20', rate:'', term:'30', lender:'',
-  costs:'', links:'', agents:[],
+  costs:'', comps:[], showComps:true, agents:[],
   pos:{}
 };
+
+/* The website printed in every footer. Not editable — the footer, the
+   social handles and the links are all fixed team boilerplate in all three
+   builders, so none of them can print a wrong one. */
+const SITE = 'gvcrealestateteam.com';
 function posFor(key) { return state.pos[key] || (state.pos[key] = { x: 50, y: 50 }); }
 
 const DEFAULT_STEPS = [
@@ -228,18 +249,20 @@ const DEFAULT_COSTS = [
   'Managing agent / board fees | 1500'
 ].join('\n');
 
-/* Same default content as the Seller Pitch & CMA's closing-page footer,
-   social entries first — kept in one editable field, but split into the
-   same Social/Links columns as the seller deck at render time. */
+/* Identical content and order to the Seller Pitch & CMA's and the
+   Brochure's closing-page footer, and not editable in any of the three, so
+   the team's own handles can never be typed wrong on a client's copy. */
+const DEFAULT_SOCIAL = [
+  ['Instagram', '@gvcrealestateteam'],
+  ['YouTube',   '@gvcrealestateteam'],
+  ['LinkedIn',  'The GVC Real Estate Team']
+];
 const DEFAULT_LINKS = [
-  'Instagram | @gvcrealestateteam',
-  'YouTube | @gvcrealestateteam',
-  'LinkedIn | The GVC Real Estate Team',
-  'Our listings | gvcrealestateteam.com/listings',
-  'Douglas Elliman | elliman.com',
-  'Market reports | gvcrealestateteam.com/market',
-  'Book a call | gvcrealestateteam.com/contact'
-].join('\n');
+  ['Our listings',    'gvcrealestateteam.com/listings'],
+  ['Douglas Elliman', 'elliman.com'],
+  ['Market reports',  'gvcrealestateteam.com/market'],
+  ['Book a call',     'gvcrealestateteam.com/contact']
+];
 
 /* ---------- helpers ---------- */
 const headshotFor = a => a.photo;
@@ -297,18 +320,27 @@ function monthly() {
 }
 
 /* ---------- page list ---------- */
-const PAGES = [
-  { key:'cover',   title:'Cover' },
-  { key:'toc',     title:'Contents' },
-  { key:'why',     title:'Why Work With Us' },
-  { key:'process', title:'The Buying Process' },
-  { key:'finance', title:'Financing' },
-  { key:'criteria',title:'Your Search Criteria' },
-  { key:'offer',   title:'Offer & Negotiation' },
-  { key:'costs',   title:'Closing Costs' },
-  { key:'next',    title:'Thank You' }
-];
-const OF = PAGES.length;
+/* The deck is assembled per render rather than fixed, because the
+   comparables page is optional — dropping it has to renumber every page
+   after it, the running footers and the contents page all at once. */
+function pageList() {
+  const pages = [
+    { key:'cover',   title:'Cover' },
+    { key:'toc',     title:'Contents' },
+    { key:'why',     title:'Why Work With Us' },
+    { key:'process', title:'The Buying Process' },
+    { key:'finance', title:'Financing' },
+    { key:'criteria',title:'Your Search Criteria' }
+  ];
+  if (state.showComps) pages.push({ key:'comps', title:'Comparable Sales' });
+  pages.push(
+    { key:'offer', title:'Offer & Negotiation' },
+    { key:'costs', title:'Closing Costs' },
+    { key:'next',  title:'Thank You' }
+  );
+  return pages;
+}
+let PAGES = pageList(), OF = PAGES.length;
 
 /* ---------- renderers ---------- */
 function pgCover() {
@@ -325,7 +357,7 @@ function pgCover() {
 }
 
 function pgToc(n) {
-  return P.page({ deck:DECK, n, of:OF, site:state.site, title:'Contents',
+  return P.page({ deck:DECK, n, of:OF, site:SITE, title:'Contents',
     body: P.toc(PAGES.slice(1).map((p, i) => ({ page:i + 2, title:p.title }))) });
 }
 
@@ -351,7 +383,7 @@ function pgWhy(n) {
         '<div class="stat"><div class="v">50+</div><div class="l">Years combined experience</div></div>' +
       '</div></div>' +
     '</div>';
-  return P.page({ deck:DECK, n, of:OF, site:state.site,
+  return P.page({ deck:DECK, n, of:OF, site:SITE,
     title:'Why Work With Us', body });
 }
 
@@ -362,7 +394,7 @@ function pgProcess(n) {
       '<div class="st">' + esc(t) + '</div>' +
       (d ? '<div class="sd">' + esc(d) + '</div>' : '') +
     '</div></div>').join('') + '</div>';
-  return P.page({ deck:DECK, n, of:OF, site:state.site,
+  return P.page({ deck:DECK, n, of:OF, site:SITE,
     title:'The Buying Process', body });
 }
 
@@ -388,13 +420,14 @@ function pgFinance(n) {
     (state.lender ? '<div class="copy">' + P.lines(state.lender) + '</div>' : '') +
     '<div class="cost-note">Estimates only: principal and interest, excluding taxes, insurance and ' +
     'common charges. Your lender&rsquo;s figures govern.</div>';
-  return P.page({ deck:DECK, n, of:OF, site:state.site,
+  return P.page({ deck:DECK, n, of:OF, site:SITE,
     title:'Financing', body });
 }
 
 function pgCriteria(n) {
   const field = lab => '<div class="wf"><span>' + esc(lab) + '</span><i></i></div>';
   const body =
+    '<div class="check-stamp">CHECK ACCURACY</div>' +
     '<div class="lede">Fill this in together at our first meeting. It is the brief we search against.</div>' +
     '<div class="ws">' +
       '<div class="wl">The essentials</div>' +
@@ -409,8 +442,38 @@ function pgCriteria(n) {
       '<div class="wl">Deal breakers</div>' +
       field('1') + field('2') +
     '</div>';
-  return P.page({ deck:DECK, n, of:OF, site:state.site,
+  return P.page({ deck:DECK, n, of:OF, site:SITE,
     title:'Your Search Criteria', body });
+}
+
+/* The Seller Pitch & CMA's comparables table, read from the other side of
+   the transaction: the subject row is the target price rather than a
+   listing, because the buyer has not bought anything yet. */
+function pgComps(n) {
+  const rows = state.comps.filter(c => c.address);
+  const sub = { address: state.area ? ('Target — ' + state.area) : 'Your target', price: state.price,
+                sqft:'', bb:'', date:'Subject' };
+  const tr = (c, isSub) =>
+    '<tr' + (isSub ? ' class="subject"' : '') + '>' +
+      '<td class="adr">' + esc(c.address) + (c.note ? '<span class="meta">' + esc(c.note) + '</span>' : '') + '</td>' +
+      '<td class="num">' + (c.price ? P.money(c.price) : '—') + '</td>' +
+      '<td class="num">' + (c.sqft ? esc(c.sqft) : '—') + '</td>' +
+      '<td class="num">' + (c.price && P.num(c.sqft) ? P.money(P.num(c.price) / P.num(c.sqft)) : '—') + '</td>' +
+      '<td class="num">' + (c.bb || '—') + '</td>' +
+      '<td class="num">' + esc(c.date || '—') + '</td>' +
+    '</tr>';
+  const body =
+    '<div class="lede">What the market has actually paid nearby. An offer is defended with these, ' +
+    'not with an asking price.</div>' +
+    '<table class="tbl" id="compTable"><thead><tr>' +
+      '<th>Address</th><th class="num">Sold</th><th class="num">' + (window.icon ? window.icon('ruler','hi') : '') + 'Sq ft</th>' +
+      '<th class="num">$ / sq ft</th><th class="num">' + (window.icon ? window.icon('bed','hi') : '') + 'Bed / Bath</th><th class="num">Date</th>' +
+    '</tr></thead><tbody>' + tr(sub, true) + rows.map(c => tr(c, false)).join('') + '</tbody></table>' +
+    (rows.length ? '' : '<div class="empty-note on-white" style="position:relative;margin-top:.6in">Add comparables in the panel</div>') +
+    '<div class="comps-note">Closed sales only. Active listings tell you what sellers hope for; ' +
+    'closed sales tell you what buyers agreed to.</div>';
+  return P.page({ deck:DECK, n, of:OF, site:SITE,
+    title:'Comparable Sales', body });
 }
 
 function pgOffer(n) {
@@ -428,7 +491,7 @@ function pgOffer(n) {
     '<div class="cards c2">' + items.map(([ic, h, p]) =>
       '<div class="card">' + (window.icon ? window.icon(ic, 'ci') : '') +
       '<h3>' + esc(h) + '</h3><p>' + esc(p) + '</p></div>').join('') + '</div>';
-  return P.page({ deck:DECK, n, of:OF, site:state.site,
+  return P.page({ deck:DECK, n, of:OF, site:SITE,
     title:'Offer & Negotiation', body });
 }
 
@@ -451,13 +514,10 @@ function pgCosts(n) {
     '</tbody></table>' +
     '<div class="cost-note">Estimates for budgeting only. Actual figures come from your attorney and ' +
     'lender, and vary by building, loan type and municipality.</div>';
-  return P.page({ deck:DECK, n, of:OF, site:state.site,
+  return P.page({ deck:DECK, n, of:OF, site:SITE,
     title:'Closing Costs', body });
 }
 
-/* platforms get the small monogram badge; a generic link like "Book a call"
-   does not, since a two-letter abbreviation of it isn't meaningful. */
-const SOCIAL_PLATFORMS = ['instagram', 'youtube', 'linkedin', 'facebook', 'tiktok', 'twitter', 'x'];
 
 /* Closing page — Team and Next Steps merged into one, styled like the
    Seller Pitch & CMA's final page: a centered "Thank You" with the
@@ -473,10 +533,7 @@ const STATES = [
    The one editable links field is split into the same Social/Links columns
    the seller deck uses. */
 function pgNext(n) {
-  const ls = pairs(state.links);
-  const isSocial = ([k]) => SOCIAL_PLATFORMS.indexOf(String(k).toLowerCase()) > -1;
-  const site = 'https://' + String(state.site || 'gvcrealestateteam.com').replace(/^https?:\/\//, '');
-  const qr = qrSvg(site);
+  const qr = qrSvg('https://' + SITE);
   const body =
     '<div class="cx-top">' +
       '<div class="cx-kicker">The GVC Team</div><div class="cx-thanks">Thank You</div>' +
@@ -485,17 +542,17 @@ function pgNext(n) {
     '</div>' +
     P.agentCards(agents(), headshotFor) +
     '<div class="contact-foot">' +
-      P.linkCols([['Social', ls.filter(isSocial)], ['Links', ls.filter(r => !isSocial(r))]]) +
+      P.linkCols([['Social', DEFAULT_SOCIAL], ['Links', DEFAULT_LINKS]]) +
     '</div>' +
     '<div class="states">' + STATES.map(([nm, art]) =>
       '<div class="stc"><img src="' + art + '" alt=""><span>' + esc(nm) + '</span></div>').join('') + '</div>';
-  return P.page({ deck:DECK, n, of:OF, site:state.site, reversed:true, cls:'close',
+  return P.page({ deck:DECK, n, of:OF, site:SITE, reversed:true, cls:'close',
     title:'Thank You', body });
 }
 
 const RENDER = {
   cover:pgCover, toc:pgToc, why:pgWhy, process:pgProcess, finance:pgFinance,
-  criteria:pgCriteria, offer:pgOffer, costs:pgCosts, next:pgNext
+  criteria:pgCriteria, comps:pgComps, offer:pgOffer, costs:pgCosts, next:pgNext
 };
 
 /* ---------- wiring ---------- */
@@ -505,14 +562,16 @@ const RULES = [
   { key:'process', box:'warnSteps',   msg:'The buying-process page is over-full: trim a step or shorten the detail lines.' },
   { key:'finance', box:'warnFinance', msg:'The financing page is over-full: shorten the lender notes.' },
   { key:'costs',   box:'warnCosts',   msg:'Closing costs run past the page: remove a line item.' },
-  { key:'next',    box:'warnLinks',   msg:'The closing page is over-full: trim a social or link entry.' }
+  { key:'comps',   box:'warnComps',   msg:'Comparable sales run past the page: remove one, or shorten the longest address.' }
 ];
 function checkAll() { P.checkOverflow(document.getElementById('pages'), RULES, 'warnGeneral'); }
 
 function redraw() {
   if (!builder) return;
   reassign();
-  builder.rebuild();
+  PAGES = pageList(); OF = PAGES.length;
+  if (builder.state.pages !== PAGES.length) builder.setPages(PAGES.length);
+  else builder.rebuild();
   paintPhotos();
   P.wirePhotoDrag(document.getElementById('pages'), state.pos);
   // setTimeout, not rAF: rAF is suspended while the tab is not rendering.
@@ -541,14 +600,55 @@ function loadPreview() {
     url: '../../photos/3-crosby-lane/img/' + n + '-e-f.webp',
     role: 'auto'
   }));
+  state.comps = [
+    { address:'112 Greene Street, 4A', price:'1795000', sqft:'1180', bb:'2 / 2',   date:'Jun 2026' },
+    { address:'55 Thompson Street, 6C', price:'1910000', sqft:'1240', bb:'2 / 2',  date:'May 2026' },
+    { address:'40 Mercer Street, 11B',  price:'1725000', sqft:'1105', bb:'2 / 1.5',date:'Apr 2026' },
+    { address:'27 N Moore Street, 3E',  price:'1880000', sqft:'1215', bb:'2 / 2',  date:'Mar 2026' }
+  ];
+  state.showComps = true;
+  paintCompsToggle(); renderComps();
   document.querySelectorAll('[data-f]').forEach(el => { el.value = state[el.dataset.f] || ''; });
   paintRoster(); redraw();
+}
+
+/* comps are a repeating row, so they get their own tiny list editor —
+   identical to the Seller Pitch & CMA's */
+function renderComps() {
+  const host = document.getElementById('compList');
+  host.innerHTML = '';
+  state.comps.forEach((c, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'rw';
+    const mk = (ph, key, w) => {
+      const inp = document.createElement('input');
+      inp.type = 'text'; inp.placeholder = ph; inp.value = c[key] || '';
+      if (w) inp.style.flex = '0 0 ' + w;
+      inp.addEventListener('input', () => { c[key] = inp.value; redraw(); });
+      return inp;
+    };
+    wrap.appendChild(mk('Address', 'address'));
+    wrap.appendChild(mk('Sold $', 'price', '68px'));
+    wrap.appendChild(mk('Sq ft', 'sqft', '52px'));
+    wrap.appendChild(mk('Bd/Ba', 'bb', '52px'));
+    wrap.appendChild(mk('Date', 'date', '58px'));
+    const x = document.createElement('button');
+    x.type = 'button'; x.className = 'x'; x.textContent = '\u00d7';
+    x.addEventListener('click', () => { state.comps.splice(i, 1); renderComps(); redraw(); });
+    wrap.appendChild(x);
+    host.appendChild(wrap);
+  });
+}
+
+function paintCompsToggle() {
+  document.querySelectorAll('#compsPick button').forEach(b => {
+    b.classList.toggle('on', (b.dataset.comps === '1') === !!state.showComps);
+  });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   state.steps = DEFAULT_STEPS;
   state.costs = DEFAULT_COSTS;
-  state.links = DEFAULT_LINKS;
 
   document.querySelectorAll('[data-f]').forEach(el => {
     const k = el.dataset.f;
@@ -563,8 +663,21 @@ document.addEventListener('DOMContentLoaded', () => {
   paintRoster = P.wireRoster(document.getElementById('rosterPick'), state, 2, redraw);
   document.getElementById('btnSample').addEventListener('click', loadPreview);
 
+  document.getElementById('addComp').addEventListener('click', () => {
+    state.comps.push({ address:'', price:'', sqft:'', bb:'', date:'' });
+    if (!state.showComps) { state.showComps = true; paintCompsToggle(); }
+    renderComps(); redraw();
+  });
+  document.querySelectorAll('#compsPick button').forEach(b => {
+    b.addEventListener('click', () => {
+      state.showComps = b.dataset.comps === '1';
+      paintCompsToggle(); redraw();
+    });
+  });
+  paintCompsToggle(); renderComps();
+
   builder = Builder.init({
-    pages: PAGES.length,
+    pages: pageList().length,
     label: 'Page',
     render: (page, i) => {
       page.innerHTML = RENDER[PAGES[i].key](i + 1);

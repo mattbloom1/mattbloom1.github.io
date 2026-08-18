@@ -104,6 +104,17 @@
 .cv-bar .cb-mono{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
   height:.46in;width:auto;display:block;flex:none;}
 
+/* ---------- CONTENTS ----------
+   Verbatim from assets/css/pitch.css, so the brochure's contents page is
+   the same object as the Seller Pitch & CMA's and the Buyer Package's. */
+.toc-pg{position:absolute;inset:0;background:#fff;display:flex;flex-direction:column;overflow:hidden;}
+.toc{list-style:none;margin:0;padding:0;column-gap:.5in;}
+.toc li{display:flex;align-items:baseline;gap:.14in;padding:.115in 0;border-bottom:.75pt solid var(--rule);}
+.toc .n{font:800 8.5pt var(--sans);letter-spacing:.1em;color:var(--sky2);width:.34in;flex:none;}
+.toc .t{font:400 11.5pt var(--body);color:var(--navy);}
+.toc .d{flex:1;border-bottom:.75pt dotted rgba(0,39,58,.28);margin:0 .06in;transform:translateY(-.03in);}
+.toc .p{font:800 9pt var(--sans);color:rgba(0,39,58,.55);}
+
 /* ---------- PAGE 2 — BENTO GALLERY ---------- */
 .bento{position:absolute;inset:0;display:grid;
   grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(6,1fr);
@@ -123,11 +134,14 @@
 /* ---------- PAGE 3 — PROPERTY INFORMATION ---------- */
 .info{position:absolute;inset:0;overflow:hidden;background:#fff;}
 .info-block{position:absolute;top:0;left:0;right:0;height:66.667%;background:var(--navy);color:var(--ow);}
-.info-photo{position:absolute;top:66.667%;bottom:.56in;left:0;right:0;background:var(--navy);overflow:hidden;}
-/* the shared footer needs a plain strip under the photo, not the photo
-   itself, so it gets its own reserved band instead of overlaying the shot */
-.info .pg-foot{position:absolute;left:0;right:0;bottom:0;padding-bottom:.16in;}
-.info .pg-foot .pg-mono{bottom:.16in;}
+/* The shared footer needs a plain strip under the photo, not the photo
+   itself, so the photo stops short and the footer gets its own band. That
+   band is .49in — the height the footer occupies on every other page — so
+   the site line and the monogram land on exactly the same baseline here as
+   they do there. It used to be .56in with a shrunken .16in bottom padding,
+   which pushed this page's footer .18in below the rest of the deck. */
+.info-photo{position:absolute;top:66.667%;bottom:.49in;left:0;right:0;background:var(--navy);overflow:hidden;}
+.info .pg-foot{position:absolute;left:0;right:0;bottom:0;}
 .info-photo img{width:100%;height:100%;object-fit:cover;display:block;}
 /* the header sits in the page's own top-left corner rather than in a
    .pg-h strip, because the top-right photo overlaps that band — but it is
@@ -462,14 +476,9 @@
         <summary>Agents <span class="hint">max 2 &middot; page 1 &amp; final page</span></summary>
         <div class="sec-in">
           <div id="rosterPick"></div>
-          <div id="shotList"></div>
           <div class="field">
             <label>Team statement</label>
             <textarea data-field="agentBio" rows="4"></textarea>
-          </div>
-          <div class="field">
-            <label>Website</label>
-            <input type="text" data-field="site" placeholder="gvcrealestateteam.com">
           </div>
         </div>
       </details>
@@ -520,6 +529,11 @@ const P = window.Pitch;
 const MONO = '../../assets/logos/monogram-white.svg';
 const MONO_NAVY = '../../assets/logos/monogram.svg';
 
+/* The website printed in every footer. Not editable — the footer, the
+   social handles and the links are all fixed team boilerplate in all three
+   builders, so none of them can print a wrong one. */
+const SITE = 'gvcrealestateteam.com';
+
 /* ============================================================
    ROSTER — The Gasdaska Verdiglione Conlon Team
    Selecting an agent fills the page 1 footer and the agent page,
@@ -527,8 +541,10 @@ const MONO_NAVY = '../../assets/logos/monogram.svg';
    ============================================================ */
 const ROSTER = window.GVC_ROSTER;
 // Headshots come from the roster as transparent PNGs, so they sit on the
-// navy agent page without a white box behind them.
-const headshotFor = a => state.headshots[a.id] || a.photo;
+// closing page's card without a white box behind them. The roster is the
+// only source: a per-listing override would drift from the two packages,
+// which have never had one.
+const headshotFor = a => a.photo;
 const MAX_AGENTS = 2;
 
 /* Bento layouts — six rows of six characters on a 6x6 grid; the letter is
@@ -582,14 +598,13 @@ const state = {
   // page 1
   address: '', city: '', state: '', zip: '',
   // agents
-  agents: [], headshots: {},
+  agents: [],
   /* two lines is what the closing page has room for beside the cards, the
      contact columns and the states row — the Warnings section says so if a
      longer one is typed in */
   agentBio: 'A combined three decades across Manhattan and Westchester, pairing institutional ' +
     'market data with the hands-on preparation that gets a property photographed, priced and ' +
     'positioned properly the first time.',
-  site: 'gvcrealestateteam.com',
   // page 3
   price: '', blurb: '', features: '',
   beds: '', baths: '', parking: '', sqft: '',
@@ -671,7 +686,7 @@ const agentObjs = () => state.agents.map(id => ROSTER.find(a => a.id === id)).fi
    navy monogram instead. */
 function pageFoot(n, of, dark) {
   return '<div class="pg-foot' + (dark ? ' rev' : '') + '">' +
-    '<span class="site">' + escapeHtml(state.site || '') + '</span>' +
+    '<span class="site">' + escapeHtml(SITE) + '</span>' +
     '<img class="pg-mono" src="' + (dark ? MONO : MONO_NAVY) + '" alt="">' +
     '<span class="pg-n">' + n + ' / ' + of + '</span>' +
   '</div>';
@@ -761,11 +776,25 @@ function swapCells(a, b) {
 }
 
 /* ---------------- page plan ---------------- */
+/* One list drives the deck and the contents page both, so a floor-plan
+   page appearing or disappearing renumbers the contents automatically. */
 function pagePlan() {
-  const plan = [{ t: 'cover' }, { t: 'gallery' }, { t: 'info' }];
+  const plan = [
+    { t: 'cover',    title: 'Cover' },
+    { t: 'toc',      title: 'Contents' },
+    { t: 'gallery',  title: 'The Property in Pictures' },
+    { t: 'info',     title: 'The Property' }
+  ];
   const fpPages = Math.max(1, Math.ceil(state.floorplans.length / 2));
-  for (let i = 0; i < fpPages; i++) plan.push({ t: 'floorplan', from: i * 2, page: i + 1, of: fpPages });
-  plan.push({ t: 'location' }, { t: 'plan' }, { t: 'agent' });
+  for (let i = 0; i < fpPages; i++) {
+    plan.push({ t: 'floorplan', from: i * 2, page: i + 1, of: fpPages,
+                title: 'Floor Plans' + (fpPages > 1 ? ' \u2014 ' + (i + 1) + ' of ' + fpPages : '') });
+  }
+  plan.push(
+    { t: 'location', title: state.hood || 'The Location' },
+    { t: 'plan',     title: 'Marketing Plan' },
+    { t: 'agent',    title: 'Thank You' }
+  );
   return plan;
 }
 
@@ -794,13 +823,29 @@ function renderCover(page) {
       '<div class="cv-head">' +
         '<div class="cv-ttl">' + (escapeHtml(state.address) || '&nbsp;') + '</div>' +
         (city ? '<div class="cv-sub">' + escapeHtml(city) + '</div>' : '') +
-        (state.site ? '<div class="cv-for">' + escapeHtml(state.site) + '</div>' : '') +
+        '<div class="cv-for">' + escapeHtml(SITE) + '</div>' +
       '</div>' +
       '<div class="cv-bar">' +
         cbSide(a1, 'l') +
         '<img class="cb-mono" src="' + MONO + '" alt="">' +
         cbSide(a2, 'r') +
       '</div>' +
+    '</div>';
+}
+
+/* Contents. Same markup and numbering as P.toc() in assets/js/pitch.js —
+   two-digit index, title, dotted leader, page number. */
+function renderToc(page, n, of) {
+  const plan = pagePlan();
+  const rows = plan.slice(1).map((spec, i) =>
+    '<li><span class="n">' + String(i + 2).padStart(2, '0') + '</span>' +
+    '<span class="t">' + escapeHtml(spec.title) + '</span>' +
+    '<span class="d"></span><span class="p">' + (i + 2) + '</span></li>').join('');
+  page.innerHTML =
+    '<div class="toc-pg">' +
+      '<div class="pg-h"><h2>Contents</h2></div>' +
+      '<div class="pg-body"><ol class="toc">' + rows + '</ol></div>' +
+      pageFoot(n, of, false) +
     '</div>';
 }
 
@@ -978,7 +1023,7 @@ const AG_LINKS = [
    CMA and Buyer Package's final page. */
 function renderAgent(page, n, of) {
   const list = agentObjs();
-  const site = 'https://' + String(state.site || 'gvcrealestateteam.com').replace(/^https?:\/\//, '');
+  const site = 'https://' + SITE;
   const qr = qrSvg(site);
   page.innerHTML =
     '<div class="ag">' +
@@ -1041,6 +1086,7 @@ function renderPage(page, i) {
   if (!spec) return;
   const n = i + 1, of = plan.length;
   if (spec.t === 'cover')          renderCover(page);
+  else if (spec.t === 'toc')       renderToc(page, n, of);
   else if (spec.t === 'gallery')   renderGallery(page);
   else if (spec.t === 'info')      renderInfo(page, n, of);
   else if (spec.t === 'floorplan') renderFloorplan(page, spec, n, of);
@@ -1080,6 +1126,8 @@ const OVER_TARGETS = [
    'The Location page has more categories than fit on it.'],
   ['.ag-bio',      'Statement clipped',  null,
    'The team statement is longer than the closing page can show.'],
+  ['.toc',         'Contents clipped',   null,
+   'The contents page has more entries than fit. That means the deck has grown \u2014 remove a floor-plan page.'],
   ['.plan3',       'Plan clipped',       null,
    'The Marketing Plan page is running long. Its copy is shared with the Seller Pitch & CMA \u2014 change it in both.']
 ];
@@ -1353,48 +1401,8 @@ function renderRoster() {
       if (on) state.agents = state.agents.filter(id => id !== a.id);
       else if (state.agents.length < MAX_AGENTS) state.agents.push(a.id);
       else state.agents = [state.agents[1], a.id];
-      renderRoster(); renderShots(); redraw();
+      renderRoster(); redraw();
     });
-    host.appendChild(row);
-  });
-}
-
-function renderShots() {
-  const host = $('#shotList');
-  host.innerHTML = '';
-  agentObjs().forEach(a => {
-    const custom = !!state.headshots[a.id];
-    const row = document.createElement('div');
-    row.className = 'img-row';
-
-    const thumb = document.createElement('img');
-    thumb.className = 'img-thumb shot-thumb';
-    thumb.src = headshotFor(a); thumb.alt = '';
-
-    const mid = document.createElement('div');
-    mid.className = 'img-mid';
-    mid.innerHTML = '<div class="img-name">' + escapeHtml(a.name) + '</div>' +
-                    '<div class="img-auto">' + (custom ? 'custom headshot' : 'team headshot') + '</div>';
-
-    const inp = document.createElement('input');
-    inp.type = 'file'; inp.accept = 'image/*'; inp.hidden = true;
-    inp.addEventListener('change', () => {
-      const f = inp.files && inp.files[0];
-      if (!f) return;
-      const r = new FileReader();
-      r.onload = e => { state.headshots[a.id] = e.target.result; renderShots(); redraw(); };
-      r.readAsDataURL(f);
-    });
-
-    const btn = document.createElement('button');
-    btn.type = 'button'; btn.className = 'shot-btn';
-    btn.textContent = custom ? 'Revert' : 'Replace';
-    btn.addEventListener('click', () => {
-      if (custom) { delete state.headshots[a.id]; renderShots(); redraw(); }
-      else inp.click();
-    });
-
-    row.append(thumb, mid, btn, inp);
     host.appendChild(row);
   });
 }
@@ -1668,7 +1676,7 @@ $('#btnPreview').addEventListener('click', () => {
     if (el) el.value = PREVIEW[k];
   });
 
-  renderImgList(); renderFpList(); renderRoster(); renderShots();
+  renderImgList(); renderFpList(); renderRoster();
   redraw(); updateBentoNote();
 });
 
@@ -1678,7 +1686,7 @@ document.querySelectorAll('[data-field]').forEach(el => {
 });
 
 builder = Builder.init({ pages: pagePlan().length, label: 'Page', render: renderPage });
-renderImgList(); renderRoster(); renderShots(); renderFpList();
+renderImgList(); renderRoster(); renderFpList();
 redraw(); updateBentoNote();
 // webfont metrics change block heights, so re-measure once they land
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(checkOverflow);
@@ -1712,7 +1720,6 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(checkOverf
 .img-x:hover{background:var(--danger,#B3261E);border-color:var(--danger,#B3261E);color:#fff;}
 .img-x:focus-visible{outline:2px solid var(--sky);outline-offset:2px;}
 /* the agent picker (.ag-chip) is shared — see builder.css */
-.shot-thumb{width:34px;height:34px;border-radius:50%;object-fit:cover;}
 .shot-btn{flex:none;border:1px solid var(--ui-rule);background:#fff;border-radius:999px;
   font:800 8.5px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ui-ink-soft);
   padding:5px 10px;cursor:pointer;transition:background .15s,color .15s,border-color .15s;}
