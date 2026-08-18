@@ -57,7 +57,7 @@
      `key` lands on the wrapper so overflow rules can name a page and give
      a specific warning rather than a generic "something is too tall". */
   function page(o) {
-    return '<div class="pg' + (o.reversed ? ' rev' : '') + '"' +
+    return '<div class="pg' + (o.reversed ? ' rev' : '') + (o.cls ? ' ' + esc(o.cls) : '') + '"' +
              (o.key ? ' data-key="' + esc(o.key) + '"' : '') + '>' +
       heading(o.title) +
       '<div class="pg-body">' + o.body + '</div>' +
@@ -97,17 +97,52 @@
     '</div>';
   }
 
+  /* Closing-page agent cards. One solid box per agent holding the cutout
+     and every detail that belongs to them — name, title, phone, email —
+     rather than the box holding the photo and the details floating loose
+     underneath it. Every deck's closing page calls this. */
   function agentCards(list, headshotFor) {
     if (!list.length) {
       return '<div class="ag-row"><div class="ag-c"><div class="shot">' +
-             '<div class="empty-note">Pick an agent<br>in the Agents panel</div></div></div></div>';
+             '<div class="empty-note on-white">Pick an agent<br>in the Agents panel</div></div></div></div>';
     }
     return '<div class="ag-row">' + list.map(a =>
       '<div class="ag-c">' +
         '<div class="shot"><img src="' + headshotFor(a) + '" alt=""></div>' +
-        '<div class="nm">' + esc(a.name) + '</div>' +
-        '<div class="tt">' + esc(a.title) + '</div>' +
-        '<div class="ct">' + [a.phone, a.email].filter(Boolean).map(esc).join('<br>') + '</div>' +
+        '<div class="ag-meta">' +
+          '<div class="nm">' + esc(a.name) + '</div>' +
+          (a.title ? '<div class="tt">' + esc(a.title) + '</div>' : '') +
+          '<div class="ct">' +
+            (a.phone ? '<span>' + esc(a.phone) + '</span>' : '') +
+            (a.email ? '<span>' + esc(a.email) + '</span>' : '') +
+          '</div>' +
+        '</div>' +
+      '</div>').join('') + '</div>';
+  }
+
+  /* ---------- closing-page contact columns ----------
+     Each row is marked with the platform's own glyph rather than a
+     two-letter monogram. Anything without a mark of its own falls back to
+     a generic link glyph, so a row the team invents later still lines up
+     with the rest instead of losing its left edge. */
+  const LINK_ICONS = {
+    instagram:'instagram', youtube:'youtube', linkedin:'linkedin',
+    facebook:'facebook', x:'twitter', twitter:'twitter',
+    'our listings':'home', 'douglas elliman':'building',
+    'market reports':'chart', 'book a call':'calendar',
+    website:'globe', email:'mail', phone:'phone'
+  };
+  function linkIcon(label) {
+    const name = LINK_ICONS[String(label || '').trim().toLowerCase()] || 'link';
+    return global.icon ? global.icon(name) : '';
+  }
+  /* cols: [[heading, [[label, value], ...]], ...] */
+  function linkCols(cols) {
+    return '<div class="lcols">' + cols.map(c =>
+      '<div class="lcol"><div class="lcol-t">' + esc(c[0]) + '</div>' + c[1].map(r =>
+        '<div class="lrow"><span class="lb">' + linkIcon(r[0]) + '</span>' +
+        '<span class="ltxt"><span class="lk">' + esc(r[0]) + '</span>' +
+        '<span class="lv">' + esc(r[1]) + '</span></span></div>').join('') +
       '</div>').join('') + '</div>';
   }
 
@@ -348,7 +383,7 @@
   global.Pitch = {
     MONO, MONO_NAVY,
     esc, lines, money, moneyShort, num,
-    page, cover, heading, foot, toc, agentCards,
+    page, cover, heading, foot, toc, agentCards, linkCols, linkIcon,
     checkOverflow, overflowing, wireDrop, wireRoster, agentsOf,
     assignRoles, renderPhotoList, autoLabelFor,
     beginPhotoDrag, wirePhotoDrag

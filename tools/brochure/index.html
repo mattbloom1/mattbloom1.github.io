@@ -206,72 +206,78 @@
   .loc-photo.is-moving{cursor:grabbing;} .loc-photo img{pointer-events:none;} }
 
 /* ---------- AGENT / CLOSING PAGE ----------
-   The last page in the deck, styled to match the Seller Pitch & CMA and
-   Buyer Package's closing page: a centered "Thank You" in place of a plain
-   title, then the team, then a footer with the licensed states. */
-/* .ag-body + a trailing .pg-foot mirrors the Seller Pitch & CMA and Buyer
-   Package's .pg-body + .pg-foot exactly — same padding, same space-between
-   rhythm — so this is the one page in the brochure that borrows their
-   layout skeleton wholesale rather than the rest of the deck's. */
+   The last page in the deck. Everything below is a verbatim mirror of the
+   CLOSING PAGE section of assets/css/pitch.css, which the Seller Pitch &
+   CMA and the Buyer Package share. This file cannot load pitch.css (its
+   .stat / .ph / .band would collide with this deck's own), so the block is
+   duplicated on purpose — if you change one, change the other.
+
+   .ag-body + a trailing .pg-foot is those decks' .pg-body + .pg-foot: same
+   padding, same space-between rhythm. */
 .ag{position:absolute;inset:0;background:var(--navy);color:var(--ow);
   display:flex;flex-direction:column;overflow:hidden;}
 .ag-body{flex:1;min-height:0;padding:.5in var(--pad) .44in;
   display:flex;flex-direction:column;justify-content:space-between;}
-.ag-top{position:relative;flex:none;text-align:center;margin-bottom:.34in;
-  padding-bottom:.28in;border-bottom:1pt solid rgba(83,199,220,.35);}
-.ag-top .ag-kicker{font:800 8pt var(--sans);letter-spacing:.28em;text-transform:uppercase;color:var(--sky);}
-.ag-top .ag-thanks{margin-top:.1in;font:700 34pt/1.1 var(--serif);color:#fff;}
-.ag-qr{position:absolute;top:0;right:0;width:.85in;text-align:center;}
-.ag-qr .qbox{width:.85in;height:.85in;background:#fff;padding:.045in;}
-.ag-qr .qbox svg{width:100%;height:100%;display:block;}
-.ag-qr .qcap{margin-top:.06in;font:800 5.6pt var(--sans);letter-spacing:.1em;
-  text-transform:uppercase;color:rgba(229,229,229,.6);}
-/* agent cards — identical to the Seller Pitch & CMA and Buyer Package
-   closing pages: the cutout sits on a light panel so the shadow and the
-   name band have something solid to sit against. */
-.ag-row{flex:none;display:flex;gap:.55in;justify-content:center;}
-.ag-c{flex:0 1 2.5in;max-width:2.5in;text-align:center;}
-.ag-c .shot{position:relative;width:100%;aspect-ratio:1/1;overflow:hidden;
-  background:linear-gradient(#F4F3EF,#E4E2DC);box-shadow:0 .14in .3in rgba(0,0,0,.4);}
-.ag-c .shot img{width:100%;height:100%;display:block;
-  object-fit:contain;object-position:50% 100%;}
-.ag-c .shot .band{position:absolute;left:0;right:0;bottom:0;padding:.1in .15in;
-  background:rgba(0,39,58,.9);text-align:center;}
-.ag-c .shot .band .bnm{font:700 13pt/1.15 var(--serif);color:#fff;}
-.ag-c .tt{margin-top:.13in;font:800 6.8pt/1.5 var(--sans);letter-spacing:.14em;
-  text-transform:uppercase;color:var(--sky);}
-.ag-c .ct{margin-top:.07in;display:flex;flex-direction:column;align-items:center;gap:.02in;}
-.ag-c .ct span{font:300 9pt/1.5 var(--body);color:var(--ow);}
-.ag-bio{flex:none;max-height:1.5in;overflow:hidden;font:300 9.5pt/15pt var(--body);
-  color:var(--ow);margin-top:.34in;padding-top:.26in;border-top:.75pt solid rgba(83,199,220,.35);text-align:center;}
 
-/* footer: two link columns, identical markup and values to the Seller
-   Pitch & CMA's and Buyer Package's closing pages — same class names, not
-   just matching styles. Not editable here (the brochure has no per-listing
-   social data), but that also means it can never drift from theirs. */
-.contact-foot{flex:none;margin-top:.34in;padding-top:.26in;border-top:1pt solid rgba(83,199,220,.35);}
+.cx-top{position:relative;flex:none;text-align:center;margin-bottom:.34in;padding-bottom:.28in;
+  border-bottom:1pt solid var(--rule-rev);}
+.cx-top .cx-kicker{font:800 8pt var(--sans);letter-spacing:.28em;text-transform:uppercase;color:var(--sky);}
+.cx-top .cx-thanks{margin-top:.1in;font:700 34pt/1.1 var(--serif);color:#fff;}
+.cx-qr{position:absolute;top:0;right:0;width:.85in;text-align:center;}
+.cx-qr .qbox{width:.85in;height:.85in;background:#fff;padding:.045in;}
+.cx-qr .qbox svg{width:100%;height:100%;display:block;}
+.cx-qr .qcap{margin-top:.06in;font:800 5.6pt var(--sans);letter-spacing:.1em;
+  text-transform:uppercase;color:rgba(229,229,229,.6);}
+
+/* One solid card per agent, holding the cutout AND the name, title and
+   contact details — the details used to float underneath on the navy,
+   which left the box looking like it only contained the photo. */
+.ag-row{flex:none;display:flex;gap:.55in;justify-content:center;}
+.ag-c{flex:0 1 2.2in;max-width:2.2in;text-align:center;overflow:hidden;
+  background:linear-gradient(#F7F6F3,#E4E2DC);box-shadow:0 .14in .3in rgba(0,0,0,.4);}
+.ag-c .shot{position:relative;width:100%;aspect-ratio:1/1;overflow:hidden;}
+.ag-c .shot img{width:100%;height:100%;display:block;object-fit:contain;object-position:50% 100%;}
+.ag-meta{padding:0 .16in .17in;}
+.ag-meta .nm{font:700 13pt/1.2 var(--serif);color:var(--navy);}
+.ag-meta .tt{margin-top:.07in;padding-top:.08in;border-top:.75pt solid rgba(0,39,58,.16);
+  font:800 6.8pt/1.5 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--sky2);}
+.ag-meta .ct{margin-top:.06in;display:flex;flex-direction:column;align-items:center;gap:.01in;}
+.ag-meta .ct span{font:300 9pt/1.45 var(--body);color:rgba(0,39,58,.75);}
+
+/* The one block the two packages' closing pages do not carry. It is the
+   flexible child — flex:1, not flex:none — so it takes whatever height the
+   fixed blocks leave rather than adding to their stack and pushing the
+   states row under the page footer. A statement too long for the space
+   clips and raises "Statement clipped" in the Warnings section. */
+.ag-bio{flex:1;min-height:0;overflow:hidden;font:300 9.5pt/15pt var(--body);
+  color:rgba(229,229,229,.8);margin-top:.16in;text-align:center;
+  display:flex;align-items:center;justify-content:center;}
+
+.contact-foot{flex:none;margin-top:.34in;padding-top:.26in;border-top:1pt solid var(--rule-rev);}
 .lcols{display:grid;grid-template-columns:1fr 1fr;gap:.42in;}
 .lcol{min-width:0;}
 .lcol-t{font:800 7pt var(--sans);letter-spacing:.18em;text-transform:uppercase;
-  color:var(--sky);padding-bottom:.08in;margin-bottom:.1in;border-bottom:.75pt solid rgba(83,199,220,.35);}
+  color:var(--sky);padding-bottom:.08in;margin-bottom:.1in;border-bottom:.75pt solid var(--rule-rev);}
 .lrow{display:flex;align-items:center;gap:.11in;margin-bottom:.09in;min-width:0;}
+/* every row carries a mark, links as well as social, so the two columns
+   line up on the same left edge instead of one being indented */
 .lrow .lb{flex:none;width:.26in;height:.26in;border-radius:50%;background:rgba(83,199,220,.16);
   border:.75pt solid rgba(83,199,220,.4);display:flex;align-items:center;justify-content:center;
-  font:800 6.5pt var(--sans);letter-spacing:0;color:var(--sky);}
+  color:var(--sky);}
+.lrow .lb .ico{width:.135in;height:.135in;}
+.lrow .lb .ico svg{stroke-width:2.2;}
 .lrow .ltxt{min-width:0;}
 .lrow .lk{display:block;font:800 6.2pt var(--sans);letter-spacing:.14em;text-transform:uppercase;
   color:rgba(229,229,229,.5);}
 .lrow .lv{display:block;font:300 9pt/1.4 var(--body);color:var(--ow);
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 
-/* margin-bottom keeps clear of the page-footer's monogram, which floats up
-   out of its own slim bar — same fix as the Seller Pitch and Buyer Package. */
-.ag-states{flex:none;display:flex;justify-content:center;gap:.55in;margin-top:.26in;margin-bottom:.34in;
-  padding-top:.22in;border-top:1pt solid rgba(83,199,220,.35);}
-.ag-states .stc{text-align:center;}
-.ag-states .stc img{display:block;margin:0 auto .08in;height:.5in;width:auto;
+.states{flex:none;display:flex;justify-content:center;gap:.55in;margin-top:.26in;margin-bottom:.34in;
+  padding-top:.22in;border-top:1pt solid var(--rule-rev);}
+.states .stc{text-align:center;}
+.states .stc img{display:block;margin:0 auto .08in;height:.5in;width:auto;
   filter:brightness(0) invert(1);opacity:.28;}
-.ag-states .stc span{font:800 7.5pt var(--sans);letter-spacing:.18em;
+.states .stc span{font:800 7.5pt var(--sans);letter-spacing:.18em;
   text-transform:uppercase;color:rgba(229,229,229,.72);}
 
 /* ---------- MARKETING PLAN ----------
@@ -453,7 +459,7 @@
       </details>
 
       <details class="ed-sec">
-        <summary>Agents <span class="hint">page 1, final page &amp; footers</span></summary>
+        <summary>Agents <span class="hint">max 2 &middot; page 1 &amp; final page</span></summary>
         <div class="sec-in">
           <div id="rosterPick"></div>
           <div id="shotList"></div>
@@ -502,10 +508,15 @@
 <script src="../../assets/js/motion.js"></script>
 <script src="../../assets/js/builder.js"></script>
 <script src="../../assets/js/roster.js"></script>
+<!-- only for the shared closing-page builders (P.agentCards / P.linkCols);
+     this deck draws every other page itself. pitch.css is deliberately not
+     loaded alongside it — see the closing-page CSS above. -->
+<script src="../../assets/js/pitch.js"></script>
 <script src="icons.js"></script>
 <script>
 'use strict';
 const $ = s => document.querySelector(s);
+const P = window.Pitch;
 const MONO = '../../assets/logos/monogram-white.svg';
 const MONO_NAVY = '../../assets/logos/monogram.svg';
 
@@ -572,9 +583,11 @@ const state = {
   address: '', city: '', state: '', zip: '',
   // agents
   agents: [], headshots: {},
-  agentBio: 'The Gasdaska Verdiglione Conlon Team brings a combined three decades of ' +
-    'experience across Manhattan and Westchester, pairing institutional market data with ' +
-    'the kind of hands-on preparation that gets a property photographed, priced and ' +
+  /* two lines is what the closing page has room for beside the cards, the
+     contact columns and the states row — the Warnings section says so if a
+     longer one is typed in */
+  agentBio: 'A combined three decades across Manhattan and Westchester, pairing institutional ' +
+    'market data with the hands-on preparation that gets a property photographed, priced and ' +
     'positioned properly the first time.',
   site: 'gvcrealestateteam.com',
   // page 3
@@ -941,7 +954,7 @@ function renderLocation(page, n, of) {
   if (photo) box.addEventListener('pointerdown', e => beginPhotoDrag(e, box, state.locPos));
 }
 
-const AG_STATES = [
+const STATES = [
   ['New York',   '../../assets/img/states/new-york.svg'],
   ['New Jersey', '../../assets/img/states/new-jersey.svg'],
   ['Florida',    '../../assets/img/states/florida.svg']
@@ -970,39 +983,18 @@ function renderAgent(page, n, of) {
   page.innerHTML =
     '<div class="ag">' +
       '<div class="ag-body">' +
-        '<div class="ag-top">' +
-          '<div class="ag-kicker">The GVC Team</div><div class="ag-thanks">Thank You</div>' +
-          (qr ? '<div class="ag-qr"><div class="qbox">' + qr + '</div>' +
+        '<div class="cx-top">' +
+          '<div class="cx-kicker">The GVC Team</div><div class="cx-thanks">Thank You</div>' +
+          (qr ? '<div class="cx-qr"><div class="qbox">' + qr + '</div>' +
                 '<div class="qcap">Our team site</div></div>' : '') +
         '</div>' +
-        '<div class="ag-row">' +
-          (list.length ? list.map(a => {
-            const shot = headshotFor(a);
-            return '<div class="ag-c">' +
-              '<div class="shot">' +
-                (shot ? '<img src="' + shot + '" alt="">' : '') +
-                '<div class="band"><div class="bnm">' + escapeHtml(a.name) + '</div></div>' +
-              '</div>' +
-              '<div class="tt">' + escapeHtml(a.title) + '</div>' +
-              '<div class="ct">' +
-                [a.phone, a.email].filter(Boolean).map(c => '<span>' + escapeHtml(c) + '</span>').join('') +
-              '</div>' +
-            '</div>';
-          }).join('') : '<div class="ag-c"><div class="shot">' +
-              '<div class="empty-note">Pick an agent<br>in the Agents panel</div></div></div>') +
-        '</div>' +
+        P.agentCards(list, headshotFor) +
         '<div class="ag-bio">' + escapeHtml(state.agentBio) + '</div>' +
-        '<div class="contact-foot"><div class="lcols">' +
-          '<div class="lcol"><div class="lcol-t">Social</div>' + AG_SOCIAL.map(([k, v]) =>
-            '<div class="lrow"><span class="lb">' + escapeHtml(k.slice(0, 2).toUpperCase()) + '</span>' +
-            '<span class="ltxt"><span class="lk">' + escapeHtml(k) + '</span>' +
-            '<span class="lv">' + escapeHtml(v) + '</span></span></div>').join('') + '</div>' +
-          '<div class="lcol"><div class="lcol-t">Links</div>' + AG_LINKS.map(([k, v]) =>
-            '<div class="lrow"><span class="ltxt"><span class="lk">' + escapeHtml(k) + '</span>' +
-            '<span class="lv">' + escapeHtml(v) + '</span></span></div>').join('') + '</div>' +
-        '</div></div>' +
-        '<div class="ag-states">' + AG_STATES.map(([nm, icon]) =>
-          '<div class="stc"><img src="' + icon + '" alt=""><span>' + escapeHtml(nm) + '</span></div>').join('') + '</div>' +
+        '<div class="contact-foot">' +
+          P.linkCols([['Social', AG_SOCIAL], ['Links', AG_LINKS]]) +
+        '</div>' +
+        '<div class="states">' + STATES.map(([nm, art]) =>
+          '<div class="stc"><img src="' + art + '" alt=""><span>' + escapeHtml(nm) + '</span></div>').join('') + '</div>' +
       '</div>' +
       pageFoot(n, of, true) +
     '</div>';

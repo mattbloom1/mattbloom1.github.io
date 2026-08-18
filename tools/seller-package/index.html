@@ -222,76 +222,12 @@
 /* ============================================================
    p13 — closing page
    ============================================================ */
-/* the standard title bar is dropped for this page in favour of the
-   centered "Thank You" treatment below, so the page reads as a close
-   rather than one more numbered section */
-.pg[data-key="contact"] .pg-h{display:none;}
-.pg[data-key="contact"] .pg-body{justify-content:space-between;padding-top:.5in;}
+/* Closing page — all of its furniture (the "Thank You" block, the agent
+   cards, the contact columns and the licensed states) is shared; see the
+   CLOSING PAGE section of assets/css/pitch.css. Nothing deck-specific is
+   left here, which is the point: it can no longer drift from the Buyer
+   Package's closing page. */
 
-/* the top block: kicker + headline centered as usual, with the team-site
-   QR docked top-right — relative positioning here, not on .pg-body, so the
-   QR tracks this block rather than the whole page. */
-.cx-top{position:relative;flex:none;text-align:center;margin-bottom:.34in;padding-bottom:.28in;
-  border-bottom:1pt solid var(--rule-rev);}
-.cx-top .cx-kicker{font:800 8pt var(--sans);letter-spacing:.28em;text-transform:uppercase;
-  color:var(--sky);}
-.cx-top .cx-thanks{margin-top:.1in;font:700 34pt/1.1 var(--serif);color:#fff;}
-.cx-qr{position:absolute;top:0;right:0;width:.85in;text-align:center;}
-.cx-qr .qbox{width:.85in;height:.85in;background:#fff;padding:.045in;}
-.cx-qr .qbox svg{width:100%;height:100%;display:block;}
-.cx-qr .qcap{margin-top:.06in;font:800 5.6pt var(--sans);letter-spacing:.1em;
-  text-transform:uppercase;color:rgba(229,229,229,.6);}
-
-/* agents. The cutout sits on a light panel so the shadow and the name band
-   have something solid to sit against. */
-.pg[data-key="contact"] .ag-row{gap:.55in;flex:none;justify-content:center;}
-.ag-c{flex:0 1 2.5in;max-width:2.5in;text-align:center;}
-/* Square panel, deliberately: the cutouts' subjects are all ~1:1, so a 4:5
-   portrait panel made contain letterbox by 20% and object-position:bottom
-   dumped every bit of it above the head. Matching the panel to the subject
-   removes the gap without cover-cropping anyone's arms — the roster framings
-   vary too much for that to be safe. The band overlaps the chest. */
-.ag-c .shot{position:relative;width:100%;aspect-ratio:1/1;overflow:hidden;
-  background:linear-gradient(#F4F3EF,#E4E2DC);box-shadow:0 .14in .3in rgba(0,0,0,.4);}
-.ag-c .shot img{width:100%;height:100%;display:block;
-  object-fit:contain;object-position:50% 100%;}
-.ag-c .shot .band{position:absolute;left:0;right:0;bottom:0;padding:.1in .15in;
-  background:rgba(0,39,58,.9);text-align:center;}
-.ag-c .shot .band .bnm{font:700 13pt/1.15 var(--serif);color:#fff;}
-.ag-c .tt{margin-top:.13in;font:800 6.8pt/1.5 var(--sans);letter-spacing:.14em;
-  text-transform:uppercase;color:var(--sky);}
-.ag-c .ct{margin-top:.07in;display:flex;flex-direction:column;align-items:center;gap:.02in;}
-.ag-c .ct span{font:300 9pt/1.5 var(--body);color:var(--ow);}
-
-/* footer: two link columns, full width now that the QR has moved up top */
-.contact-foot{flex:none;padding-top:.26in;border-top:1pt solid var(--rule-rev);}
-.lcols{display:grid;grid-template-columns:1fr 1fr;gap:.42in;}
-.lcol{min-width:0;}
-.lcol-t{font:800 7pt var(--sans);letter-spacing:.18em;text-transform:uppercase;
-  color:var(--sky);padding-bottom:.08in;margin-bottom:.1in;border-bottom:.75pt solid var(--rule-rev);}
-.lrow{display:flex;align-items:center;gap:.11in;margin-bottom:.09in;min-width:0;}
-/* small monogram badge — a lightweight stand-in for the platform's mark */
-.lrow .lb{flex:none;width:.26in;height:.26in;border-radius:50%;background:rgba(83,199,220,.16);
-  border:.75pt solid rgba(83,199,220,.4);display:flex;align-items:center;justify-content:center;
-  font:800 6.5pt var(--sans);letter-spacing:0;color:var(--sky);}
-.lrow .ltxt{min-width:0;}
-.lrow .lk{display:block;font:800 6.2pt var(--sans);letter-spacing:.14em;text-transform:uppercase;
-  color:rgba(229,229,229,.5);}
-.lrow .lv{display:block;font:300 9pt/1.4 var(--body);color:var(--ow);
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-
-/* the three states we are licensed in, each with its outline beneath —
-   the source art ships as flat-colour SVGs, so a full-white silhouette via
-   filter keeps every state visually consistent regardless of source colour.
-   margin-bottom keeps clear of the page-footer's monogram, which floats up
-   out of its own slim bar and would otherwise land on top of these labels. */
-.states{flex:none;display:flex;justify-content:center;gap:.55in;margin-top:.26in;margin-bottom:.34in;
-  padding-top:.22in;border-top:1pt solid var(--rule-rev);}
-.states .stc{text-align:center;}
-.states .stc img{display:block;margin:0 auto .08in;height:.5in;width:auto;
-  filter:brightness(0) invert(1);opacity:.28;}
-.states .stc span{font:800 7.5pt var(--sans);letter-spacing:.18em;
-  text-transform:uppercase;color:rgba(229,229,229,.72);}
 </style>
 </head>
 <body data-root="../../" data-nav="tools" data-foot="none">
@@ -356,10 +292,11 @@
       </details>
 
       <details class="ed-sec">
-        <summary>Client &amp; cover <span class="hint">cover</span></summary>
+        <summary>Client &amp; cover <span class="hint">cover + footers</span></summary>
         <div class="sec-in">
           <div class="field"><label>Prepared for</label><input type="text" data-f="client" placeholder="Mr. &amp; Mrs. Harrington"></div>
           <div class="field"><label>Date</label><input type="text" data-f="date" placeholder="August 2026"></div>
+          <div class="field"><label>Website shown in footers</label><input type="text" data-f="site" placeholder="gvcrealestateteam.com"></div>
         </div>
       </details>
 
@@ -679,7 +616,6 @@ function pgCover() {
 function pgToc(n) {
   return P.page({ deck:DECK, n, of:OF, site:state.site,
     title:'Contents',
-    sub:'What we will cover, and where to find it.',
     body: P.toc(PAGES.slice(1).map((p, i) => ({ page:i + 2, title:p.title })))
   });
 }
@@ -972,59 +908,30 @@ function pgVideos(n) {
    headshots are transparent cutouts, so each sits on its own light panel —
    that is what carries the drop shadow and the name banner. A shadow on the
    bare cutout draws an empty rectangle. */
+const STATES = [
+  ['New York',   '../../assets/img/states/new-york.svg'],
+  ['New Jersey', '../../assets/img/states/new-jersey.svg'],
+  ['Florida',    '../../assets/img/states/florida.svg']
+];
+
+/* Closing page. Every block on it is built by the shared helpers, so this
+   page and the Buyer Package's and the Brochure's are one design. */
 function pgContact(n) {
-  const list = agents();
-  const cards = list.length
-    ? '<div class="ag-row">' + list.map(a =>
-        '<div class="ag-c">' +
-          '<div class="shot"><img src="' + headshotFor(a) + '" alt="">' +
-            '<div class="band"><div class="bnm">' + esc(a.name) + '</div></div>' +
-          '</div>' +
-          '<div class="tt">' + esc(a.title) + '</div>' +
-          '<div class="ct">' +
-            (a.phone ? '<span>' + esc(a.phone) + '</span>' : '') +
-            (a.email ? '<span>' + esc(a.email) + '</span>' : '') +
-          '</div>' +
-        '</div>').join('') + '</div>'
-    : '<div class="ag-row"><div class="ag-c"><div class="shot">' +
-      '<div class="empty-note">Pick an agent<br>in the Agents panel</div></div></div></div>';
-
-  /* the social column gets a two-letter monogram badge per platform —
-     lightweight, and it doesn't require shipping brand logo assets. The
-     plain links column stays as-is; an abbreviation of "Book a call" isn't
-     meaningful the way a platform initial is. */
-  const linkCol = (heading, arr, badges) =>
-    '<div class="lcol"><div class="lcol-t">' + heading + '</div>' + arr.map(([k, v]) =>
-      '<div class="lrow">' +
-      (badges ? '<span class="lb">' + esc((k || '').slice(0, 2).toUpperCase()) + '</span>' : '') +
-      '<span class="ltxt"><span class="lk">' + esc(k) + '</span>' +
-      '<span class="lv">' + esc(v) + '</span></span></div>').join('') + '</div>';
-
   const site = 'https://' + String(state.site || 'gvcrealestateteam.com').replace(/^https?:\/\//, '');
   const qr = qrSvg(site);
-
-  const STATES = [
-    ['New York',    '../../assets/img/states/new-york.svg'],
-    ['New Jersey',  '../../assets/img/states/new-jersey.svg'],
-    ['Florida',     '../../assets/img/states/florida.svg']
-  ];
-
   const body =
     '<div class="cx-top">' +
       '<div class="cx-kicker">The GVC Team</div><div class="cx-thanks">Thank You</div>' +
       (qr ? '<div class="cx-qr"><div class="qbox">' + qr + '</div>' +
             '<div class="qcap">Our team site</div></div>' : '') +
     '</div>' +
-    cards +
+    P.agentCards(agents(), headshotFor) +
     '<div class="contact-foot">' +
-      '<div class="lcols">' +
-        linkCol('Social', pairs(DEFAULT_SOCIAL), true) +
-        linkCol('Links', pairs(DEFAULT_LINKS), false) +
-      '</div>' +
+      P.linkCols([['Social', pairs(DEFAULT_SOCIAL)], ['Links', pairs(DEFAULT_LINKS)]]) +
     '</div>' +
-    '<div class="states">' + STATES.map(([nm, icon]) =>
-      '<div class="stc"><img src="' + icon + '" alt=""><span>' + esc(nm) + '</span></div>').join('') + '</div>';
-  return P.page({ deck:DECK, n, of:OF, site:state.site, reversed:true,
+    '<div class="states">' + STATES.map(([nm, art]) =>
+      '<div class="stc"><img src="' + art + '" alt=""><span>' + esc(nm) + '</span></div>').join('') + '</div>';
+  return P.page({ deck:DECK, n, of:OF, site:state.site, reversed:true, cls:'close',
     title:'Thank You', body });
 }
 
