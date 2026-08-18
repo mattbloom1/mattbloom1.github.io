@@ -163,9 +163,14 @@
    title, then the team, then a footer with the licensed states. */
 .ag{position:absolute;inset:0;background:var(--navy);color:var(--ow);
   display:flex;flex-direction:column;padding:.7in var(--pad) .5in;overflow:hidden;}
-.ag-top{flex:none;text-align:center;padding-bottom:.28in;border-bottom:1pt solid rgba(229,229,229,.25);}
+.ag-top{position:relative;flex:none;text-align:center;padding-bottom:.28in;border-bottom:1pt solid rgba(229,229,229,.25);}
 .ag-top .ag-kicker{font:800 8pt var(--sans);letter-spacing:.28em;text-transform:uppercase;color:var(--sky);}
 .ag-top .ag-thanks{margin-top:.1in;font:700 34pt/1.1 var(--serif);color:#fff;}
+.ag-qr{position:absolute;top:0;right:0;width:.85in;text-align:center;}
+.ag-qr .qbox{width:.85in;height:.85in;background:#fff;padding:.045in;}
+.ag-qr .qbox svg{width:100%;height:100%;display:block;}
+.ag-qr .qcap{margin-top:.06in;font:800 5.6pt var(--sans);letter-spacing:.1em;
+  text-transform:uppercase;color:rgba(229,229,229,.6);}
 .ag-cards{flex:1;min-height:0;display:flex;gap:.45in;margin-top:.42in;justify-content:center;}
 /* max-width keeps a lone agent's square headshot from filling the page */
 .ag-card{flex:1;min-width:0;max-width:3.45in;display:flex;flex-direction:column;text-align:center;}
@@ -407,6 +412,7 @@
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" integrity="sha384-HOvlOYPIs/zjoIkWUGXkVmXsjr8GuZLV+Q+rcPwmJOVZVpvTSXQChiN4t9Euv9Vc" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js" integrity="sha384-lQXOAyZwHXE55JFyrOMB7nY2Wv+m5ZWNtJcHrd1rceRQXAYNLak8ukN5TjBTcIwz" crossorigin="anonymous"></script>
 <script src="../../assets/js/chrome.js"></script>
 <script src="../../assets/js/motion.js"></script>
 <script src="../../assets/js/builder.js"></script>
@@ -523,6 +529,21 @@ let assign = { hero: null, infoTop: null, infoBottom: null, location: null, gall
 const escapeHtml = s => String(s == null ? '' : s)
   .replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
 const lines = s => String(s || '').split('\n').map(x => x.trim()).filter(Boolean);
+/* QR as vector SVG so it stays crisp at any print size. Same approach as
+   the Showsheet and the Seller Pitch & CMA. Returns '' for an empty url or
+   if the CDN script failed, and the caller prints a placeholder instead. */
+function qrSvg(text) {
+  try {
+    if (!text || typeof qrcode === 'undefined') return '';
+    const qr = qrcode(0, 'M');
+    qr.addData(text); qr.make();
+    const n = qr.getModuleCount();
+    let d = '';
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (qr.isDark(r, c)) d += 'M' + c + ' ' + r + 'h1v1h-1z';
+    return '<svg viewBox="0 0 ' + n + ' ' + n + '" shape-rendering="crispEdges" ' +
+           'xmlns="http://www.w3.org/2000/svg"><path d="' + d + '" fill="#00273A"/></svg>';
+  } catch (e) { return ''; }
+}
 const cityLine = () => {
   const cs = [state.city, state.state].filter(Boolean).join(', ');
   return [cs, state.zip].filter(Boolean).join(' ');
@@ -801,9 +822,15 @@ const AG_STATES = [
    CMA and Buyer Package's final page. */
 function renderAgent(page) {
   const list = agentObjs();
+  const site = 'https://' + String(state.site || 'gvcrealestateteam.com').replace(/^https?:\/\//, '');
+  const qr = qrSvg(site);
   page.innerHTML =
     '<div class="ag">' +
-      '<div class="ag-top"><div class="ag-kicker">The GVC Team</div><div class="ag-thanks">Thank You</div></div>' +
+      '<div class="ag-top">' +
+        '<div class="ag-kicker">The GVC Team</div><div class="ag-thanks">Thank You</div>' +
+        (qr ? '<div class="ag-qr"><div class="qbox">' + qr + '</div>' +
+              '<div class="qcap">Our team site</div></div>' : '') +
+      '</div>' +
       '<div class="ag-cards">' +
         (list.length ? list.map(a => {
           const shot = headshotFor(a);

@@ -57,7 +57,7 @@
 .dline.sm{font-size:15pt;margin:.22in 0 .14in;}
 
 /* p3 — about GVC: one wide founders photo, headline stat, copy, value blocks. */
-.duo{position:relative;height:2.5in;flex:none;margin-bottom:.24in;overflow:hidden;
+.duo{position:relative;height:3.15in;flex:none;margin-bottom:.24in;overflow:hidden;
   background:linear-gradient(#F4F3EF,#E4E2DC);box-shadow:0 .1in .26in rgba(0,39,58,.22);}
 .duo img{width:100%;height:100%;display:block;object-fit:cover;}
 .duo .cap{position:absolute;left:0;right:0;bottom:0;padding:.12in .2in;
@@ -222,21 +222,19 @@
 .pg[data-key="contact"] .pg-h{display:none;}
 .pg[data-key="contact"] .pg-body{justify-content:space-between;padding-top:.5in;}
 
-.cx-top{flex:none;text-align:center;margin-bottom:.32in;padding-bottom:.28in;
+/* the top block: kicker + headline centered as usual, with the team-site
+   QR docked top-right — relative positioning here, not on .pg-body, so the
+   QR tracks this block rather than the whole page. */
+.cx-top{position:relative;flex:none;text-align:center;margin-bottom:.34in;padding-bottom:.28in;
   border-bottom:1pt solid var(--rule-rev);}
 .cx-top .cx-kicker{font:800 8pt var(--sans);letter-spacing:.28em;text-transform:uppercase;
   color:var(--sky);}
 .cx-top .cx-thanks{margin-top:.1in;font:700 34pt/1.1 var(--serif);color:#fff;}
-
-/* the three things that happen next, framed as a soft glass panel so the
-   dark page gets one more layer instead of sitting flat */
-.steps3-wrap{flex:none;background:rgba(255,255,255,.05);border:1pt solid rgba(255,255,255,.12);
-  backdrop-filter:blur(6px);padding:.3in;}
-.steps3{display:grid;grid-template-columns:repeat(3,1fr);gap:.42in;}
-.steps3 .s{border-top:1.4pt solid var(--sky);padding-top:.15in;}
-.steps3 .sn{font:800 8pt var(--sans);letter-spacing:.18em;color:var(--sky);}
-.steps3 .st{margin-top:.1in;font:700 13pt/1.2 var(--serif);color:#fff;}
-.steps3 .sd{margin-top:.08in;font:300 8.8pt/13pt var(--body);color:rgba(229,229,229,.78);}
+.cx-qr{position:absolute;top:0;right:0;width:.85in;text-align:center;}
+.cx-qr .qbox{width:.85in;height:.85in;background:#fff;padding:.045in;}
+.cx-qr .qbox svg{width:100%;height:100%;display:block;}
+.cx-qr .qcap{margin-top:.06in;font:800 5.6pt var(--sans);letter-spacing:.1em;
+  text-transform:uppercase;color:rgba(229,229,229,.6);}
 
 /* agents. The cutout sits on a light panel so the shadow and the name band
    have something solid to sit against. */
@@ -259,10 +257,9 @@
 .ag-c .ct{margin-top:.07in;display:flex;flex-direction:column;align-items:center;gap:.02in;}
 .ag-c .ct span{font:300 9pt/1.5 var(--body);color:var(--ow);}
 
-/* footer: two link columns and the team-site QR on one baseline */
-.contact-foot{flex:none;display:flex;align-items:flex-start;gap:.42in;
-  padding-top:.26in;border-top:1pt solid var(--rule-rev);}
-.lcols{flex:1;min-width:0;display:grid;grid-template-columns:1fr 1fr;gap:.42in;}
+/* footer: two link columns, full width now that the QR has moved up top */
+.contact-foot{flex:none;padding-top:.26in;border-top:1pt solid var(--rule-rev);}
+.lcols{display:grid;grid-template-columns:1fr 1fr;gap:.42in;}
 .lcol{min-width:0;}
 .lcol-t{font:800 7pt var(--sans);letter-spacing:.18em;text-transform:uppercase;
   color:var(--sky);padding-bottom:.08in;margin-bottom:.1in;border-bottom:.75pt solid var(--rule-rev);}
@@ -276,16 +273,13 @@
   color:rgba(229,229,229,.5);}
 .lrow .lv{display:block;font:300 9pt/1.4 var(--body);color:var(--ow);
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.cf-qr{flex:none;width:1in;text-align:center;}
-.cf-qr .qbox{width:1in;height:1in;background:#fff;padding:.05in;}
-.cf-qr .qbox svg{width:100%;height:100%;display:block;}
-.cf-qr .qcap{margin-top:.07in;font:800 6pt var(--sans);letter-spacing:.12em;
-  text-transform:uppercase;color:rgba(229,229,229,.6);}
 
 /* the three states we are licensed in, each with its outline beneath —
    the source art ships as flat-colour SVGs, so a full-white silhouette via
-   filter keeps every state visually consistent regardless of source colour */
-.states{flex:none;display:flex;justify-content:center;gap:.55in;margin-top:.26in;
+   filter keeps every state visually consistent regardless of source colour.
+   margin-bottom keeps clear of the page-footer's monogram, which floats up
+   out of its own slim bar and would otherwise land on top of these labels. */
+.states{flex:none;display:flex;justify-content:center;gap:.55in;margin-top:.26in;margin-bottom:.34in;
   padding-top:.22in;border-top:1pt solid var(--rule-rev);}
 .states .stc{text-align:center;}
 .states .stc img{display:block;margin:0 auto .08in;height:.5in;width:auto;
@@ -494,7 +488,7 @@ const DEFAULT_LINKS = [
 ].join('\n');
 const DEFAULT_SOCIAL = [
   'Instagram | @gvcrealestateteam',
-  'YouTube | youtube.com/@gvcrealestateteam',
+  'YouTube | @gvcrealestateteam',
   'LinkedIn | The GVC Real Estate Team'
 ].join('\n');
 
@@ -968,16 +962,10 @@ function pgVideos(n) {
     title:'Professional Videos', body });
 }
 
-/* Closing page. Three things that happen next, then the agents as proper
-   cards, then one tidy footer block. The headshots are transparent cutouts,
-   so each sits on its own light panel — that is what carries the drop shadow
-   and the name banner. A shadow on the bare cutout draws an empty rectangle. */
-const NEXT_STEPS = [
-  ['Agree on a number', 'We review the comparables together and settle on the range we go out at.'],
-  ['Book the shoot',    'Photography, floor plan and film scheduled, usually within the first week.'],
-  ['Go to market',      'Elliman, StreetEasy and the full syndication list on launch day.']
-];
-
+/* Closing page. The agents as proper cards, then one tidy footer block. The
+   headshots are transparent cutouts, so each sits on its own light panel —
+   that is what carries the drop shadow and the name banner. A shadow on the
+   bare cutout draws an empty rectangle. */
 function pgContact(n) {
   const list = agents();
   const cards = list.length
@@ -1016,18 +1004,17 @@ function pgContact(n) {
   ];
 
   const body =
-    '<div class="cx-top"><div class="cx-kicker">The GVC Team</div><div class="cx-thanks">Thank You</div></div>' +
-    '<div class="steps3-wrap"><div class="steps3">' + NEXT_STEPS.map(([t, d], i) =>
-      '<div class="s"><div class="sn">' + String(i + 1).padStart(2, '0') + '</div>' +
-      '<div class="st">' + t + '</div><div class="sd">' + d + '</div></div>').join('') + '</div></div>' +
+    '<div class="cx-top">' +
+      '<div class="cx-kicker">The GVC Team</div><div class="cx-thanks">Thank You</div>' +
+      (qr ? '<div class="cx-qr"><div class="qbox">' + qr + '</div>' +
+            '<div class="qcap">Our team site</div></div>' : '') +
+    '</div>' +
     cards +
     '<div class="contact-foot">' +
       '<div class="lcols">' +
         linkCol('Social', pairs(DEFAULT_SOCIAL), true) +
         linkCol('Links', pairs(DEFAULT_LINKS), false) +
       '</div>' +
-      (qr ? '<div class="cf-qr"><div class="qbox">' + qr + '</div>' +
-            '<div class="qcap">Our team site</div></div>' : '') +
     '</div>' +
     '<div class="states">' + STATES.map(([nm, icon]) =>
       '<div class="stc"><img src="' + icon + '" alt=""><span>' + esc(nm) + '</span></div>').join('') + '</div>';
