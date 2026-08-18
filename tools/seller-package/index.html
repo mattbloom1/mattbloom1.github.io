@@ -110,7 +110,7 @@
 .eval{text-align:center;font:700 10.5pt/15pt var(--body);color:var(--navy);
   margin:0 0 .26in;padding:0 .3in;}
 .band{position:relative;}
-.band .bsr{margin-top:.14in;padding-top:.11in;border-top:.75pt solid var(--rule);text-align:left;}
+.band .bsr{margin-top:.14in;padding-top:.11in;border-top:.75pt solid var(--rule);text-align:center;}
 .band.mid .bsr{border-top-color:rgba(83,199,220,.4);}
 .band .bsr div{font:300 8.3pt/12.5pt var(--body);color:rgba(0,39,58,.75);}
 .band .bsr div + div{margin-top:.05in;}
@@ -143,6 +143,17 @@
 .plan3 .ph3.p1 li::before{background:var(--navy);}
 .plan3 .ph3.p2 li::before{background:var(--sky2);}
 .plan3 .ph3.p3 li::before{background:var(--sky);}
+
+/* p9 footer — follow the plan, follow along: a small QR per channel */
+.plan-social{flex:none;margin-top:.22in;padding-top:.2in;border-top:.75pt solid var(--rule);
+  display:flex;justify-content:center;gap:.55in;}
+.plan-social .ps{text-align:center;}
+.plan-social .ps .qbox{width:.82in;height:.82in;margin:0 auto;background:#fff;
+  border:.75pt solid var(--rule);padding:.04in;}
+.plan-social .ps .qbox svg{width:100%;height:100%;display:block;}
+.plan-social .ps .pl{margin-top:.08in;font:800 6.8pt var(--sans);letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(0,39,58,.6);}
+.plan-social .ps .pv{margin-top:.02in;font:300 7.6pt var(--body);color:rgba(0,39,58,.5);}
 
 /* p10 — preparing your home: the seller checklist, two icon-headed columns.
    Boxes are printed empty on purpose — the seller ticks them by hand. */
@@ -459,8 +470,17 @@ const DEFAULT_LINKS = [
 ].join('\n');
 const DEFAULT_SOCIAL = [
   'Instagram | @gvcrealestateteam',
-  'YouTube | youtube.com/@gvcrealestateteam'
+  'YouTube | youtube.com/@gvcrealestateteam',
+  'LinkedIn | The GVC Real Estate Team'
 ].join('\n');
+
+/* p9 footer — one QR per channel, drawn as vector art so it stays sharp at
+   any print size. label/handle are what's printed under the code. */
+const PLAN_SOCIAL = [
+  ['YouTube',  'youtube.com/@gvcrealestateteam',                 'https://youtube.com/@gvcrealestateteam'],
+  ['Instagram','@gvcrealestateteam',                             'https://instagram.com/gvcrealestateteam'],
+  ['LinkedIn', 'The GVC Real Estate Team',                       'https://www.linkedin.com/company/the-gvc-real-estate-team']
+];
 
 /* ------------------------------------------------------------
    PREPARING YOUR HOME — the seller checklist, verbatim from the
@@ -852,7 +872,15 @@ function pgPlan(n) {
       groups.map(g => '<div class="grp"><div class="grp-t">' + g.name + '</div><ul>' +
         g.items.map(t => '<li>' + t + '</li>').join('') + '</ul></div>').join('') + '</div>';
   };
-  const body = '<div class="plan3">' + phases.map(col).join('') + '</div>';
+  const social = '<div class="plan-social">' + PLAN_SOCIAL.map(([label, handle, url]) => {
+    const code = qrSvg(url);
+    return '<div class="ps">' +
+      '<div class="qbox">' + (code || '') + '</div>' +
+      '<div class="pl">' + esc(label) + '</div>' +
+      '<div class="pv">' + esc(handle) + '</div>' +
+    '</div>';
+  }).join('') + '</div>';
+  const body = '<div class="plan3">' + phases.map(col).join('') + '</div>' + social;
   return P.page({ deck:DECK, n, of:OF, site:state.site,
     title:'Marketing Plan', body });
 }
