@@ -175,8 +175,10 @@
 /* the review-count badge. A flex item rather than absolutely positioned: the
    page body clips its overflow, and a floating badge would land on top of the
    first quote's closing mark. Sits right-aligned above the quotes. */
-.rev-badge{flex:none;align-self:flex-end;display:flex;align-items:center;gap:.13in;
-  background:var(--navy);padding:.1in .19in;margin-bottom:.2in;}
+.rev-badge{flex:none;align-self:flex-end;display:flex;flex-direction:column;align-items:center;
+  gap:.06in;text-align:center;background:var(--navy);padding:.18in .24in;margin-bottom:.2in;}
+.rev-badge .rb-qr{width:.62in;height:.62in;background:#fff;padding:.035in;margin-bottom:.04in;}
+.rev-badge .rb-qr svg{width:100%;height:100%;display:block;}
 .rev-badge .rb-stars{color:var(--sky);font-size:9.5pt;line-height:1;letter-spacing:.06em;}
 .rev-badge .rb-n{font:700 14pt/1 var(--serif);color:#fff;}
 .rev-badge .rb-l{font:800 7pt var(--sans);letter-spacing:.14em;text-transform:uppercase;
@@ -898,11 +900,15 @@ function pgPrep(n) {
     title:'The Sales Plan', body });
 }
 
+const REVIEWS_URL = 'https://gvcrealestateteam.com/about';
+
 /* Static GVC boilerplate — curated from client testimonials, not editor-driven. */
 function pgReviews(n) {
   const rs = pairs(DEFAULT_REVIEWS);
+  const revQr = qrSvg(REVIEWS_URL);
   const body =
     '<div class="rev-badge">' +
+      (revQr ? '<div class="rb-qr">' + revQr + '</div>' : '') +
       '<div class="rb-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>' +
       '<div class="rb-n">50+</div>' +
       '<div class="rb-l">5-star reviews</div>' +
