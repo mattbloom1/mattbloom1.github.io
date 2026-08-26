@@ -170,18 +170,18 @@
    floated photo any more. */
 .info{position:absolute;inset:0;overflow:hidden;background:#fff;}
 /* the banner photo, full bleed across the top */
-.info-tr{position:absolute;top:0;left:0;right:0;height:2.5in;overflow:hidden;background:var(--navy);}
+.info-tr{position:absolute;top:0;left:0;right:0;height:4.2in;overflow:hidden;background:var(--navy);}
 .info-tr img{width:100%;height:100%;object-fit:cover;display:block;}
 /* the price band, full width, directly under the banner */
-.info-price{position:absolute;top:2.5in;left:0;right:0;background:var(--sky);color:var(--navy);
+.info-price{position:absolute;top:4.2in;left:0;right:0;background:var(--sky);color:var(--navy);
   padding:.13in .1in;font:700 22pt/1 var(--serif);text-align:center;white-space:nowrap;}
 .info-price .po{font:800 10pt var(--sans);letter-spacing:.14em;text-transform:uppercase;}
 /* the navy text block. Its top is the banner plus the price band; when
    there is no price the band collapses and the block simply starts
    higher — .info-block.no-price carries that case. */
-.info-block{position:absolute;top:3.06in;left:0;right:0;height:4.5in;background:var(--navy);color:var(--ow);
+.info-block{position:absolute;top:4.77in;left:0;right:0;bottom:0;background:var(--navy);color:var(--ow);
   display:flex;flex-direction:column;overflow:hidden;}
-.info-block.no-price{top:2.5in;height:4.5in;}
+.info-block.no-price{top:4.2in;}
 .info-block .pg-h{padding:.34in var(--pad) 0;}
 .info-mid{flex:1;min-height:0;padding:.26in var(--pad) .34in;display:flex;gap:.42in;}
 .info-col{min-width:0;display:flex;flex-direction:column;}
@@ -198,21 +198,28 @@
 .stat .ico{flex:none;width:.21in;height:.21in;margin-top:.035in;color:var(--sky);}
 .stat .v{font:700 20pt/1 var(--serif);color:#fff;}
 .stat .k{font:800 7.5pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--sky);margin-top:.05in;}
-/* The footer strip has to clear the photo entirely. The running monogram
-   is .3in tall and sits .34in off the page edge, so it reaches .64in up —
-   at the old .49in it poked into the photo and got clipped. The photo stops
-   at .82in, which clears the monogram with .18in of white to spare so the
-   footer reads as its own band rather than as something crowding the photo.
-   The footer itself is still anchored to the page bottom, so its baseline
-   matches every other page exactly. */
-.info-photo{position:absolute;top:7.56in;bottom:.82in;left:0;right:0;background:var(--navy);overflow:hidden;}
-.info-photo.no-price{top:7in;}
-.info .pg-foot{position:absolute;left:0;right:0;bottom:0;}
-.info-photo img{width:100%;height:100%;object-fit:cover;display:block;}
+/* The listing QR sits at the foot of the details column, pushed down by
+   margin-top:auto so it lands on the same baseline whatever the columns
+   above it hold. It prints as vector SVG, and is left out entirely when no
+   listing link has been typed. */
+.info-qr{margin-top:auto;padding-top:.24in;display:flex;gap:.16in;align-items:center;}
+/* the white padding is the QR's quiet zone — a code with no clear margin
+   around it is unreliable to scan. .12in is a little over the four modules
+   the spec asks for at this size. */
+.info-qr .box{flex:none;width:1.15in;height:1.15in;background:#fff;padding:.12in;}
+.info-qr .box svg{width:100%;height:100%;display:block;}
+.info-qr .cap{min-width:0;}
+.info-qr .cap b{display:block;font:800 7.5pt/1.5 var(--sans);letter-spacing:.14em;
+  text-transform:uppercase;color:var(--sky);}
+.info-qr .cap .url{display:block;font:300 8pt/1.4 var(--body);color:rgba(229,229,229,.72);
+  margin-top:.04in;word-break:break-all;}
+/* the running footer now sits inside the navy block, so it takes the dark
+   variant — same geometry and baseline as every other page. */
+.info .pg-foot{flex:none;}
 @media screen{
-  .cv.has-img,.info-photo.has-img,.info-tr.has-img{cursor:grab;touch-action:none;user-select:none;}
-  .cv.is-moving,.info-photo.is-moving,.info-tr.is-moving{cursor:grabbing;}
-  .info-photo img,.info-tr img{pointer-events:none;}
+  .cv.has-img,.info-tr.has-img{cursor:grab;touch-action:none;user-select:none;}
+  .cv.is-moving,.info-tr.is-moving{cursor:grabbing;}
+  .info-tr img{pointer-events:none;}
 }
 
 /* ---------- FLOOR PLANS ---------- */
@@ -493,6 +500,11 @@ body.is-dragging-photo [data-drop].drop-on::after{content:'';position:absolute;i
             <input type="text" data-field="price" placeholder="$8,950,000">
           </div>
           <div class="field">
+            <label>Listing link</label>
+            <input type="text" data-field="listingUrl" placeholder="https://…">
+            <div class="note">Printed on page 3 as a QR code. Leave it blank and the code is left off.</div>
+          </div>
+          <div class="field">
             <label>About the property</label>
             <textarea data-field="blurb" rows="5" placeholder="Perched above Crosby Street…"></textarea>
             <div class="warn" id="warnBlurb" hidden><b>Too long.</b> The end of this blurb is cut off on page 3.</div>
@@ -716,11 +728,10 @@ const ROLES = [
   ['hero',        'Cover'],
   ['gallery',     'Gallery'],
   ['info-top',    'Info · top banner'],
-  ['info-bottom', 'Info · bottom'],
   ['exclude',     'Unused']
 ];
 // aspect ratio each single slot wants, used by the "by shape" strategy
-const SLOT_AR = { hero: 0.77, infoTop: 1.70, infoBottom: 2.32 };
+const SLOT_AR = { hero: 0.77, infoTop: 1.70 };
 
 const state = {
   images: [],            // {id,name,url,ar,role}
@@ -741,16 +752,16 @@ const state = {
     'market data with the hands-on preparation that gets a property photographed, priced and ' +
     'positioned properly the first time.',
   // page 3
-  price: '', blurb: '', features: '',
+  price: '', blurb: '', features: '', listingUrl: '',
   beds: '', baths: '', parking: '', sqft: '',
-  coverPos: { x: 50, y: 50 }, infoPos: { x: 50, y: 50 }, infoTopPos: { x: 50, y: 50 },
+  coverPos: { x: 50, y: 50 }, infoTopPos: { x: 50, y: 50 },
   // floor plans
   floorplans: [],        // {id,name,url,label}
   fpNote: 'Dimensions and square footage are approximate and subject to verification.',
 };
 
 let uid = 0, builder = null;
-let assign = { hero: null, infoTop: null, infoBottom: null, gallery: [] };
+let assign = { hero: null, infoTop: null, gallery: [] };
 
 /* ---------------- helpers ---------------- */
 const escapeHtml = s => String(s == null ? '' : s)
@@ -791,7 +802,7 @@ function pageFoot(n, of, dark) {
 
 /* ---------------- placement ---------------- */
 function computeAssignment() {
-  const res = { hero: null, infoTop: null, infoBottom: null, gallery: [] };
+  const res = { hero: null, infoTop: null, gallery: [] };
   const taken = new Set();
   const forcedGallery = [];
 
@@ -799,7 +810,6 @@ function computeAssignment() {
     switch (im.role) {
       case 'hero':        if (!res.hero)        { res.hero = im;        taken.add(im.id); } break;
       case 'info-top':    if (!res.infoTop)     { res.infoTop = im;     taken.add(im.id); } break;
-      case 'info-bottom': if (!res.infoBottom)  { res.infoBottom = im;  taken.add(im.id); } break;
       case 'gallery':     forcedGallery.push(im); taken.add(im.id); break;
       case 'exclude':     taken.add(im.id); break;
     }
@@ -822,14 +832,14 @@ function computeAssignment() {
 
     if (state.strategy === 'spotlight') {
       // the strongest photos go to the cover and the gallery's big cells;
-      // the page-3 slots take what is left
+      // page 3's banner takes what is left
       take('hero');
-      const n = Math.max(0, pool.length - 3);
+      const n = Math.max(0, pool.length - 2);
       res.gallery = forcedGallery.concat(pool.slice(0, n));
       pool = pool.slice(n);
-      take('infoTop'); take('infoBottom');
+      take('infoTop');
     } else {
-      take('hero'); take('infoTop'); take('infoBottom');
+      take('hero'); take('infoTop');
     }
   }
 
@@ -1244,7 +1254,7 @@ function beginCrop(e, cellEl, c) {
 }
 
 function renderInfo(page, n, of) {
-  const photo = assign.infoBottom, topPhoto = assign.infoTop;
+  const topPhoto = assign.infoTop;
   const feats = lines(state.features);
   const stats = [['Bedrooms', state.beds, 'bed'], ['Bathrooms', state.baths, 'bath'],
                  ['Parking', state.parking, 'car'], ['Sq Ft', state.sqft, 'ruler']];
@@ -1252,8 +1262,12 @@ function renderInfo(page, n, of) {
     ? (/\d/.test(state.price) ? escapeHtml(state.price)
        : '<span class="po">' + escapeHtml(state.price) + '</span>')
     : '';
-
   const np = price ? '' : ' no-price';
+  /* the QR is drawn from whatever link is typed; a bare domain still has to
+     scan as a link, so it gets an https:// in front of it. The printed line
+     under the code keeps the address as it was typed. */
+  const url = String(state.listingUrl || '').trim();
+  const qr = url ? qrSvg(/^[a-z]+:\/\//i.test(url) ? url : 'https://' + url) : '';
 
   page.innerHTML =
     '<div class="info">' +
@@ -1278,20 +1292,16 @@ function renderInfo(page, n, of) {
                 '<div class="v">' + (escapeHtml(s[1]) || '&mdash;') + '</div>' +
                 '<div class="k">' + s[0] + '</div></div></div>').join('') +
             '</div>' +
+            (qr ? '<div class="info-qr"><div class="box">' + qr + '</div>' +
+                    '<div class="cap"><b>Scan for<br>the full listing</b>' +
+                      '<span class="url">' + escapeHtml(url) + '</span></div></div>'
+                : '') +
           '</div>' +
         '</div>' +
+        pageFoot(n, of, true) +
       '</div>' +
-      '<div class="info-photo' + np + (photo ? ' has-img' : '') + '" data-drop="info-bottom">' +
-        (photo ? '<img src="' + photo.url + '" alt="" style="object-position:' +
-                   state.infoPos.x + '% ' + state.infoPos.y + '%">'
-               : '<div class="empty-note">Bottom photo</div>') +
-      '</div>' +
-      pageFoot(n, of, false) +
     '</div>';
 
-  const box = page.querySelector('.info-photo');
-  if (photo) box.addEventListener('pointerdown', e => beginPhotoDrag(e, box, state.infoPos));
-  addSlotGrip(box, photo, 'Drag to move this photo somewhere else');
   const tr = page.querySelector('.info-tr');
   if (topPhoto) tr.addEventListener('pointerdown', e => beginPhotoDrag(e, tr, state.infoTopPos));
   addSlotGrip(tr, topPhoto, 'Drag to move this photo somewhere else');
@@ -1781,7 +1791,6 @@ function roleLabelFor(img) {
   if (img.role && img.role !== 'auto') return null;   // explicit shows in the select
   if (assign.hero === img) return 'Cover';
   if (assign.infoTop === img) return 'Info · top';
-  if (assign.infoBottom === img) return 'Info · bottom';
   if (assign.gallery.includes(img)) return 'Gallery';
   return 'Unused';
 }
@@ -1799,14 +1808,13 @@ function roleLabelFor(img) {
 
      hero          the cover photo
      info-top      page 3, top banner
-     info-bottom   page 3, foot
      cell          one gallery frame  (data-id = the photo in it)
      gal-add       a gallery page's spare space (data-gi = which page)
    ============================================================ */
 let photoDrag = null;
 
 const DROP_LABEL = {
-  'hero': 'Cover photo', 'info-top': 'Top banner', 'info-bottom': 'Foot photo',
+  'hero': 'Cover photo', 'info-top': 'Top banner',
   'cell': 'Swap in', 'gal-add': 'Add to this page'
 };
 
@@ -1968,7 +1976,6 @@ function placementOf(img) {
   if (img.role === 'exclude') return { text: 'Unused', cls: '' };
   if (assign.hero === img) return { text: 'Cover', cls: img.role === 'hero' ? 'pinned' : 'used' };
   if (assign.infoTop === img) return { text: 'Top banner', cls: img.role === 'info-top' ? 'pinned' : 'used' };
-  if (assign.infoBottom === img) return { text: 'Foot', cls: img.role === 'info-bottom' ? 'pinned' : 'used' };
   const hit = findCell(img.id);
   if (hit) return { text: 'Gallery ' + (hit.pi + 1), cls: img.role === 'gallery' ? 'pinned' : 'used' };
   if (assign.gallery.indexOf(img) > -1) return { text: 'Gallery', cls: 'used' };
@@ -2266,6 +2273,7 @@ const PREVIEW = {
   photos: [0, 3, 6, 9, 12, 15, 18, 21, 24, 27],
   address: '3 Crosby Lane', city: 'Rye', state: 'NY', zip: '10580',
   price: '$4,275,000',
+  listingUrl: 'https://gvcrealestateteam.com/listings/3-crosby-lane',
   blurb: 'Set behind a stone wall on a quiet lane, this shingle-and-clapboard colonial ' +
     'opens to a double-height entry and a great room that runs the depth of the house. ' +
     'Every principal room faces the rear garden.',
@@ -2296,7 +2304,6 @@ $('#galCaps').addEventListener('change', e => {
 });
 $('#btnResetPos').addEventListener('click', () => {
   state.coverPos = { x: 50, y: 50 };
-  state.infoPos = { x: 50, y: 50 };
   state.infoTopPos = { x: 50, y: 50 };
   redraw();
 });
@@ -2321,10 +2328,9 @@ $('#btnPreview').addEventListener('click', () => {
   state.agents = PREVIEW.agents.slice();
   state.gallery = []; state.galPage = 0; state.galSel = null;
   state.coverPos = { x: 50, y: 50 };
-  state.infoPos = { x: 50, y: 50 };
   state.infoTopPos = { x: 50, y: 50 };
 
-  ['address','city','state','zip','price','blurb','features','beds','baths','parking','sqft'
+  ['address','city','state','zip','price','listingUrl','blurb','features','beds','baths','parking','sqft'
   ].forEach(k => {
     state[k] = PREVIEW[k];
     const el = document.querySelector('[data-field=' + k + ']');
