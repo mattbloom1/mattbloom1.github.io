@@ -104,16 +104,6 @@
 .cv-bar .cb-mono{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
   height:.46in;width:auto;display:block;flex:none;}
 
-/* ---------- CONTENTS ----------
-   Verbatim from assets/css/pitch.css, so the brochure's contents page is
-   the same object as the Seller Pitch & CMA's and the Buyer Package's. */
-.toc-pg{position:absolute;inset:0;background:#fff;display:flex;flex-direction:column;overflow:hidden;}
-.toc{list-style:none;margin:0;padding:0;column-gap:.5in;}
-.toc li{display:flex;align-items:baseline;gap:.14in;padding:.115in 0;border-bottom:.75pt solid var(--rule);}
-.toc .n{font:800 8.5pt var(--sans);letter-spacing:.1em;color:var(--sky2);width:.34in;flex:none;}
-.toc .t{font:400 11.5pt var(--body);color:var(--navy);}
-.toc .d{flex:1;border-bottom:.75pt dotted rgba(0,39,58,.28);margin:0 .06in;transform:translateY(-.03in);}
-.toc .p{font:800 9pt var(--sans);color:rgba(0,39,58,.55);}
 
 /* ---------- PAGE 2 — BENTO GALLERY ---------- */
 .bento{position:absolute;inset:0;display:grid;
@@ -199,25 +189,6 @@
 .fp-note{flex:none;padding:.16in 0 0;text-align:center;
   font:400 7.5pt var(--ui-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ui-ink-soft);}
 
-/* ---------- LOCATION ---------- */
-.loc{position:absolute;inset:0;background:var(--navy);color:var(--ow);display:flex;flex-direction:column;overflow:hidden;}
-.loc-photo{flex:none;height:42%;position:relative;overflow:hidden;background:rgba(255,255,255,.05);}
-.loc-photo img{width:100%;height:100%;object-fit:cover;display:block;}
-/* the photo eats the top of the page, so this page's .pg-h needs less
-   lead-in above it than a page that starts at the paper edge */
-.loc .pg-h{padding-top:.34in;}
-.loc-blurb{font:300 10pt/15pt var(--body);color:var(--ow);max-width:6.6in;
-  max-height:.95in;overflow:hidden;}
-.loc-grid{margin-top:.28in;flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;
-  gap:.24in .45in;overflow:hidden;align-content:start;}
-.loc-cat{min-width:0;display:flex;flex-direction:column;min-height:0;}
-.loc-cat h3{display:flex;align-items:center;gap:.09in;font:800 8pt var(--sans);letter-spacing:.16em;
-  text-transform:uppercase;color:var(--sky);margin-bottom:.09in;}
-.loc-cat h3 .ico{width:.15in;height:.15in;flex:none;}
-.loc-cat ul{list-style:none;margin:0;padding:0;flex:1;min-height:0;overflow:hidden;}
-.loc-cat li{font:400 9pt/14.5pt var(--body);color:var(--ow);}
-@media screen{ .loc-photo.has-img{cursor:grab;touch-action:none;user-select:none;}
-  .loc-photo.is-moving{cursor:grabbing;} .loc-photo img{pointer-events:none;} }
 
 /* ---------- AGENT / CLOSING PAGE ----------
    The last page in the deck. Everything below is a verbatim mirror of the
@@ -294,45 +265,6 @@
 .states .stc span{font:800 7.5pt var(--sans);letter-spacing:.18em;
   text-transform:uppercase;color:rgba(229,229,229,.72);}
 
-/* ---------- MARKETING PLAN ----------
-   Copied verbatim from the Seller Pitch & CMA's page 9 (see
-   tools/seller-package/index.html) — same three phase columns, same
-   accents, same QR footer, same copy. The two pages are meant to be
-   indistinguishable, so edit them together.
-
-   Each phase carries its own accent, darkest to lightest as the listing
-   moves from pre-launch through to on-going, so the three columns read as
-   a sequence rather than three unrelated lists. The bullets pick up the
-   same colour. */
-.mk{position:absolute;inset:0;background:#fff;display:flex;flex-direction:column;overflow:hidden;}
-.plan3{display:flex;gap:.3in;flex:1;min-height:0;}
-.plan3 .ph3{flex:1;min-width:0;display:flex;flex-direction:column;}
-.plan3 .ph3-h{flex:none;font:800 11pt var(--sans);letter-spacing:.03em;text-transform:uppercase;
-  color:var(--navy);padding-bottom:.1in;border-bottom:2pt solid var(--sky);margin-bottom:.16in;}
-.plan3 .ph3.p1 .ph3-h{border-bottom-color:var(--navy);}
-.plan3 .ph3.p2 .ph3-h{border-bottom-color:var(--sky2);}
-.plan3 .ph3.p3 .ph3-h{border-bottom-color:var(--sky);}
-.plan3 .grp{margin-bottom:.16in;}
-.plan3 .grp-t{font:800 7pt var(--sans);letter-spacing:.13em;text-transform:uppercase;color:rgba(0,39,58,.55);margin-bottom:.06in;}
-.plan3 ul{list-style:none;margin:0;padding:0;}
-.plan3 li{padding:.05in 0 .05in .16in;position:relative;font:300 8.8pt/13pt var(--body);color:var(--navy);}
-.plan3 li::before{content:'';position:absolute;left:0;top:.095in;width:.06in;height:.06in;background:var(--sky2);}
-.plan3 .ph3.p1 li::before{background:var(--navy);}
-.plan3 .ph3.p2 li::before{background:var(--sky2);}
-.plan3 .ph3.p3 li::before{background:var(--sky);}
-
-/* footer — follow the plan, follow along: a small QR per channel */
-.plan-social{flex:none;margin-top:.22in;padding-top:.2in;border-top:.75pt solid var(--rule);
-  display:flex;justify-content:center;gap:.55in;}
-/* fixed, equal width regardless of label length, so the three QR squares
-   themselves stay evenly spaced and centered on the page */
-.plan-social .ps{flex:none;width:1.5in;text-align:center;}
-.plan-social .ps .qbox{width:.82in;height:.82in;margin:0 auto;background:#fff;
-  border:.75pt solid var(--rule);padding:.04in;}
-.plan-social .ps .qbox svg{width:100%;height:100%;display:block;}
-.plan-social .ps .pl{margin-top:.08in;font:800 6.8pt var(--sans);letter-spacing:.14em;
-  text-transform:uppercase;color:rgba(0,39,58,.6);}
-.plan-social .ps .pv{margin-top:.02in;font:300 7.6pt var(--body);color:rgba(0,39,58,.5);}
 
 /* ---------- OVERFLOW WARNINGS (screen only) ---------- */
 @media screen{
@@ -457,20 +389,6 @@
         </div>
       </details>
 
-      <details class="ed-sec">
-        <summary>Location <span class="hint">amenities page</span></summary>
-        <div class="sec-in">
-          <div class="field"><label>Neighbourhood</label><input type="text" data-field="hood" placeholder="Milton Point, Rye"></div>
-          <div class="field">
-            <label>About the area</label>
-            <textarea data-field="hoodBlurb" rows="4"></textarea>
-          </div>
-          <div class="field"><label>Dining &amp; shopping — one per line</label><textarea data-field="amDining" rows="4"></textarea></div>
-          <div class="field"><label>Schools — one per line</label><textarea data-field="amSchools" rows="4"></textarea></div>
-          <div class="field"><label>Transit — one per line</label><textarea data-field="amTransit" rows="4"></textarea></div>
-          <div class="field"><label>Parks &amp; recreation — one per line</label><textarea data-field="amRec" rows="4"></textarea></div>
-        </div>
-      </details>
 
       <details class="ed-sec">
         <summary>Agents <span class="hint">max 2 &middot; page 1 &amp; final page</span></summary>
@@ -584,11 +502,10 @@ const ROLES = [
   ['gallery',     'Gallery'],
   ['info-top',    'Info · top right'],
   ['info-bottom', 'Info · bottom'],
-  ['location',    'Location'],
   ['exclude',     'Unused']
 ];
 // aspect ratio each single slot wants, used by the "by shape" strategy
-const SLOT_AR = { hero: 0.77, infoTop: 1.70, infoBottom: 2.32, location: 2.00 };
+const SLOT_AR = { hero: 0.77, infoTop: 1.70, infoBottom: 2.32 };
 
 const state = {
   images: [],            // {id,name,url,ar,role}
@@ -612,48 +529,10 @@ const state = {
   // floor plans
   floorplans: [],        // {id,name,url,label}
   fpNote: 'Dimensions and square footage are approximate and subject to verification.',
-  // location
-  hood: '', hoodBlurb: '', locPos: { x: 50, y: 50 },
-  amDining: '', amSchools: '', amTransit: '', amRec: '',
 };
 
-/* ============================================================
-   MARKETING PLAN — copied verbatim from the Seller Pitch & CMA.
-   Rows are Phase | Group | Title | detail; the phase groups the row into
-   one of the three columns on the page. Static GVC boilerplate, not
-   editor-driven, exactly as it is in the seller deck — if you change one
-   of the two pages, change the other.
-   ============================================================ */
-const DEFAULT_PLAN = [
-  'Pre-Launch | Media Creation | Custom photography | A full shoot with our in-house photographer, timed to the property at its best.',
-  'Pre-Launch | Media Creation | Professional floor plan | Produced in-house for every listing.',
-  'Pre-Launch | Media Creation | Property video | A cinematic walkthrough cut for the launch and for social.',
-  'Pre-Launch | Property Info | Verify all pertinent information | Confirmed against the deed, offering plan and building records before anything goes out.',
-  'Pre-Launch | Pre-Launch Marketing | Elliman &amp; REBNY notice | Immediate notice to all Elliman brokers, REBNY members and co-broke firms.',
-  'Pre-Launch | Pre-Launch Marketing | Teaser announcement | Social teaser ahead of the public listing date.',
-  'Launch | Digital Launch | Elliman.com listing | Posted with professional photos, floor plan, description and all marketing information.',
-  'Launch | Digital Launch | Brokerage &amp; contact announcement | Emailed to the entire brokerage community and our private contact lists.',
-  'Launch | Digital Launch | StreetEasy syndication | Posted with full professional details and marketing information.',
-  'Launch | Print Marketing | Marketing sheet | A professional sheet detailing the property, distributed to agents and prospective buyers.',
-  'Launch | Print Marketing | Print placements | Placed in appropriate print publications.',
-  'Launch | Print Marketing | Just Listed cards | Sent to targeted buildings in the surrounding area.',
-  'On-Going | Communication | Weekly seller updates | Market traffic feedback, both buyer and web, delivered on a weekly cadence.',
-  'On-Going | Communication | Offer qualification | Every offer qualified before it is presented.',
-  'On-Going | Communication | Showings &amp; open houses | Scheduled as needed, public or broker-specific.',
-  'On-Going | Communication | Comparable tracking | Continued tracking of similar sales, so pricing stays defensible.',
-  'On-Going | Ongoing Marketing | Bi-weekly email blasts | Sent to the entire brokerage community.',
-  'On-Going | Ongoing Marketing | Continued print &amp; web ads | As needed through the life of the listing.'
-].join('\n');
-
-/* one QR per channel under the plan — label/handle are what gets printed */
-const PLAN_SOCIAL = [
-  ['YouTube',  '@gvcrealestateteam',       'https://youtube.com/@gvcrealestateteam'],
-  ['Instagram','@gvcrealestateteam',       'https://instagram.com/gvcrealestateteam'],
-  ['LinkedIn', 'The GVC Real Estate Team', 'https://www.linkedin.com/company/the-gvc-real-estate-team']
-];
-
 let uid = 0, builder = null;
-let assign = { hero: null, infoTop: null, infoBottom: null, location: null, gallery: [] };
+let assign = { hero: null, infoTop: null, infoBottom: null, gallery: [] };
 
 /* ---------------- helpers ---------------- */
 const escapeHtml = s => String(s == null ? '' : s)
@@ -694,7 +573,7 @@ function pageFoot(n, of, dark) {
 
 /* ---------------- placement ---------------- */
 function computeAssignment() {
-  const res = { hero: null, infoTop: null, infoBottom: null, location: null, gallery: [] };
+  const res = { hero: null, infoTop: null, infoBottom: null, gallery: [] };
   const taken = new Set();
   const forcedGallery = [];
 
@@ -703,7 +582,6 @@ function computeAssignment() {
       case 'hero':        if (!res.hero)        { res.hero = im;        taken.add(im.id); } break;
       case 'info-top':    if (!res.infoTop)     { res.infoTop = im;     taken.add(im.id); } break;
       case 'info-bottom': if (!res.infoBottom)  { res.infoBottom = im;  taken.add(im.id); } break;
-      case 'location':    if (!res.location)    { res.location = im;    taken.add(im.id); } break;
       case 'gallery':     forcedGallery.push(im); taken.add(im.id); break;
       case 'exclude':     taken.add(im.id); break;
     }
@@ -726,14 +604,14 @@ function computeAssignment() {
 
     if (state.strategy === 'spotlight') {
       // the strongest photos go to the cover and the gallery's big cells;
-      // the page-3 and location slots take what is left
+      // the page-3 slots take what is left
       take('hero');
       const n = Math.min(GALLERY_MAX - forcedGallery.length, Math.max(0, pool.length - 3));
       res.gallery = forcedGallery.concat(pool.slice(0, n));
       pool = pool.slice(n);
-      take('infoTop'); take('infoBottom'); take('location');
+      take('infoTop'); take('infoBottom');
     } else {
-      take('hero'); take('infoTop'); take('infoBottom'); take('location');
+      take('hero'); take('infoTop'); take('infoBottom');
     }
   }
 
@@ -781,7 +659,6 @@ function swapCells(a, b) {
 function pagePlan() {
   const plan = [
     { t: 'cover',    title: 'Cover' },
-    { t: 'toc',      title: 'Contents' },
     { t: 'gallery',  title: 'The Property in Pictures' },
     { t: 'info',     title: 'The Property' }
   ];
@@ -790,11 +667,7 @@ function pagePlan() {
     plan.push({ t: 'floorplan', from: i * 2, page: i + 1, of: fpPages,
                 title: 'Floor Plans' + (fpPages > 1 ? ' \u2014 ' + (i + 1) + ' of ' + fpPages : '') });
   }
-  plan.push(
-    { t: 'location', title: state.hood || 'The Location' },
-    { t: 'plan',     title: 'Marketing Plan' },
-    { t: 'agent',    title: 'Thank You' }
-  );
+  plan.push({ t: 'agent', title: 'Thank You' });
   return plan;
 }
 
@@ -833,21 +706,6 @@ function renderCover(page) {
     '</div>';
 }
 
-/* Contents. Same markup and numbering as P.toc() in assets/js/pitch.js —
-   two-digit index, title, dotted leader, page number. */
-function renderToc(page, n, of) {
-  const plan = pagePlan();
-  const rows = plan.slice(1).map((spec, i) =>
-    '<li><span class="n">' + String(i + 2).padStart(2, '0') + '</span>' +
-    '<span class="t">' + escapeHtml(spec.title) + '</span>' +
-    '<span class="d"></span><span class="p">' + (i + 2) + '</span></li>').join('');
-  page.innerHTML =
-    '<div class="toc-pg">' +
-      '<div class="pg-h"><h2>Contents</h2></div>' +
-      '<div class="pg-body"><ol class="toc">' + rows + '</ol></div>' +
-      pageFoot(n, of, false) +
-    '</div>';
-}
 
 function renderGallery(page) {
   const imgs = assign.gallery;
@@ -967,38 +825,6 @@ function renderFloorplan(page, spec, n, of) {
   });
 }
 
-function renderLocation(page, n, of) {
-  const photo = assign.location;
-  const cats = [
-    ['Dining &amp; Shopping', 'utensils', lines(state.amDining)],
-    ['Schools',               'school',   lines(state.amSchools)],
-    ['Transit',               'train',    lines(state.amTransit)],
-    ['Parks &amp; Recreation','trees',    lines(state.amRec)]
-  ].filter(c => c[2].length);
-
-  page.innerHTML =
-    '<div class="loc">' +
-      '<div class="loc-photo' + (photo ? ' has-img' : '') + '">' +
-        (photo ? '<img src="' + photo.url + '" alt="" style="object-position:' +
-                   state.locPos.x + '% ' + state.locPos.y + '%">'
-               : '<div class="empty-note">Location photo</div>') +
-      '</div>' +
-      '<div class="pg-h rev"><h2>' + (escapeHtml(state.hood) || 'The Location') + '</h2></div>' +
-      '<div class="pg-body loc-body">' +
-        '<div class="loc-blurb">' + escapeHtml(state.hoodBlurb) + '</div>' +
-        '<div class="loc-grid">' +
-          cats.map(c =>
-            '<div class="loc-cat"><h3>' + icon(c[1]) + '<span>' + c[0] + '</span></h3>' +
-            '<ul>' + c[2].map(x => '<li>' + escapeHtml(x) + '</li>').join('') + '</ul></div>').join('') +
-        '</div>' +
-      '</div>' +
-      pageFoot(n, of, true) +
-    '</div>';
-
-  const box = page.querySelector('.loc-photo');
-  if (photo) box.addEventListener('pointerdown', e => beginPhotoDrag(e, box, state.locPos));
-}
-
 const STATES = [
   ['New York',   '../../assets/img/states/new-york.svg'],
   ['New Jersey', '../../assets/img/states/new-jersey.svg'],
@@ -1018,8 +844,6 @@ const AG_LINKS = [
   ['Book a call',    'gvcrealestateteam.com/contact']
 ];
 
-/* Closing page — the last page in the deck, styled like the Seller Pitch &
-   CMA and Buyer Package's final page. */
 function renderAgent(page, n, of) {
   const list = agentObjs();
   const site = 'https://' + SITE;
@@ -1044,40 +868,6 @@ function renderAgent(page, n, of) {
     '</div>';
 }
 
-/* Marketing Plan — the Seller Pitch & CMA's page 9, rebuilt here from the
-   same DEFAULT_PLAN rows with the same three phase columns and the same QR
-   footer, so the two pages print identically. */
-function renderPlan(page, n, of) {
-  const rows = lines(DEFAULT_PLAN).map(l => l.split('|').map(x => x.trim()));
-  const phases = ['Pre-Launch', 'Launch', 'On-Going'];
-  /* p1/p2/p3 carry the phase accent — navy, mid, then light */
-  const col = (phase, i) => {
-    const groups = [];
-    rows.filter(r => r[0] === phase).forEach(r => {
-      let g = groups.filter(x => x.name === r[1])[0];
-      if (!g) { g = { name: r[1], items: [] }; groups.push(g); }
-      g.items.push(r[2] + (r[3] ? ' — ' + r[3] : ''));
-    });
-    return '<div class="ph3 p' + (i + 1) + '"><div class="ph3-h">' + phase + '</div>' +
-      groups.map(g => '<div class="grp"><div class="grp-t">' + g.name + '</div><ul>' +
-        g.items.map(t => '<li>' + t + '</li>').join('') + '</ul></div>').join('') + '</div>';
-  };
-  const social = '<div class="plan-social">' + PLAN_SOCIAL.map(([label, handle, url]) =>
-    '<div class="ps">' +
-      '<div class="qbox">' + (qrSvg(url) || '') + '</div>' +
-      '<div class="pl">' + escapeHtml(label) + '</div>' +
-      '<div class="pv">' + escapeHtml(handle) + '</div>' +
-    '</div>').join('') + '</div>';
-
-  page.innerHTML =
-    '<div class="mk">' +
-      '<div class="pg-h"><h2>Marketing Plan</h2></div>' +
-      '<div class="pg-body">' +
-        '<div class="plan3">' + phases.map(col).join('') + '</div>' + social +
-      '</div>' +
-      pageFoot(n, of, false) +
-    '</div>';
-}
 
 function renderPage(page, i) {
   const plan = pagePlan();
@@ -1085,13 +875,10 @@ function renderPage(page, i) {
   if (!spec) return;
   const n = i + 1, of = plan.length;
   if (spec.t === 'cover')          renderCover(page);
-  else if (spec.t === 'toc')       renderToc(page, n, of);
   else if (spec.t === 'gallery')   renderGallery(page);
   else if (spec.t === 'info')      renderInfo(page, n, of);
   else if (spec.t === 'floorplan') renderFloorplan(page, spec, n, of);
-  else if (spec.t === 'location')  renderLocation(page, n, of);
   else if (spec.t === 'agent')     renderAgent(page, n, of);
-  else if (spec.t === 'plan')      renderPlan(page, n, of);
 }
 
 function redraw() {
@@ -1117,18 +904,8 @@ const OVER_TARGETS = [
    'The property blurb is longer than page 3 can show. Trim it, or the end will be cut off in print.'],
   ['.info-feats',  'Features clipped',   '#warnFeats',
    'There are more features than page 3 can show. Remove a line or two.'],
-  ['.loc-blurb',   'Area text clipped',  null,
-   'The area description is longer than the Location page can show. Trim it, or the end will be cut off in print.'],
-  ['.loc-cat ul',  'Amenities clipped',  null,
-   'One of the Location lists is longer than fits. Remove a line or two.'],
-  ['.loc-grid',    'Categories clipped', null,
-   'The Location page has more categories than fit on it.'],
   ['.ag-bio',      'Statement clipped',  null,
-   'The team statement is longer than the closing page can show.'],
-  ['.toc',         'Contents clipped',   null,
-   'The contents page has more entries than fit. That means the deck has grown \u2014 remove a floor-plan page.'],
-  ['.plan3',       'Plan clipped',       null,
-   'The Marketing Plan page is running long. Its copy is shared with the Seller Pitch & CMA \u2014 change it in both.']
+   'The team statement is longer than the closing page can show.']
 ];
 
 function flag(el, label) {
@@ -1329,7 +1106,6 @@ function roleLabelFor(img) {
   if (assign.hero === img) return 'Cover';
   if (assign.infoTop === img) return 'Info · top';
   if (assign.infoBottom === img) return 'Info · bottom';
-  if (assign.location === img) return 'Location';
   if (assign.gallery.includes(img)) return 'Gallery';
   return 'Unused';
 }
@@ -1592,17 +1368,6 @@ const PREVIEW = {
     'Finished lower level with gym', 'Whole-house generator',
     'Irrigated landscaped grounds', 'Attached two-car garage'].join('\n'),
   beds: '5', baths: '4.5', parking: '2', sqft: '4,180',
-  hood: 'Milton Point, Rye',
-  hoodBlurb: 'Milton Point sits on the Long Island Sound at the southern edge of Rye, ' +
-    'a ten-minute walk from the village and thirty-eight minutes from Grand Central.',
-  amDining: ['Ruby\'s Oyster Bar — 0.8 mi', 'Frankie & Fanucci\'s — 1.1 mi',
-    'Rye Village shops — 0.9 mi', 'Whole Foods, Port Chester — 2.4 mi'].join('\n'),
-  amSchools: ['Midland Elementary — 1.2 mi', 'Rye Middle School — 1.4 mi',
-    'Rye High School — 1.4 mi', 'Rye Country Day — 2.1 mi'].join('\n'),
-  amTransit: ['Rye Metro-North — 1.0 mi', 'Grand Central — 38 min express',
-    'I-95 interchange 19 — 1.3 mi', 'Westchester County Airport — 7 mi'].join('\n'),
-  amRec: ['Rye Town Park & Beach — 0.6 mi', 'Playland Park — 1.7 mi',
-    'American Yacht Club — 0.5 mi', 'Marshlands Conservancy — 1.9 mi'].join('\n'),
   agents: ['john-gasdaska', 'tj-verdiglione']
 };
 
@@ -1621,7 +1386,6 @@ $('#btnShuffle').addEventListener('click', shuffleGallery);
 $('#btnResetPos').addEventListener('click', () => {
   state.infoPos = { x: 50, y: 50 };
   state.infoTopPos = { x: 50, y: 50 };
-  state.locPos = { x: 50, y: 50 };
   redraw();
 });
 
@@ -1646,10 +1410,9 @@ $('#btnPreview').addEventListener('click', () => {
   state.bentoOrder = []; state.bentoVariant = 0;
   state.infoPos = { x: 50, y: 50 };
   state.infoTopPos = { x: 50, y: 50 };
-  state.locPos = { x: 50, y: 50 };
 
-  ['address','city','state','zip','price','blurb','features','beds','baths','parking','sqft',
-   'hood','hoodBlurb','amDining','amSchools','amTransit','amRec'].forEach(k => {
+  ['address','city','state','zip','price','blurb','features','beds','baths','parking','sqft'
+  ].forEach(k => {
     state[k] = PREVIEW[k];
     const el = document.querySelector('[data-field=' + k + ']');
     if (el) el.value = PREVIEW[k];

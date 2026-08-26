@@ -589,7 +589,6 @@ function slot(name) { return assign[name] ? assign[name].url : null; }
    ============================================================ */
 const PAGES = [
   { key:'cover',   title:'Cover' },
-  { key:'toc',     title:'Contents' },
   { key:'about',   title:'About The GVC Team' },
   { key:'studio',  title:'In-House Marketing & Design' },
   { key:'property',title:'Your Property' },
@@ -617,13 +616,6 @@ function pgCover() {
     image: slot('cover'),
     pos: posFor('cover'),
     agents: agents()
-  });
-}
-
-function pgToc(n) {
-  return P.page({ deck:DECK, n, of:OF, site:SITE,
-    title:'Contents',
-    body: P.toc(PAGES.slice(1).map((p, i) => ({ page:i + 2, title:p.title })))
   });
 }
 
@@ -943,7 +935,7 @@ function pgContact(n) {
 }
 
 const RENDER = {
-  cover:pgCover, toc:pgToc, about:pgAbout, studio:pgStudio, property:pgProperty,
+  cover:pgCover, about:pgAbout, studio:pgStudio, property:pgProperty,
   map:pgMap, comps:pgComps, strategy:pgStrategy, plan:pgPlan, prep:pgPrep,
   reviews:pgReviews, videos:pgVideos, contact:pgContact
 };

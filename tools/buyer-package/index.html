@@ -325,7 +325,6 @@ function monthly() {
 function pageList() {
   const pages = [
     { key:'cover',   title:'Cover' },
-    { key:'toc',     title:'Contents' },
     { key:'why',     title:'Why Work With Us' },
     { key:'process', title:'The Buying Process' },
     { key:'finance', title:'Financing' },
@@ -353,11 +352,6 @@ function pgCover() {
     pos: posFor('cover'),
     agents: agents()
   });
-}
-
-function pgToc(n) {
-  return P.page({ deck:DECK, n, of:OF, site:SITE, title:'Contents',
-    body: P.toc(PAGES.slice(1).map((p, i) => ({ page:i + 2, title:p.title }))) });
 }
 
 function pgWhy(n) {
@@ -550,7 +544,7 @@ function pgNext(n) {
 }
 
 const RENDER = {
-  cover:pgCover, toc:pgToc, why:pgWhy, process:pgProcess, finance:pgFinance,
+  cover:pgCover, why:pgWhy, process:pgProcess, finance:pgFinance,
   criteria:pgCriteria, comps:pgComps, offer:pgOffer, costs:pgCosts, next:pgNext
 };
 
