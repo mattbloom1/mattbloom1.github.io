@@ -105,21 +105,62 @@
   height:.46in;width:auto;display:block;flex:none;}
 
 
-/* ---------- PAGE 2 — BENTO GALLERY ---------- */
-.bento{position:absolute;inset:0;display:grid;
-  grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(6,1fr);
+/* ---------- GALLERY PAGES ----------
+   A gallery page is rows of cells, both sized in proportional fr units, so
+   whatever numbers the editor lands on the page is always exactly filled —
+   no holes, no overflow, nothing to tile by hand. A "big" photo is just a
+   row with one cell and a large height. */
+.gal{position:absolute;inset:0;display:flex;flex-direction:column;
   gap:var(--bento-gap);background:#fff;overflow:hidden;}
-.bento-cell{position:relative;overflow:hidden;background:var(--navy);}
-.bento-cell img{width:100%;height:100%;object-fit:cover;display:block;}
-.bento-empty{position:absolute;inset:0;background:var(--navy);}
+.gal-row{display:flex;gap:var(--bento-gap);min-height:0;min-width:0;}
+.gal-cell{position:relative;overflow:hidden;background:var(--navy);min-width:0;}
+.gal-cell img{width:100%;height:100%;object-fit:cover;display:block;
+  transform:scale(var(--z,1));transform-origin:center;}
+.gal-empty{position:absolute;inset:0;background:var(--navy);}
+
+/* Caption plate. Sits on the photo bottom-left over a soft scrim so it stays
+   legible on a light image; hidden entirely when the label is blank.
+
+   The plate is decoration and deliberately transparent to the pointer — it
+   covers the bottom third of the photo, and swallowing drags there would
+   make the crop feel broken. Only the text itself is clickable. */
+.gal-cap{position:absolute;left:0;right:0;bottom:0;padding:.30in .22in .13in;
+  font:800 7.5pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--ow);
+  background:linear-gradient(to top,rgba(0,39,58,.72),rgba(0,39,58,0));
+  pointer-events:none;}
+.gal-cap-t{display:inline-block;max-width:100%;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom;}
+.gal-cell.no-cap .gal-cap{display:none;}
+
 @media screen{
-  .bento-cell{cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;}
-  .bento-cell img{-webkit-user-drag:none;pointer-events:none;}
-  .bento-cell:active{cursor:grabbing;}
-  .bento-cell.is-dragging{opacity:.4;}
-  .bento-cell.is-target::after{content:'';position:absolute;inset:0;
+  .gal-cell{cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;}
+  .gal-cell img{-webkit-user-drag:none;pointer-events:none;}
+  .gal-cell.is-dragging{opacity:.4;}
+  .gal-cell.is-target::after{content:'';position:absolute;inset:0;
     background:rgba(83,199,220,.28);box-shadow:inset 0 0 0 3px var(--sky);}
+  .gal-cell.is-sel{box-shadow:inset 0 0 0 3px var(--sky),0 0 0 1px var(--sky);}
+  /* the label is typed in place on screen, so the text — and only the text —
+     takes the pointer back */
+  .gal-cap-t{pointer-events:auto;cursor:text;min-width:.5in;}
+  .gal-cell.no-cap .gal-cap{display:block;}
+  .gal-cell.no-cap .gal-cap-t{opacity:0;}
+  .gal-cell.no-cap:hover .gal-cap-t{opacity:.5;}
+  .gal-cell.no-cap .gal-cap-t:focus{opacity:1;}
+  .gal-cap-t:focus{outline:2px solid var(--sky);outline-offset:2px;}
+  .gal-cap-t:empty::before{content:'Label';}
+
+  /* Grab strips between cells and between rows. They straddle the gap so
+     there is something to grab even when the gap is hairline. */
+  .gal-vdiv,.gal-hdiv{position:absolute;z-index:4;}
+  .gal-vdiv{top:0;bottom:0;width:14px;margin-left:-7px;cursor:col-resize;}
+  .gal-hdiv{left:0;right:0;height:14px;margin-top:-7px;cursor:row-resize;}
+  .gal-vdiv::after,.gal-hdiv::after{content:'';position:absolute;background:var(--sky);
+    opacity:0;transition:opacity .12s;}
+  .gal-vdiv::after{left:6px;width:2px;top:0;bottom:0;}
+  .gal-hdiv::after{top:6px;height:2px;left:0;right:0;}
+  .gal-vdiv:hover::after,.gal-hdiv:hover::after,.gal-div-live::after{opacity:1;}
 }
+@media print{ .gal-vdiv,.gal-hdiv{display:none;} }
 
 /* ---------- PAGE 3 — PROPERTY INFORMATION ---------- */
 .info{position:absolute;inset:0;overflow:hidden;background:#fff;}
@@ -266,6 +307,37 @@
   text-transform:uppercase;color:rgba(229,229,229,.72);}
 
 
+/* ---------- GALLERY EDITOR PANEL (screen only) ---------- */
+.gal-pages{display:flex;flex-wrap:wrap;gap:6px;}
+.gal-tab{font:800 9.5px var(--sans);letter-spacing:.05em;padding:6px 10px;border-radius:6px;
+  border:1px solid var(--ui-rule);background:#fff;color:var(--navy);cursor:pointer;}
+.gal-tab.on{background:var(--navy);color:var(--ow);border-color:var(--navy);}
+.gal-row-btns{display:flex;gap:6px;margin-top:8px;}
+.gal-row-btns .btn{flex:1;}
+.gal-sub{font:800 8.5px var(--sans);letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ui-ink-soft);margin:14px 0 7px;}
+.gal-presets{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.gal-pre{font:600 9.5px var(--sans);padding:6px 8px;border-radius:6px;border:1px solid var(--ui-rule);
+  background:#fff;color:var(--navy);cursor:pointer;text-align:left;}
+.gal-pre:hover{border-color:var(--sky);}
+.gal-check{display:flex;align-items:center;gap:7px;margin-top:12px;
+  font:400 10.5px var(--body);color:var(--navy);cursor:pointer;}
+.gal-ins-none{font:400 10px var(--body);color:var(--ui-ink-soft);}
+.gal-ins-nm{font:800 10px var(--sans);color:var(--navy);margin-bottom:8px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.gal-fld{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.gal-fld > span{flex:none;width:52px;font:400 9.5px var(--body);color:var(--ui-ink-soft);}
+.gal-fld input[type=text]{flex:1;min-width:0;}
+.gal-fld input[type=range]{flex:1;min-width:0;}
+.gal-step{display:flex;gap:4px;}
+.gal-step button{width:26px;height:24px;border-radius:5px;border:1px solid var(--ui-rule);
+  background:#fff;color:var(--navy);font:800 12px var(--sans);cursor:pointer;line-height:1;}
+.gal-step button:hover{border-color:var(--sky);}
+.gal-val{min-width:34px;text-align:center;font:600 9.5px var(--ui-mono);color:var(--navy);}
+.gal-ins-btns{display:flex;gap:6px;margin-top:9px;}
+.gal-ins-btns .btn{flex:1;}
+.gal-tip{font:400 9.5px/1.5 var(--body);color:var(--ui-ink-soft);margin-top:11px;}
+
 /* ---------- OVERFLOW WARNINGS (screen only) ---------- */
 @media screen{
   .is-over{outline:2px solid var(--danger,#B3261E);outline-offset:2px;}
@@ -322,11 +394,21 @@
         </div>
       </details>
 
-      <details class="ed-sec">
-        <summary>Gallery <span class="hint">page 2</span></summary>
+      <details class="ed-sec" open>
+        <summary>Gallery <span class="hint">layout &amp; crops</span></summary>
         <div class="sec-in">
-          <div class="sec-note" id="bentoNote">Add 2 more photos.</div>
-          <button class="btn sm" id="btnShuffle" style="margin-top:10px;width:100%">Shuffle layout</button>
+          <div class="gal-pages" id="galTabs"></div>
+          <div class="gal-row-btns">
+            <button class="btn sm" id="btnGalAdd">Add page</button>
+            <button class="btn sm" id="btnGalDel">Remove page</button>
+            <button class="btn sm" id="btnShuffle">Shuffle</button>
+          </div>
+          <div class="gal-sub">Layouts for this page</div>
+          <div class="gal-presets" id="galPresets"></div>
+          <label class="gal-check"><input type="checkbox" id="galCaps" checked> Print the labels</label>
+          <div class="gal-sub">Selected photo</div>
+          <div id="galInspect"></div>
+          <div class="sec-note" id="bentoNote"></div>
         </div>
       </details>
 
@@ -465,31 +547,101 @@ const ROSTER = window.GVC_ROSTER;
 const headshotFor = a => a.photo;
 const MAX_AGENTS = 2;
 
-/* Bento layouts — six rows of six characters on a 6x6 grid; the letter is
-   the cell index (a = photo 1). Four variants per photo count. */
-const BENTO = {
-  2: [['aaabbb','aaabbb','aaabbb','aaabbb','aaabbb','aaabbb'],
-      ['aaaaaa','aaaaaa','aaaaaa','bbbbbb','bbbbbb','bbbbbb'],
-      ['aaaabb','aaaabb','aaaabb','aaaabb','aaaabb','aaaabb'],
-      ['aaaaaa','aaaaaa','aaaaaa','aaaaaa','bbbbbb','bbbbbb']],
-  3: [['aaabbb','aaabbb','aaabbb','aaaccc','aaaccc','aaaccc'],
-      ['aaaaaa','aaaaaa','aaaaaa','bbbccc','bbbccc','bbbccc'],
-      ['aabbcc','aabbcc','aabbcc','aabbcc','aabbcc','aabbcc'],
-      ['aaaaaa','aaaaaa','aaaaaa','aaaaaa','bbbccc','bbbccc']],
-  4: [['aaabbb','aaabbb','aaabbb','cccddd','cccddd','cccddd'],
-      ['aaabbb','aaabbb','aaaccc','aaaccc','aaaddd','aaaddd'],
-      ['aaaaaa','aaaaaa','aaaaaa','aaaaaa','bbccdd','bbccdd'],
-      ['aabbcc','aabbcc','aabbcc','dddddd','dddddd','dddddd']],
-  5: [['aaaabb','aaaabb','aaaacc','aaaacc','dddeee','dddeee'],
-      ['aaabbb','aaabbb','aaabbb','ccddee','ccddee','ccddee'],
-      ['aaaaaa','aaaaaa','bbbccc','bbbccc','dddeee','dddeee'],
-      ['aabbcc','aabbcc','aabbcc','ddddee','ddddee','ddddee']],
-  6: [['aabbcc','aabbcc','aabbcc','ddeeff','ddeeff','ddeeff'],
-      ['aaaabb','aaaabb','aaaacc','aaaacc','ddeeff','ddeeff'],
-      ['aaabbb','aaabbb','cccddd','cccddd','eeefff','eeefff'],
-      ['aabbcc','aabbcc','ddddee','ddddee','ddddff','ddddff']]
-};
-const GALLERY_MIN = 2, GALLERY_MAX = 6;
+/* ============================================================
+   GALLERY LAYOUT MODEL
+
+   A gallery page is a list of rows; a row is a list of cells. Rows carry a
+   height and cells a width, both in proportional fr units, so the page is
+   always exactly filled whatever the numbers are. That is the whole trick
+   behind free resizing: there is no grid to tile and therefore no way to
+   leave a hole or overflow the paper.
+
+     pages: [ { rows: [ { h, cells: [ {id, w, fx, fy, z, label} ] } ] } ]
+
+   A cell's fx/fy are the crop's focal point in per-cent and z its zoom;
+   label is the caption printed on the photo.
+
+   PRESETS are written as row shapes — [rowHeight, [cellWidths]] — and are
+   only ever starting points: everything is draggable afterwards.
+   ============================================================ */
+const PRESETS = [
+  { n: 1, name: 'Full page',    rows: [[1, [1]]] },
+  { n: 2, name: 'Side by side', rows: [[1, [1, 1]]] },
+  { n: 2, name: 'Stacked',      rows: [[1, [1]], [1, [1]]] },
+  { n: 2, name: 'Wide + strip', rows: [[2, [1]], [1, [1]]] },
+  { n: 3, name: 'Hero + pair',  rows: [[2, [1]], [1, [1, 1]]] },
+  { n: 3, name: 'Three up',     rows: [[1, [1, 1, 1]]] },
+  { n: 3, name: 'Tall + two',   rows: [[1, [1.6, 1]], [1, [1]]] },
+  { n: 4, name: 'Quad',         rows: [[1, [1, 1]], [1, [1, 1]]] },
+  { n: 4, name: 'Hero + three', rows: [[2, [1]], [1, [1, 1, 1]]] },
+  { n: 4, name: 'Big + strip',  rows: [[2, [1.7, 1]], [1, [1, 1]]] },
+  { n: 5, name: 'Hero + four',  rows: [[2, [1]], [1, [1, 1, 1, 1]]] },
+  { n: 5, name: 'Two + three',  rows: [[1.3, [1, 1]], [1, [1, 1, 1]]] },
+  { n: 6, name: 'Six up',       rows: [[1, [1, 1, 1]], [1, [1, 1, 1]]] },
+  { n: 6, name: 'Hero + five',  rows: [[1.8, [1.6, 1]], [1, [1, 1, 1, 1]]] }
+];
+
+const CELL_MIN = 0.28;     // smallest a cell may be dragged, in fr
+const GAL_MAX_PAGES = 6;
+
+function newCell(id) { return { id: id, w: 1, fx: 50, fy: 50, z: 1, label: '' }; }
+
+/* Lay `ids` out using the best-fitting preset — the one whose cell count
+   matches, else the largest that does not exceed it, with any remainder
+   spilling into a final row. */
+function layoutFor(ids, presetName) {
+  const pool = ids.slice();
+  const opts = PRESETS.filter(p => p.n === pool.length);
+  const chosen = (presetName && PRESETS.filter(p => p.name === presetName)[0])
+              || opts[0]
+              || PRESETS.filter(p => p.n <= pool.length).pop()
+              || PRESETS[0];
+  const rows = [];
+  chosen.rows.forEach(([h, ws]) => {
+    const cells = [];
+    ws.forEach(w => { if (pool.length) { const c = newCell(pool.shift()); c.w = w; cells.push(c); } });
+    if (cells.length) rows.push({ h: h, cells: cells });
+  });
+  while (pool.length) {                     // leftovers get their own row
+    const take = pool.splice(0, Math.min(3, pool.length)).map(newCell);
+    rows.push({ h: 1, cells: take });
+  }
+  return { rows: rows };
+}
+
+/* Every cell on a page, flattened, with its row for context. */
+function cellsOf(pg) {
+  const out = [];
+  (pg.rows || []).forEach((row, ri) => (row.cells || []).forEach((c, ci) =>
+    out.push({ cell: c, row: row, ri: ri, ci: ci })));
+  return out;
+}
+
+function galPages() {
+  if (!Array.isArray(state.gallery)) state.gallery = [];
+  return state.gallery;
+}
+
+function findCell(id) {
+  const pages = galPages();
+  for (let pi = 0; pi < pages.length; pi++) {
+    const hit = cellsOf(pages[pi]).filter(x => x.cell.id === id)[0];
+    if (hit) return Object.assign({ pi: pi, page: pages[pi] }, hit);
+  }
+  return null;
+}
+
+/* Drop a cell, and tidy up after it: an empty row goes, and an empty page
+   goes too unless it is the only one. */
+function removeCell(id) {
+  const hit = findCell(id);
+  if (!hit) return;
+  hit.row.cells.splice(hit.ci, 1);
+  if (!hit.row.cells.length) hit.page.rows.splice(hit.ri, 1);
+  if (!hit.page.rows.length && galPages().length > 1) galPages().splice(hit.pi, 1);
+}
+
+const GALLERY_MIN = 1;
 
 /* ============================================================
    PHOTO PLACEMENT
@@ -510,8 +662,11 @@ const SLOT_AR = { hero: 0.77, infoTop: 1.70, infoBottom: 2.32 };
 const state = {
   images: [],            // {id,name,url,ar,role}
   strategy: 'sequence',
-  bentoVariant: 0,
-  bentoOrder: [],
+  /* one entry per gallery page — see the GALLERY LAYOUT MODEL block */
+  gallery: [],
+  galCaptions: true,
+  galPage: 0,            // which gallery page the editor is working on
+  galSel: null,          // id of the selected cell, if any
   // page 1
   address: '', city: '', state: '', zip: '',
   // agents
@@ -606,7 +761,7 @@ function computeAssignment() {
       // the strongest photos go to the cover and the gallery's big cells;
       // the page-3 slots take what is left
       take('hero');
-      const n = Math.min(GALLERY_MAX - forcedGallery.length, Math.max(0, pool.length - 3));
+      const n = Math.max(0, pool.length - 3);
       res.gallery = forcedGallery.concat(pool.slice(0, n));
       pool = pool.slice(n);
       take('infoTop'); take('infoBottom');
@@ -619,49 +774,148 @@ function computeAssignment() {
   if (!res.gallery.length) {
     res.gallery = state.strategy === 'manual' ? forcedGallery : forcedGallery.concat(pool);
   }
-  res.gallery = res.gallery.slice(0, GALLERY_MAX);
-
-  // apply the agent's manual bento ordering on top
-  const idx = id => { const i = state.bentoOrder.indexOf(id); return i === -1 ? 1e6 : i; };
-  res.gallery.sort((a, b) => idx(a.id) - idx(b.id));
+  /* No cap: the gallery is as many pages as it needs, and the layout keeps
+     each page's own order, so there is nothing to sort here. */
   return res;
 }
 
+/* Keep the layout honest against the photo list: photos that are no longer
+   in the gallery lose their cells, and photos newly in it get appended to
+   the last page. Existing cells keep their size, crop and caption, so
+   adding one photo never reshuffles the work already done. */
 function syncGallery() {
   const ids = assign.gallery.map(i => i.id);
-  state.bentoOrder = state.bentoOrder.filter(id => ids.includes(id));
-  ids.forEach(id => { if (!state.bentoOrder.includes(id)) state.bentoOrder.push(id); });
-  const variants = BENTO[Math.min(ids.length, GALLERY_MAX)];
-  if (variants && state.bentoVariant >= variants.length) state.bentoVariant = 0;
+  const pages = galPages();
+
+  // drop cells whose photo has left the gallery
+  pages.forEach(pg => {
+    (pg.rows || []).forEach(row => { row.cells = (row.cells || []).filter(c => ids.includes(c.id)); });
+    pg.rows = (pg.rows || []).filter(row => row.cells.length);
+  });
+  /* Empty pages are kept on purpose. Adding a page and then moving photos
+     onto it is a two-step job, and pruning here would delete the page
+     between the two steps. Pages go only when the editor says so. */
+
+  const placed = [];
+  pages.forEach(pg => cellsOf(pg).forEach(x => placed.push(x.cell.id)));
+  const fresh = ids.filter(id => placed.indexOf(id) === -1);
+
+  if (!placed.length) {
+    // first run, or every photo changed at once: lay the whole set out
+    state.gallery = [layoutFor(ids)];
+  } else if (fresh.length) {
+    /* Land new photos on the page being edited — that is where the eye is,
+       and an empty page just added is the usual reason for tagging more. */
+    const host = pages[Math.min(state.galPage, pages.length - 1)] || pages[pages.length - 1];
+    fresh.forEach(id => {
+      const row = host.rows[host.rows.length - 1];
+      if (row && row.cells.length < 4) row.cells.push(newCell(id));
+      else host.rows.push({ h: 1, cells: [newCell(id)] });
+    });
+  }
+  if (!galPages().length) state.gallery = [layoutFor(ids)];
+  state.galPage = Math.max(0, Math.min(state.galPage, galPages().length - 1));
+  if (state.galSel && !findCell(state.galSel)) state.galSel = null;
+}
+
+/* Re-lay the active page from a named preset, keeping its photos and their
+   crops and captions — only the geometry is replaced. */
+function applyPreset(name) {
+  const pg = galPages()[state.galPage];
+  if (!pg) return;
+  const old = cellsOf(pg).map(x => x.cell);
+  const fresh = layoutFor(old.map(c => c.id), name);
+  // carry each photo's crop and caption across to its new cell
+  cellsOf(fresh).forEach(x => {
+    const prev = old.filter(c => c.id === x.cell.id)[0];
+    if (prev) { x.cell.fx = prev.fx; x.cell.fy = prev.fy; x.cell.z = prev.z; x.cell.label = prev.label; }
+  });
+  galPages()[state.galPage] = fresh;
+  redraw(); renderGalleryPanel();
 }
 
 function shuffleGallery() {
-  const n = Math.min(assign.gallery.length, GALLERY_MAX);
-  if (n < GALLERY_MIN) return;
-  const variants = BENTO[n];
-  if (variants && variants.length > 1) {
-    let v; do { v = Math.floor(Math.random() * variants.length); } while (v === state.bentoVariant);
-    state.bentoVariant = v;
-  }
-  redraw(); updateBentoNote();
+  const pg = galPages()[state.galPage];
+  if (!pg) return;
+  const n = cellsOf(pg).length;
+  const opts = PRESETS.filter(p => p.n === n);
+  if (!opts.length) return;
+  applyPreset(opts[Math.floor(Math.random() * opts.length)].name);
 }
 
-function swapCells(a, b) {
-  const o = state.bentoOrder;
-  if (a === b || a < 0 || b < 0 || a >= o.length || b >= o.length) return;
-  [o[a], o[b]] = [o[b], o[a]];
-  redraw();
+/* Swap two photos between cells, keeping each cell's geometry — the frames
+   stay put and the pictures move, which is what dragging one onto another
+   looks like it should do. */
+function swapCells(idA, idB) {
+  const A = findCell(idA), B = findCell(idB);
+  if (!A || !B || idA === idB) return;
+  const a = A.cell, b = B.cell;
+  const keep = { id: a.id, fx: a.fx, fy: a.fy, z: a.z, label: a.label };
+  a.id = b.id; a.fx = b.fx; a.fy = b.fy; a.z = b.z; a.label = b.label;
+  b.id = keep.id; b.fx = keep.fx; b.fy = keep.fy; b.z = keep.z; b.label = keep.label;
+  redraw(); renderGalleryPanel();
+}
+
+function addGalleryPage() {
+  if (galPages().length >= GAL_MAX_PAGES) { return; }
+  galPages().push({ rows: [] });
+  state.galPage = galPages().length - 1;
+  redraw(); renderGalleryPanel();
+}
+
+function removeGalleryPage(pi) {
+  const pages = galPages();
+  if (pages.length <= 1) return;
+  const dead = cellsOf(pages[pi]).map(x => x.cell);
+  pages.splice(pi, 1);
+  // its photos are not lost — they rejoin the page before it
+  const host = pages[Math.max(0, pi - 1)];
+  dead.forEach(c => {
+    const row = host.rows[host.rows.length - 1];
+    if (row && row.cells.length < 4) row.cells.push(c);
+    else host.rows.push({ h: 1, cells: [c] });
+  });
+  state.galPage = Math.max(0, Math.min(state.galPage, pages.length - 1));
+  redraw(); renderGalleryPanel();
+}
+
+/* Move a photo to another gallery page — the one control that cannot be
+   done by dragging, since the pages are not on screen together. */
+function moveCellToPage(id, pi) {
+  const hit = findCell(id);
+  const pages = galPages();
+  if (!hit || !pages[pi] || hit.pi === pi) return;
+  const cell = hit.cell;
+  hit.row.cells.splice(hit.ci, 1);
+  if (!hit.row.cells.length) hit.page.rows.splice(hit.ri, 1);
+  const host = pages[pi];
+  const row = host.rows[host.rows.length - 1];
+  if (row && row.cells.length < 4) row.cells.push(cell);
+  else host.rows.push({ h: 1, cells: [cell] });
+  state.galPage = pi;
+  redraw(); renderGalleryPanel();
+}
+
+/* Split the selected cell's row, or pull the cell out into its own row. */
+function cellToOwnRow(id) {
+  const hit = findCell(id);
+  if (!hit || hit.row.cells.length === 1) return;
+  hit.row.cells.splice(hit.ci, 1);
+  hit.page.rows.splice(hit.ri + 1, 0, { h: 1, cells: [hit.cell] });
+  redraw(); renderGalleryPanel();
 }
 
 /* ---------------- page plan ---------------- */
 /* One list drives the deck and the contents page both, so a floor-plan
    page appearing or disappearing renumbers the contents automatically. */
 function pagePlan() {
-  const plan = [
-    { t: 'cover',    title: 'Cover' },
-    { t: 'gallery',  title: 'The Property in Pictures' },
-    { t: 'info',     title: 'The Property' }
-  ];
+  const plan = [{ t: 'cover', title: 'Cover' }];
+  const gp = galPages();
+  gp.forEach((_, i) => plan.push({
+    t: 'gallery', gi: i,
+    title: 'The Property in Pictures' + (gp.length > 1 ? ' \u2014 ' + (i + 1) + ' of ' + gp.length : '')
+  }));
+  plan.push({ t: 'info', title: 'The Property' });
   const fpPages = Math.max(1, Math.ceil(state.floorplans.length / 2));
   for (let i = 0; i < fpPages; i++) {
     plan.push({ t: 'floorplan', from: i * 2, page: i + 1, of: fpPages,
@@ -707,35 +961,197 @@ function renderCover(page) {
 }
 
 
-function renderGallery(page) {
-  const imgs = assign.gallery;
-  if (imgs.length < GALLERY_MIN) {
-    page.innerHTML = '<div class="bento-empty"><div class="empty-note">Add at least ' +
-      GALLERY_MIN + ' photos<br>for the gallery page</div></div>';
+/* A gallery page. Rows and cells are flexed by their fr values, so the
+   printed page is filled exactly; the divider strips and the selection
+   chrome are screen-only and drop out of the print stylesheet. */
+function renderGallery(page, gi) {
+  const pg = galPages()[gi || 0];
+  const cells = pg ? cellsOf(pg) : [];
+  if (!cells.length) {
+    page.innerHTML = '<div class="gal-empty"><div class="empty-note">' +
+      'Tag photos as <b>Gallery</b> in the Photos panel<br>to fill this page</div></div>';
     return;
   }
-  const variants = BENTO[imgs.length];
-  const areas = variants[Math.min(state.bentoVariant, variants.length - 1)];
 
-  // Built via DOM, not an HTML string: grid-template-areas rows are quoted
-  // CSS strings, and those quotes terminate a style="" attribute.
-  const grid = document.createElement('div');
-  grid.className = 'bento';
-  grid.style.gridTemplateAreas = areas.map(r => '"' + r.split('').join(' ') + '"').join(' ');
+  const wrap = document.createElement('div');
+  wrap.className = 'gal';
 
-  imgs.forEach((img, i) => {
-    const cell = document.createElement('div');
-    cell.className = 'bento-cell';
-    cell.style.gridArea = String.fromCharCode(97 + i);
-    cell.dataset.slot = String(i);
-    cell.title = 'Drag onto another photo to swap them';
-    const el = document.createElement('img');
-    el.src = img.url; el.alt = ''; el.draggable = false;
-    cell.appendChild(el);
-    cell.addEventListener('pointerdown', e => beginDrag(e, cell, i, grid));
-    grid.appendChild(cell);
+  pg.rows.forEach((row, ri) => {
+    const rEl = document.createElement('div');
+    rEl.className = 'gal-row';
+    rEl.style.flex = (row.h || 1) + ' 1 0';
+    rEl.style.position = 'relative';
+
+    row.cells.forEach((c, ci) => {
+      const img = state.images.filter(im => im.id === c.id)[0];
+      const cell = document.createElement('div');
+      cell.className = 'gal-cell' + (c.label ? '' : ' no-cap') +
+                       (state.galSel === c.id ? ' is-sel' : '');
+      cell.style.flex = (c.w || 1) + ' 1 0';
+      cell.dataset.id = c.id;
+
+      if (img) {
+        const el = document.createElement('img');
+        el.src = img.url; el.alt = ''; el.draggable = false;
+        el.style.objectPosition = (c.fx || 50) + '% ' + (c.fy || 50) + '%';
+        el.style.setProperty('--z', c.z || 1);
+        cell.appendChild(el);
+      }
+
+      const cap = document.createElement('div');
+      cap.className = 'gal-cap';
+      if (!state.galCaptions) cap.style.display = 'none';
+      const capT = document.createElement('span');
+      capT.className = 'gal-cap-t';
+      capT.textContent = c.label || '';
+      capT.contentEditable = 'true';
+      capT.spellcheck = false;
+      capT.addEventListener('pointerdown', ev => ev.stopPropagation());
+      capT.addEventListener('input', () => { c.label = capT.textContent.trim(); });
+      capT.addEventListener('blur', () => {
+        c.label = capT.textContent.trim();
+        cell.classList.toggle('no-cap', !c.label);
+        renderGalleryPanel();
+      });
+      capT.addEventListener('keydown', ev => {
+        if (ev.key === 'Enter') { ev.preventDefault(); capT.blur(); }
+      });
+      cap.appendChild(capT);
+      cell.appendChild(cap);
+
+      // a plain drag pans the crop; Shift-drag throws the photo at another cell
+      cell.addEventListener('pointerdown', ev => beginCellPointer(ev, cell, c, wrap));
+
+      if (ci < row.cells.length - 1) {
+        const d = document.createElement('div');
+        d.className = 'gal-vdiv';
+        d.style.right = '0';
+        d.style.marginRight = 'calc(-7px - var(--bento-gap) / 2)';
+        d.addEventListener('pointerdown', ev => beginFlexDrag(ev, 'x', row.cells, ci, rEl));
+        cell.appendChild(d);
+      }
+      rEl.appendChild(cell);
+    });
+
+    if (ri < pg.rows.length - 1) {
+      const d = document.createElement('div');
+      d.className = 'gal-hdiv';
+      d.style.bottom = '0';
+      d.style.marginBottom = 'calc(-7px - var(--bento-gap) / 2)';
+      d.addEventListener('pointerdown', ev => beginFlexDrag(ev, 'y', pg.rows, ri, wrap));
+      rEl.appendChild(d);
+    }
+    wrap.appendChild(rEl);
   });
-  page.replaceChildren(grid);
+
+  page.replaceChildren(wrap);
+}
+
+/* Drag a divider: hand the delta to the pair either side of it, in fr. That
+   pair's total is fixed, so the rest of the page holds still. */
+function beginFlexDrag(e, axis, list, i, container) {
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+  e.preventDefault(); e.stopPropagation();
+  const key = axis === 'x' ? 'w' : 'h';
+  const a = list[i], b = list[i + 1];
+  if (!a || !b) return;
+  const box = container.getBoundingClientRect();
+  const span = axis === 'x' ? box.width : box.height;
+  const start = axis === 'x' ? e.clientX : e.clientY;
+  const a0 = a[key] || 1, b0 = b[key] || 1, total = a0 + b0;
+  const shareTotal = list.reduce((sum, x) => sum + (x[key] || 1), 0);
+  const px = (span * (total / shareTotal)) || 1;     // pixels the pair occupies
+  const div = e.currentTarget;
+  div.classList.add('gal-div-live');
+
+  const move = ev => {
+    const d = (((axis === 'x' ? ev.clientX : ev.clientY) - start) / px) * total;
+    let na = a0 + d, nb = b0 - d;
+    if (na < CELL_MIN) { nb -= CELL_MIN - na; na = CELL_MIN; }
+    if (nb < CELL_MIN) { na -= CELL_MIN - nb; nb = CELL_MIN; }
+    a[key] = Math.round(na * 100) / 100;
+    b[key] = Math.round(nb * 100) / 100;
+    redraw();
+  };
+  const finish = () => {
+    window.removeEventListener('pointermove', move);
+    window.removeEventListener('pointerup', finish);
+    window.removeEventListener('pointercancel', finish);
+    document.querySelectorAll('.gal-div-live').forEach(x => x.classList.remove('gal-div-live'));
+    renderGalleryPanel();
+  };
+  window.addEventListener('pointermove', move);
+  window.addEventListener('pointerup', finish);
+  window.addEventListener('pointercancel', finish);
+}
+
+/* Pointer on a cell: select it, then either pan its crop (plain drag, the
+   common case) or throw its photo at another cell (Shift-drag). */
+function beginCellPointer(e, cellEl, c, wrap) {
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+  state.galSel = c.id;
+  wrap.querySelectorAll('.gal-cell').forEach(x => x.classList.remove('is-sel'));
+  cellEl.classList.add('is-sel');
+  renderGalleryPanel();
+  if (e.shiftKey) beginCellSwap(e, cellEl, c, wrap);
+  else beginCrop(e, cellEl, c);
+}
+
+function beginCellSwap(e, cellEl, c, wrap) {
+  e.preventDefault();
+  const start = { x: e.clientX, y: e.clientY };
+  let active = false, target = null;
+  const move = ev => {
+    if (!active && Math.hypot(ev.clientX - start.x, ev.clientY - start.y) < DRAG_THRESHOLD) return;
+    active = true;
+    cellEl.classList.add('is-dragging');
+    wrap.querySelectorAll('.gal-cell').forEach(x => x.classList.remove('is-target'));
+    const el = document.elementFromPoint(ev.clientX, ev.clientY);
+    const hit = el && el.closest ? el.closest('.gal-cell') : null;
+    target = (hit && hit !== cellEl && wrap.contains(hit)) ? hit.dataset.id : null;
+    if (target) hit.classList.add('is-target');
+  };
+  const finish = () => {
+    window.removeEventListener('pointermove', move);
+    window.removeEventListener('pointerup', finish);
+    wrap.querySelectorAll('.gal-cell').forEach(x => x.classList.remove('is-dragging', 'is-target'));
+    if (active && target) swapCells(c.id, target);
+  };
+  window.addEventListener('pointermove', move);
+  window.addEventListener('pointerup', finish);
+}
+
+/* Pan the photo inside its frame. object-position p% offsets the overflow by
+   -(overflow * p/100); pointer deltas are screen px so they divide by the
+   preview scale first. Zoom multiplies the overflow. */
+function beginCrop(e, cellEl, c) {
+  const img = cellEl.querySelector('img');
+  if (!img || !img.naturalWidth) return;
+  e.preventDefault();
+  const pageEl = cellEl.closest('.page');
+  const scale = pageEl ? pageEl.getBoundingClientRect().width / (8.5 * 96) : 1;
+  const bw = cellEl.clientWidth, bh = cellEl.clientHeight;
+  const cover = Math.max(bw / img.naturalWidth, bh / img.naturalHeight) * (c.z || 1);
+  const overX = img.naturalWidth * cover - bw, overY = img.naturalHeight * cover - bh;
+  const start = { x: e.clientX, y: e.clientY, fx: c.fx || 50, fy: c.fy || 50 };
+  let active = false;
+  const move = ev => {
+    if (!active && Math.hypot(ev.clientX - start.x, ev.clientY - start.y) < DRAG_THRESHOLD) return;
+    active = true;
+    cellEl.classList.add('is-moving');
+    const dx = (ev.clientX - start.x) / scale, dy = (ev.clientY - start.y) / scale;
+    if (overX > 1) c.fx = Math.max(0, Math.min(100, start.fx - (dx / overX) * 100));
+    if (overY > 1) c.fy = Math.max(0, Math.min(100, start.fy - (dy / overY) * 100));
+    img.style.objectPosition = c.fx + '% ' + c.fy + '%';
+  };
+  const finish = () => {
+    window.removeEventListener('pointermove', move);
+    window.removeEventListener('pointerup', finish);
+    cellEl.classList.remove('is-moving');
+    if (active) renderGalleryPanel();
+  };
+  window.addEventListener('pointermove', move);
+  window.addEventListener('pointerup', finish);
 }
 
 function renderInfo(page, n, of) {
@@ -875,7 +1291,7 @@ function renderPage(page, i) {
   if (!spec) return;
   const n = i + 1, of = plan.length;
   if (spec.t === 'cover')          renderCover(page);
-  else if (spec.t === 'gallery')   renderGallery(page);
+  else if (spec.t === 'gallery')   renderGallery(page, spec.gi);
   else if (spec.t === 'info')      renderInfo(page, n, of);
   else if (spec.t === 'floorplan') renderFloorplan(page, spec, n, of);
   else if (spec.t === 'agent')     renderAgent(page, n, of);
@@ -885,7 +1301,6 @@ function redraw() {
   if (!builder) return;
   assign = computeAssignment();
   syncGallery();
-  assign = computeAssignment();   // re-apply ordering once bentoOrder is synced
   const n = pagePlan().length;
   if (builder.state.pages !== n) builder.setPages(n);
   else builder.rebuild();
@@ -1088,18 +1503,184 @@ function clampAllFp() {
 }
 
 /* ---------------- editor UI ---------------- */
-function updateBentoNote() {
-  const n = Math.min(assign.gallery.length, GALLERY_MAX);
-  const note = $('#bentoNote'), btn = $('#btnShuffle');
-  const ok = n >= GALLERY_MIN;
-  note.textContent = ok
-    ? n + ' photos, layout ' + (state.bentoVariant + 1) + ' of ' + BENTO[n].length +
-      '. Drag one onto another to swap.'
-    : 'Add ' + (GALLERY_MIN - n) + ' more photo' + (GALLERY_MIN - n === 1 ? '' : 's') + '.';
-  btn.disabled = !ok;
-  btn.style.opacity = ok ? '' : '.45';
-  btn.style.cursor = ok ? '' : 'not-allowed';
+/* ---------------- gallery editor panel ----------------
+   Everything here is chrome for the page preview: the page tabs, the preset
+   shortcuts and an inspector for whichever cell is selected. The layout
+   itself is edited on the page, by dragging. */
+function renderGalleryPanel() {
+  const pages = galPages();
+  const note = $('#bentoNote');
+
+  // page tabs
+  const tabs = $('#galTabs');
+  if (tabs) {
+    tabs.innerHTML = '';
+    pages.forEach((pg, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'gal-tab' + (i === state.galPage ? ' on' : '');
+      b.textContent = (i + 1) + ' · ' + cellsOf(pg).length;
+      b.title = 'Gallery page ' + (i + 1);
+      b.addEventListener('click', () => {
+        state.galPage = i; state.galSel = null; redraw(); renderGalleryPanel();
+      });
+      tabs.appendChild(b);
+    });
+  }
+  const delBtn = $('#btnGalDel'), addBtn = $('#btnGalAdd');
+  if (delBtn) delBtn.disabled = pages.length <= 1;
+  if (addBtn) addBtn.disabled = pages.length >= GAL_MAX_PAGES;
+
+  // presets that fit the active page's photo count
+  const pg = pages[state.galPage];
+  const n = pg ? cellsOf(pg).length : 0;
+  const host = $('#galPresets');
+  if (host) {
+    const opts = PRESETS.filter(pr => pr.n === n);
+    host.innerHTML = '';
+    if (!opts.length) {
+      host.innerHTML = '<div class="gal-ins-none">' + (n
+        ? n + ' photos on this page — no preset that size, so drag the dividers to shape it.'
+        : 'No photos on this page yet.') + '</div>';
+    }
+    opts.forEach(pr => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'gal-pre'; b.textContent = pr.name;
+      b.addEventListener('click', () => applyPreset(pr.name));
+      host.appendChild(b);
+    });
+  }
+
+  const caps = $('#galCaps');
+  if (caps) caps.checked = !!state.galCaptions;
+
+  renderGalleryInspector();
+
+  if (note) {
+    const total = pages.reduce((t, x) => t + cellsOf(x).length, 0);
+    note.textContent = total
+      ? total + ' photo' + (total === 1 ? '' : 's') + ' across ' + pages.length +
+        ' gallery page' + (pages.length === 1 ? '' : 's') + '.'
+      : 'Tag photos as Gallery in the Photos panel.';
+  }
 }
+
+/* The selected cell's own controls: caption, size, zoom, and the moves that
+   dragging cannot express. */
+function renderGalleryInspector() {
+  const host = $('#galInspect');
+  if (!host) return;
+  host.innerHTML = '';
+  const hit = state.galSel ? findCell(state.galSel) : null;
+  if (!hit) {
+    host.innerHTML = '<div class="gal-ins-none">Click a photo on the gallery page to size it, ' +
+      'crop it or label it.</div>' +
+      '<div class="gal-tip">Drag a photo to move the crop. Drag the lines between photos to ' +
+      'resize them. Shift-drag one photo onto another to swap them. Click a label to type on it.</div>';
+    return;
+  }
+  const c = hit.cell;
+  const img = state.images.filter(im => im.id === c.id)[0];
+
+  const nm = document.createElement('div');
+  nm.className = 'gal-ins-nm';
+  nm.textContent = img ? img.name : 'Photo';
+  host.appendChild(nm);
+
+  // caption
+  const fLabel = document.createElement('div');
+  fLabel.className = 'gal-fld';
+  fLabel.innerHTML = '<span>Label</span>';
+  const inp = document.createElement('input');
+  inp.type = 'text'; inp.value = c.label || ''; inp.placeholder = 'Living room';
+  inp.addEventListener('input', () => { c.label = inp.value; redraw(); });
+  fLabel.appendChild(inp);
+  host.appendChild(fLabel);
+
+  // a stepper row: label, -, value, +
+  const stepper = (label, get, set, fmt) => {
+    const row = document.createElement('div');
+    row.className = 'gal-fld';
+    row.innerHTML = '<span>' + label + '</span>';
+    const wrap = document.createElement('div');
+    wrap.className = 'gal-step';
+    const mk = (txt, delta) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.textContent = txt;
+      b.addEventListener('click', () => { set(delta); redraw(); renderGalleryPanel(); });
+      return b;
+    };
+    const val = document.createElement('span');
+    val.className = 'gal-val'; val.textContent = fmt(get());
+    wrap.appendChild(mk('−', -1));
+    wrap.appendChild(val);
+    wrap.appendChild(mk('+', 1));
+    row.appendChild(wrap);
+    host.appendChild(row);
+  };
+
+  stepper('Width', () => c.w || 1,
+    d => { c.w = Math.max(CELL_MIN, Math.round(((c.w || 1) + d * 0.25) * 100) / 100); },
+    v => v.toFixed(2));
+  stepper('Height', () => hit.row.h || 1,
+    d => { hit.row.h = Math.max(CELL_MIN, Math.round(((hit.row.h || 1) + d * 0.25) * 100) / 100); },
+    v => v.toFixed(2));
+
+  // zoom
+  const fz = document.createElement('div');
+  fz.className = 'gal-fld';
+  fz.innerHTML = '<span>Zoom</span>';
+  const rng = document.createElement('input');
+  rng.type = 'range'; rng.min = '1'; rng.max = '3'; rng.step = '0.05';
+  rng.value = String(c.z || 1);
+  rng.addEventListener('input', () => { c.z = parseFloat(rng.value); redraw(); });
+  fz.appendChild(rng);
+  host.appendChild(fz);
+
+  // moves
+  const btns = document.createElement('div');
+  btns.className = 'gal-ins-btns';
+  const mkBtn = (txt, fn, title) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'btn sm'; b.textContent = txt;
+    if (title) b.title = title;
+    b.addEventListener('click', fn);
+    return b;
+  };
+  btns.appendChild(mkBtn('Recentre', () => {
+    c.fx = 50; c.fy = 50; c.z = 1; redraw(); renderGalleryPanel();
+  }, 'Put the crop back to the middle at 1x'));
+  btns.appendChild(mkBtn('Own row', () => cellToOwnRow(c.id),
+    'Pull this photo out onto a row of its own'));
+  host.appendChild(btns);
+
+  // move to another gallery page
+  if (galPages().length > 1) {
+    const row = document.createElement('div');
+    row.className = 'gal-fld';
+    row.innerHTML = '<span>Page</span>';
+    const sel = document.createElement('select');
+    galPages().forEach((_, i) => {
+      const o = document.createElement('option');
+      o.value = String(i); o.textContent = 'Page ' + (i + 1);
+      if (i === hit.pi) o.selected = true;
+      sel.appendChild(o);
+    });
+    sel.addEventListener('change', () => moveCellToPage(c.id, parseInt(sel.value, 10)));
+    row.appendChild(sel);
+    host.appendChild(row);
+  }
+
+  const tip = document.createElement('div');
+  tip.className = 'gal-tip';
+  tip.textContent = 'Drag the photo to move its crop. Drag the lines between photos to resize. ' +
+    'Shift-drag onto another photo to swap them.';
+  host.appendChild(tip);
+}
+
+/* kept as an alias so the older call sites read the same */
+function updateBentoNote() { renderGalleryPanel(); }
+
 
 function roleLabelFor(img) {
   if (img.role && img.role !== 'auto') return null;   // explicit shows in the select
@@ -1383,6 +1964,11 @@ $('#strategy').addEventListener('change', e => {
   redraw(); renderImgList(); updateBentoNote();
 });
 $('#btnShuffle').addEventListener('click', shuffleGallery);
+$('#btnGalAdd').addEventListener('click', addGalleryPage);
+$('#btnGalDel').addEventListener('click', () => removeGalleryPage(state.galPage));
+$('#galCaps').addEventListener('change', e => {
+  state.galCaptions = e.target.checked; redraw();
+});
 $('#btnResetPos').addEventListener('click', () => {
   state.infoPos = { x: 50, y: 50 };
   state.infoTopPos = { x: 50, y: 50 };
@@ -1407,7 +1993,7 @@ $('#btnPreview').addEventListener('click', () => {
       label: 'Second Floor', zoom: 1, tx: 0, ty: 0 }
   ];
   state.agents = PREVIEW.agents.slice();
-  state.bentoOrder = []; state.bentoVariant = 0;
+  state.gallery = []; state.galPage = 0; state.galSel = null;
   state.infoPos = { x: 50, y: 50 };
   state.infoTopPos = { x: 50, y: 50 };
 
