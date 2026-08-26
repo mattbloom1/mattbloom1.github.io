@@ -354,7 +354,18 @@ body.is-dragging-photo [data-drop].drop-on::after{content:'';position:absolute;i
   justify-content:center;cursor:grab;font:700 12px var(--sans);line-height:1;}
 .gal-cell:hover .gal-grip,.gal-cell.is-sel .gal-grip,.slot-host:hover .gal-grip{display:flex;}
 .gal-grip:hover{background:var(--sky);color:var(--navy);}
-@media print{ .gal-grip,.drop-label{display:none !important;} }
+/* The remove button sits beside the move grip on every photo in the deck —
+   the cover, page 3's banner and every gallery frame — so a photo can be
+   taken off a page without dragging it back to the tray. It takes the photo
+   out of the brochure's pages, not out of the tray: it turns up there as
+   Unused and can be dropped back anywhere. */
+.gal-kill{position:absolute;top:7px;left:37px;z-index:6;width:24px;height:24px;border-radius:5px;
+  background:rgba(0,39,58,.72);color:var(--ow);display:none;align-items:center;
+  justify-content:center;cursor:pointer;font:700 12px var(--sans);line-height:1;
+  border:0;padding:0;}
+.gal-cell:hover .gal-kill,.gal-cell.is-sel .gal-kill,.slot-host:hover .gal-kill{display:flex;}
+.gal-kill:hover{background:#B3261E;color:#fff;}
+@media print{ .gal-grip,.gal-kill,.drop-label{display:none !important;} }
 
 /* ---------- PHOTO TRAY ---------- */
 .img-row.is-source{opacity:.35;}
@@ -1118,6 +1129,7 @@ function renderGallery(page, gi) {
         beginPhotoDnD(ev, c.id, 'page');
       });
       cell.appendChild(grip);
+      cell.appendChild(killBtn(c.id, 'Take this photo off the page'));
 
       cell.addEventListener('pointerdown', ev => beginCellPointer(ev, cell, c, wrap));
 
@@ -1404,6 +1416,12 @@ function redraw() {
   if (!builder) return;
   assign = computeAssignment();
   syncGallery();
+  /* The tray is often drawn before this runs — every caller pairs the two,
+     and several draw the list first — so its badges would otherwise show a
+     placement from before the photos were assigned, which read as a tray
+     full of "Unused" beside pages that plainly had photos on them. The
+     badges are re-read here instead, once the placement is settled. */
+  refreshPlacementBadges();
   const n = pagePlan().length;
   if (builder.state.pages !== n) builder.setPages(n);
   else builder.rebuild();
@@ -1953,9 +1971,24 @@ function beginPhotoDnD(e, id, from) {
   window.addEventListener('pointercancel', finish);
 }
 
-/* Single slots — the cover and the two page-3 photos — get the same move grip
-   the gallery frames have, so a photo can be dragged out of any slot in the
-   deck rather than only out of the gallery. */
+/* The ✕ that takes a photo off the page. Every photo in the deck carries one
+   — the same button on a gallery frame, the cover and page 3's banner — and
+   all of them do the one thing: hand the photo back to the tray. */
+function killBtn(id, title) {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'gal-kill';
+  b.innerHTML = '&#10005;';
+  b.title = title || 'Take this photo off the page';
+  // the pages are covered in drag handlers, so the click must not reach them
+  b.addEventListener('pointerdown', ev => ev.stopPropagation());
+  b.addEventListener('click', ev => { ev.stopPropagation(); unusePhoto(id); });
+  return b;
+}
+
+/* Single slots — the cover and page 3's banner — get the same move grip and
+   remove button the gallery frames have, so a photo can be moved or taken out
+   from any slot in the deck rather than only from the gallery. */
 function addSlotGrip(box, img, title) {
   if (!box || !img) return;
   box.classList.add('slot-host');      // so the grip appears on hover, as in the gallery
@@ -1968,9 +2001,23 @@ function addSlotGrip(box, img, title) {
     beginPhotoDnD(ev, img.id, 'page');
   });
   box.appendChild(grip);
+  box.appendChild(killBtn(img.id, 'Take this photo off the page'));
 }
 
 /* ---------------- the photo tray ---------------- */
+/* Re-read every tray badge from the current placement, leaving the rest of
+   the row alone. Called at the end of every redraw. */
+function refreshPlacementBadges() {
+  document.querySelectorAll('#imgList .img-row').forEach(row => {
+    const img = state.images.filter(im => im.id === +row.dataset.id)[0];
+    const badge = row.querySelector('.img-badge');
+    if (!img || !badge) return;
+    const place = placementOf(img);
+    badge.className = 'img-badge ' + place.cls;
+    badge.textContent = place.text;
+  });
+}
+
 /* Where a photo currently sits, as the badge shows it. */
 function placementOf(img) {
   if (img.role === 'exclude') return { text: 'Unused', cls: '' };
@@ -2040,6 +2087,7 @@ function renderImgList() {
     name.className = 'img-name'; name.textContent = img.name;
     mid.appendChild(name);
 
+    row.dataset.id = img.id;
     const place = placementOf(img);
     const badge = document.createElement('button');
     badge.type = 'button';
