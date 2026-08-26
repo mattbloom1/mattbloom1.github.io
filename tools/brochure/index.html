@@ -162,43 +162,34 @@
 }
 @media print{ .gal-vdiv,.gal-hdiv{display:none;} }
 
-/* ---------- PAGE 3 — PROPERTY INFORMATION ---------- */
+/* ---------- PAGE 3 — PROPERTY INFORMATION ----------
+   Stacked in bands down the page: a full-width photo banner, the price
+   band under it, then the navy text block carrying the blurb, the
+   features and the details side by side, and a full-width photo at the
+   foot. Every band spans edge to edge, so nothing has to wrap around a
+   floated photo any more. */
 .info{position:absolute;inset:0;overflow:hidden;background:#fff;}
-.info-block{position:absolute;top:0;left:0;right:0;height:66.667%;background:var(--navy);color:var(--ow);}
-/* The shared footer needs a plain strip under the photo, not the photo
-   itself, so the photo stops short and the footer gets its own band. That
-   band is .49in — the height the footer occupies on every other page — so
-   the site line and the monogram land on exactly the same baseline here as
-   they do there. It used to be .56in with a shrunken .16in bottom padding,
-   which pushed this page's footer .18in below the rest of the deck. */
-.info-photo{position:absolute;top:66.667%;bottom:.49in;left:0;right:0;background:var(--navy);overflow:hidden;}
-.info .pg-foot{position:absolute;left:0;right:0;bottom:0;}
-.info-photo img{width:100%;height:100%;object-fit:cover;display:block;}
-/* the header sits in the page's own top-left corner rather than in a
-   .pg-h strip, because the top-right photo overlaps that band — but it is
-   the same .pg-h markup and type, just width-limited so it wraps clear of
-   the photo instead of running under it. */
-.info-top{position:absolute;top:0;left:0;right:0;height:50%;display:flex;flex-direction:column;}
-/* This block spans the full width and is painted after the top-right photo,
-   so it was swallowing every click and drag aimed at that photo. Its own
-   content — a 4.2in heading and a 3.4in blurb — stays in the left column, so
-   it has no need of the pointer. */
-@media screen{ .info-top{pointer-events:none;} }
-.info-top .pg-h{width:4.2in;}
-.info-tr{position:absolute;top:0;right:0;width:4.25in;height:2.5in;overflow:hidden;background:rgba(255,255,255,.05);}
+/* the banner photo, full bleed across the top */
+.info-tr{position:absolute;top:0;left:0;right:0;height:2.5in;overflow:hidden;background:var(--navy);}
 .info-tr img{width:100%;height:100%;object-fit:cover;display:block;}
-.info-price{position:absolute;top:2.5in;right:0;width:4.25in;background:var(--sky);color:var(--navy);
+/* the price band, full width, directly under the banner */
+.info-price{position:absolute;top:2.5in;left:0;right:0;background:var(--sky);color:var(--navy);
   padding:.13in .1in;font:700 22pt/1 var(--serif);text-align:center;white-space:nowrap;}
 .info-price .po{font:800 10pt var(--sans);letter-spacing:.14em;text-transform:uppercase;}
-/* the blurb keeps clear of the top-right photo, so it stays in the left column */
-.info-blurb{margin:.28in 0 0 var(--pad);font:300 10.5pt/16pt var(--body);color:var(--ow);
-  width:3.4in;flex:1;min-height:0;overflow:hidden;}
-.info-mid{position:absolute;top:50%;bottom:0;left:0;right:0;padding:.34in var(--pad) .5in;
-  display:flex;gap:.5in;border-top:.75pt solid rgba(83,199,220,.35);}
+/* the navy text block. Its top is the banner plus the price band; when
+   there is no price the band collapses and the block simply starts
+   higher — .info-block.no-price carries that case. */
+.info-block{position:absolute;top:3.06in;left:0;right:0;height:4.5in;background:var(--navy);color:var(--ow);
+  display:flex;flex-direction:column;overflow:hidden;}
+.info-block.no-price{top:2.5in;height:4.5in;}
+.info-block .pg-h{padding:.34in var(--pad) 0;}
+.info-mid{flex:1;min-height:0;padding:.26in var(--pad) .34in;display:flex;gap:.42in;}
 .info-col{min-width:0;display:flex;flex-direction:column;}
-.info-col.features{flex:1.35;}
+.info-col.about{flex:1.15;}
+.info-col.features{flex:1.15;}
 .info-col.stats{flex:1;}
 .info-lbl{font:800 8pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--sky);margin-bottom:.14in;}
+.info-blurb{font:300 10.5pt/16pt var(--body);color:var(--ow);flex:1;min-height:0;overflow:hidden;}
 .info-feats{list-style:none;margin:0;padding:0;flex:1;min-height:0;overflow:hidden;}
 .info-feats li{font:400 9.5pt/15pt var(--body);color:var(--ow);padding-left:.17in;position:relative;margin-bottom:.055in;}
 .info-feats li::before{content:'';position:absolute;left:0;top:.072in;width:.055in;height:.055in;background:var(--sky);}
@@ -207,6 +198,17 @@
 .stat .ico{flex:none;width:.21in;height:.21in;margin-top:.035in;color:var(--sky);}
 .stat .v{font:700 20pt/1 var(--serif);color:#fff;}
 .stat .k{font:800 7.5pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--sky);margin-top:.05in;}
+/* The footer strip has to clear the photo entirely. The running monogram
+   is .3in tall and sits .34in off the page edge, so it reaches .64in up —
+   at the old .49in it poked into the photo and got clipped. The photo stops
+   at .82in, which clears the monogram with .18in of white to spare so the
+   footer reads as its own band rather than as something crowding the photo.
+   The footer itself is still anchored to the page bottom, so its baseline
+   matches every other page exactly. */
+.info-photo{position:absolute;top:7.56in;bottom:.82in;left:0;right:0;background:var(--navy);overflow:hidden;}
+.info-photo.no-price{top:7in;}
+.info .pg-foot{position:absolute;left:0;right:0;bottom:0;}
+.info-photo img{width:100%;height:100%;object-fit:cover;display:block;}
 @media screen{
   .cv.has-img,.info-photo.has-img,.info-tr.has-img{cursor:grab;touch-action:none;user-select:none;}
   .cv.is-moving,.info-photo.is-moving,.info-tr.is-moving{cursor:grabbing;}
@@ -713,7 +715,7 @@ const ROLES = [
   ['auto',        'Auto'],
   ['hero',        'Cover'],
   ['gallery',     'Gallery'],
-  ['info-top',    'Info · top right'],
+  ['info-top',    'Info · top banner'],
   ['info-bottom', 'Info · bottom'],
   ['exclude',     'Unused']
 ];
@@ -1251,20 +1253,22 @@ function renderInfo(page, n, of) {
        : '<span class="po">' + escapeHtml(state.price) + '</span>')
     : '';
 
+  const np = price ? '' : ' no-price';
+
   page.innerHTML =
     '<div class="info">' +
-      '<div class="info-block">' +
-        '<div class="info-tr' + (topPhoto ? ' has-img' : '') + '" data-drop="info-top">' +
-          (topPhoto ? '<img src="' + topPhoto.url + '" alt="" style="object-position:' +
-                        state.infoTopPos.x + '% ' + state.infoTopPos.y + '%">'
-                    : '<div class="empty-note">Top-right photo</div>') +
-        '</div>' +
-        (price ? '<div class="info-price">' + price + '</div>' : '') +
-        '<div class="info-top">' +
-          '<div class="pg-h rev"><h2>The Property</h2></div>' +
-          '<div class="info-blurb">' + escapeHtml(state.blurb) + '</div>' +
-        '</div>' +
+      '<div class="info-tr' + (topPhoto ? ' has-img' : '') + '" data-drop="info-top">' +
+        (topPhoto ? '<img src="' + topPhoto.url + '" alt="" style="object-position:' +
+                      state.infoTopPos.x + '% ' + state.infoTopPos.y + '%">'
+                  : '<div class="empty-note">Top banner photo</div>') +
+      '</div>' +
+      (price ? '<div class="info-price">' + price + '</div>' : '') +
+      '<div class="info-block' + np + '">' +
+        '<div class="pg-h rev"><h2>The Property</h2></div>' +
         '<div class="info-mid">' +
+          '<div class="info-col about"><div class="info-lbl">Overview</div>' +
+            '<div class="info-blurb">' + escapeHtml(state.blurb) + '</div>' +
+          '</div>' +
           '<div class="info-col features"><div class="info-lbl">Features</div>' +
             '<ul class="info-feats">' + feats.map(f => '<li>' + escapeHtml(f) + '</li>').join('') + '</ul>' +
           '</div>' +
@@ -1277,7 +1281,7 @@ function renderInfo(page, n, of) {
           '</div>' +
         '</div>' +
       '</div>' +
-      '<div class="info-photo' + (photo ? ' has-img' : '') + '" data-drop="info-bottom">' +
+      '<div class="info-photo' + np + (photo ? ' has-img' : '') + '" data-drop="info-bottom">' +
         (photo ? '<img src="' + photo.url + '" alt="" style="object-position:' +
                    state.infoPos.x + '% ' + state.infoPos.y + '%">'
                : '<div class="empty-note">Bottom photo</div>') +
@@ -1794,7 +1798,7 @@ function roleLabelFor(img) {
    need to know anything about page layout:
 
      hero          the cover photo
-     info-top      page 3, top right
+     info-top      page 3, top banner
      info-bottom   page 3, foot
      cell          one gallery frame  (data-id = the photo in it)
      gal-add       a gallery page's spare space (data-gi = which page)
@@ -1802,7 +1806,7 @@ function roleLabelFor(img) {
 let photoDrag = null;
 
 const DROP_LABEL = {
-  'hero': 'Cover photo', 'info-top': 'Top right', 'info-bottom': 'Foot photo',
+  'hero': 'Cover photo', 'info-top': 'Top banner', 'info-bottom': 'Foot photo',
   'cell': 'Swap in', 'gal-add': 'Add to this page'
 };
 
@@ -1963,7 +1967,7 @@ function addSlotGrip(box, img, title) {
 function placementOf(img) {
   if (img.role === 'exclude') return { text: 'Unused', cls: '' };
   if (assign.hero === img) return { text: 'Cover', cls: img.role === 'hero' ? 'pinned' : 'used' };
-  if (assign.infoTop === img) return { text: 'Top right', cls: img.role === 'info-top' ? 'pinned' : 'used' };
+  if (assign.infoTop === img) return { text: 'Top banner', cls: img.role === 'info-top' ? 'pinned' : 'used' };
   if (assign.infoBottom === img) return { text: 'Foot', cls: img.role === 'info-bottom' ? 'pinned' : 'used' };
   const hit = findCell(img.id);
   if (hit) return { text: 'Gallery ' + (hit.pi + 1), cls: img.role === 'gallery' ? 'pinned' : 'used' };
