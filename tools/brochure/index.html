@@ -307,6 +307,62 @@
   text-transform:uppercase;color:rgba(229,229,229,.72);}
 
 
+/* ---------- PHOTO DRAG & DROP (screen only) ----------
+   One gesture for the whole tool: pick a photo up from the tray and drop it
+   on the slot you want it in. Every slot on every page is a target, so
+   there is nothing to learn beyond "drag it where you want it". */
+.drag-ghost{position:fixed;z-index:9999;pointer-events:none;width:120px;height:90px;
+  border-radius:8px;overflow:hidden;box-shadow:0 12px 34px rgba(0,39,58,.4);
+  border:2px solid var(--sky);transform:translate(-50%,-50%) rotate(-2deg);opacity:.94;}
+.drag-ghost img{width:100%;height:100%;object-fit:cover;display:block;}
+body.is-dragging-photo{cursor:grabbing !important;}
+body.is-dragging-photo *{cursor:grabbing !important;}
+
+/* Every drop zone gets a dashed hint while a photo is in the air, and fills
+   in when it is the one under the pointer. */
+body.is-dragging-photo [data-drop]{outline:2px dashed rgba(83,199,220,.65);outline-offset:-4px;}
+body.is-dragging-photo [data-drop].drop-on{outline:3px solid var(--sky);outline-offset:-4px;}
+body.is-dragging-photo [data-drop].drop-on::after{content:'';position:absolute;inset:0;
+  background:rgba(83,199,220,.3);pointer-events:none;z-index:3;}
+.drop-label{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:5;
+  font:800 9px var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--ow);
+  background:var(--navy);padding:5px 9px;border-radius:5px;pointer-events:none;white-space:nowrap;}
+
+/* The tray itself is a drop zone: drag a photo off a page and onto the panel
+   to take it out of the brochure. */
+#imgList.drop-on{outline:3px solid var(--sky);outline-offset:2px;border-radius:8px;
+  background:rgba(83,199,220,.1);}
+
+/* Move grip on a gallery cell. Dragging the photo pans its crop, so moving
+   the photo needs its own handle rather than a held-down modifier. */
+.gal-grip{position:absolute;top:7px;left:7px;z-index:6;width:24px;height:24px;border-radius:5px;
+  background:rgba(0,39,58,.72);color:var(--ow);display:none;align-items:center;
+  justify-content:center;cursor:grab;font:700 12px var(--sans);line-height:1;}
+.gal-cell:hover .gal-grip,.gal-cell.is-sel .gal-grip{display:flex;}
+.gal-grip:hover{background:var(--sky);color:var(--navy);}
+@media print{ .gal-grip,.drop-label{display:none !important;} }
+
+/* ---------- PHOTO TRAY ---------- */
+.img-row.is-source{opacity:.35;}
+.img-grab{flex:none;width:44px;height:34px;border-radius:4px;overflow:hidden;
+  cursor:grab;position:relative;background:var(--ui-paper-2);}
+.img-grab img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;}
+.img-grab:active{cursor:grabbing;}
+.img-badge{flex:none;font:800 8.5px var(--sans);letter-spacing:.08em;text-transform:uppercase;
+  padding:4px 7px;border-radius:5px;border:1px solid var(--ui-rule);background:#fff;
+  color:var(--ui-ink-soft);cursor:pointer;white-space:nowrap;max-width:96px;
+  overflow:hidden;text-overflow:ellipsis;}
+.img-badge:hover{border-color:var(--sky);color:var(--navy);}
+.img-badge.used{background:var(--navy);border-color:var(--navy);color:var(--ow);}
+.img-badge.pinned{background:var(--sky);border-color:var(--sky);color:var(--navy);}
+.img-menu{position:fixed;z-index:10000;background:#fff;border:1px solid var(--ui-rule);
+  border-radius:8px;box-shadow:0 14px 40px rgba(0,39,58,.22);padding:5px;min-width:150px;}
+.img-menu button{display:block;width:100%;text-align:left;border:0;background:none;
+  font:500 11px var(--body);color:var(--navy);padding:7px 9px;border-radius:5px;cursor:pointer;}
+.img-menu button:hover{background:var(--ui-paper-2);}
+.img-menu button.on{font-weight:800;color:var(--sky2);}
+.img-hint{font:400 9.5px/1.5 var(--body);color:var(--ui-ink-soft);margin-top:9px;}
+
 /* ---------- GALLERY EDITOR PANEL (screen only) ---------- */
 .gal-pages{display:flex;flex-wrap:wrap;gap:6px;}
 .gal-tab{font:800 9.5px var(--sans);letter-spacing:.05em;padding:6px 10px;border-radius:6px;
@@ -372,8 +428,8 @@
     </div>
     <div class="ed-body">
 
-      <details class="ed-sec">
-        <summary>Photos <span class="hint">roles &amp; placement</span></summary>
+      <details class="ed-sec" open>
+        <summary>Photos <span class="hint">drag onto the pages</span></summary>
         <div class="sec-in">
           <div class="drop" id="imgDrop" tabindex="0" role="button" aria-label="Add photos">
             <div class="d-big">Drop photos</div>
@@ -394,7 +450,7 @@
         </div>
       </details>
 
-      <details class="ed-sec" open>
+      <details class="ed-sec">
         <summary>Gallery <span class="hint">layout &amp; crops</span></summary>
         <div class="sec-in">
           <div class="gal-pages" id="galTabs"></div>
@@ -942,7 +998,7 @@ function renderCover(page) {
   const hero = assign.hero, city = cityLine();
   const [a1, a2] = agentObjs();
   page.innerHTML =
-    '<div class="cv">' +
+    '<div class="cv" data-drop="hero">' +
       (hero ? '<img class="cv-img" src="' + hero.url + '" alt="">'
             : '<div class="empty-note">Drop a cover photo<br>in the Photos panel</div>') +
       '<div class="cv-mask"></div>' +
@@ -958,6 +1014,7 @@ function renderCover(page) {
         cbSide(a2, 'r') +
       '</div>' +
     '</div>';
+  addSlotGrip(page.querySelector('.cv'), hero, 'Drag to move the cover photo');
 }
 
 
@@ -968,13 +1025,19 @@ function renderGallery(page, gi) {
   const pg = galPages()[gi || 0];
   const cells = pg ? cellsOf(pg) : [];
   if (!cells.length) {
-    page.innerHTML = '<div class="gal-empty"><div class="empty-note">' +
-      'Tag photos as <b>Gallery</b> in the Photos panel<br>to fill this page</div></div>';
+    const empty = document.createElement('div');
+    empty.className = 'gal-empty';
+    empty.dataset.drop = 'gal-add';
+    empty.dataset.gi = String(gi || 0);
+    empty.innerHTML = '<div class="empty-note">Drag photos here from the Photos panel</div>';
+    page.replaceChildren(empty);
     return;
   }
 
   const wrap = document.createElement('div');
   wrap.className = 'gal';
+  wrap.dataset.drop = 'gal-add';
+  wrap.dataset.gi = String(gi || 0);
 
   pg.rows.forEach((row, ri) => {
     const rEl = document.createElement('div');
@@ -989,6 +1052,7 @@ function renderGallery(page, gi) {
                        (state.galSel === c.id ? ' is-sel' : '');
       cell.style.flex = (c.w || 1) + ' 1 0';
       cell.dataset.id = c.id;
+      cell.dataset.drop = 'cell';        // a photo dropped here swaps in
 
       if (img) {
         const el = document.createElement('img');
@@ -1019,7 +1083,19 @@ function renderGallery(page, gi) {
       cap.appendChild(capT);
       cell.appendChild(cap);
 
-      // a plain drag pans the crop; Shift-drag throws the photo at another cell
+      /* Dragging the photo pans its crop, which is the thing you do most, so
+         moving it lives on its own grip rather than behind a held key. */
+      const grip = document.createElement('div');
+      grip.className = 'gal-grip';
+      grip.textContent = '\u2725';
+      grip.title = 'Drag to move this photo somewhere else';
+      grip.addEventListener('pointerdown', ev => {
+        ev.stopPropagation();
+        state.galSel = c.id;
+        beginPhotoDnD(ev, c.id, 'page');
+      });
+      cell.appendChild(grip);
+
       cell.addEventListener('pointerdown', ev => beginCellPointer(ev, cell, c, wrap));
 
       if (ci < row.cells.length - 1) {
@@ -1167,7 +1243,7 @@ function renderInfo(page, n, of) {
   page.innerHTML =
     '<div class="info">' +
       '<div class="info-block">' +
-        '<div class="info-tr' + (topPhoto ? ' has-img' : '') + '">' +
+        '<div class="info-tr' + (topPhoto ? ' has-img' : '') + '" data-drop="info-top">' +
           (topPhoto ? '<img src="' + topPhoto.url + '" alt="" style="object-position:' +
                         state.infoTopPos.x + '% ' + state.infoTopPos.y + '%">'
                     : '<div class="empty-note">Top-right photo</div>') +
@@ -1190,7 +1266,7 @@ function renderInfo(page, n, of) {
           '</div>' +
         '</div>' +
       '</div>' +
-      '<div class="info-photo' + (photo ? ' has-img' : '') + '">' +
+      '<div class="info-photo' + (photo ? ' has-img' : '') + '" data-drop="info-bottom">' +
         (photo ? '<img src="' + photo.url + '" alt="" style="object-position:' +
                    state.infoPos.x + '% ' + state.infoPos.y + '%">'
                : '<div class="empty-note">Bottom photo</div>') +
@@ -1200,8 +1276,10 @@ function renderInfo(page, n, of) {
 
   const box = page.querySelector('.info-photo');
   if (photo) box.addEventListener('pointerdown', e => beginPhotoDrag(e, box, state.infoPos));
+  addSlotGrip(box, photo, 'Drag to move this photo somewhere else');
   const tr = page.querySelector('.info-tr');
   if (topPhoto) tr.addEventListener('pointerdown', e => beginPhotoDrag(e, tr, state.infoTopPos));
+  addSlotGrip(tr, topPhoto, 'Drag to move this photo somewhere else');
 }
 
 /* The crop transform for one plan. At zoom 1 the plan is letterboxed whole
@@ -1652,6 +1730,8 @@ function renderGalleryInspector() {
   }, 'Put the crop back to the middle at 1x'));
   btns.appendChild(mkBtn('Own row', () => cellToOwnRow(c.id),
     'Pull this photo out onto a row of its own'));
+  btns.appendChild(mkBtn('Take off', () => unusePhoto(c.id),
+    'Take this photo off the page — it stays in the Photos list as Unused'));
   host.appendChild(btns);
 
   // move to another gallery page
@@ -1691,6 +1771,230 @@ function roleLabelFor(img) {
   return 'Unused';
 }
 
+/* ============================================================
+   PHOTO DRAG & DROP
+
+   The whole photo system is one gesture: pick a photo up and drop it where
+   it should go. The tray on the left is a source, every photo slot on every
+   page is a target, and the tray is itself a target so dragging a photo off
+   a page takes it out of the brochure.
+
+   Slots are marked with data-drop as the pages render, so this code does not
+   need to know anything about page layout:
+
+     hero          the cover photo
+     info-top      page 3, top right
+     info-bottom   page 3, foot
+     cell          one gallery frame  (data-id = the photo in it)
+     gal-add       a gallery page's spare space (data-gi = which page)
+   ============================================================ */
+let photoDrag = null;
+
+const DROP_LABEL = {
+  'hero': 'Cover photo', 'info-top': 'Top right', 'info-bottom': 'Foot photo',
+  'cell': 'Swap in', 'gal-add': 'Add to this page'
+};
+
+/* Put a photo in a named single slot, freeing whoever was pinned there. */
+function placeInSlot(id, slot) {
+  const role = slot === 'hero' ? 'hero' : slot;
+  state.images.forEach(im => { if (im.role === role && im.id !== id) im.role = 'auto'; });
+  const img = state.images.filter(im => im.id === id)[0];
+  if (!img) return;
+  removeCell(id);                  // it cannot be in the gallery and here at once
+  img.role = role;
+  redraw(); renderImgList(); renderGalleryPanel();
+}
+
+/* Drop onto an existing gallery frame. If the incoming photo is already in
+   the gallery the two trade places, which is what the gesture looks like it
+   should do; otherwise it takes the frame and the photo it displaces drops
+   back to the tray as unused, where it is visible and one click from coming
+   back. */
+function dropOnCell(id, targetPhotoId) {
+  if (id === targetPhotoId) return;
+  const img = state.images.filter(im => im.id === id)[0];
+  if (!img) return;
+  if (findCell(id)) { swapCells(id, targetPhotoId); return; }
+  const hit = findCell(targetPhotoId);
+  if (!hit) return;
+  const displaced = state.images.filter(im => im.id === targetPhotoId)[0];
+  hit.cell.id = id;
+  hit.cell.fx = 50; hit.cell.fy = 50; hit.cell.z = 1;
+  img.role = 'gallery';
+  if (displaced) displaced.role = 'exclude';
+  redraw(); renderImgList(); renderGalleryPanel();
+}
+
+/* Drop onto a gallery page's spare space: append a frame on that page. */
+function dropOnGalleryPage(id, gi) {
+  const img = state.images.filter(im => im.id === id)[0];
+  if (!img) return;
+  removeCell(id);
+  img.role = 'gallery';
+  state.galPage = gi;
+  const pages = galPages();
+  const host = pages[gi] || pages[pages.length - 1];
+  const row = host.rows[host.rows.length - 1];
+  if (row && row.cells.length < 4) row.cells.push(newCell(id));
+  else host.rows.push({ h: 1, cells: [newCell(id)] });
+  state.galSel = id;
+  redraw(); renderImgList(); renderGalleryPanel();
+}
+
+/* Take a photo out of the brochure's pages without deleting the file. */
+function unusePhoto(id) {
+  const img = state.images.filter(im => im.id === id)[0];
+  if (!img) return;
+  removeCell(id);
+  img.role = 'exclude';
+  if (state.galSel === id) state.galSel = null;
+  redraw(); renderImgList(); renderGalleryPanel();
+}
+
+/* Start dragging a photo. `from` is 'tray' or 'page' — a page drag that ends
+   on the tray means "take this out", which a tray drag cannot mean. */
+function beginPhotoDnD(e, id, from) {
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+  const img = state.images.filter(im => im.id === id)[0];
+  if (!img) return;
+  e.preventDefault();
+
+  photoDrag = { id: id, from: from, x: e.clientX, y: e.clientY, active: false, ghost: null, over: null };
+
+  const arm = () => {
+    document.body.classList.add('is-dragging-photo');
+    const g = document.createElement('div');
+    g.className = 'drag-ghost';
+    g.innerHTML = '<img src="' + img.url + '" alt="">';
+    document.body.appendChild(g);
+    photoDrag.ghost = g;
+    // label every live target so the drop is self-explanatory
+    document.querySelectorAll('[data-drop]').forEach(z => {
+      if (z.querySelector(':scope > .drop-label')) return;
+      const l = document.createElement('div');
+      l.className = 'drop-label';
+      l.textContent = DROP_LABEL[z.dataset.drop] || 'Drop here';
+      z.appendChild(l);
+    });
+  };
+
+  const clear = () => {
+    document.body.classList.remove('is-dragging-photo');
+    if (photoDrag && photoDrag.ghost) photoDrag.ghost.remove();
+    document.querySelectorAll('.drop-label').forEach(l => l.remove());
+    document.querySelectorAll('.drop-on').forEach(z => z.classList.remove('drop-on'));
+    document.querySelectorAll('.img-row.is-source').forEach(r => r.classList.remove('is-source'));
+  };
+
+  const move = ev => {
+    if (!photoDrag) return;
+    if (!photoDrag.active) {
+      if (Math.hypot(ev.clientX - photoDrag.x, ev.clientY - photoDrag.y) < DRAG_THRESHOLD) return;
+      photoDrag.active = true;
+      arm();
+    }
+    photoDrag.ghost.style.left = ev.clientX + 'px';
+    photoDrag.ghost.style.top = ev.clientY + 'px';
+
+    const el = document.elementFromPoint(ev.clientX, ev.clientY);
+    let zone = el && el.closest ? el.closest('[data-drop]') : null;
+    if (!zone && el && el.closest && el.closest('#imgList') && from === 'page') {
+      zone = document.getElementById('imgList');
+    }
+    if (zone !== photoDrag.over) {
+      document.querySelectorAll('.drop-on').forEach(z => z.classList.remove('drop-on'));
+      if (zone) zone.classList.add('drop-on');
+      photoDrag.over = zone;
+    }
+  };
+
+  const finish = () => {
+    window.removeEventListener('pointermove', move);
+    window.removeEventListener('pointerup', finish);
+    window.removeEventListener('pointercancel', finish);
+    const d = photoDrag;
+    const zone = d && d.active ? d.over : null;
+    clear();
+    photoDrag = null;
+    if (!zone) return;
+    if (zone.id === 'imgList') { unusePhoto(d.id); return; }
+    const kind = zone.dataset.drop;
+    if (kind === 'cell')          dropOnCell(d.id, zone.dataset.id);
+    else if (kind === 'gal-add')  dropOnGalleryPage(d.id, parseInt(zone.dataset.gi, 10) || 0);
+    else                          placeInSlot(d.id, kind);
+  };
+
+  window.addEventListener('pointermove', move);
+  window.addEventListener('pointerup', finish);
+  window.addEventListener('pointercancel', finish);
+}
+
+/* Single slots — the cover and the two page-3 photos — get the same move grip
+   the gallery frames have, so a photo can be dragged out of any slot in the
+   deck rather than only out of the gallery. */
+function addSlotGrip(box, img, title) {
+  if (!box || !img) return;
+  const grip = document.createElement('div');
+  grip.className = 'gal-grip';
+  grip.textContent = '\u2725';
+  grip.title = title || 'Drag to move this photo';
+  grip.addEventListener('pointerdown', ev => {
+    ev.stopPropagation();
+    beginPhotoDnD(ev, img.id, 'page');
+  });
+  box.appendChild(grip);
+}
+
+/* ---------------- the photo tray ---------------- */
+/* Where a photo currently sits, as the badge shows it. */
+function placementOf(img) {
+  if (img.role === 'exclude') return { text: 'Unused', cls: '' };
+  if (assign.hero === img) return { text: 'Cover', cls: img.role === 'hero' ? 'pinned' : 'used' };
+  if (assign.infoTop === img) return { text: 'Top right', cls: img.role === 'info-top' ? 'pinned' : 'used' };
+  if (assign.infoBottom === img) return { text: 'Foot', cls: img.role === 'info-bottom' ? 'pinned' : 'used' };
+  const hit = findCell(img.id);
+  if (hit) return { text: 'Gallery ' + (hit.pi + 1), cls: img.role === 'gallery' ? 'pinned' : 'used' };
+  if (assign.gallery.indexOf(img) > -1) return { text: 'Gallery', cls: 'used' };
+  return { text: 'Unused', cls: '' };
+}
+
+function closeImgMenu() {
+  document.querySelectorAll('.img-menu').forEach(m => m.remove());
+}
+
+/* The badge opens the same choices the old dropdown had. Dragging covers the
+   common cases; this is the keyboard path and the way to say "auto". */
+function openImgMenu(img, anchor) {
+  closeImgMenu();
+  const box = anchor.getBoundingClientRect();
+  const menu = document.createElement('div');
+  menu.className = 'img-menu';
+  ROLES.forEach(([value, label]) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = label;
+    if ((img.role || 'auto') === value) b.className = 'on';
+    b.addEventListener('click', () => {
+      closeImgMenu();
+      if (value === 'gallery' || value === 'auto' || value === 'exclude') {
+        if (value !== 'gallery') removeCell(img.id);
+        img.role = value;
+        redraw(); renderImgList(); renderGalleryPanel();
+      } else {
+        placeInSlot(img.id, value);
+      }
+    });
+    menu.appendChild(b);
+  });
+  document.body.appendChild(menu);
+  menu.style.left = Math.min(box.left, window.innerWidth - menu.offsetWidth - 10) + 'px';
+  menu.style.top = Math.min(box.bottom + 5, window.innerHeight - menu.offsetHeight - 10) + 'px';
+  setTimeout(() => document.addEventListener('pointerdown', function once(ev) {
+    if (!menu.contains(ev.target)) { closeImgMenu(); document.removeEventListener('pointerdown', once); }
+  }), 0);
+}
+
 function renderImgList() {
   const host = $('#imgList');
   host.innerHTML = '';
@@ -1698,46 +2002,51 @@ function renderImgList() {
     const row = document.createElement('div');
     row.className = 'img-row';
 
-    const thumb = document.createElement('img');
-    thumb.className = 'img-thumb'; thumb.src = img.url; thumb.alt = '';
+    const grab = document.createElement('div');
+    grab.className = 'img-grab';
+    grab.title = 'Drag onto any photo slot in the preview';
+    grab.innerHTML = '<img src="' + img.url + '" alt="">';
+    grab.addEventListener('pointerdown', e => {
+      row.classList.add('is-source');
+      beginPhotoDnD(e, img.id, 'tray');
+    });
 
     const mid = document.createElement('div');
     mid.className = 'img-mid';
     const name = document.createElement('div');
     name.className = 'img-name'; name.textContent = img.name;
-    const auto = document.createElement('div');
-    auto.className = 'img-auto';
-    const lab = roleLabelFor(img);
-    auto.textContent = lab ? 'auto → ' + lab : 'pinned';
-    mid.append(name, auto);
+    mid.appendChild(name);
 
-    const sel = document.createElement('select');
-    sel.className = 'img-role';
-    ROLES.forEach(r => {
-      const o = document.createElement('option');
-      o.value = r[0]; o.textContent = r[1];
-      sel.appendChild(o);
-    });
-    sel.value = img.role || 'auto';
-    sel.addEventListener('change', () => {
-      img.role = sel.value;
-      redraw(); renderImgList(); updateBentoNote();
-    });
+    const place = placementOf(img);
+    const badge = document.createElement('button');
+    badge.type = 'button';
+    badge.className = 'img-badge ' + place.cls;
+    badge.textContent = place.text;
+    badge.title = (img.role && img.role !== 'auto')
+      ? 'Placed by hand — click to change'
+      : 'Placed automatically — click to pin it somewhere';
+    badge.addEventListener('click', () => openImgMenu(img, badge));
 
     const del = document.createElement('button');
-    del.type = 'button'; del.className = 'img-x'; del.innerHTML = '&#10005;'; del.title = 'Remove';
+    del.type = 'button'; del.className = 'img-x'; del.innerHTML = '&#10005;';
+    del.title = 'Remove this photo from the brochure';
     del.addEventListener('click', () => {
+      removeCell(img.id);
       state.images = state.images.filter(x => x.id !== img.id);
-      redraw(); renderImgList(); updateBentoNote();
+      redraw(); renderImgList(); renderGalleryPanel();
     });
 
-    row.append(thumb, mid, sel, del);
+    row.append(grab, mid, badge, del);
     host.appendChild(row);
   });
-  $('#imgNote').textContent = state.images.length
-    ? state.images.length + (state.images.length === 1 ? ' photo' : ' photos')
+
+  $('#imgNote').innerHTML = state.images.length
+    ? state.images.length + (state.images.length === 1 ? ' photo' : ' photos') +
+      '<div class="img-hint">Drag a thumbnail onto any slot in the preview to place it. ' +
+      'Drag a photo off a page and onto this list to take it out.</div>'
     : '';
 }
+
 
 /* The .ag-chip picker shared with the Showsheet and the packages — the
    implementation lives in roster.js, the styles in builder.css. */
