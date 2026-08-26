@@ -1,29 +1,51 @@
 /* ============================================================
    GVC TEAM ROSTER — the single source of truth for agent profiles.
 
-   Every tool on the site (showsheet, brochure, and whatever comes
-   next) reads its agent list from here. Add a teammate once, in this
-   file, and they turn up everywhere.
+   Every tool on the site (showsheet, brochure, seller and buyer
+   packages, and whatever comes next) reads its agent list from here.
+   Add a teammate once, in this file, and they turn up everywhere.
 
    TO ADD SOMEONE
      1. Drop a square headshot at  assets/agents/<id>.png
-        512x512, transparent background. The tools draw it on white
-        paper and on navy panels, so a white box will show.
-     2. Add a row below. Keep `id` lowercase-hyphenated and matching
-        the filename.
+        1100x1100, transparent background — a cut-out of the person,
+        not a photo with a white box behind them. The tools draw it on
+        white paper and on navy panels, so any background will show.
+        Frame it like the others: face about 0.30 of the width, centred,
+        eyes a third of the way down, torso running off the bottom edge.
+     2. Add a row to the right market below. Keep `id`
+        lowercase-hyphenated and matching the filename.
 
    `phone` may be left empty — the tools skip blank fields rather
    than leaving a gap in the layout.
+
+   This file also owns the agent PICKER the builder tools share, so the
+   chips look and behave the same everywhere. See GVC_PICKER at the
+   bottom.
    ============================================================ */
-(function () {
+(function (global) {
+  /* Founders first, then each market, which is the order the pickers
+     show and roughly the order sheets get built in. */
   var PEOPLE = [
-    {id:'john-gasdaska',   name:'John Gasdaska',   title:'Licensed Associate Real Estate Broker', phone:'646.345.7350', email:'john.gasdaska@elliman.com'},
-    {id:'tj-verdiglione',  name:'TJ Verdiglione',  title:'Licensed Real Estate Salesperson',      phone:'732.425.7477', email:'thomas.verdiglione@elliman.com'},
-    {id:'jonathan-conlon', name:'Jonathan Conlon', title:'Licensed Associate Real Estate Broker', phone:'347.564.2440', email:'jonathan.conlon@elliman.com'},
-    {id:'katie-cook',      name:'Katie Cook',      title:'Licensed Real Estate Salesperson',      phone:'516.319.9732', email:'katie.cook@elliman.com'},
-    {id:'nicole-melveney', name:'Nicole Melveney', title:'Licensed Real Estate Sales Associate',  phone:'732.567.5375', email:'nicole.melveney@elliman.com'},
-    {id:'jessica-wolf',    name:'Jessica Wolf',    title:'Licensed Real Estate Salesperson',      phone:'847.414.7841', email:'jessica.wolf@elliman.com'},
-    {id:'marli-silver',    name:'Marli Silver',    title:'Licensed Real Estate Salesperson',      phone:'732.387.3807', email:'marli.silver@elliman.com'}
+    /* Founders */
+    {id:'john-gasdaska',     name:'John Gasdaska',     title:'Licensed Associate Real Estate Broker', phone:'646.345.7350', email:'john.gasdaska@elliman.com'},
+    {id:'tj-verdiglione',    name:'TJ Verdiglione',    title:'Licensed Real Estate Salesperson',      phone:'732.425.7477', email:'thomas.verdiglione@elliman.com'},
+    {id:'jonathan-conlon',   name:'Jonathan Conlon',   title:'Licensed Associate Real Estate Broker', phone:'347.564.2440', email:'jonathan.conlon@elliman.com'},
+
+    /* New York */
+    {id:'katie-cook',        name:'Katie Cook',        title:'Licensed Real Estate Salesperson',      phone:'516.319.9732', email:'katie.cook@elliman.com'},
+    {id:'jessica-wolf',      name:'Jessica Wolf',      title:'Licensed Real Estate Salesperson',      phone:'847.414.7841', email:'jessica.wolf@elliman.com'},
+    {id:'nicole-sobol',      name:'Nicole Sobol',      title:'Licensed Real Estate Salesperson',      phone:'201.240.7544', email:'nicole.sobol@elliman.com'},
+    {id:'gary-kasparov',     name:'Gary Kasparov',     title:'Licensed Real Estate Salesperson',      phone:'718.980.8777', email:'gary.kasparov@elliman.com'},
+    {id:'ayuen-gai',         name:'Ayuen Gai',         title:'Licensed Real Estate Salesperson',      phone:'315.679.0088', email:'ayuen.gai@elliman.com'},
+
+    /* New Jersey */
+    {id:'marli-silver',      name:'Marli Silver',      title:'Licensed Real Estate Salesperson',      phone:'732.387.3807', email:'marli.silver@elliman.com'},
+    {id:'george-putykewycz', name:'George Putykewycz', title:'Licensed Real Estate Salesperson',      phone:'732.546.7375', email:'george.putykewycz@elliman.com'},
+    {id:'james-huber',       name:'James Huber',       title:'Licensed Real Estate Salesperson',      phone:'732.962.0683', email:'james.huber@elliman.com'},
+
+    /* Florida */
+    {id:'nicole-melveney',   name:'Nicole Melveney',   title:'Licensed Real Estate Sales Associate',  phone:'732.567.5375', email:'nicole.melveney@elliman.com'},
+    {id:'karl-brisard',      name:'Karl Brisard',      title:'Licensed Real Estate Sales Associate',  phone:'561.291.8861', email:'karl.brisard@elliman.com'}
   ];
 
   /* Resolve headshots against this file's own location rather than the
@@ -34,8 +56,87 @@
 
   PEOPLE.forEach(function (a) { a.photo = base + a.id + '.png'; });
 
-  window.GVC_ROSTER = PEOPLE;
-  window.GVC_AGENT = function (id) {
-    return PEOPLE.filter(function (a) { return a.id === id; })[0] || null;
+  global.GVC_ROSTER = PEOPLE;
+  var BY_ID = {};
+  PEOPLE.forEach(function (a) { BY_ID[a.id] = a; });
+  global.GVC_AGENT = function (id) { return BY_ID[id] || null; };
+
+  /* ============================================================
+     THE SHARED AGENT PICKER
+
+     The grid of headshot chips in every builder's Agents panel. Click
+     to add, click again to remove; a selected chip carries a badge with
+     its position, because on the printed sheet the order is the order.
+
+     Kept here rather than in each tool because there is one right way
+     for it to behave and four tools that need it. Styles are the
+     .ag-chip rules in assets/css/builder.css (the Showsheet keeps its
+     own copy, being deliberately self-contained).
+
+       host    element to fill
+       state   object holding the selection array
+       opts    {key, max, onChange, onFull}
+                 key      state property holding the ids (default 'agents')
+                 max      how many fit on the page (default 2)
+                 onChange called after every change
+                 onFull   called with the roster entry when the pick
+                          would exceed `max`. Return false to reject it;
+                          anything else drops the oldest and accepts.
+
+     Returns its own repaint function, for callers that reset state
+     from elsewhere (loading a sample, clearing the form).
+     ============================================================ */
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  /* The chips are narrow, so titles ride in abbreviated. */
+  function shortTitle(t) {
+    return String(t || '').replace('Licensed', 'Lic.').replace('Real Estate', 'R.E.');
+  }
+
+  global.GVC_PICKER = function (host, state, opts) {
+    opts = opts || {};
+    var key = opts.key || 'agents';
+    var max = opts.max || 2;
+
+    function picked() {
+      if (!Array.isArray(state[key])) state[key] = [];
+      return state[key];
+    }
+
+    function paint() {
+      var sel = picked();
+      host.innerHTML = '';
+      PEOPLE.forEach(function (a) {
+        var ord = sel.indexOf(a.id);
+        var chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'ag-chip' + (ord > -1 ? ' sel' : '');
+        chip.setAttribute('aria-pressed', ord > -1 ? 'true' : 'false');
+        chip.innerHTML =
+          '<img src="' + a.photo + '" alt="">' +
+          '<div><div class="nm">' + esc(a.name) + '</div>' +
+          '<div class="tt">' + esc(shortTitle(a.title)) + '</div></div>' +
+          (ord > -1 ? '<span class="ord">' + (ord + 1) + '</span>' : '');
+        chip.addEventListener('click', function () {
+          var list = picked(), i = list.indexOf(a.id);
+          if (i > -1) list.splice(i, 1);
+          else {
+            if (list.length >= max && opts.onFull && opts.onFull(a, max) === false) return;
+            list.push(a.id);
+            while (list.length > max) list.shift();
+          }
+          paint();
+          if (opts.onChange) opts.onChange();
+        });
+        host.appendChild(chip);
+      });
+    }
+
+    paint();
+    return paint;
   };
-})();
+})(window);

@@ -1382,29 +1382,9 @@ function renderImgList() {
     : '';
 }
 
-/* Same .ag-chip picker as the Showsheet and the packages — styles in builder.css. */
-function renderRoster() {
-  const host = $('#rosterPick');
-  host.innerHTML = '';
-  ROSTER.forEach(a => {
-    const on = state.agents.includes(a.id);
-    const ord = state.agents.indexOf(a.id);
-    const row = document.createElement('button');
-    row.type = 'button';
-    row.className = 'ag-chip' + (on ? ' sel' : '');
-    row.innerHTML = '<img src="' + a.photo + '" alt="">' +
-                    '<div><div class="nm">' + escapeHtml(a.name) + '</div>' +
-                    '<div class="tt">' + escapeHtml(a.title.replace('Licensed', 'Lic.').replace('Real Estate', 'R.E.')) + '</div></div>' +
-                    (on ? '<span class="ord">' + (ord + 1) + '</span>' : '');
-    row.addEventListener('click', () => {
-      if (on) state.agents = state.agents.filter(id => id !== a.id);
-      else if (state.agents.length < MAX_AGENTS) state.agents.push(a.id);
-      else state.agents = [state.agents[1], a.id];
-      renderRoster(); redraw();
-    });
-    host.appendChild(row);
-  });
-}
+/* The .ag-chip picker shared with the Showsheet and the packages — the
+   implementation lives in roster.js, the styles in builder.css. */
+let renderRoster = () => {};
 
 function renderFpList() {
   const host = $('#fpList');
@@ -1685,7 +1665,8 @@ document.querySelectorAll('[data-field]').forEach(el => {
 });
 
 builder = Builder.init({ pages: pagePlan().length, label: 'Page', render: renderPage });
-renderImgList(); renderRoster(); renderFpList();
+renderRoster = GVC_PICKER($('#rosterPick'), state, { max: MAX_AGENTS, onChange: redraw });
+renderImgList(); renderFpList();
 redraw(); updateBentoNote();
 // webfont metrics change block heights, so re-measure once they land
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(checkOverflow);

@@ -343,37 +343,10 @@
   }
 
   /* ---------- roster picker ----------
-     Shares .ag-chip with the Showsheet Generator; styles live in builder.css. */
-  function shortTitle(t) {
-    return String(t || '').replace('Licensed', 'Lic.').replace('Real Estate', 'R.E.');
-  }
-
+     One implementation for the whole site, in roster.js. This stays as a
+     thin wrapper so the packages keep their existing call signature. */
   function wireRoster(host, state, max, redraw) {
-    function paint() {
-      host.innerHTML = '';
-      (global.GVC_ROSTER || []).forEach(a => {
-        const ord = state.agents.indexOf(a.id);
-        const b = document.createElement('button');
-        b.type = 'button';
-        b.className = 'ag-chip' + (ord > -1 ? ' sel' : '');
-        b.innerHTML = '<img src="' + a.photo + '" alt="">' +
-                      '<div><div class="nm">' + esc(a.name) + '</div>' +
-                      '<div class="tt">' + esc(shortTitle(a.title)) + '</div></div>' +
-                      (ord > -1 ? '<span class="ord">' + (ord + 1) + '</span>' : '');
-        b.addEventListener('click', () => {
-          const i = state.agents.indexOf(a.id);
-          if (i > -1) state.agents.splice(i, 1);
-          else {
-            state.agents.push(a.id);
-            while (state.agents.length > max) state.agents.shift();
-          }
-          paint(); redraw();
-        });
-        host.appendChild(b);
-      });
-    }
-    paint();
-    return paint;
+    return global.GVC_PICKER(host, state, { max: max, onChange: redraw });
   }
 
   function agentsOf(state) {
