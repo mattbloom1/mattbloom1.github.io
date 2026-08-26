@@ -74,7 +74,11 @@
      own copy, being deliberately self-contained).
 
        host    element to fill
-       state   object holding the selection array
+       state   object holding the selection array — or, for a tool that
+               REPLACES its state object rather than mutating it (loading
+               a saved sheet, resetting the form), a function returning
+               the current one. Passing the object itself there would
+               leave the picker editing a discarded copy.
        opts    {key, max, onChange, onFull}
                  key      state property holding the ids (default 'agents')
                  max      how many fit on the page (default 2)
@@ -102,9 +106,12 @@
     var key = opts.key || 'agents';
     var max = opts.max || 2;
 
+    /* Resolved on every read, never cached, so a tool that swaps its whole
+       state object out from under us still gets the live selection. */
     function picked() {
-      if (!Array.isArray(state[key])) state[key] = [];
-      return state[key];
+      var s = typeof state === 'function' ? state() : state;
+      if (!Array.isArray(s[key])) s[key] = [];
+      return s[key];
     }
 
     function paint() {

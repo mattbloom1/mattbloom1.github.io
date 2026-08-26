@@ -1369,8 +1369,13 @@ function setFocal(e, th, p){
 /* The chips themselves are the shared picker from roster.js. Unlike the
    other builders, a full sheet here refuses the extra agent and says so
    rather than silently dropping the first one — four is a layout limit,
-   not a preference. */
-const renderAgentPicker = GVC_PICKER($('#agentPick'), state, {
+   not a preference.
+
+   The state goes in as a getter rather than as `state` itself: this tool
+   replaces its whole state object when it loads a saved sheet or resets
+   the form, so the picker has to look the selection up fresh each time
+   rather than hold a reference to whichever object existed at startup. */
+const renderAgentPicker = GVC_PICKER($('#agentPick'), () => state, {
   key: 'agentIds',
   max: 4,
   onChange: render,
