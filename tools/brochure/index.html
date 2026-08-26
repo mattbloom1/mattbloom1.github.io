@@ -179,6 +179,11 @@
    the same .pg-h markup and type, just width-limited so it wraps clear of
    the photo instead of running under it. */
 .info-top{position:absolute;top:0;left:0;right:0;height:50%;display:flex;flex-direction:column;}
+/* This block spans the full width and is painted after the top-right photo,
+   so it was swallowing every click and drag aimed at that photo. Its own
+   content — a 4.2in heading and a 3.4in blurb — stays in the left column, so
+   it has no need of the pointer. */
+@media screen{ .info-top{pointer-events:none;} }
 .info-top .pg-h{width:4.2in;}
 .info-tr{position:absolute;top:0;right:0;width:4.25in;height:2.5in;overflow:hidden;background:rgba(255,255,255,.05);}
 .info-tr img{width:100%;height:100%;object-fit:cover;display:block;}
@@ -203,8 +208,8 @@
 .stat .v{font:700 20pt/1 var(--serif);color:#fff;}
 .stat .k{font:800 7.5pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--sky);margin-top:.05in;}
 @media screen{
-  .info-photo.has-img,.info-tr.has-img{cursor:grab;touch-action:none;user-select:none;}
-  .info-photo.is-moving,.info-tr.is-moving{cursor:grabbing;}
+  .cv.has-img,.info-photo.has-img,.info-tr.has-img{cursor:grab;touch-action:none;user-select:none;}
+  .cv.is-moving,.info-photo.is-moving,.info-tr.is-moving{cursor:grabbing;}
   .info-photo img,.info-tr img{pointer-events:none;}
 }
 
@@ -338,7 +343,7 @@ body.is-dragging-photo [data-drop].drop-on::after{content:'';position:absolute;i
 .gal-grip{position:absolute;top:7px;left:7px;z-index:6;width:24px;height:24px;border-radius:5px;
   background:rgba(0,39,58,.72);color:var(--ow);display:none;align-items:center;
   justify-content:center;cursor:grab;font:700 12px var(--sans);line-height:1;}
-.gal-cell:hover .gal-grip,.gal-cell.is-sel .gal-grip{display:flex;}
+.gal-cell:hover .gal-grip,.gal-cell.is-sel .gal-grip,.slot-host:hover .gal-grip{display:flex;}
 .gal-grip:hover{background:var(--sky);color:var(--navy);}
 @media print{ .gal-grip,.drop-label{display:none !important;} }
 
@@ -736,7 +741,7 @@ const state = {
   // page 3
   price: '', blurb: '', features: '',
   beds: '', baths: '', parking: '', sqft: '',
-  infoPos: { x: 50, y: 50 }, infoTopPos: { x: 50, y: 50 },
+  coverPos: { x: 50, y: 50 }, infoPos: { x: 50, y: 50 }, infoTopPos: { x: 50, y: 50 },
   // floor plans
   floorplans: [],        // {id,name,url,label}
   fpNote: 'Dimensions and square footage are approximate and subject to verification.',
@@ -999,7 +1004,8 @@ function renderCover(page) {
   const [a1, a2] = agentObjs();
   page.innerHTML =
     '<div class="cv" data-drop="hero">' +
-      (hero ? '<img class="cv-img" src="' + hero.url + '" alt="">'
+      (hero ? '<img class="cv-img" src="' + hero.url + '" alt="" style="object-position:' +
+                state.coverPos.x + '% ' + state.coverPos.y + '%">'
             : '<div class="empty-note">Drop a cover photo<br>in the Photos panel</div>') +
       '<div class="cv-mask"></div>' +
       '<div class="cv-kind">Property Brochure</div>' +
@@ -1014,7 +1020,12 @@ function renderCover(page) {
         cbSide(a2, 'r') +
       '</div>' +
     '</div>';
-  addSlotGrip(page.querySelector('.cv'), hero, 'Drag to move the cover photo');
+  const cv = page.querySelector('.cv');
+  if (hero) {
+    cv.classList.add('has-img');
+    cv.addEventListener('pointerdown', e => beginPhotoDrag(e, cv, state.coverPos));
+  }
+  addSlotGrip(cv, hero, 'Drag to move the cover photo');
 }
 
 
@@ -1935,6 +1946,7 @@ function beginPhotoDnD(e, id, from) {
    deck rather than only out of the gallery. */
 function addSlotGrip(box, img, title) {
   if (!box || !img) return;
+  box.classList.add('slot-host');      // so the grip appears on hover, as in the gallery
   const grip = document.createElement('div');
   grip.className = 'gal-grip';
   grip.textContent = '\u2725';
@@ -2279,6 +2291,7 @@ $('#galCaps').addEventListener('change', e => {
   state.galCaptions = e.target.checked; redraw();
 });
 $('#btnResetPos').addEventListener('click', () => {
+  state.coverPos = { x: 50, y: 50 };
   state.infoPos = { x: 50, y: 50 };
   state.infoTopPos = { x: 50, y: 50 };
   redraw();
@@ -2303,6 +2316,7 @@ $('#btnPreview').addEventListener('click', () => {
   ];
   state.agents = PREVIEW.agents.slice();
   state.gallery = []; state.galPage = 0; state.galSel = null;
+  state.coverPos = { x: 50, y: 50 };
   state.infoPos = { x: 50, y: 50 };
   state.infoTopPos = { x: 50, y: 50 };
 
