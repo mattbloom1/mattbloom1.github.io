@@ -119,6 +119,24 @@ a.tile,button.tile{cursor:pointer}
   text-transform:uppercase;color:var(--ink-soft);
 }
 
+/* a section that folds. The summary is the same editorial header, plus a
+   Show/Hide word on the end; the marker is dropped because the header
+   already reads as the control. Collapsed is the default in the markup —
+   no `open` attribute — so this needs no script. */
+.home-fold{margin-top:clamp(44px,6vw,68px)}
+.home-fold > summary{cursor:pointer;list-style:none;margin-bottom:0;
+  padding:6px 0;border-radius:6px;}
+.home-fold > summary::-webkit-details-marker{display:none}
+.home-fold[open] > summary{margin-bottom:22px}
+.home-fold > summary:hover .sec-label,.home-fold > summary:focus-visible .sec-label{color:var(--sky-ink,var(--ink))}
+.home-fold > summary:focus-visible{outline:none;box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--sky)}
+.sec-more{
+  font-family:var(--mono);font-size:10px;letter-spacing:0.12em;
+  text-transform:uppercase;color:var(--ink-soft);white-space:nowrap;
+}
+.sec-more::after{content:'Show'}
+.home-fold[open] .sec-more::after{content:'Hide'}
+
 /* tools — a wrapping grid of light paper cards. Cells are equal width and
    flow onto as many rows as the count needs. Hover/focus is a colour shift
    only; nothing grows, moves, or reflows — in particular the name's font

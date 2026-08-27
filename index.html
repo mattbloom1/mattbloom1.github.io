@@ -25,17 +25,24 @@
 <main class="page home">
   <h1 class="visually-hidden">Matt Bloomfield — Portfolio</h1>
 
-  <section class="home-sec" aria-label="Tools">
+  <!-- The four listing builders share one property's facts, so they lead the
+       page as their own set rather than sitting among the odd-job tools. -->
+  <section class="home-sec" aria-label="Listing suite">
     <div class="sec-head">
-      <h2 class="sec-label">Tools</h2>
+      <h2 class="sec-label">Listing Suite</h2>
       <span class="sec-rule" aria-hidden="true"></span>
-      <span class="sec-count">8 tools</span>
+      <span class="sec-count">One property, four documents</span>
     </div>
     <div class="tool-row">
 
       <a class="tool" href="tools/showsheet/" data-enter>
         <span class="t-mono">Generator</span>
         <span class="tool-name">Showsheet Generator</span>
+      </a>
+
+      <a class="tool" href="tools/brochure/" data-enter>
+        <span class="t-mono">Builder</span>
+        <span class="tool-name">Brochure</span>
       </a>
 
       <a class="tool" href="tools/buyer-package/" data-enter>
@@ -48,10 +55,16 @@
         <span class="tool-name">Seller Pitch &amp; CMA</span>
       </a>
 
-      <a class="tool" href="tools/brochure/" data-enter>
-        <span class="t-mono">Builder</span>
-        <span class="tool-name">Brochure</span>
-      </a>
+    </div>
+  </section>
+
+  <section class="home-sec" aria-label="Tools">
+    <div class="sec-head">
+      <h2 class="sec-label">Tools</h2>
+      <span class="sec-rule" aria-hidden="true"></span>
+      <span class="sec-count">4 tools</span>
+    </div>
+    <div class="tool-row">
 
       <a class="tool" href="tools/floorplan/" data-enter>
         <span class="t-mono">Converter</span>
@@ -76,12 +89,16 @@
     </div>
   </section>
 
-  <section class="home-sec" aria-label="Websites">
-    <div class="sec-head">
+  <!-- Websites and Photos are reference material, not something an agent
+       came here to do, so they arrive folded shut. <details> with no `open`
+       means collapsed by default and works with no JavaScript at all. -->
+  <details class="home-sec home-fold" aria-label="Websites">
+    <summary class="sec-head">
       <h2 class="sec-label">Websites</h2>
       <span class="sec-rule" aria-hidden="true"></span>
       <span class="sec-count">4 websites</span>
-    </div>
+      <span class="sec-more" aria-hidden="true"></span>
+    </summary>
     <div class="site-stack">
 
       <a class="site" href="projects/casa-avenida/" data-enter>
@@ -113,14 +130,15 @@
       </a>
 
     </div>
-  </section>
+  </details>
 
-  <section class="home-sec" aria-label="Photos">
-    <div class="sec-head">
+  <details class="home-sec home-fold" aria-label="Photos">
+    <summary class="sec-head">
       <h2 class="sec-label">Photos</h2>
       <span class="sec-rule" aria-hidden="true"></span>
       <span class="sec-count" id="ph-count">Before / after</span>
-    </div>
+      <span class="sec-more" aria-hidden="true"></span>
+    </summary>
 
     <!-- Populated by shuffle.js from photos/pairs.json. Hidden until a photo
          loads so a failed fetch degrades to just the "All galleries" link. -->
@@ -147,7 +165,7 @@
         </span>
       </div>
     </div>
-  </section>
+  </details>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" integrity="sha384-HOvlOYPIs/zjoIkWUGXkVmXsjr8GuZLV+Q+rcPwmJOVZVpvTSXQChiN4t9Euv9Vc" crossorigin="anonymous"></script>
 <script src="assets/js/chrome.js"></script>
