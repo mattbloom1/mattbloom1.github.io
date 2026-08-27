@@ -342,6 +342,43 @@
     });
   }
 
+  /* ---------- comparable sales editor ----------
+     One row per comp: address, sold price, sq ft, bed/bath, date — the same
+     five fields the Seller Pitch's CMA and the Buyer Package both print, and
+     the same shape in both, which is why they can share a property's comps.
+     `host` is the list container, `comps` the array to edit in place. */
+  function compsEditor(host, comps, onChange) {
+    host.innerHTML = '';
+    comps.forEach(function (c, i) {
+      var wrap = document.createElement('div');
+      wrap.className = 'rw';
+      var mk = function (ph, key, w) {
+        var inp = document.createElement('input');
+        inp.type = 'text'; inp.placeholder = ph; inp.value = c[key] || '';
+        if (w) inp.style.flex = '0 0 ' + w;
+        inp.addEventListener('input', function () { c[key] = inp.value; onChange(); });
+        return inp;
+      };
+      wrap.appendChild(mk('Address', 'address'));
+      wrap.appendChild(mk('Sold $', 'price', '68px'));
+      wrap.appendChild(mk('Sq ft', 'sqft', '52px'));
+      wrap.appendChild(mk('Bd/Ba', 'bb', '52px'));
+      wrap.appendChild(mk('Date', 'date', '58px'));
+      var x = document.createElement('button');
+      x.type = 'button'; x.className = 'x'; x.textContent = '×';
+      x.title = 'Remove this comp';
+      x.addEventListener('click', function () {
+        comps.splice(i, 1);
+        compsEditor(host, comps, onChange);
+        onChange();
+      });
+      wrap.appendChild(x);
+      host.appendChild(wrap);
+    });
+  }
+
+  function blankComp() { return { address:'', price:'', sqft:'', bb:'', date:'' }; }
+
   /* ---------- roster picker ----------
      One implementation for the whole site, in roster.js. This stays as a
      thin wrapper so the packages keep their existing call signature. */
@@ -358,7 +395,7 @@
     esc, lines, money, moneyShort, num,
     page, cover, heading, foot, toc, agentCards, linkCols, linkIcon,
     checkOverflow, overflowing, wireDrop, wireRoster, agentsOf,
-    assignRoles, renderPhotoList, autoLabelFor,
+    assignRoles, renderPhotoList, autoLabelFor, compsEditor, blankComp,
     beginPhotoDrag, wirePhotoDrag
   };
 })(window);

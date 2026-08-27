@@ -293,7 +293,7 @@
   color:rgba(229,229,229,.8);margin-top:.16in;text-align:center;
   display:flex;align-items:center;justify-content:center;}
 
-.contact-foot{flex:none;margin-top:.34in;padding-top:.26in;border-top:1pt solid var(--rule-rev);}
+.contact-foot{flex:none;margin-top:.26in;padding-top:.22in;border-top:1pt solid var(--rule-rev);}
 .lcols{display:grid;grid-template-columns:1fr 1fr;gap:.42in;}
 .lcol{min-width:0;}
 .lcol-t{font:800 7pt var(--sans);letter-spacing:.18em;text-transform:uppercase;
@@ -312,8 +312,13 @@
 .lrow .lv{display:block;font:300 9pt/1.4 var(--body);color:var(--ow);
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 
-.states{flex:none;display:flex;justify-content:center;gap:.55in;margin-top:.26in;margin-bottom:.34in;
-  padding-top:.22in;border-top:1pt solid var(--rule-rev);}
+/* the brokerage disclaimer, at the foot of the closing page. Mirrors the
+   Seller Pitch & CMA's .legal exactly; the words come from the shared
+   assets/js/legal.js so no builder can drift from the others. */
+.legal{flex:none;margin-top:.14in;padding-top:.14in;border-top:.75pt solid var(--rule-rev);
+  font:300 6.5pt/1.45 var(--body);color:rgba(229,229,229,.55);text-align:justify;}
+.states{flex:none;display:flex;justify-content:center;gap:.55in;margin-top:.2in;margin-bottom:.16in;
+  padding-top:.18in;border-top:1pt solid var(--rule-rev);}
 .states .stc{text-align:center;}
 .states .stc img{display:block;margin:0 auto .08in;height:.5in;width:auto;
   filter:brightness(0) invert(1);opacity:.28;}
@@ -607,7 +612,10 @@ body.is-dragging-photo [data-drop].drop-on::after{content:'';position:absolute;i
      this deck draws every other page itself. pitch.css is deliberately not
      loaded alongside it — see the closing-page CSS above. -->
 <script src="../../assets/js/pitch.js"></script>
-<script src="icons.js"></script>
+<script src="../../assets/js/icons.js"></script>
+<script src="../../assets/js/qr.js"></script>
+<script src="../../assets/js/legal.js"></script>
+<script src="../../assets/js/unsaved.js"></script>
 <script>
 'use strict';
 const $ = s => document.querySelector(s);
@@ -774,7 +782,7 @@ const state = {
   coverPos: { x: 50, y: 50 }, infoTopPos: { x: 50, y: 50 },
   // floor plans
   floorplans: [],        // {id,name,url,label}
-  fpNote: 'Dimensions and square footage are approximate and subject to verification.',
+  fpNote: window.GVC_LEGAL.FLOORPLAN,
 };
 
 let uid = 0, builder = null;
@@ -784,21 +792,9 @@ let assign = { hero: null, infoTop: null, gallery: [] };
 const escapeHtml = s => String(s == null ? '' : s)
   .replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
 const lines = s => String(s || '').split('\n').map(x => x.trim()).filter(Boolean);
-/* QR as vector SVG so it stays crisp at any print size. Same approach as
-   the Showsheet and the Seller Pitch & CMA. Returns '' for an empty url or
-   if the CDN script failed, and the caller prints a placeholder instead. */
-function qrSvg(text) {
-  try {
-    if (!text || typeof qrcode === 'undefined') return '';
-    const qr = qrcode(0, 'M');
-    qr.addData(text); qr.make();
-    const n = qr.getModuleCount();
-    let d = '';
-    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (qr.isDark(r, c)) d += 'M' + c + ' ' + r + 'h1v1h-1z';
-    return '<svg viewBox="0 0 ' + n + ' ' + n + '" shape-rendering="crispEdges" ' +
-           'xmlns="http://www.w3.org/2000/svg"><path d="' + d + '" fill="#00273A"/></svg>';
-  } catch (e) { return ''; }
-}
+/* QR as vector SVG so it stays crisp at any print size — one shared
+   implementation for all four builders, in assets/js/qr.js. */
+const qrSvg = window.GVC_QR;
 const cityLine = () => {
   const cs = [state.city, state.state].filter(Boolean).join(', ');
   return [cs, state.zip].filter(Boolean).join(' ');
@@ -1277,8 +1273,11 @@ function renderInfo(page, n, of) {
   const feats = lines(state.features);
   const stats = [['Bedrooms', state.beds, 'bed'], ['Bathrooms', state.baths, 'bath'],
                  ['Parking', state.parking, 'car'], ['Sq Ft', state.sqft, 'ruler']];
+  /* A typed number is formatted the way every other builder formats one —
+     4275000 prints as $4,275,000, not as 4275000. Anything without a digit
+     in it ("Price upon request") is a label, and prints as tracked caps. */
   const price = state.price
-    ? (/\d/.test(state.price) ? escapeHtml(state.price)
+    ? (/\d/.test(state.price) ? escapeHtml(P.money(state.price) || state.price)
        : '<span class="po">' + escapeHtml(state.price) + '</span>')
     : '';
   const np = price ? '' : ' no-price';
@@ -1401,6 +1400,7 @@ function renderAgent(page, n, of) {
         '</div>' +
         '<div class="states">' + STATES.map(([nm, art]) =>
           '<div class="stc"><img src="' + art + '" alt=""><span>' + escapeHtml(nm) + '</span></div>').join('') + '</div>' +
+        GVC_LEGAL.block('listing') +
       '</div>' +
       pageFoot(n, of, true) +
     '</div>';
@@ -2036,6 +2036,7 @@ function beginPhotoDnD(e, id, from) {
     if (!zone) return;
     if (zone.id === 'imgList') { unusePhoto(d.id); return; }
     const kind = zone.dataset.drop;
+    GVC_UNSAVED.touch();
     if (kind === 'cell')          dropOnCell(d.id, zone.dataset.id);
     else if (kind === 'gal-add')  dropOnGalleryPage(d.id, parseInt(zone.dataset.gi, 10) || 0);
     else                          placeInSlot(d.id, kind);
@@ -2266,6 +2267,7 @@ function addFiles(files) {
       };
       probe.src = img.url;
       redraw(); renderImgList(); updateBentoNote();
+      GVC_UNSAVED.touch();
     };
     reader.readAsDataURL(f);
   });
@@ -2469,10 +2471,24 @@ document.querySelectorAll('[data-field]').forEach(el => {
   if (state[el.dataset.field]) el.value = state[el.dataset.field];
 });
 
-builder = Builder.init({ pages: pagePlan().length, label: 'Page', render: renderPage });
+/* what the printed PDF should be called: the property, falling back to the
+   deck's own name when nothing has been typed yet */
+function printName() {
+  const addr = String(state.address || '').trim();
+  const where = cityLine();
+  return [addr, where].filter(Boolean).join(', ') || 'Brochure';
+}
+
+builder = Builder.init({ pages: pagePlan().length, label: 'Page',
+                         render: renderPage, printName: printName });
 renderRoster = GVC_PICKER($('#rosterPick'), state, { max: MAX_AGENTS, onChange: redraw });
 renderImgList(); renderFpList();
 redraw(); updateBentoNote();
+/* nothing here is saved anywhere yet, so at least make the browser ask
+   before a stray reload throws the whole deck away. Dropped photos and
+   dragged crops fire no input event of their own — hence the touch() in
+   the drag and drop code. */
+GVC_UNSAVED.watch();
 // webfont metrics change block heights, so re-measure once they land
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(checkOverflow);
 </script>

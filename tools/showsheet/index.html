@@ -599,6 +599,8 @@ body.bleed .crop{display:block;}
 <div id="toasts"></div>
 </main>
 <script id="unit-data" type="application/json"></script>
+<script src="../../assets/js/qr.js"></script>
+<script src="../../assets/js/legal.js"></script>
 <script src="../../assets/js/roster.js"></script>
 <script>
 'use strict';
@@ -625,7 +627,8 @@ const ICONS = {
 };
 const EHO_SVG = `<svg class="eho" viewBox="0 0 26 24" xmlns="http://www.w3.org/2000/svg"><path d="M13 0 0 9.8h3.1V24h19.8V9.8H26L13 0Zm7.5 21.6H5.5V8.9L13 3.2l7.5 5.7v12.7Z"/><rect x="8.2" y="11" width="9.6" height="2.1"/><rect x="8.2" y="15.4" width="9.6" height="2.1"/></svg>`;
 
-const DEFAULT_DISCLAIMER = "The information set forth herein has been obtained from sources deemed reliable but is not guaranteed and is submitted subject to errors, omissions, change of price, prior sale, or withdrawal without notice. All dimensions and square footage are approximate and should be independently verified. Carrying costs, financing limits, flip tax, assessments, and sublet and pied-à-terre policies are subject to building documents and board approval. This is not intended to solicit property already listed. The Gasdaska Verdiglione Conlon Team at Douglas Elliman Real Estate · 575 Madison Avenue, New York, NY 10022. Equal Housing Opportunity.";
+/* the same words the other three builders print — assets/js/legal.js */
+const DEFAULT_DISCLAIMER = window.GVC_LEGAL.DISCLAIMER;
 const FRONT_DISCLAIMER = "All information is from sources deemed reliable but is not guaranteed; complete terms and disclosures appear on the reverse. Equal Housing Opportunity.";
 const OFFICE_LINE = "575 Madison Avenue, 5th Floor · (347) 564-2440 · gvcrealestateteam.com";
 const LS_KEY = 'gvc-showsheet-current-v1';
@@ -687,19 +690,9 @@ function blankish(v){
 }
 
 /* ============================================================
-   QR (vector SVG via qrcode-generator)
+   QR — shared with the other three builders, assets/js/qr.js
    ============================================================ */
-function qrSvg(text){
-  try{
-    if(!text || typeof qrcode === 'undefined') return '';
-    const qr = qrcode(0, 'M');
-    qr.addData(text); qr.make();
-    const n = qr.getModuleCount();
-    let d = '';
-    for(let r=0;r<n;r++) for(let c=0;c<n;c++) if(qr.isDark(r,c)) d += `M${c} ${r}h1v1h-1z`;
-    return `<svg viewBox="0 0 ${n} ${n}" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg"><path d="${d}" fill="#00273A"/></svg>`;
-  }catch(e){ return ''; }
-}
+const qrSvg = window.GVC_QR;
 
 /* ============================================================
    SHEET RENDERING
@@ -857,7 +850,7 @@ function renderBack(){
   const fp = state.floorplan
     ? `<div class="fp-area">
          <div class="fp-wrap"><img src="${state.floorplan}" alt="Floorplan"></div>
-         <div class="fp-note">All dimensions are approximate. Not to scale.</div>
+         <div class="fp-note">${GVC_LEGAL.FLOORPLAN_SHORT}</div>
        </div>`
     : `<div class="fp-empty">Floorplan available upon request</div>`;
 

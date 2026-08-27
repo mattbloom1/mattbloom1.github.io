@@ -89,7 +89,25 @@
       state.zoom = state.zoom === 'fit' ? 'full' : 'fit';
       fit();
     });
-    if (btnPrint) btnPrint.addEventListener('click', () => window.print());
+    /* The browser's Print → "Save as PDF" offers the page title as the file
+       name, so a builder that passes printName() gets its PDF named after the
+       property rather than after the tool. The title goes back afterwards, so
+       the tab reads normally the rest of the time. Same trick the Showsheet
+       has always used. */
+    if (btnPrint) btnPrint.addEventListener('click', () => {
+      const appTitle = document.title;
+      let name = '';
+      try { name = opts.printName ? String(opts.printName() || '').trim() : ''; } catch (e) {}
+      if (name) {
+        document.title = name;
+        const restore = () => {
+          document.title = appTitle;
+          window.removeEventListener('afterprint', restore);
+        };
+        window.addEventListener('afterprint', restore);
+      }
+      window.print();
+    });
     if (pageInput) pageInput.addEventListener('change', () => {
       const n = Math.max(1, Math.min(40, parseInt(pageInput.value, 10) || 1));
       pageInput.value = String(n);

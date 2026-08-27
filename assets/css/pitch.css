@@ -234,6 +234,11 @@ table.tbl .meta{display:block;font-size:7.5pt;color:rgba(0,39,58,.55);margin-top
    filter keeps every state visually consistent regardless of source colour.
    margin-bottom keeps clear of the page-footer's monogram, which floats up
    out of its own slim bar and would otherwise land on these labels. */
+/* the brokerage disclaimer, at the foot of a closing page. Small and quiet,
+   but never optional — the text itself lives in assets/js/legal.js so all
+   four builders print the same words. */
+.legal{flex:none;margin-top:.2in;padding-top:.16in;border-top:.75pt solid var(--rule-rev);
+  font:300 6.5pt/1.5 var(--body);color:rgba(229,229,229,.55);text-align:justify;}
 .states{flex:none;display:flex;justify-content:center;gap:.55in;margin-top:.26in;margin-bottom:.34in;
   padding-top:.22in;border-top:1pt solid var(--rule-rev);}
 .states .stc{text-align:center;}
