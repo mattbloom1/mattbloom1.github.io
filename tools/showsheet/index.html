@@ -19,6 +19,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=JetBrains+Mono&family=Nunito+Sans:opsz,wght@6..12,200..1000&family=Playfair+Display:ital,wght@0,400..800;1,400..800&family=Raleway:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/css/tokens.css">
 <link rel="stylesheet" href="../../assets/css/base.css">
+<link rel="stylesheet" href="../../assets/css/photo-dnd.css">
 <script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
 <style>
@@ -67,7 +68,7 @@ body{font-family:var(--body);color:var(--navy);}
 #quickBar .drop{margin-top:10px;}
 #quickBar .qb-stack .drop{margin-top:0;}
 #quickBar .note{margin-top:4px;}
-#quickBar #phList:empty,#quickBar #phSecList:empty{display:none;}
+#quickBar #imgList:empty,#quickBar #imgNote:empty{display:none;}
 details.ed-sec{border-bottom:1px solid var(--ui-rule);}
 details.ed-sec summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;padding:13px 20px;font:800 11px var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--navy);user-select:none;transition:background .18s,box-shadow .18s;}
 details.ed-sec summary:hover{background:#fff;box-shadow:inset 3px 0 0 var(--sky);}
@@ -125,12 +126,18 @@ details.ed-sec summary .hint{margin-left:auto;font:400 10px var(--ui-mono);lette
 .btn.sm{padding:7px 13px;font-size:10px;}
 .btn-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
 .btn-row .btn{flex:1;white-space:nowrap;}
-/* photo card (single) */
-#phList{display:flex;flex-direction:column;gap:6px;margin-top:10px;}
-.ph-card{display:flex;gap:10px;border:1px solid var(--ui-rule);border-radius:8px;padding:8px;background:#fff;align-items:stretch;}
-.ph-thumb{position:relative;width:118px;height:84px;background:var(--ui-paper-2);border-radius:4px;flex:none;cursor:crosshair;overflow:hidden;}
-.ph-thumb img{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;}
-.ph-thumb .fx-dot{position:absolute;width:14px;height:14px;border:2px solid #fff;border-radius:50%;background:rgba(83,199,220,.85);transform:translate(-50%,-50%);box-shadow:0 0 0 1.5px rgba(0,39,58,.6);pointer-events:none;}
+/* the photo tray — rows come from assets/css/photo-dnd.css */
+#imgList{margin-top:10px;}
+
+/* The back photo only exists when the residence text leaves about 1.2in of
+   slack (see fitSecondary), so an empty back slot must not take any layout
+   space — reserving it would print a blank gap. It becomes a target only
+   while a photo is in the air, positioned over the bottom of the column so
+   the flow, and so the preview's fidelity to the print, is untouched. */
+.photo-secondary.is-empty{position:absolute;left:0;right:0;bottom:0;height:1.05in;
+  flex:none;display:none;}
+body.is-dragging-photo .photo-secondary.is-empty{display:block;}
+@media print{ .photo-secondary.is-empty{display:none !important;} }
 /* agent picker */
 #agentPick{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
 .ag-chip{display:flex;align-items:center;gap:9px;border:1px solid var(--ui-rule);border-radius:8px;background:#fff;padding:7px 9px;cursor:pointer;position:relative;text-align:left;font:inherit;transition:border-color .12s,box-shadow .12s;}
@@ -242,7 +249,7 @@ body.bleed .safe{display:block;}
 .b-own .dotsep{color:var(--sky);padding:0 .32em;}
 /* front columns — residence runs the full height on the left */
 .f-main{flex:1;display:flex;gap:.34in;margin-top:.14in;min-height:0;}
-.f-left{width:4.55in;flex:none;display:flex;flex-direction:column;min-height:0;}
+.f-left{width:4.55in;flex:none;display:flex;flex-direction:column;min-height:0;position:relative;}
 .f-left .col-h{margin-bottom:.08in;}
 /* fit blocks — JS sets the container font-size so content fills its space; children scale in em */
 .fitblk{min-height:0;overflow:hidden;}
@@ -444,10 +451,10 @@ body.bleed .crop{display:block;}
       <div class="qb-pair">
         <div class="drop" id="phDrop">
           <div class="d-idle">
-            <div class="d-big">Photo</div>
-            <div class="d-sub">one per sheet</div>
+            <div class="d-big">Photos</div>
+            <div class="d-sub">drag one onto the sheet to place it</div>
           </div>
-          <div class="d-loaded"><span class="d-check">&#10003;</span><span class="d-name">Photo</span><button class="d-x" data-clear="photo" title="Remove photo">&#10005;</button></div>
+          <div class="d-loaded"><span class="d-check">&#10003;</span><span class="d-name" id="phCount">Photos</span><button class="d-x" data-clear="photo" title="Remove all photos">&#10005;</button></div>
         </div>
         <div class="drop" id="fpDrop">
           <div class="d-idle">
@@ -457,20 +464,13 @@ body.bleed .crop{display:block;}
           <div class="d-loaded"><span class="d-check">&#10003;</span><span class="d-name">Floorplan</span><button class="d-x" data-clear="floorplan" title="Remove floorplan">&#10005;</button></div>
         </div>
       </div>
-      <div id="phList"></div>
-      <div class="drop" id="phSecDrop" style="display:none">
-        <div class="d-idle">
-          <div class="d-big">Secondary Photo</div>
-          <div class="d-sub">optional</div>
-        </div>
-        <div class="d-loaded"><span class="d-check">&#10003;</span><span class="d-name">Secondary photo</span><button class="d-x" data-clear="secondary-photo" title="Remove secondary photo">&#10005;</button></div>
-      </div>
-      <div id="phSecList"></div>
+      <div id="imgList"></div>
+      <div id="imgNote"></div>
+      <div class="note" id="backNote"></div>
       <div class="field"><label>Listing URL</label><input type="text" data-field="listingUrl" placeholder="https://www.elliman.com/listing/…"></div>
       <div class="field"><label>Positioning — one sentence</label><input type="text" data-field="positioning" placeholder="A sun-flooded penthouse with three private terraces atop Lenox Hill."></div>
       <input type="file" id="docxFile" accept=".docx" hidden>
       <input type="file" id="phFile" accept="image/*" hidden>
-      <input type="file" id="phSecFile" accept="image/*" hidden>
       <input type="file" id="fpFile" accept="image/*" hidden>
     </div>
   </details>
@@ -600,6 +600,7 @@ body.bleed .crop{display:block;}
 </div>
 <div id="toasts"></div>
 </main>
+<script src="../../assets/js/photo-dnd.js"></script>
 <script src="../../assets/js/qr.js"></script>
 <script src="../../assets/js/legal.js"></script>
 <script src="../../assets/js/unsaved.js"></script>
@@ -641,7 +642,11 @@ function blankUnit(){
   return {
     ownership:'co-op', paper:'a5', bleed:false, neighborhood:'', borough:'Manhattan', address:'', unit:'', positioning:'',
     webId:'', listingUrl:'', docxName:'',
-    photos:[], heroIndex:0, secondaryIndex:null, secondaryPhoto:null,
+    /* photos is the tray; heroIndex and secondaryIndex say which of them sit
+       in the sheet's two slots, or null for a slot left empty. Older saved
+       sheets carried the back photo as its own secondaryPhoto object — setDoc
+       folds those into the tray. */
+    photos:[], heroIndex:0, secondaryIndex:null,
     floorplan:null,
     price:'', beds:'', baths:'',
     maintenance:'', commonCharges:'', taxesMonthly:'', taxDeductible:'',
@@ -727,13 +732,14 @@ function statCells(){
   if(!blankish(state.baths)) cells.push({v: esc(state.baths), l:'Bathrooms', ic:ICONS.bath});
   return cells;
 }
-function photoCell(p, cls){
+function photoCell(p, cls, drop){
   const pos = `${p.fx??50}% ${p.fy??50}%`;
-  return `<div class="${cls}"><img src="${p.src}" style="object-position:${pos}" alt=""></div>`;
+  return `<div class="${cls}" data-drop="${drop}"><img src="${p.src}" style="object-position:${pos}" alt=""></div>`;
 }
 function renderFront(){
-  const heroP = state.photos[state.heroIndex] || state.photos[0];
-  const photoHtml = heroP ? photoCell(heroP, 'photo-hero') : `<div class="photo-empty">${LOGO_MONO_NAVY}</div>`;
+  const heroP = frontPhoto();
+  const photoHtml = heroP ? photoCell(heroP, 'photo-hero', 'hero')
+    : `<div class="photo-empty" data-drop="hero">${LOGO_MONO_NAVY}</div>`;
   // the residence — complete information, scaled to fit the left column
   const r = state.residence;
   const rSpecs = specRow('Exposures', r.exposures) + specRow('Outdoor', r.outdoor) + specRow('Ceilings', r.ceiling) + specRow('Climate', r.climate);
@@ -781,7 +787,8 @@ function renderFront(){
         <div class="f-left">
           ${strip}
           ${resHtml}
-          ${state.secondaryPhoto ? `<div class="photo-secondary"><img src="${state.secondaryPhoto.src}" style="object-position:${state.secondaryPhoto.fx??50}% ${state.secondaryPhoto.fy??50}%" alt=""></div>` : ''}
+          ${backPhoto() ? photoCell(backPhoto(), 'photo-secondary', 'back')
+            : '<div class="photo-secondary is-empty" data-drop="back"></div>'}
         </div>
         <div class="f-right">
           ${photoHtml}
@@ -1025,6 +1032,8 @@ function fitSecondary(){
   const res = document.querySelector('#sheetFront .res-fit');
   const sec = document.querySelector('#sheetFront .photo-secondary');
   if(!res || !sec) return;
+  // an empty back slot is a drag-time overlay, not part of the column
+  if(sec.classList.contains('is-empty')) return;
   // reset to the flex:1 state so we measure the full column each render
   res.style.flex = ''; res.style.height = ''; sec.style.flex = '';
   // res-fit is flex:1, so clientHeight = the full space the column can give it.
@@ -1039,10 +1048,24 @@ function fitSecondary(){
   if(empty >= MIN_PX){
     res.style.height = natural + 'px';
     sec.style.flex = '1';
+    sayBackRoom(true);
   }else{
     // not enough room — give the column back to the residence, hide the photo
     res.style.flex = ''; res.style.height = '';
+    sayBackRoom(false);
   }
+}
+
+/* The back photo only appears when the residence column has slack to spare.
+   That used to fail silently, which was tolerable while the photo had its own
+   upload; now that the slot is something you drag onto, a photo that vanishes
+   on arrival needs explaining. */
+function sayBackRoom(fits){
+  const el = $('#backNote');
+  if(!el) return;
+  el.textContent = (!fits && backPhoto())
+    ? 'No room for the back photo on this sheet — shorten the residence text or trim a feature.'
+    : '';
 }
 function fitSheets(){
   const addr = document.querySelector('#sheetFront .addr');
@@ -1066,6 +1089,7 @@ function render(){
   const draw = ()=>{
     renderQueued = false;
     renderFront(); renderBack(); fitLogos(); fitSheets(); layoutPreview();
+    paintSlotTools();     // the slots were just rebuilt
   };
   // rAF is suspended while the tab is not rendering, so a sheet built in a
   // background tab would sit empty until the agent came back to it. The
@@ -1113,24 +1137,22 @@ function hydrateForm(){
   syncPaper();
   syncBleed();
   renderAgentPicker();
-  renderPhotoCards();
+  renderTray();
   syncDropZones();
 }
 function syncDropZones(){
   $('#docxDrop').classList.toggle('loaded', !!state.docxName);
   $('#docxName').textContent = state.docxName || '';
   $('#phDrop').classList.toggle('loaded', state.photos.length > 0);
-  const hasPrimary = state.photos.length > 0;
-  $('#phSecDrop').style.display = hasPrimary ? '' : 'none';
-  $('#phSecDrop').classList.toggle('loaded', !!state.secondaryPhoto);
+  const n = state.photos.length;
+  if($('#phCount')) $('#phCount').textContent = n === 1 ? '1 photo' : n + ' photos';
   $('#fpDrop').classList.toggle('loaded', !!state.floorplan);
 }
 document.addEventListener('click', e=>{
   const x = e.target.closest('.d-x'); if(!x) return;
   e.preventDefault(); e.stopPropagation();
   const what = x.dataset.clear;
-  if(what==='photo'){ state.photos=[]; state.heroIndex=0; state.secondaryIndex=null; state.secondaryPhoto=null; renderPhotoCards(); }
-  if(what==='secondary-photo'){ state.secondaryPhoto=null; renderPhotoCards(); }
+  if(what==='photo'){ state.photos=[]; state.heroIndex=0; state.secondaryIndex=null; renderTray(); }
   if(what==='floorplan'){ state.floorplan=null; }
   if(what==='docx'){
     // dropping the doc means starting the next listing — clear everything unit-specific
@@ -1262,17 +1284,24 @@ function floorplanHeaderY(img){
   }catch(e){}
   return 0;
 }
+/* Every image dropped joins the tray. The first one to arrive takes the
+   front of the sheet, because that is what an agent dropping one photo
+   means; everything after that waits to be dragged somewhere. */
 async function addPhotoFiles(files){
-  const list = [...(files||[])];
-  const f = list.find(x=>/^image\//.test(x.type));
-  if(!f) return;
-  try{
-    const img = await fileToImage(f);
-    state.photos = [{src: reencode(img, 2000, .87), fx:50, fy:50}];
-    state.heroIndex = 0; state.secondaryIndex = null;
-    renderPhotoCards(); syncDropZones(); render();
-    toast(list.length>1 ? 'One photo per sheet — used the first file.' : 'Photo set.');
-  }catch(e){ toast(`Couldn't read ${f.name}`, true); }
+  const imgs = [...(files||[])].filter(x=>/^image\//.test(x.type));
+  if(!imgs.length) return;
+  let added = 0, failed = 0;
+  for(const f of imgs){
+    try{
+      const img = await fileToImage(f);
+      state.photos.push({src: reencode(img, 2000, .87), fx:50, fy:50, name: f.name || 'Photo'});
+      added++;
+    }catch(e){ failed++; }
+  }
+  if(state.heroIndex == null || !state.photos[state.heroIndex]) state.heroIndex = 0;
+  renderTray(); syncDropZones(); render();
+  if(added) toast(added === 1 ? 'Photo added.' : `${added} photos added.`);
+  if(failed) toast(`Couldn't read ${failed} ${failed===1?'file':'files'}.`, true);
 }
 async function setFloorplanFile(f){
   try{
@@ -1295,70 +1324,173 @@ function wireDrop(zone, input, handler, multiple){
 }
 wireDrop($('#phDrop'), $('#phFile'), addPhotoFiles, true);
 wireDrop($('#fpDrop'), $('#fpFile'), setFloorplanFile, false);
-async function addSecondaryPhotoFile(f){
-  if(!f) return;
-  try{
-    const img = await fileToImage(f);
-    state.secondaryPhoto = {src: reencode(img, 2000, .87), fx:50, fy:50};
-    renderPhotoCards(); syncDropZones(); render();
-    toast('Secondary photo set.');
-  }catch(e){ toast(`Couldn't read ${f.name}`, true); }
-}
-wireDrop($('#phSecDrop'), $('#phSecFile'), addSecondaryPhotoFile, false);
 
-/* photo card: focal point for the single sheet photo */
-function renderPhotoCards(){
-  const list = $('#phList');
-  const p = state.photos[state.heroIndex] || state.photos[0];
-  if(!p){ list.innerHTML=''; }
-  else{
-    const i = state.photos.indexOf(p);
-    list.innerHTML = `
-      <div class="ph-card">
-        <div class="ph-thumb" data-i="${i}" data-type="primary" title="Click or drag to set the focal point — the crop keeps what matters">
-          <img src="${p.src}">
-          <span class="fx-dot" style="left:${p.fx}%;top:${p.fy}%"></span>
-        </div>
-      </div>`;
+
+/* ============================================================
+   PHOTOS — a tray, and two slots to drag onto.
+
+   The sheet has two photo slots: the big one on the front (hero) and the
+   smaller one under the residence (back). The tray holds every photo that
+   has been dropped in; which one sits where is heroIndex and
+   secondaryIndex, so a placement is just an index.
+
+   The gesture is shared with the other three builders — see
+   assets/js/photo-dnd.js. Reframing a photo inside its crop replaces what
+   used to be a click on the tray thumbnail: the thumbnail is now the drag
+   handle, and the crop is adjusted on the sheet itself, where the result is
+   actually visible. It writes the same fx/fy the click used to.
+   ============================================================ */
+const PD = window.GVC_PHOTODND;
+/* The Showsheet's design canvas is 11in wide and .trim is the element that is
+   that wide — the three portrait decks are 8.5in, which is why the shared
+   reframe takes both as options. */
+const REFRAME = { page: '.trim', canvasIn: 11 };
+const DROP_LABEL = { 'hero': 'Front photo', 'back': 'Back photo' };
+const PLACE_ROLES = [['hero','Front'], ['back','Back'], ['none','Unused']];
+
+/* Sheets saved before the tray existed held one photo in `photos` and the
+   back one as its own `secondaryPhoto` object. Fold that into the tray and
+   point secondaryIndex at it, so an old sheet opens with both photos in
+   place and behaves like a new one.
+
+   Detected by shape rather than by a version number, which is the more
+   reliable test here: it is true of exactly the documents that need it, and
+   stays correct for a sheet saved by any build in between.
+
+   Not reversible, and does not need to be — saving writes the new shape and
+   nothing reads secondaryPhoto any more. */
+function migratePhotos(){
+  if(!Array.isArray(state.photos)) state.photos = [];
+  // photos saved before the tray had no name to show in it
+  state.photos.forEach(p => { if(p && !p.name) p.name = 'Photo'; });
+  const legacy = state.secondaryPhoto;
+  if(legacy && legacy.src){
+    state.photos.push({ src: legacy.src, fx: legacy.fx ?? 50, fy: legacy.fy ?? 50,
+                        name: legacy.name || 'Back photo' });
+    state.secondaryIndex = state.photos.length - 1;
   }
-  const secList = $('#phSecList');
-  const sp = state.secondaryPhoto;
-  if(!sp){ secList.innerHTML=''; return; }
-  secList.innerHTML = `
-    <div class="ph-card">
-      <div class="ph-thumb" data-type="secondary" title="Click or drag to set the focal point for the secondary photo">
-        <img src="${sp.src}">
-        <span class="fx-dot" style="left:${sp.fx}%;top:${sp.fy}%"></span>
-      </div>
-    </div>`;
+  delete state.secondaryPhoto;
+  // a sheet with photos but no front one chosen shows the first, as it always did
+  if(state.heroIndex == null && state.photos.length) state.heroIndex = 0;
+  if(state.heroIndex != null && !state.photos[state.heroIndex]){
+    state.heroIndex = state.photos.length ? 0 : null;
+  }
+  if(state.secondaryIndex != null && !state.photos[state.secondaryIndex]){
+    state.secondaryIndex = null;
+  }
 }
-/* focal point: click/drag on thumb — handles both primary and secondary */
-let focalDrag = null;
-function focalListeners(list, getPhoto){
-  list.addEventListener('pointerdown', e=>{
-    const th = e.target.closest('.ph-thumb'); if(!th) return;
-    focalDrag = th.dataset.type;
-    setFocal(e, th, getPhoto(th));
-    th.setPointerCapture(e.pointerId);
-  });
-  list.addEventListener('pointermove', e=>{
-    if(focalDrag==null) return;
-    const th = e.target.closest('.ph-thumb'); if(!th) return;
-    setFocal(e, th, getPhoto(th));
-  });
-  list.addEventListener('pointerup', ()=>{ focalDrag=null; });
+
+function frontPhoto(){ return state.photos[state.heroIndex] || null; }
+function backPhoto(){
+  return state.secondaryIndex == null ? null : (state.photos[state.secondaryIndex] || null);
 }
-focalListeners($('#phList'), th => state.photos[+th.dataset.i]);
-focalListeners($('#phSecList'), () => state.secondaryPhoto);
-function setFocal(e, th, p){
+
+/* Put a photo in a slot. A photo cannot hold both slots at once, so taking
+   the one it is not already in hands the other back to the tray. */
+function placePhoto(i, slot){
+  i = Number(i);
+  if(!state.photos[i]) return;
+  if(slot === 'hero'){
+    if(state.secondaryIndex === i) state.secondaryIndex = null;
+    state.heroIndex = i;
+  }else if(slot === 'back'){
+    if(state.heroIndex === i) state.heroIndex = null;
+    state.secondaryIndex = i;
+  }
+  renderTray(); syncDropZones(); render();
+}
+
+/* Off the sheet but still in the tray — it shows as Unused and can be
+   dropped back on either slot. */
+function unusePhoto(i){
+  i = Number(i);
+  if(state.heroIndex === i) state.heroIndex = null;
+  if(state.secondaryIndex === i) state.secondaryIndex = null;
+  renderTray(); syncDropZones(); render();
+}
+
+/* Delete the file itself. Every index above it shifts down by one, so the
+   two placements have to move with it or they would point at a neighbour. */
+function deletePhoto(i){
+  i = Number(i);
+  state.photos.splice(i, 1);
+  const shift = idx => idx == null ? null : (idx === i ? null : (idx > i ? idx - 1 : idx));
+  state.heroIndex = shift(state.heroIndex);
+  state.secondaryIndex = shift(state.secondaryIndex);
+  if(state.heroIndex == null && state.photos.length) state.heroIndex = 0;
+  renderTray(); syncDropZones(); render();
+}
+
+function slotOf(i){
+  if(state.heroIndex === i) return 'hero';
+  if(state.secondaryIndex === i) return 'back';
+  return 'none';
+}
+
+function beginPhotoDnD(e, i, from){
+  const p = state.photos[i];
   if(!p) return;
-  const r = th.getBoundingClientRect();
-  const fx = Math.max(0, Math.min(100, (e.clientX-r.left)/r.width*100));
-  const fy = Math.max(0, Math.min(100, (e.clientY-r.top)/r.height*100));
-  p.fx = Math.round(fx); p.fy = Math.round(fy);
-  th.querySelector('.fx-dot').style.left = p.fx+'%';
-  th.querySelector('.fx-dot').style.top = p.fy+'%';
-  render();
+  PD.drag(e, {
+    url: p.src,
+    from: from,
+    scroller: document.getElementById('stage'),
+    tray: document.getElementById('imgList'),
+    labels: DROP_LABEL,
+    onOut: () => unusePhoto(i),
+    onDrop: kind => placePhoto(i, kind)
+  });
+}
+
+function renderTray(){
+  PD.tray($('#imgList'), state.photos, {
+    idOf: (p) => state.photos.indexOf(p),
+    urlOf: p => p.src,
+    nameOf: p => p.name || 'Photo',
+    onGrab: (e, p) => beginPhotoDnD(e, state.photos.indexOf(p), 'tray'),
+    badgeOf: p => {
+      const slot = slotOf(state.photos.indexOf(p));
+      const row = PLACE_ROLES.filter(r => r[0] === slot)[0];
+      return {
+        text: row ? row[1] : 'Unused',
+        cls: slot === 'none' ? '' : 'pinned',
+        title: 'Click to place this photo'
+      };
+    },
+    onBadge: (p, badge) => PD.menu(badge, PLACE_ROLES, value => {
+      const i = state.photos.indexOf(p);
+      if(value === 'none') unusePhoto(i); else placePhoto(i, value);
+    }, slotOf(state.photos.indexOf(p))),
+    onRemove: p => deletePhoto(state.photos.indexOf(p)),
+    removeTitle: 'Delete this photo',
+    note: $('#imgNote'),
+    hint: 'Drag a thumbnail onto either photo slot on the sheet. ' +
+          'Drag a photo off the sheet and onto this list to take it out. ' +
+          'Drag the photo itself on the sheet to adjust its crop.'
+  });
+}
+
+/* After every render: the slots are rebuilt from scratch, so reframing and
+   the move grip have to be re-attached. The back slot only gets them when it
+   actually holds a photo — when empty it is a drag-time overlay. */
+function paintSlotTools(){
+  [['hero', state.heroIndex], ['back', state.secondaryIndex]].forEach(([slot, idx]) => {
+    if(idx == null) return;
+    const p = state.photos[idx];
+    const box = document.querySelector('#sheetFront [data-drop="' + slot + '"]');
+    if(!p || !box || !box.querySelector('img')) return;
+    box.addEventListener('pointerdown', ev => {
+      if(ev.target.closest('.ph-grip, .ph-kill')) return;
+      PD.reframe(ev, box, { x: p.fx ?? 50, y: p.fy ?? 50 }, Object.assign({}, REFRAME, {
+        onMove: pos => { p.fx = Math.round(pos.x); p.fy = Math.round(pos.y); },
+        onEnd: () => { GVC_UNSAVED.touch(); }
+      }));
+    });
+    PD.grip(box, {
+      onMove: ev => beginPhotoDnD(ev, idx, 'page'),
+      onOff: () => unusePhoto(idx),
+      offTitle: 'Take this photo off the sheet'
+    });
+  });
 }
 /* ============================================================
    AGENTS PICKER
@@ -1725,10 +1857,11 @@ GVC_PROPBAR.mount({
   setDoc: doc => {
     if (doc) {
       Object.keys(doc).forEach(k => { if (CORE_ONLY.indexOf(k) === -1) state[k] = doc[k]; });
+      migratePhotos();
     } else {
       const blank = blankUnit();
       state.photos = []; state.heroIndex = 0; state.secondaryIndex = null;
-      state.secondaryPhoto = null; state.floorplan = null;
+      state.floorplan = null;
       state.building = blank.building; state.residence = blank.residence;
     }
     state.disclaimer = DEFAULT_DISCLAIMER;
@@ -1742,10 +1875,11 @@ window.__test = {
   set state(s){ state = s; hydrateForm(); render(); },
   render, hydrateForm,
   async addPhotoDataUrl(dataUrl){
-    state.photos = [{src:dataUrl, fx:50, fy:50}];
+    state.photos = [{src:dataUrl, fx:50, fy:50, name:'Photo'}];
     state.heroIndex = 0; state.secondaryIndex = null;
-    renderPhotoCards(); syncDropZones(); render();
+    renderTray(); syncDropZones(); render();
   },
+  placePhoto, unusePhoto, renderTray, migratePhotos,
   setFloorplanDataUrl(dataUrl){ state.floorplan = dataUrl; render(); },
   async importDocxBuffer(buf){
     const {value:html} = await mammoth.convertToHtml({arrayBuffer:buf});
