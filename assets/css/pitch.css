@@ -216,6 +216,9 @@ table.tbl .meta{display:block;font-size:7.5pt;color:rgba(0,39,58,.55);margin-top
 .lcol-t{font:800 7pt var(--sans);letter-spacing:.18em;text-transform:uppercase;
   color:var(--sky);padding-bottom:.08in;margin-bottom:.1in;border-bottom:.75pt solid var(--rule-rev);}
 .lrow{display:flex;align-items:center;gap:.11in;margin-bottom:.09in;min-width:0;}
+/* the last row's bottom margin is just wasted space at the foot of the column,
+   and the closing page has none to spare */
+.lrow:last-child{margin-bottom:0;}
 /* every row carries a mark, links as well as social, so the two columns
    line up on the same left edge instead of one being indented */
 .lrow .lb{flex:none;width:.26in;height:.26in;border-radius:50%;background:rgba(83,199,220,.16);

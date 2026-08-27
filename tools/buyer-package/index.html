@@ -21,6 +21,7 @@
 <link rel="stylesheet" href="../../assets/css/builder.css">
 <link rel="stylesheet" href="../../assets/css/pitch.css">
 <link rel="stylesheet" href="../../assets/css/photo-dnd.css">
+<link rel="stylesheet" href="../../assets/css/property-bar.css">
 <style>
 /* ============================================================
    BUYER PACKAGE — deck-specific page styles
@@ -91,9 +92,6 @@ table.tbl tr.total td{border-top:1.2pt solid var(--navy);border-bottom:0;
   <aside id="editor">
     <!-- the property library mounts here, identically in all four builders -->
     <div id="propBar"></div>
-    <div class="ed-top">
-      <button class="btn sm" id="btnSample">Fill with sample info</button>
-    </div>
     <div class="ed-body">
 
       <details class="ed-sec">
@@ -651,33 +649,6 @@ function paintPhotos() {
   });
 }
 
-function loadPreview() {
-  Object.assign(state, {
-    client:'Priya & Daniel Rao', date:'August 2026', area:'SoHo & Tribeca, Manhattan',
-    price:'1850000', downPct:'20', rate:'6.25', term:'30',
-    lender:'We work with three lenders we trust and will introduce you to all of them. ' +
-           'Compare their written estimates side by side, not their quoted rates over the phone.',
-    agents:['katie-cook','marli-silver']
-  });
-  // real photography from photos/3-crosby-lane, invented client details
-  state.photos = [0, 6].map(n => ({
-    id: ++uid,
-    name: '3-crosby-' + n + '.webp',
-    url: '../../photos/3-crosby-lane/img/' + n + '-e-f.webp',
-    role: 'auto'
-  }));
-  state.comps = [
-    { address:'112 Greene Street, 4A', price:'1795000', sqft:'1180', bb:'2 / 2',   date:'Jun 2026' },
-    { address:'55 Thompson Street, 6C', price:'1910000', sqft:'1240', bb:'2 / 2',  date:'May 2026' },
-    { address:'40 Mercer Street, 11B',  price:'1725000', sqft:'1105', bb:'2 / 1.5',date:'Apr 2026' },
-    { address:'27 N Moore Street, 3E',  price:'1880000', sqft:'1215', bb:'2 / 2',  date:'Mar 2026' }
-  ];
-  state.showComps = true;
-  paintCompsToggle(); renderComps();
-  document.querySelectorAll('[data-f]').forEach(el => { el.value = state[el.dataset.f] || ''; });
-  paintRoster(); redraw();
-}
-
 /* comps are a repeating row, so they get their own tiny list editor —
    identical to the Seller Pitch & CMA's */
 function renderComps() {
@@ -744,7 +715,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   paintRoster = P.wireRoster(document.getElementById('rosterPick'), state, 2, redraw);
-  document.getElementById('btnSample').addEventListener('click', loadPreview);
 
   document.getElementById('addComp').addEventListener('click', () => {
     state.comps.push(P.blankComp());

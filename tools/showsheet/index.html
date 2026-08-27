@@ -20,6 +20,7 @@
 <link rel="stylesheet" href="../../assets/css/tokens.css">
 <link rel="stylesheet" href="../../assets/css/base.css">
 <link rel="stylesheet" href="../../assets/css/photo-dnd.css">
+<link rel="stylesheet" href="../../assets/css/property-bar.css">
 <script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
 <style>
@@ -54,10 +55,6 @@ body{font-family:var(--body);color:var(--navy);}
 /* sidebar runs the full height at left; the quick bar sits beside it, above the preview */
 #app{display:grid;grid-template-columns:430px minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;height:calc(100vh - var(--mast-h, 64px));overflow:hidden;line-height:normal;}
 #main{display:contents;}
-/* sample fill — same spot in every builder: pinned to the top of the panel */
-.ed-top{flex:none;position:sticky;top:0;z-index:3;
-  padding:14px 20px;border-bottom:1px solid var(--ui-rule);background:#fff;}
-.ed-top .btn{width:100%;}
 #editor{grid-column:1;grid-row:1 / 3;width:430px;min-width:430px;min-height:0;overflow-y:auto;background:var(--page);border-right:1px solid var(--ui-rule);display:flex;flex-direction:column;}
 .ed-body{flex:1;}
 /* every-listing quick bar — the only fully manual inputs live here */
@@ -430,9 +427,6 @@ body.bleed .crop{display:block;}
 <aside id="editor">
   <!-- the property library mounts here, identically in all four builders -->
   <div id="propBar"></div>
-  <div class="ed-top">
-    <button class="btn sm" id="btnLoadPreview" hidden>Fill with sample info</button>
-  </div>
   <div class="ed-body">
 
   <details class="ed-sec" id="quickBar">
@@ -1704,34 +1698,6 @@ function applyParsedDocx(blocks){
   return [...new Set(found)];
 }
 wireDrop($('#docxDrop'), $('#docxFile'), importDocx, false);
-
-/* ---- sample loader: runs the bundled 555 W59th files through the SAME
-        docx/photo/floorplan handlers as the drop zones, so the preview always
-        reflects the current code. Needs the site served over http (fetch can't
-        read file:// siblings). ---- */
-(function(){
-  const btn = document.getElementById('btnLoadPreview');
-  if(!btn) return;
-  btn.hidden = false;
-  btn.addEventListener('click', async ()=>{
-    const label = btn.textContent; btn.disabled = true; btn.textContent = 'Loading…';
-    try{
-      const grab = async (url, name, type)=> new File([await (await fetch(url)).blob()], name, {type});
-      const docx  = await grab('sample/listing.docx', 'Showsheet details - PHC.docx',
-                               'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-      const photo = await grab('sample/hero.jpg', 'hero.jpg', 'image/jpeg');
-      const fp    = await grab('sample/floorplan.jpg', 'floorplan.jpg', 'image/jpeg');
-      await importDocx(docx);        // identical to dropping the .docx
-      await addPhotoFiles([photo]);  // identical to dropping the photo
-      await setFloorplanFile(fp);    // identical to dropping the floorplan
-    }catch(e){
-      console.error(e);
-      toast('Could not load the sample — serve the site over http (not file://).', true);
-    }finally{
-      btn.disabled = false; btn.textContent = label;
-    }
-  });
-})();
 
 /* ============================================================
    OUTPUT — print, bleed, download

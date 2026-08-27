@@ -20,6 +20,7 @@
 <link rel="stylesheet" href="../../assets/css/base.css">
 <link rel="stylesheet" href="../../assets/css/builder.css">
 <link rel="stylesheet" href="../../assets/css/photo-dnd.css">
+<link rel="stylesheet" href="../../assets/css/property-bar.css">
 <style>
 /* ============================================================
    BROCHURE — page styles
@@ -300,6 +301,9 @@
 .lcol-t{font:800 7pt var(--sans);letter-spacing:.18em;text-transform:uppercase;
   color:var(--sky);padding-bottom:.08in;margin-bottom:.1in;border-bottom:.75pt solid var(--rule-rev);}
 .lrow{display:flex;align-items:center;gap:.11in;margin-bottom:.09in;min-width:0;}
+/* the last row's bottom margin is wasted space at the foot of the column, and
+   the closing page has none to spare once an agent's Instagram is added */
+.lrow:last-child{margin-bottom:0;}
 /* every row carries a mark, links as well as social, so the two columns
    line up on the same left edge instead of one being indented */
 .lrow .lb{flex:none;width:.26in;height:.26in;border-radius:50%;background:rgba(83,199,220,.16);
@@ -389,9 +393,7 @@
   <aside id="editor">
     <!-- the property library mounts here, identically in all four builders -->
     <div id="propBar"></div>
-    <div class="ed-top">
-      <button class="btn sm" id="btnPreview">Fill with sample info</button>
-    </div>
+
     <div class="ed-body">
 
       <details class="ed-sec" open>
@@ -977,7 +979,7 @@ function renderCover(page) {
                 state.coverPos.x + '% ' + state.coverPos.y + '%">'
             : '<div class="empty-note">Drop a cover photo<br>in the Photos panel</div>') +
       '<div class="cv-mask"></div>' +
-      '<div class="cv-kind">Property Brochure</div>' +
+      '<div class="cv-kind">The GVC Team Presents</div>' +
       '<div class="cv-head">' +
         '<div class="cv-ttl">' + (esc(state.address) || '&nbsp;') + '</div>' +
         (city ? '<div class="cv-sub">' + esc(city) + '</div>' : '') +
@@ -1304,14 +1306,34 @@ const STATES = [
   ['New Jersey', '../../assets/img/states/new-jersey.svg'],
   ['Florida',    '../../assets/img/states/florida.svg']
 ];
-/* identical content and order to the Seller Pitch & CMA and Buyer
-   Package's closing-page footer — not editable here (the brochure has
-   no per-listing social data), so it can't drift from theirs. */
+/* The team's own accounts, in the same order as the Seller Pitch & CMA and
+   Buyer Package's closing-page footer. Any agent on the brochure who has an
+   Instagram in the roster gets a row of their own added after these — see
+   socialRows(). */
 const AG_SOCIAL = [
   ['Instagram', '@gvcrealestateteam'],
   ['YouTube',   '@gvcrealestateteam'],
   ['LinkedIn',  'The GVC Real Estate Team']
 ];
+
+/* Where the closing page's QR sends a reader: the team's property page rather
+   than the homepage, so a scan lands on the listings. Page 3's QR is separate
+   and still points at whatever Listing URL was typed for this property. */
+const TEAM_QR_URL = 'https://www.gvcrealestateteam.com/property';
+
+/* The Social column: the team's accounts, then one row per agent on this
+   brochure who has a handle. Labelled with the agent's name — a second row
+   just saying "Instagram" would not say whose it is — and marked with the
+   Instagram glyph via linkCols' third element.
+
+   An agent with no handle in the roster is skipped, so this is opt-in: no
+   account reaches a client-facing page unless it has been filled in. */
+function socialRows(agents) {
+  const mine = agents
+    .filter(a => a && String(a.instagram || '').trim())
+    .map(a => [a.name, String(a.instagram).trim(), 'instagram']);
+  return AG_SOCIAL.concat(mine);
+}
 const AG_LINKS = [
   ['Our listings',   'gvcrealestateteam.com/listings'],
   ['Douglas Elliman','elliman.com'],
@@ -1320,20 +1342,19 @@ const AG_LINKS = [
 
 function renderAgent(page, n, of) {
   const list = agentObjs();
-  const site = 'https://' + SITE;
-  const qr = qrSvg(site);
+  const qr = qrSvg(TEAM_QR_URL);
   page.innerHTML =
     '<div class="ag">' +
       '<div class="ag-body">' +
         '<div class="cx-top">' +
           '<div class="cx-kicker">The GVC Team</div><div class="cx-thanks">Thank You</div>' +
           (qr ? '<div class="cx-qr"><div class="qbox">' + qr + '</div>' +
-                '<div class="qcap">Our team site</div></div>' : '') +
+                '<div class="qcap">Our properties</div></div>' : '') +
         '</div>' +
         P.agentCards(list, headshotFor) +
         '<div class="ag-bio">' + esc(state.agentBio) + '</div>' +
         '<div class="contact-foot">' +
-          P.linkCols([['Social', AG_SOCIAL], ['Links', AG_LINKS]]) +
+          P.linkCols([['Social', socialRows(list)], ['Links', AG_LINKS]]) +
         '</div>' +
         '<div class="states">' + STATES.map(([nm, art]) =>
           '<div class="stc"><img src="' + art + '" alt=""><span>' + esc(nm) + '</span></div>').join('') + '</div>' +
@@ -2138,25 +2159,6 @@ function wireDrop(dropSel, inputSel, handler) {
   drop.addEventListener('drop', e => handler(e.dataTransfer.files));
 }
 
-/* ---------------- sample data ----------------
-   Real photography from photos/3-crosby-lane, invented listing copy. */
-const PREVIEW = {
-  photos: [0, 3, 6, 9, 12, 15, 18, 21, 24, 27],
-  address: '3 Crosby Lane', city: 'Rye', state: 'NY', zip: '10580',
-  price: '$4,275,000',
-  listingUrl: 'https://gvcrealestateteam.com/listings/3-crosby-lane',
-  blurb: 'Set behind a stone wall on a quiet lane, this shingle-and-clapboard colonial ' +
-    'opens to a double-height entry and a great room that runs the depth of the house. ' +
-    'Every principal room faces the rear garden.',
-  features: ['Chef\'s kitchen with double island', 'Covered bluestone porch',
-    'Primary suite with dual dressing rooms', 'Wood-burning fireplace',
-    'Finished lower level with gym', 'Whole-house generator',
-    'Irrigated landscaped grounds', 'Attached two-car garage'].join('\n'),
-  beds: '5', baths: '4.5', parking: '2', sqft: '4,180',
-  agents: ['john-gasdaska', 'tj-verdiglione']
-};
-
-/* ---------------- wiring ---------------- */
 wireDrop('#imgDrop', '#imgFile', addFiles);
 wireDrop('#fpDrop', '#fpFile', addFloorplans);
 
@@ -2177,39 +2179,6 @@ $('#btnResetPos').addEventListener('click', () => {
   state.coverPos = { x: 50, y: 50 };
   state.infoTopPos = { x: 50, y: 50 };
   redraw();
-});
-
-$('#btnPreview').addEventListener('click', () => {
-  state.images = PREVIEW.photos.map(n => ({
-    id: ++uid, name: '3-crosby-' + n + '.webp',
-    url: '../../photos/3-crosby-lane/img/' + n + '-e-f.webp',
-    ar: 1.5, role: 'auto'
-  }));
-  state.images.forEach(img => {
-    const probe = new Image();
-    probe.onload = () => { img.ar = probe.naturalWidth / probe.naturalHeight; };
-    probe.src = img.url;
-  });
-  state.floorplans = [
-    { id: ++uid, name: 'floorplan.jpg', url: '../showsheet/sample/floorplan.jpg',
-      label: 'First Floor', zoom: 1, tx: 0, ty: 0 },
-    { id: ++uid, name: 'floorplan.jpg', url: '../showsheet/sample/floorplan.jpg',
-      label: 'Second Floor', zoom: 1, tx: 0, ty: 0 }
-  ];
-  state.agents = PREVIEW.agents.slice();
-  state.gallery = []; state.galPage = 0; state.galSel = null;
-  state.coverPos = { x: 50, y: 50 };
-  state.infoTopPos = { x: 50, y: 50 };
-
-  ['address','city','state','zip','price','listingUrl','blurb','features','beds','baths','parking','sqft'
-  ].forEach(k => {
-    state[k] = PREVIEW[k];
-    const el = document.querySelector('[data-field=' + k + ']');
-    if (el) el.value = PREVIEW[k];
-  });
-
-  renderImgList(); renderFpList(); renderRoster();
-  redraw(); updateBentoNote();
 });
 
 // seed inputs from state defaults (website, bio, marketing copy, footnote)

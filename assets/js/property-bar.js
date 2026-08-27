@@ -39,6 +39,7 @@
     var busy = false;
 
     var bar = el('div', 'plib');
+    var title = el('div', 'plib-title', 'Saved property');
     var line = el('div', 'plib-line');
     var name = el('button', 'plib-name');
     var mark = el('span', 'plib-mark');
@@ -68,7 +69,7 @@
     head.append(name, mark);
     line.append(pick, save);
     foot.append(status, more);
-    bar.append(head, line, foot, note);
+    bar.append(title, head, line, foot, note);
     host.append(bar);
 
     /* ---------------- saying what is going on ---------------- */

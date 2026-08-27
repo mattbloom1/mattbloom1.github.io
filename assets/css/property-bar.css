@@ -1,0 +1,68 @@
+/* ============================================================
+   PROPERTY BAR — the library's one piece of UI, at the top of every
+   builder's editor panel. Paired with assets/js/property-bar.js.
+
+   Deliberately quiet: it is the first thing an agent sees and should read
+   as a filing cabinet, not as another form to fill in. Quiet is not the
+   same as unstyled, though — the two dropdowns used to be bare native
+   selects, which on Windows look nothing like the fields below them.
+
+   Written against the tokens.css variable names rather than builder.css's
+   --ui-* ones, because the Showsheet loads neither builder.css nor
+   pitch.css. That is why this lives in its own file: the bar is in all
+   four builders, so its styling has to be too.
+   ============================================================ */
+.plib{padding:13px 20px 15px;border-bottom:1px solid var(--rule);background:var(--paper-2);}
+
+/* The section's own label, so the panel opens with something that says what
+   this strip is rather than an unexplained dropdown. */
+.plib-title{display:flex;align-items:center;gap:8px;
+  font:800 9px var(--sans-display);letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);}
+.plib-title::after{content:'';flex:1;height:1px;background:var(--rule);}
+
+/* the loaded property's name — a button, because clicking it says when it
+   was last saved */
+.plib-head{display:flex;align-items:baseline;gap:10px;min-width:0;margin-top:8px;}
+.plib-name{flex:1;min-width:0;text-align:left;background:none;border:0;padding:0;cursor:pointer;
+  font:500 14px var(--sans-body);color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.plib-name.is-empty{font-weight:300;color:var(--ink-soft);}
+.plib-name:hover{text-decoration:underline;text-underline-offset:3px;}
+.plib-name:focus-visible{outline:2px solid var(--sky);outline-offset:2px;border-radius:3px;}
+.plib-mark{flex:none;font:400 10px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--danger);}
+
+.plib-line{display:flex;gap:8px;margin-top:9px;}
+.plib-pick{flex:1;min-width:0;max-width:100%;}
+.plib-save{flex:none;white-space:nowrap;}
+
+/* the status select and the way through to the Properties page share a row,
+   so the link costs the bar no extra height */
+.plib-foot{display:flex;align-items:center;gap:10px;margin-top:8px;}
+.plib-status{flex:none;width:auto;min-width:10em;}
+.plib-more{margin-left:auto;flex:none;font:400 11px var(--mono);color:var(--ink-soft);
+  text-decoration:none;border-bottom:1px solid var(--rule);padding-bottom:1px;white-space:nowrap;}
+.plib-more:hover{color:var(--ink);border-bottom-color:var(--ink);}
+.plib-more:focus-visible{outline:2px solid var(--sky);outline-offset:2px;}
+
+/* ---------- the two dropdowns ----------
+   Matched to the builders' own fields, with the platform arrow replaced by
+   ours so the control is the same height and colour on every OS. */
+.plib-pick,.plib-status{
+  appearance:none;-webkit-appearance:none;
+  border:1px solid var(--rule);border-radius:6px;background-color:#fff;
+  padding:7px 30px 7px 9px;font:500 12.5px var(--sans-body);color:var(--ink);
+  outline:none;cursor:pointer;text-overflow:ellipsis;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.6 6 6.4l5-4.8' fill='none' stroke='%2333525F' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;background-size:11px 7px;
+  transition:border-color .15s,box-shadow .15s;
+}
+.plib-pick:hover,.plib-status:hover{border-color:var(--cyan);}
+.plib-pick:focus-visible,.plib-status:focus-visible{
+  border-color:var(--sky);outline:2px solid var(--sky);outline-offset:1px;}
+/* the placeholder row reads as a prompt, not as a property */
+.plib-pick:has(option[value='']:checked){color:var(--ink-soft);font-weight:400;}
+
+.plib-note{margin-top:8px;font:400 11px/1.5 var(--mono);color:var(--ink-soft);min-height:1em;}
+.plib-note.is-ok{color:#2F6E4F;}
+.plib-note.is-warn{color:var(--danger);}
+
+@media print{ .plib{display:none;} }

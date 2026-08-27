@@ -21,6 +21,7 @@
 <link rel="stylesheet" href="../../assets/css/builder.css">
 <link rel="stylesheet" href="../../assets/css/pitch.css">
 <link rel="stylesheet" href="../../assets/css/photo-dnd.css">
+<link rel="stylesheet" href="../../assets/css/property-bar.css">
 <style>
 /* ============================================================
    SELLER PITCH & CMA — deck-specific page styles
@@ -245,9 +246,6 @@
   <aside id="editor">
     <!-- the property library mounts here, identically in all four builders -->
     <div id="propBar"></div>
-    <div class="ed-top">
-      <button class="btn sm" id="btnSample">Fill with sample info</button>
-    </div>
     <div class="ed-body">
 
       <details class="ed-sec">
@@ -1054,43 +1052,10 @@ function renderThumbs(hostId, arr, onRemove) {
   });
 }
 
-function loadPreview() {
-  Object.assign(state, {
-    address:'45 Crosby Street, Penthouse', city:'New York', state:'NY', zip:'10012',
-    beds:'3', baths:'2.5', sqft:'2,410', ptype:'Condominium', year:'1899',
-    taxes:'18400', cc:'2150',
-    blurb:'A full-floor penthouse in a cast-iron SoHo loft building, with 12-foot ceilings, ' +
-          'four exposures and a 900-square-foot planted terrace. Converted in 2019 and barely lived in since.',
-    features:'Private keyed elevator, opens into the great room\nChef’s kitchen — Wolf range, Sub-Zero, honed marble\n900 sq ft landscaped terrace with irrigation\nOriginal cast-iron columns, restored\nPrimary suite with dressing room\nVented washer / dryer in unit\nCentral heat and cooling, zoned\nStorage unit conveys',
-    client:'Mr. & Mrs. Harrington', date:'August 2026',
-    comps:[
-      {address:'62 Greene Street, 4W', price:'3550000', sqft:'2280', bb:'3 / 2.5', date:'Jun 2026'},
-      {address:'110 Mercer Street, PH', price:'4100000', sqft:'2610', bb:'3 / 3', date:'May 2026'},
-      {address:'28 Wooster Street, 3', price:'3275000', sqft:'2190', bb:'3 / 2', date:'Apr 2026'},
-      {address:'155 Grand Street, 6A', price:'3690000', sqft:'2400', bb:'3 / 2.5', date:'Mar 2026'},
-      {address:'80 Greene Street, 5', price:'3425000', sqft:'2340', bb:'3 / 2.5', date:'Feb 2026'}
-    ],
-    priceLow:'3450000', priceMid:'3695000', priceHigh:'3950000',
-    agents:['john-gasdaska','tj-verdiglione']
-  });
-  // real photography from photos/3-crosby-lane, invented listing copy.
-  // One per slot: cover, hero, strategy, then the three video stills.
-  state.photos = [0, 3, 6, 9, 12, 15].map(n => ({
-    id: ++uid,
-    name: '3-crosby-' + n + '.webp',
-    url: '../../photos/3-crosby-lane/img/' + n + '-e-f.webp',
-    role: 'auto'
-  }));
-  state.pos = {};
-  state.map = null;
-  document.querySelectorAll('[data-f]').forEach(el => { el.value = state[el.dataset.f] || ''; });
-  renderComps(); paintRoster(); paintRec(); paintMap(); redraw();
-}
-
 let paintRoster = () => {}, paintRec = () => {};
 
 /* Which of the three ranges carries the star. Returns a repaint function so
-   the sample loader can re-sync the buttons with state. */
+   the buttons can be re-synced with state after a property is loaded. */
 function wireRecPick() {
   const host = document.getElementById('recPick');
   const btns = [...host.querySelectorAll('button')];
@@ -1122,7 +1087,6 @@ document.addEventListener('DOMContentLoaded', () => {
     state.comps.push(P.blankComp());
     renderComps(); redraw();
   });
-  document.getElementById('btnSample').addEventListener('click', loadPreview);
   paintRec = wireRecPick();
 
   builder = Builder.init({

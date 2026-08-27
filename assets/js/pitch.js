@@ -136,11 +136,16 @@
     const name = LINK_ICONS[String(label || '').trim().toLowerCase()] || 'link';
     return global.icon ? global.icon(name) : '';
   }
-  /* cols: [[heading, [[label, value], ...]], ...] */
+  /* cols: [[heading, [[label, value], ...]], ...]
+
+     A row may name its own glyph as a third element. That is for rows whose
+     label is not the platform — an agent's own Instagram is labelled with
+     their name, and should still be marked with the Instagram glyph rather
+     than falling back to the generic link one. */
   function linkCols(cols) {
     return '<div class="lcols">' + cols.map(c =>
       '<div class="lcol"><div class="lcol-t">' + esc(c[0]) + '</div>' + c[1].map(r =>
-        '<div class="lrow"><span class="lb">' + linkIcon(r[0]) + '</span>' +
+        '<div class="lrow"><span class="lb">' + linkIcon(r[2] || r[0]) + '</span>' +
         '<span class="ltxt"><span class="lk">' + esc(r[0]) + '</span>' +
         '<span class="lv">' + esc(r[1]) + '</span></span></div>').join('') +
       '</div>').join('') + '</div>';
