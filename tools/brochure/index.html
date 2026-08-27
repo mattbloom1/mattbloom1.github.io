@@ -708,7 +708,13 @@ function galPages() {
   return state.gallery;
 }
 
+/* Photo ids are numbers, but every id read back out of the DOM (a cell's
+   data-id, a tray row's) arrives as a string, and `===` says 8 is not '8'.
+   Every lookup here coerces, so a drop that came from the DOM finds its
+   photo instead of silently doing nothing — which is what used to happen
+   to every photo-onto-photo swap. */
 function findCell(id) {
+  id = Number(id);
   const pages = galPages();
   for (let pi = 0; pi < pages.length; pi++) {
     const hit = cellsOf(pages[pi]).filter(x => x.cell.id === id)[0];
@@ -931,6 +937,7 @@ function shuffleGallery() {
    stay put and the pictures move, which is what dragging one onto another
    looks like it should do. */
 function swapCells(idA, idB) {
+  idA = Number(idA); idB = Number(idB);
   const A = findCell(idA), B = findCell(idB);
   if (!A || !B || idA === idB) return;
   const a = A.cell, b = B.cell;
@@ -1837,12 +1844,33 @@ const DROP_LABEL = {
 };
 
 /* Put a photo in a named single slot, freeing whoever was pinned there. */
+/* The single slot a photo is sitting in right now, or '' if it is in the
+   gallery, the tray, or nowhere. */
+function slotOf(img) {
+  if (assign.hero === img) return 'hero';
+  if (assign.infoTop === img) return 'info-top';
+  return '';
+}
+
 function placeInSlot(id, slot) {
+  id = Number(id);
   const role = slot === 'hero' ? 'hero' : slot;
-  state.images.forEach(im => { if (im.role === role && im.id !== id) im.role = 'auto'; });
   const img = state.images.filter(im => im.id === id)[0];
   if (!img) return;
-  removeCell(id);                  // it cannot be in the gallery and here at once
+  const sitting = state.images.filter(im => im !== img &&
+    (slot === 'hero' ? assign.hero === im : assign.infoTop === im))[0];
+  /* Dropping a gallery photo into a slot swaps the two: whoever was in the
+     slot takes the gallery cell that just came free, rather than being
+     turned loose to be re-placed wherever the strategy next puts it. */
+  const cell = findCell(id);
+  state.images.forEach(im => { if (im.role === role && im.id !== id) im.role = 'auto'; });
+  if (cell && sitting) {
+    cell.cell.id = sitting.id;
+    cell.cell.fx = 50; cell.cell.fy = 50; cell.cell.z = 1;
+    sitting.role = 'gallery';
+  } else {
+    removeCell(id);                // it cannot be in the gallery and here at once
+  }
   img.role = role;
   redraw(); renderImgList(); renderGalleryPanel();
 }
@@ -1853,6 +1881,7 @@ function placeInSlot(id, slot) {
    back to the tray as unused, where it is visible and one click from coming
    back. */
 function dropOnCell(id, targetPhotoId) {
+  id = Number(id); targetPhotoId = Number(targetPhotoId);
   if (id === targetPhotoId) return;
   const img = state.images.filter(im => im.id === id)[0];
   if (!img) return;
@@ -1860,15 +1889,21 @@ function dropOnCell(id, targetPhotoId) {
   const hit = findCell(targetPhotoId);
   if (!hit) return;
   const displaced = state.images.filter(im => im.id === targetPhotoId)[0];
+  /* Where the dragged photo is coming from decides what happens to the one
+     it lands on. Off the cover or page 3's banner it is a straight swap —
+     the displaced photo takes the slot just vacated. Off the tray there is
+     no slot to give back, so the displaced photo goes to the tray instead. */
+  const vacated = slotOf(img);
   hit.cell.id = id;
   hit.cell.fx = 50; hit.cell.fy = 50; hit.cell.z = 1;
   img.role = 'gallery';
-  if (displaced) displaced.role = 'exclude';
+  if (displaced) displaced.role = vacated || 'exclude';
   redraw(); renderImgList(); renderGalleryPanel();
 }
 
 /* Drop onto a gallery page's spare space: append a frame on that page. */
 function dropOnGalleryPage(id, gi) {
+  id = Number(id);
   const img = state.images.filter(im => im.id === id)[0];
   if (!img) return;
   removeCell(id);
@@ -1885,6 +1920,7 @@ function dropOnGalleryPage(id, gi) {
 
 /* Take a photo out of the brochure's pages without deleting the file. */
 function unusePhoto(id) {
+  id = Number(id);
   const img = state.images.filter(im => im.id === id)[0];
   if (!img) return;
   removeCell(id);
@@ -1897,14 +1933,61 @@ function unusePhoto(id) {
    on the tray means "take this out", which a tray drag cannot mean. */
 function beginPhotoDnD(e, id, from) {
   if (e.pointerType === 'mouse' && e.button !== 0) return;
+  id = Number(id);
   const img = state.images.filter(im => im.id === id)[0];
   if (!img) return;
   e.preventDefault();
 
   photoDrag = { id: id, from: from, x: e.clientX, y: e.clientY, active: false, ghost: null, over: null };
 
+  /* The deck is taller than the stage, so the page a photo is headed for is
+     usually off-screen when the drag starts — and a drop can only land on
+     something that is actually under the pointer. Holding the photo near the
+     top or bottom edge of the stage scrolls the deck, the way dragging to the
+     edge of any list does, which is what makes moving a photo from one page
+     to another possible at all. */
+  const stage = document.getElementById('stage');
+  const EDGE = 80, MAX_SPEED = 26;
+  let last = { x: e.clientX, y: e.clientY }, raf = 0;
+
+  /* what is under the pointer right now, highlighted as the live target */
+  const aim = () => {
+    const el = document.elementFromPoint(last.x, last.y);
+    let zone = el && el.closest ? el.closest('[data-drop]') : null;
+    if (!zone && el && el.closest && el.closest('#imgList') && from === 'page') {
+      zone = document.getElementById('imgList');
+    }
+    if (zone !== photoDrag.over) {
+      document.querySelectorAll('.drop-on').forEach(z => z.classList.remove('drop-on'));
+      if (zone) zone.classList.add('drop-on');
+      photoDrag.over = zone;
+    }
+  };
+
+  /* Speed for one axis: nothing until the pointer is inside the edge band,
+     then proportional to how far into it the pointer has gone. */
+  const speed = (pos, lo, hi) => {
+    if (pos < lo + EDGE) return -MAX_SPEED * Math.min(1, (lo + EDGE - pos) / EDGE);
+    if (pos > hi - EDGE) return  MAX_SPEED * Math.min(1, (pos - (hi - EDGE)) / EDGE);
+    return 0;
+  };
+
+  const scrollTick = () => {
+    if (!photoDrag || !photoDrag.active) { raf = 0; return; }
+    const r = stage.getBoundingClientRect();
+    // both axes: the deck is taller than the stage, and at some zooms wider too
+    const vy = speed(last.y, r.top, r.bottom), vx = speed(last.x, r.left, r.right);
+    if (vy || vx) {
+      const wasY = stage.scrollTop, wasX = stage.scrollLeft;
+      stage.scrollTop += vy; stage.scrollLeft += vx;
+      if (stage.scrollTop !== wasY || stage.scrollLeft !== wasX) aim();  // the target moved
+    }
+    raf = requestAnimationFrame(scrollTick);
+  };
+
   const arm = () => {
     document.body.classList.add('is-dragging-photo');
+    if (!raf) raf = requestAnimationFrame(scrollTick);
     const g = document.createElement('div');
     g.className = 'drag-ghost';
     g.innerHTML = '<img src="' + img.url + '" alt="">';
@@ -1921,6 +2004,7 @@ function beginPhotoDnD(e, id, from) {
   };
 
   const clear = () => {
+    if (raf) { cancelAnimationFrame(raf); raf = 0; }
     document.body.classList.remove('is-dragging-photo');
     if (photoDrag && photoDrag.ghost) photoDrag.ghost.remove();
     document.querySelectorAll('.drop-label').forEach(l => l.remove());
@@ -1937,17 +2021,8 @@ function beginPhotoDnD(e, id, from) {
     }
     photoDrag.ghost.style.left = ev.clientX + 'px';
     photoDrag.ghost.style.top = ev.clientY + 'px';
-
-    const el = document.elementFromPoint(ev.clientX, ev.clientY);
-    let zone = el && el.closest ? el.closest('[data-drop]') : null;
-    if (!zone && el && el.closest && el.closest('#imgList') && from === 'page') {
-      zone = document.getElementById('imgList');
-    }
-    if (zone !== photoDrag.over) {
-      document.querySelectorAll('.drop-on').forEach(z => z.classList.remove('drop-on'));
-      if (zone) zone.classList.add('drop-on');
-      photoDrag.over = zone;
-    }
+    last = { x: ev.clientX, y: ev.clientY };
+    aim();
   };
 
   const finish = () => {
