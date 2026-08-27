@@ -372,7 +372,6 @@
 .warn{margin-top:10px;padding:9px 11px;border-radius:6px;background:#FFF4E5;border:1px solid #E8C99B;
   font:400 10.5px/1.6 var(--ui-mono);color:#6B4A12;}
 .warn b{font-weight:700;}
-.warn .warn-item + .warn-item{margin-top:5px;}
 
 @media print{
   .empty-note,.over-flag{display:none !important;}
@@ -505,12 +504,6 @@
         </div>
       </details>
 
-      <details class="ed-sec">
-        <summary>Warnings</summary>
-        <div class="sec-in">
-          <div class="warn" id="warnGeneral" hidden></div>
-        </div>
-      </details>
 
     </div>
   </aside>
@@ -1383,15 +1376,13 @@ function redraw() {
 }
 
 /* ---------------- overflow warnings ---------------- */
-/* selector | flag printed on the page | its own warning box, if it has one |
-   the plain-English line collected into the Warnings section. Anything
-   without a box of its own falls through to #warnGeneral, exactly as the
-   Seller Pitch & CMA and Buyer Package do. */
+/* selector | the flag printed over it on the page | its own warning box, which
+   sits under the field that causes it. Both targets have one, so there is no
+   catch-all panel; a new target without a box of its own needs somewhere to
+   put its message. */
 const OVER_TARGETS = [
-  ['.info-blurb',  'Blurb clipped',      '#warnBlurb',
-   'The property blurb is longer than page 3 can show. Trim it, or the end will be cut off in print.'],
-  ['.info-feats',  'Features clipped',   '#warnFeats',
-   'There are more features than page 3 can show. Remove a line or two.']
+  ['.info-blurb',  'Blurb clipped',    '#warnBlurb'],
+  ['.info-feats',  'Features clipped', '#warnFeats']
 ];
 
 function flag(el, label) {
@@ -1414,12 +1405,11 @@ function checkOverflow() {
   // multi-column and grid regions overflow sideways, so both axes matter
   const over = el => !!el && (el.scrollHeight > el.clientHeight + 1 ||
                               el.scrollWidth > el.clientWidth + 1);
-  const hit = {}, general = [];
+  const hit = {};
   OVER_TARGETS.forEach(t => {
     let any = false;
     document.querySelectorAll(t[0]).forEach(el => { if (over(el)) { flag(el, t[1]); any = true; } });
-    if (t[2]) hit[t[2]] = any;
-    else if (any && general.indexOf(t[3]) === -1) general.push(t[3]);
+    hit[t[2]] = any;
   });
 
   // page 1: has the address grown up out of the bottom scrim?
@@ -1436,10 +1426,6 @@ function checkOverflow() {
   $('#warnBlurb').hidden = !hit['#warnBlurb'];
   $('#warnFeats').hidden = !hit['#warnFeats'];
   $('#warnAddr').hidden = !addrOver;
-
-  const gen = $('#warnGeneral');
-  gen.innerHTML = general.map(m => '<div class="warn-item">' + esc(m) + '</div>').join('');
-  gen.hidden = !general.length;
 }
 
 /* ---------------- drag: swap bento cells ---------------- */
