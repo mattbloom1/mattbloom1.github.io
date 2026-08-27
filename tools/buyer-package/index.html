@@ -88,6 +88,8 @@ table.tbl tr.total td{border-top:1.2pt solid var(--navy);border-bottom:0;
 
   <!-- ======================= EDITOR ======================= -->
   <aside id="editor">
+    <!-- the property library mounts here, identically in all four builders -->
+    <div id="propBar"></div>
     <div class="ed-top">
       <button class="btn sm" id="btnSample">Fill with sample info</button>
     </div>
@@ -213,6 +215,9 @@ table.tbl tr.total td{border-top:1.2pt solid var(--navy);border-bottom:0;
 <script src="../../assets/js/qr.js"></script>
 <script src="../../assets/js/legal.js"></script>
 <script src="../../assets/js/unsaved.js"></script>
+<script src="../../assets/js/supabase-config.js"></script>
+<script src="../../assets/js/property-library.js"></script>
+<script src="../../assets/js/property-bar.js"></script>
 <script>
 'use strict';
 const P = window.Pitch, esc = P.esc;
@@ -623,9 +628,43 @@ document.addEventListener('DOMContentLoaded', () => {
     files.forEach(f => state.photos.push({ id: ++uid, name: f.name, url: f.url, role: 'auto' }));
     redraw(); GVC_UNSAVED.touch();
   });
-  /* nothing here is saved anywhere yet, so at least make the browser ask
-     before a stray reload throws the work away */
+  /* the browser asks before a reload throws unsaved work away */
   GVC_UNSAVED.watch();
+
+  /* ============================================================
+     THE PROPERTY LIBRARY
+
+     The thinnest adapter of the four: a buyer package belongs to a client
+     rather than to a listing, so almost everything in it is document, not
+     shared fact. It borrows a target price and the comps.
+     ============================================================ */
+  const DOC_ONLY = ['client','date','area','steps','downPct','rate','term','lender',
+                    'costs','showComps','photos','pos','agents'];
+
+  GVC_PROPBAR.mount({
+    host: document.getElementById('propBar'),
+    tool: 'buyer',
+
+    toCore: () => ({ price: state.price, comps: state.comps }),
+
+    fromCore: core => {
+      state.price = core.price || '';       // never inherit the last listing's
+      if (core.comps && core.comps.length) state.comps = core.comps;
+      if (!state.area && core.city) state.area = [core.city, core.state].filter(Boolean).join(', ');
+      document.querySelectorAll('[data-f]').forEach(el => { el.value = state[el.dataset.f] || ''; });
+      renderComps(); redraw();
+    },
+
+    getDoc: () => DOC_ONLY.reduce((doc, k) => { doc[k] = state[k]; return doc; }, {}),
+
+    setDoc: doc => {
+      if (doc) DOC_ONLY.forEach(k => { if (k in doc) state[k] = doc[k]; });
+      else { state.photos = []; state.pos = {}; }
+      uid = Math.max(uid, ...state.photos.map(p => p.id || 0), 0);
+      document.querySelectorAll('[data-f]').forEach(el => { el.value = state[el.dataset.f] || ''; });
+      paintPhotos(); paintCompsToggle(); renderComps(); paintRoster(); redraw();
+    }
+  });
 
   paintRoster = P.wireRoster(document.getElementById('rosterPick'), state, 2, redraw);
   document.getElementById('btnSample').addEventListener('click', loadPreview);

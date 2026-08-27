@@ -22,10 +22,14 @@
   function clear() { dirty = false; }
   function isDirty() { return dirty; }
 
-  function watch() {
+  function watch(opts) {
     // typing in the editor, and any select / checkbox / file input
     document.addEventListener('input', touch, true);
     document.addEventListener('change', touch, true);
+
+    // the Showsheet autosaves, so a leave-the-page prompt there would be
+    // nagging about work that is not actually at risk
+    if (opts && opts.warnOnClose === false) return;
 
     global.addEventListener('beforeunload', function (e) {
       if (!dirty) return;

@@ -453,6 +453,8 @@ body.is-dragging-photo [data-drop].drop-on::after{content:'';position:absolute;i
 
   <!-- ======================= EDITOR ======================= -->
   <aside id="editor">
+    <!-- the property library mounts here, identically in all four builders -->
+    <div id="propBar"></div>
     <div class="ed-top">
       <button class="btn sm" id="btnPreview">Fill with sample info</button>
     </div>
@@ -616,6 +618,9 @@ body.is-dragging-photo [data-drop].drop-on::after{content:'';position:absolute;i
 <script src="../../assets/js/qr.js"></script>
 <script src="../../assets/js/legal.js"></script>
 <script src="../../assets/js/unsaved.js"></script>
+<script src="../../assets/js/supabase-config.js"></script>
+<script src="../../assets/js/property-library.js"></script>
+<script src="../../assets/js/property-bar.js"></script>
 <script>
 'use strict';
 const $ = s => document.querySelector(s);
@@ -2484,11 +2489,67 @@ builder = Builder.init({ pages: pagePlan().length, label: 'Page',
 renderRoster = GVC_PICKER($('#rosterPick'), state, { max: MAX_AGENTS, onChange: redraw });
 renderImgList(); renderFpList();
 redraw(); updateBentoNote();
-/* nothing here is saved anywhere yet, so at least make the browser ask
-   before a stray reload throws the whole deck away. Dropped photos and
-   dragged crops fire no input event of their own — hence the touch() in
-   the drag and drop code. */
+/* The browser asks before a reload throws unsaved work away. Dropped
+   photos and dragged crops fire no input event of their own — hence the
+   touch() calls in the drag and drop code. */
 GVC_UNSAVED.watch();
+
+/* ============================================================
+   THE PROPERTY LIBRARY
+
+   Two small maps and nothing else: which of this deck's fields are shared
+   facts, and how to put its own work back. Everything about saving,
+   loading, photos and the team password lives in the shared module.
+   ============================================================ */
+
+/* the deck's own work — everything that is not a shared fact */
+const DOC_KEYS = ['images', 'gallery', 'galCaptions', 'galPage', 'strategy',
+                  'floorplans', 'fpNote', 'agentBio', 'coverPos', 'infoTopPos'];
+
+GVC_PROPBAR.mount({
+  host: $('#propBar'),
+  tool: 'brochure',
+
+  toCore: () => ({
+    address: state.address, city: state.city, state: state.state, zip: state.zip,
+    price: state.price, beds: state.beds, baths: state.baths,
+    sqft: state.sqft, parking: state.parking,
+    listingUrl: state.listingUrl, description: state.blurb,
+    features: lines(state.features), agentIds: state.agents.slice()
+  }),
+
+  fromCore: core => {
+    Object.assign(state, {
+      address: core.address || '', city: core.city || '', state: core.state || '',
+      zip: core.zip || '', price: core.price || '', beds: core.beds || '',
+      baths: core.baths || '', sqft: core.sqft || '', parking: core.parking || '',
+      listingUrl: core.listingUrl || '', blurb: core.description || '',
+      features: (core.features || []).join('\n')
+    });
+    if (core.agentIds && core.agentIds.length) state.agents = core.agentIds.slice(0, MAX_AGENTS);
+    document.querySelectorAll('[data-field]').forEach(el => {
+      const k = el.dataset.field;
+      if (k in state) el.value = state[k];
+    });
+    renderRoster(); redraw();
+  },
+
+  getDoc: () => DOC_KEYS.reduce((doc, k) => { doc[k] = state[k]; return doc; }, {}),
+
+  /* null means the property has no brochure yet, which is normal: keep the
+     facts that were just filled in and start the deck itself empty. */
+  setDoc: doc => {
+    DOC_KEYS.forEach(k => { if (doc && k in doc) state[k] = doc[k]; });
+    if (!doc) { state.images = []; state.gallery = []; state.floorplans = []; }
+    state.galSel = null;
+    uid = Math.max(uid, ...state.images.map(i => i.id || 0), ...state.floorplans.map(f => f.id || 0), 0);
+    document.querySelectorAll('[data-field]').forEach(el => {
+      const k = el.dataset.field;
+      if (k in state) el.value = state[k];
+    });
+    renderImgList(); renderFpList(); renderGalleryPanel(); redraw(); updateBentoNote();
+  }
+});
 // webfont metrics change block heights, so re-measure once they land
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(checkOverflow);
 </script>

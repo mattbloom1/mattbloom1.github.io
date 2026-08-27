@@ -242,6 +242,8 @@
 
   <!-- ======================= EDITOR ======================= -->
   <aside id="editor">
+    <!-- the property library mounts here, identically in all four builders -->
+    <div id="propBar"></div>
     <div class="ed-top">
       <button class="btn sm" id="btnSample">Fill with sample info</button>
     </div>
@@ -377,6 +379,9 @@
 <script src="../../assets/js/qr.js"></script>
 <script src="../../assets/js/legal.js"></script>
 <script src="../../assets/js/unsaved.js"></script>
+<script src="../../assets/js/supabase-config.js"></script>
+<script src="../../assets/js/property-library.js"></script>
+<script src="../../assets/js/property-bar.js"></script>
 <script>
 'use strict';
 const P = window.Pitch, esc = P.esc;
@@ -1070,9 +1075,61 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.fonts && document.fonts.ready.then(() => setTimeout(checkAll, 0));
   setTimeout(checkAll, 0);
-  /* nothing here is saved anywhere yet, so at least make the browser ask
-     before a stray reload throws the work away */
+  /* the browser asks before a reload throws unsaved work away */
   GVC_UNSAVED.watch();
+
+  /* ============================================================
+     THE PROPERTY LIBRARY
+
+     The price band is deliberately not a shared fact: a CMA is what you
+     bring to a seller who has not set a price yet, so low/mid/high stays
+     in this document and never becomes the property's asking price.
+     ============================================================ */
+  const DOC_ONLY = ['client','date','photos','map','priceLow','priceMid','priceHigh',
+                    'recBand','pos','agents'];
+
+  /* the features box is one per line; P.lines() renders them, it does not
+     split them */
+  const splitLines = s => String(s || '').split(/\r?\n/).map(x => x.trim()).filter(Boolean);
+
+  GVC_PROPBAR.mount({
+    host: document.getElementById('propBar'),
+    tool: 'seller',
+
+    toCore: () => ({
+      address: state.address, city: state.city, state: state.state, zip: state.zip,
+      beds: state.beds, baths: state.baths, sqft: state.sqft,
+      propertyType: state.ptype, yearBuilt: state.year,
+      taxesMonthly: state.taxes, commonCharges: state.cc,
+      description: state.blurb, features: splitLines(state.features),
+      agentIds: state.agents.slice(), comps: state.comps
+    }),
+
+    fromCore: core => {
+      Object.assign(state, {
+        address: core.address || '', city: core.city || '', state: core.state || '',
+        zip: core.zip || '', beds: core.beds || '', baths: core.baths || '',
+        sqft: core.sqft || '', ptype: core.propertyType || '', year: core.yearBuilt || '',
+        taxes: core.taxesMonthly || '', cc: core.commonCharges || '',
+        blurb: core.description || ''
+      });
+      state.features = (core.features || []).join(String.fromCharCode(10));
+      if (core.comps && core.comps.length) state.comps = core.comps;
+      if (core.agentIds && core.agentIds.length) state.agents = core.agentIds.slice(0, 2);
+      document.querySelectorAll('[data-f]').forEach(el => { el.value = state[el.dataset.f] || ''; });
+      renderComps(); paintRoster(); redraw();
+    },
+
+    getDoc: () => DOC_ONLY.reduce((doc, k) => { doc[k] = state[k]; return doc; }, {}),
+
+    setDoc: doc => {
+      if (doc) DOC_ONLY.forEach(k => { if (k in doc) state[k] = doc[k]; });
+      else { state.photos = []; state.map = null; state.pos = {}; }
+      uid = Math.max(uid, ...state.photos.map(p => p.id || 0), 0);
+      document.querySelectorAll('[data-f]').forEach(el => { el.value = state[el.dataset.f] || ''; });
+      paintPhotos(); paintMap(); renderComps(); paintRoster(); redraw();
+    }
+  });
 });
 
 function paintPhotos() {

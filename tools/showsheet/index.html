@@ -421,6 +421,8 @@ body.bleed .crop{display:block;}
 <div id="main">
 <!-- ======================= EDITOR ======================= -->
 <aside id="editor">
+  <!-- the property library mounts here, identically in all four builders -->
+  <div id="propBar"></div>
   <div class="ed-top">
     <button class="btn sm" id="btnLoadPreview" hidden>Fill with sample info</button>
   </div>
@@ -601,6 +603,10 @@ body.bleed .crop{display:block;}
 <script id="unit-data" type="application/json"></script>
 <script src="../../assets/js/qr.js"></script>
 <script src="../../assets/js/legal.js"></script>
+<script src="../../assets/js/unsaved.js"></script>
+<script src="../../assets/js/supabase-config.js"></script>
+<script src="../../assets/js/property-library.js"></script>
+<script src="../../assets/js/property-bar.js"></script>
 <script src="../../assets/js/roster.js"></script>
 <script>
 'use strict';
@@ -1680,6 +1686,94 @@ function buildSnapshot(){
   render();
   if(document.fonts && document.fonts.ready) document.fonts.ready.then(()=>render());
 })();
+
+/* ============================================================
+   THE PROPERTY LIBRARY
+
+   Which of this sheet's fields are shared facts, and how to put the sheet
+   itself back. Everything about saving, loading, photos and the team
+   password lives in the shared module.
+
+   Two spellings need care here. A unit is part of the address in the
+   library — one address is one property — but the sheet keeps it in its
+   own field, so it is joined on the way out and split on the way back.
+   And the sheet thinks in borough plus neighborhood where the other tools
+   think in city, state, zip: core carries both and neither is invented
+   from the other.
+   ============================================================ */
+const CORE_ONLY = ['address','unit','borough','neighborhood','price','beds','baths',
+                   'listingUrl','positioning','maintenance','commonCharges','taxesMonthly',
+                   'ownership','agentIds'];
+
+function addressWithUnit(){
+  const u = String(state.unit||'').trim();
+  return [String(state.address||'').trim(), u && unitDisplay(u)].filter(Boolean).join(', ');
+}
+function splitUnit(full){
+  const m = String(full||'').match(/^(.*?),\s*((?:apt|unit|ph|#)[^,]*|[0-9]+[A-Za-z]?)$/i);
+  return m ? { address: m[1].trim(), unit: m[2].trim() } : { address: String(full||'').trim(), unit: '' };
+}
+
+/* the sheet autosaves, so this is only here to know when there is work the
+   library would replace on a load */
+GVC_UNSAVED.watch({ warnOnClose: false });
+
+GVC_PROPBAR.mount({
+  host: $('#propBar'),
+  tool: 'showsheet',
+
+  toCore: () => ({
+    address: addressWithUnit(),
+    borough: state.borough, neighborhood: state.neighborhood,
+    price: state.price, beds: state.beds, baths: state.baths,
+    ownership: state.ownership, listingUrl: state.listingUrl,
+    description: state.positioning,
+    maintenance: state.maintenance, commonCharges: state.commonCharges,
+    taxesMonthly: state.taxesMonthly,
+    yearBuilt: state.building && state.building.builtYear,
+    features: (state.residence && state.residence.features) || [],
+    agentIds: (state.agentIds || []).slice()
+  }),
+
+  fromCore: core => {
+    const split = splitUnit(core.address);
+    state.address = split.address;
+    state.unit = split.unit;
+    state.borough = core.borough || core.city || '';
+    state.neighborhood = core.neighborhood || '';
+    /* assigned, not merged: a field this property does not carry has to go
+       blank, or the last listing's maintenance and taxes quietly print on
+       the next one's sheet */
+    ['price','beds','baths','ownership','listingUrl','maintenance','commonCharges','taxesMonthly']
+      .forEach(k => { state[k] = core[k] || ''; });
+    state.positioning = core.description || '';
+    state.building.builtYear = core.yearBuilt || '';
+    if (core.agentIds && core.agentIds.length) state.agentIds = core.agentIds.slice();
+    hydrateForm(); render();
+  },
+
+  /* everything that is not a shared fact: the sheet's own copy, its photos
+     and its floor plan */
+  getDoc: () => {
+    const doc = JSON.parse(JSON.stringify(state));
+    CORE_ONLY.forEach(k => delete doc[k]);
+    delete doc.disclaimer;                 // code-controlled, never stored
+    return doc;
+  },
+
+  setDoc: doc => {
+    if (doc) {
+      Object.keys(doc).forEach(k => { if (CORE_ONLY.indexOf(k) === -1) state[k] = doc[k]; });
+    } else {
+      const blank = blankUnit();
+      state.photos = []; state.heroIndex = 0; state.secondaryIndex = null;
+      state.secondaryPhoto = null; state.floorplan = null;
+      state.building = blank.building; state.residence = blank.residence;
+    }
+    state.disclaimer = DEFAULT_DISCLAIMER;
+    hydrateForm(); render(); autosave();
+  }
+});
 
 /* test hooks (harmless in production) */
 window.__test = {

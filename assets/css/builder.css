@@ -69,6 +69,26 @@ details.ed-sec[open] summary:hover::before{transform:rotate(45deg) scale(1.3);}
 details.ed-sec summary .hint{margin-left:auto;font:400 10px var(--ui-mono);letter-spacing:.03em;color:var(--ui-ink-soft);text-transform:none;}
 .sec-in{padding:2px 20px 18px;}
 
+/* ================= PROPERTY BAR =================
+   The library's one piece of UI, at the top of every builder's editor
+   panel. Deliberately plain: it is the first thing an agent sees, and it
+   should read as a filing cabinet, not as another form to fill in. */
+.plib{padding:12px 20px 14px;border-bottom:1px solid var(--ui-rule);background:var(--ui-paper-2);}
+.plib-head{display:flex;align-items:baseline;gap:10px;min-width:0;}
+.plib-name{flex:1;min-width:0;text-align:left;background:none;border:0;padding:0;cursor:pointer;
+  font:500 14px var(--body);color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.plib-name.is-empty{font-weight:300;color:var(--ui-ink-soft);}
+.plib-name:hover{text-decoration:underline;text-underline-offset:3px;}
+.plib-mark{flex:none;font:400 10px var(--ui-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--danger,#8C3A2B);}
+.plib-line{display:flex;gap:8px;margin-top:9px;}
+.plib-pick{flex:1;min-width:0;}
+.plib-save{flex:none;white-space:nowrap;}
+.plib-status{margin-top:8px;width:auto;min-width:9.5em;}
+.plib-note{margin-top:8px;font:400 11px/1.5 var(--ui-mono);color:var(--ui-ink-soft);min-height:1em;}
+.plib-note.is-ok{color:#2F6E4F;}
+.plib-note.is-warn{color:var(--danger,#8C3A2B);}
+@media print{ .plib{display:none;} }
+
 /* ================= FIELDS ================= */
 .f-row{display:flex;gap:10px;}
 .f-row > *{flex:1;min-width:0;}
