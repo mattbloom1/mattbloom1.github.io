@@ -600,7 +600,6 @@ body.bleed .crop{display:block;}
 </div>
 <div id="toasts"></div>
 </main>
-<script id="unit-data" type="application/json"></script>
 <script src="../../assets/js/qr.js"></script>
 <script src="../../assets/js/legal.js"></script>
 <script src="../../assets/js/unsaved.js"></script>
@@ -637,7 +636,6 @@ const EHO_SVG = `<svg class="eho" viewBox="0 0 26 24" xmlns="http://www.w3.org/2
 const DEFAULT_DISCLAIMER = window.GVC_LEGAL.DISCLAIMER;
 const FRONT_DISCLAIMER = "All information is from sources deemed reliable but is not guaranteed; complete terms and disclosures appear on the reverse. Equal Housing Opportunity.";
 const OFFICE_LINE = "575 Madison Avenue, 5th Floor · (347) 564-2440 · gvcrealestateteam.com";
-const LS_KEY = 'gvc-showsheet-current-v1';
 
 function blankUnit(){
   return {
@@ -1067,7 +1065,7 @@ function render(){
   renderQueued = true;
   const draw = ()=>{
     renderQueued = false;
-    renderFront(); renderBack(); fitLogos(); fitSheets(); layoutPreview(); autosave();
+    renderFront(); renderBack(); fitLogos(); fitSheets(); layoutPreview();
   };
   // rAF is suspended while the tab is not rendering, so a sheet built in a
   // background tab would sit empty until the agent came back to it. The
@@ -1604,18 +1602,6 @@ wireDrop($('#docxDrop'), $('#docxFile'), importDocx, false);
 })();
 
 /* ============================================================
-   PERSISTENCE — the working unit autosaves to this browser
-   ============================================================ */
-let saveTimer = null;
-function autosave(){
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(()=>{
-    try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
-    catch(e){ /* storage full — Download HTML still captures everything */ }
-  }, 500);
-}
-
-/* ============================================================
    OUTPUT — print, bleed, download
    ============================================================ */
 // the essentials every sheet needs — warn (but don't block) when any are missing
@@ -1651,37 +1637,11 @@ $('#btnZoom').onclick = ()=>{
   $('#btnZoom').textContent = zoom100 ? 'Zoom: Fit' : 'Zoom 100%';
   layoutPreview();
 };
-function buildSnapshot(){
-  const clone = document.documentElement.cloneNode(true);
-  // state JSON is the single source of truth — boot re-renders sheets,
-  // thumbnails and pickers, so strip their (heavy, duplicated) markup.
-  clone.querySelector('#unit-data').textContent = JSON.stringify(state).replace(/<\//g,'<\\/');
-  ['#sheetFront','#sheetBack','#phList','#agentPick'].forEach(sel=>{
-    const el = clone.querySelector(sel); if(el) el.innerHTML='';
-  });
-  clone.querySelectorAll('input').forEach(i=>{ i.removeAttribute('value'); });
-  return '<!DOCTYPE html>\n'+clone.outerHTML;
-}
 /* ============================================================
-   BOOT
+   BOOT — the sheet always opens blank. Nothing is kept in this browser;
+   the property library is the only way work comes back.
    ============================================================ */
 (function boot(){
-  let booted = false;
-  const dataEl = $('#unit-data');
-  if(dataEl && dataEl.textContent.trim()){
-    try{ state = Object.assign(blankUnit(), JSON.parse(dataEl.textContent)); booted = true; }
-    catch(e){}
-  }
-  if(!booted){
-    try{
-      const s = localStorage.getItem(LS_KEY);
-      if(s) state = Object.assign(blankUnit(), JSON.parse(s));
-    }catch(e){}
-  }
-  state.building = Object.assign(blankUnit().building, state.building||{});
-  state.residence = Object.assign(blankUnit().residence, state.residence||{});
-  // the disclaimer is code-controlled — saved or imported copies never override it
-  state.disclaimer = DEFAULT_DISCLAIMER;
   hydrateForm();
   render();
   if(document.fonts && document.fonts.ready) document.fonts.ready.then(()=>render());
@@ -1714,9 +1674,10 @@ function splitUnit(full){
   return m ? { address: m[1].trim(), unit: m[2].trim() } : { address: String(full||'').trim(), unit: '' };
 }
 
-/* the sheet autosaves, so this is only here to know when there is work the
-   library would replace on a load */
-GVC_UNSAVED.watch({ warnOnClose: false });
+/* Nothing is kept in this browser any more, so the tab has to ask before it
+   closes on unsaved work — the same warning the other three builders give.
+   property-bar clears the marker after a save and after a load. */
+GVC_UNSAVED.watch();
 
 GVC_PROPBAR.mount({
   host: $('#propBar'),
@@ -1771,7 +1732,7 @@ GVC_PROPBAR.mount({
       state.building = blank.building; state.residence = blank.residence;
     }
     state.disclaimer = DEFAULT_DISCLAIMER;
-    hydrateForm(); render(); autosave();
+    hydrateForm(); render();
   }
 });
 
@@ -1779,7 +1740,7 @@ GVC_PROPBAR.mount({
 window.__test = {
   get state(){ return state; },
   set state(s){ state = s; hydrateForm(); render(); },
-  render, hydrateForm, buildSnapshot,
+  render, hydrateForm,
   async addPhotoDataUrl(dataUrl){
     state.photos = [{src:dataUrl, fx:50, fy:50}];
     state.heroIndex = 0; state.secondaryIndex = null;
