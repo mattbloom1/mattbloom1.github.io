@@ -259,7 +259,7 @@
 .ag{position:absolute;inset:0;background:var(--navy);color:var(--ow);
   display:flex;flex-direction:column;overflow:hidden;}
 .ag-body{flex:1;min-height:0;padding:.5in var(--pad) .44in;
-  display:flex;flex-direction:column;justify-content:space-between;}
+  display:flex;flex-direction:column;}
 
 .cx-top{position:relative;flex:none;text-align:center;margin-bottom:.34in;padding-bottom:.28in;
   border-bottom:1pt solid var(--rule-rev);}
@@ -286,16 +286,13 @@
 .ag-meta .ct{margin-top:.06in;display:flex;flex-direction:column;align-items:center;gap:.01in;}
 .ag-meta .ct span{font:300 9pt/1.45 var(--body);color:rgba(0,39,58,.75);}
 
-/* The one block the two packages' closing pages do not carry. It is the
-   flexible child — flex:1, not flex:none — so it takes whatever height the
-   fixed blocks leave rather than adding to their stack and pushing the
-   states row under the page footer. A statement too long for the space
-   clips and raises "Statement clipped" in the Warnings section. */
-.ag-bio{flex:1;min-height:0;overflow:hidden;font:300 9.5pt/15pt var(--body);
-  color:rgba(229,229,229,.8);margin-top:.16in;text-align:center;
-  display:flex;align-items:center;justify-content:center;}
-
-.contact-foot{flex:none;margin-top:.26in;padding-top:.22in;border-top:1pt solid var(--rule-rev);}
+/* The statement used to sit here, and it was the only flexible child of
+   .ag-body — it absorbed whatever height the fixed blocks left. With it gone
+   that job passes to the contact block's auto top margin, which keeps the
+   slack in the same place: below the agent cards, above the contact columns.
+   Without it, .ag-body's space-between would spread the slack across every
+   gap on the page and loosen the whole stack. */
+.contact-foot{flex:none;margin-top:auto;padding-top:.22in;border-top:1pt solid var(--rule-rev);}
 .lcols{display:grid;grid-template-columns:1fr 1fr;gap:.42in;}
 .lcol{min-width:0;}
 .lcol-t{font:800 7pt var(--sans);letter-spacing:.18em;text-transform:uppercase;
@@ -505,10 +502,6 @@
         <summary>Agents <span class="hint">max 2 &middot; page 1 &amp; final page</span></summary>
         <div class="sec-in">
           <div id="rosterPick"></div>
-          <div class="field">
-            <label>Team statement</label>
-            <textarea data-field="agentBio" rows="4"></textarea>
-          </div>
         </div>
       </details>
 
@@ -713,12 +706,7 @@ const state = {
   address: '', city: '', state: '', zip: '',
   // agents
   agents: [],
-  /* two lines is what the closing page has room for beside the cards, the
-     contact columns and the states row — the Warnings section says so if a
-     longer one is typed in */
-  agentBio: 'A combined three decades across Manhattan and Westchester, pairing institutional ' +
-    'market data with the hands-on preparation that gets a property photographed, priced and ' +
-    'positioned properly the first time.',
+
   // page 3
   price: '', blurb: '', features: '', listingUrl: '',
   beds: '', baths: '', parking: '', sqft: '',
@@ -1352,7 +1340,6 @@ function renderAgent(page, n, of) {
                 '<div class="qcap">Our properties</div></div>' : '') +
         '</div>' +
         P.agentCards(list, headshotFor) +
-        '<div class="ag-bio">' + esc(state.agentBio) + '</div>' +
         '<div class="contact-foot">' +
           P.linkCols([['Social', socialRows(list)], ['Links', AG_LINKS]]) +
         '</div>' +
@@ -1404,9 +1391,7 @@ const OVER_TARGETS = [
   ['.info-blurb',  'Blurb clipped',      '#warnBlurb',
    'The property blurb is longer than page 3 can show. Trim it, or the end will be cut off in print.'],
   ['.info-feats',  'Features clipped',   '#warnFeats',
-   'There are more features than page 3 can show. Remove a line or two.'],
-  ['.ag-bio',      'Statement clipped',  null,
-   'The team statement is longer than the closing page can show.']
+   'There are more features than page 3 can show. Remove a line or two.']
 ];
 
 function flag(el, label) {
@@ -2214,7 +2199,7 @@ GVC_UNSAVED.watch();
 
 /* the deck's own work — everything that is not a shared fact */
 const DOC_KEYS = ['images', 'gallery', 'galCaptions', 'galPage', 'strategy',
-                  'floorplans', 'fpNote', 'agentBio', 'coverPos', 'infoTopPos'];
+                  'floorplans', 'fpNote', 'coverPos', 'infoTopPos'];
 
 GVC_PROPBAR.mount({
   host: $('#propBar'),
