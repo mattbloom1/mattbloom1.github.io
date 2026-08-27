@@ -20,6 +20,7 @@
 <link rel="stylesheet" href="../../assets/css/base.css">
 <link rel="stylesheet" href="../../assets/css/builder.css">
 <link rel="stylesheet" href="../../assets/css/pitch.css">
+<link rel="stylesheet" href="../../assets/css/photo-dnd.css">
 <style>
 /* ============================================================
    BUYER PACKAGE — deck-specific page styles
@@ -104,6 +105,7 @@ table.tbl tr.total td{border-top:1.2pt solid var(--navy);border-bottom:0;
           </div>
           <input type="file" id="filePhotos" accept="image/*" multiple hidden>
           <div id="imgList"></div>
+          <div id="imgNote"></div>
         </div>
       </details>
 
@@ -210,6 +212,7 @@ table.tbl tr.total td{border-top:1.2pt solid var(--navy);border-bottom:0;
 <script src="../../assets/js/motion.js"></script>
 <script src="../../assets/js/builder.js"></script>
 <script src="../../assets/js/roster.js"></script>
+<script src="../../assets/js/photo-dnd.js"></script>
 <script src="../../assets/js/pitch.js"></script>
 <script src="../../assets/js/icons.js"></script>
 <script src="../../assets/js/qr.js"></script>
@@ -221,6 +224,7 @@ table.tbl tr.total td{border-top:1.2pt solid var(--navy);border-bottom:0;
 <script>
 'use strict';
 const P = window.Pitch, esc = P.esc;
+const PD = window.GVC_PHOTODND;
 const DECK = 'Buyer Package';
 
 const state = {
@@ -290,6 +294,60 @@ let assign = {}, uid = 0;
 function reassign() { assign = P.assignRoles(state.photos, SLOTS); }
 function slot(name) { return assign[name] ? assign[name].url : null; }
 
+/* ============================================================
+   PHOTOS — drag one onto the slot you want it in.
+
+   The gesture is shared with the other three builders and lives in
+   assets/js/photo-dnd.js. All this says is what the two data-drop values
+   mean, which is one line each: a photo's role IS its placement, so
+   dropping it somewhere is nothing more than setting that role.
+
+   That is why no saved buyer package needed migrating: the drag writes the
+   same field the old dropdown wrote.
+   ============================================================ */
+const REFRAME = { page: '.pg, .cv', canvasIn: 8.5 };
+const DROP_LABEL = { 'cover': 'Cover photo', 'portrait': 'Why us' };
+
+/* Pin a photo to a slot, turning whoever was pinned there loose. The
+   displaced photo goes back to 'auto' rather than out of the deck, so it can
+   still be picked up by the auto pass for a slot that is empty. */
+function placeInRole(img, role) {
+  state.photos.forEach(p => { if (p !== img && p.role === role) p.role = 'auto'; });
+  img.role = role;
+  redraw();
+}
+
+/* Off the pages but not out of the tray — it shows as Unused and can be
+   dropped back anywhere. */
+function unusePhoto(img) { img.role = 'exclude'; redraw(); }
+
+function beginPhotoDnD(e, img, from) {
+  PD.drag(e, {
+    url: img.url,
+    from: from,
+    scroller: document.getElementById('stage'),
+    tray: document.getElementById('imgList'),
+    labels: DROP_LABEL,
+    onOut: () => unusePhoto(img),
+    onDrop: kind => placeInRole(img, kind)
+  });
+}
+
+/* Every placed photo gets the move grip and the ✕, so it can be moved or
+   taken off the page from where it is sitting. Called after each redraw,
+   because the pages are rebuilt from scratch. */
+function paintSlotGrips() {
+  SLOTS.forEach(name => {
+    const img = assign[name];
+    const box = document.querySelector('[data-drop="' + name + '"]');
+    if (!img || !box) return;
+    PD.grip(box, {
+      onMove: ev => beginPhotoDnD(ev, img, 'page'),
+      onOff: () => unusePhoto(img)
+    });
+  });
+}
+
 function loanAmount() { return P.num(state.price) * (1 - P.num(state.downPct) / 100); }
 
 /* QR as vector SVG — shared by all four builders, assets/js/qr.js */
@@ -353,9 +411,9 @@ function pgWhy(n) {
   const a = agents()[0];
   const body =
     '<div class="why">' +
-      '<div class="ph"' + (slot('portrait') ? ' data-pos="portrait"' : '') + '>' + (slot('portrait')
+      '<div class="ph" data-drop="portrait"' + (slot('portrait') ? ' data-pos="portrait"' : '') + '>' + (slot('portrait')
         ? '<img src="' + slot('portrait') + '" alt="" style="object-position:' + posFor('portrait').x + '% ' + posFor('portrait').y + '%">'
-        : '<div class="empty-note on-white">Tag a photo<br>&ldquo;Why us&rdquo;</div>') + '</div>' +
+        : '<div class="empty-note on-white">Drag a photo here<br>from the Photos panel</div>') + '</div>' +
       '<div class="txt"><div class="copy">' +
         '<p style="margin:0 0 .16in">Buying is the side of the transaction where good representation is ' +
         'hardest to see and matters most. Anyone can open a door. The value is in knowing which ' +
@@ -562,15 +620,34 @@ function redraw() {
   if (builder.state.pages !== PAGES.length) builder.setPages(PAGES.length);
   else builder.rebuild();
   paintPhotos();
-  P.wirePhotoDrag(document.getElementById('pages'), state.pos);
+  PD.wireReframe(document.getElementById('pages'), state.pos, REFRAME);
+  paintSlotGrips();
   // setTimeout, not rAF: rAF is suspended while the tab is not rendering.
   setTimeout(checkAll, 0);
 }
 
 function paintPhotos() {
-  P.renderPhotoList(document.getElementById('imgList'), state.photos, ROLES, assign, {
-    onChange: redraw,
-    onRemove: img => { state.photos = state.photos.filter(x => x.id !== img.id); redraw(); }
+  PD.tray(document.getElementById('imgList'), state.photos, {
+    idOf: img => img.id,
+    onGrab: (e, img) => beginPhotoDnD(e, img, 'tray'),
+    badgeOf: img => {
+      const place = P.placementOf(img, assign, ROLES);
+      return {
+        text: place.text, cls: place.cls,
+        title: (img.role && img.role !== 'auto')
+          ? 'Placed by hand — click to change'
+          : 'Placed automatically — click to pin it somewhere'
+      };
+    },
+    onBadge: (img, badge) => PD.menu(badge, ROLES, value => {
+      if (value === 'auto' || value === 'exclude') { img.role = value; redraw(); }
+      else placeInRole(img, value);
+    }, img.role || 'auto'),
+    onRemove: img => { state.photos = state.photos.filter(x => x.id !== img.id); redraw(); },
+    removeTitle: 'Remove this photo from the package',
+    note: document.getElementById('imgNote'),
+    hint: 'Drag a thumbnail onto either photo slot in the preview. ' +
+          'Drag a photo off a page and onto this list to take it out.'
   });
 }
 

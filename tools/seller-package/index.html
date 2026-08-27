@@ -20,6 +20,7 @@
 <link rel="stylesheet" href="../../assets/css/base.css">
 <link rel="stylesheet" href="../../assets/css/builder.css">
 <link rel="stylesheet" href="../../assets/css/pitch.css">
+<link rel="stylesheet" href="../../assets/css/photo-dnd.css">
 <style>
 /* ============================================================
    SELLER PITCH & CMA — deck-specific page styles
@@ -258,6 +259,7 @@
           </div>
           <input type="file" id="filePhotos" accept="image/*" multiple hidden>
           <div id="imgList"></div>
+          <div id="imgNote"></div>
           <div class="drop" id="dropMap" tabindex="0" role="button" style="margin-top:14px">
             <div class="d-big">Drop past-sales map</div>
             <div class="d-sub">Export one from <a href="../map-studio/" target="_blank" rel="noopener" onclick="event.stopPropagation()">Map Studio</a></div>
@@ -374,6 +376,7 @@
 <script src="../../assets/js/motion.js"></script>
 <script src="../../assets/js/builder.js"></script>
 <script src="../../assets/js/roster.js"></script>
+<script src="../../assets/js/photo-dnd.js"></script>
 <script src="../../assets/js/pitch.js"></script>
 <script src="../../assets/js/icons.js"></script>
 <script src="../../assets/js/qr.js"></script>
@@ -385,6 +388,7 @@
 <script>
 'use strict';
 const P = window.Pitch, esc = P.esc;
+const PD = window.GVC_PHOTODND;
 const DECK = 'Seller Pitch & CMA';
 
 /* The website printed in every footer. Not editable — the footer, the
@@ -580,6 +584,67 @@ function reassign() { assign = P.assignRoles(state.photos, SLOTS); }
 function slot(name) { return assign[name] ? assign[name].url : null; }
 
 /* ============================================================
+   PHOTOS — drag one onto the slot you want it in.
+
+   The gesture is shared with the other three builders and lives in
+   assets/js/photo-dnd.js. This deck has six slots, which is where a
+   dropdown per photo hurt most and where dragging helps most.
+
+   A photo's role IS its placement, so a drop is just setting that role —
+   the same field the old dropdown wrote, which is why no saved deck needed
+   migrating.
+   ============================================================ */
+const REFRAME = { page: '.pg, .cv', canvasIn: 8.5 };
+const DROP_LABEL = {
+  'cover': 'Cover photo', 'hero': 'Property hero', 'strategy': 'Strategy page',
+  'video1': 'Video 1 still', 'video2': 'Video 2 still', 'video3': 'Video 3 still'
+};
+
+/* Pin a photo to a slot, turning whoever was pinned there loose. The
+   displaced photo goes back to 'auto' rather than out of the deck, so it can
+   still be picked up by the auto pass for a slot that is empty. */
+function placeInRole(img, role) {
+  state.photos.forEach(p => { if (p !== img && p.role === role) p.role = 'auto'; });
+  img.role = role;
+  redraw();
+}
+
+/* Off the pages but not out of the tray — it shows as Unused and can be
+   dropped back anywhere. */
+function unusePhoto(img) { img.role = 'exclude'; redraw(); }
+
+function beginPhotoDnD(e, img, from) {
+  PD.drag(e, {
+    url: img.url,
+    from: from,
+    scroller: document.getElementById('stage'),
+    tray: document.getElementById('imgList'),
+    labels: DROP_LABEL,
+    onOut: () => unusePhoto(img),
+    onDrop: kind => placeInRole(img, kind)
+  });
+}
+
+/* Every placed photo gets the move grip and the ✕, so it can be moved or
+   taken off the page from where it is sitting. Called after each redraw,
+   because the pages are rebuilt from scratch.
+
+   A video still is only shown when that video has no frame of its own, so a
+   slot can be a live drop target with nothing of ours in it — hence the
+   check that the box actually holds the photo assign gave it. */
+function paintSlotGrips() {
+  SLOTS.forEach(name => {
+    const img = assign[name];
+    const box = document.querySelector('[data-drop="' + name + '"]');
+    if (!img || !box || !box.querySelector('img')) return;
+    PD.grip(box, {
+      onMove: ev => beginPhotoDnD(ev, img, 'page'),
+      onOff: () => unusePhoto(img)
+    });
+  });
+}
+
+/* ============================================================
    PAGE LIST — order here drives the deck and the contents page
    ============================================================ */
 const PAGES = [
@@ -720,7 +785,7 @@ function pgProperty(n) {
   ].filter(r => r[1]);
   const feats = listOf(state.features);
   const body =
-    '<div class="ph pb-hero"' + (slot('hero') ? ' data-pos="hero"' : '') + '>' + (slot('hero')
+    '<div class="ph pb-hero" data-drop="hero"' + (slot('hero') ? ' data-pos="hero"' : '') + '>' + (slot('hero')
       ? '<img src="' + slot('hero') + '" alt="" style="object-position:' + posFor('hero').x + '% ' + posFor('hero').y + '%">'
       : '<div class="empty-note on-white">Tag a photo &ldquo;Property hero&rdquo;</div>') + '</div>' +
     (state.blurb ? '<div class="copy" style="margin-bottom:.24in">' + P.lines(state.blurb) + '</div>' : '') +
@@ -800,7 +865,7 @@ function pgStrategy(n) {
     'listing goes stale &mdash; buyers read days-on-market before they read the description. Go out too ' +
     'low and you leave money on the table. The three numbers above are the honest range the comparables ' +
     'support, and the highlighted one is where we would go to market.</div>' +
-    '<div class="ph strat-ph"' + (slot('strategy') ? ' data-pos="strategy"' : '') + '>' + (slot('strategy')
+    '<div class="ph strat-ph" data-drop="strategy"' + (slot('strategy') ? ' data-pos="strategy"' : '') + '>' + (slot('strategy')
       ? '<img src="' + slot('strategy') + '" alt="" style="object-position:' +
           posFor('strategy').x + '% ' + posFor('strategy').y + '%">'
       : '<div class="empty-note on-white">Tag a photo &ldquo;Strategy page&rdquo;</div>') + '</div>';
@@ -885,7 +950,7 @@ function pgVideos(n) {
         const code = v.qr
           ? '<img src="' + v.qr + '" alt="">'
           : qrSvg(v.url);
-        return '<div class="vid"' + (img ? ' data-pos="' + key + '"' : '') + '>' +
+        return '<div class="vid" data-drop="' + key + '"' + (img ? ' data-pos="' + key + '"' : '') + '>' +
           (img
             ? '<img src="' + img + '" alt="" style="object-position:' + posFor(key).x + '% ' + posFor(key).y + '%">'
             : '<div class="empty-note on-white">Tag a photo &ldquo;' + esc('Video ' + (i + 1) + ' still') + '&rdquo;</div>') +
@@ -946,7 +1011,8 @@ function redraw() {
   reassign();
   builder.rebuild();
   paintPhotos();
-  P.wirePhotoDrag(document.getElementById('pages'), state.pos);
+  PD.wireReframe(document.getElementById('pages'), state.pos, REFRAME);
+  paintSlotGrips();
   // setTimeout, not rAF: rAF is suspended while the tab is not rendering,
   // which silently skips the overflow check.
   setTimeout(checkAll, 0);
@@ -1133,9 +1199,27 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function paintPhotos() {
-  P.renderPhotoList(document.getElementById('imgList'), state.photos, ROLES, assign, {
-    onChange: redraw,
-    onRemove: img => { state.photos = state.photos.filter(x => x.id !== img.id); redraw(); }
+  PD.tray(document.getElementById('imgList'), state.photos, {
+    idOf: img => img.id,
+    onGrab: (e, img) => beginPhotoDnD(e, img, 'tray'),
+    badgeOf: img => {
+      const place = P.placementOf(img, assign, ROLES);
+      return {
+        text: place.text, cls: place.cls,
+        title: (img.role && img.role !== 'auto')
+          ? 'Placed by hand — click to change'
+          : 'Placed automatically — click to pin it somewhere'
+      };
+    },
+    onBadge: (img, badge) => PD.menu(badge, ROLES, value => {
+      if (value === 'auto' || value === 'exclude') { img.role = value; redraw(); }
+      else placeInRole(img, value);
+    }, img.role || 'auto'),
+    onRemove: img => { state.photos = state.photos.filter(x => x.id !== img.id); redraw(); },
+    removeTitle: 'Remove this photo from the deck',
+    note: document.getElementById('imgNote'),
+    hint: 'Drag a thumbnail onto any photo slot in the preview. ' +
+          'Drag a photo off a page and onto this list to take it out.'
   });
 }
 function paintMap() {

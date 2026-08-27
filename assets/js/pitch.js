@@ -77,10 +77,10 @@
   }
   function cover(o) {
     const a1 = o.agents && o.agents[0], a2 = o.agents && o.agents[1];
-    return '<div class="cv"' + (o.image ? ' data-pos="cover"' : '') + '>' +
+    return '<div class="cv" data-drop="cover"' + (o.image ? ' data-pos="cover"' : '') + '>' +
       (o.image ? '<img class="cv-img" src="' + o.image + '" alt="" style="object-position:' +
                    (o.pos ? o.pos.x : 50) + '% ' + (o.pos ? o.pos.y : 50) + '%">'
-               : '<div class="empty-note">Drop a cover photo<br>in the Photos panel</div>') +
+               : '<div class="empty-note">Drag a photo here<br>from the Photos panel</div>') +
       '<div class="cv-mask"></div>' +
       '<div class="cv-kind">' + esc(o.kind) + '</div>' +
       '<div class="cv-head">' +
@@ -245,101 +245,18 @@
     return res;
   }
 
-  /* The label shown under an auto photo, so the agent can see where it
-     actually landed without having to pin it. */
-  function autoLabelFor(img, assign, roles) {
-    if (img.role && img.role !== 'auto') return null;
-    const hit = Object.keys(assign).filter(k => k !== '_spare' && assign[k] === img)[0];
-    if (!hit) return 'Unused';
-    const row = roles.filter(r => r[0] === hit)[0];
-    return row ? row[1] : hit;
-  }
-
-  function renderPhotoList(host, photos, roles, assign, handlers) {
-    host.innerHTML = '';
-    photos.forEach(img => {
-      const row = document.createElement('div');
-      row.className = 'img-row';
-
-      const thumb = document.createElement('img');
-      thumb.className = 'img-thumb'; thumb.src = img.url; thumb.alt = '';
-
-      const mid = document.createElement('div');
-      mid.className = 'img-mid';
-      const name = document.createElement('div');
-      name.className = 'img-name'; name.textContent = img.name;
-      const auto = document.createElement('div');
-      auto.className = 'img-auto';
-      const lab = autoLabelFor(img, assign, roles);
-      auto.textContent = lab ? 'auto → ' + lab
-                        : (img.role === 'exclude' ? 'not used' : 'pinned');
-      mid.appendChild(name); mid.appendChild(auto);
-
-      const sel = document.createElement('select');
-      sel.className = 'img-role';
-      roles.forEach(r => {
-        const o = document.createElement('option');
-        o.value = r[0]; o.textContent = r[1];
-        sel.appendChild(o);
-      });
-      sel.value = img.role || 'auto';
-      sel.addEventListener('change', () => { img.role = sel.value; handlers.onChange(); });
-
-      const del = document.createElement('button');
-      del.type = 'button'; del.className = 'img-x'; del.innerHTML = '&#10005;'; del.title = 'Remove';
-      del.addEventListener('click', () => handlers.onRemove(img));
-
-      row.appendChild(thumb); row.appendChild(mid);
-      row.appendChild(sel); row.appendChild(del);
-      host.appendChild(row);
-    });
-  }
-
-  /* ---------- reframe a photo inside its crop ----------
-     Mirrors the brochure's drag-to-reposition: object-position p% puts the
-     image's overflow at -(overflow * p/100), so moving it by d px means
-     changing p by -d/overflow*100. Pointer deltas are in screen px, so
-     they're divided by the preview's scale first. */
-  function beginPhotoDrag(e, box, pos) {
-    const img = box.querySelector('img');
-    if (!img || !img.naturalWidth) return;
-    e.preventDefault();
-    const page = box.closest('.pg, .cv');
-    const scale = page ? page.getBoundingClientRect().width / (8.5 * 96) : 1;
-    const bw = box.clientWidth, bh = box.clientHeight;
-    const cover = Math.max(bw / img.naturalWidth, bh / img.naturalHeight);
-    const overX = img.naturalWidth * cover - bw, overY = img.naturalHeight * cover - bh;
-    const start = { x: e.clientX, y: e.clientY, px: pos.x, py: pos.y };
-    box.classList.add('is-moving');
-    try { box.setPointerCapture(e.pointerId); } catch (_) {}
-
-    const move = ev => {
-      const dx = (ev.clientX - start.x) / scale, dy = (ev.clientY - start.y) / scale;
-      if (overX > 0.5) pos.x = Math.max(0, Math.min(100, start.px - (dx / overX) * 100));
-      if (overY > 0.5) pos.y = Math.max(0, Math.min(100, start.py - (dy / overY) * 100));
-      img.style.objectPosition = pos.x + '% ' + pos.y + '%';
-    };
-    const done = ev => {
-      box.removeEventListener('pointermove', move);
-      box.removeEventListener('pointerup', done);
-      box.removeEventListener('pointercancel', done);
-      try { box.releasePointerCapture(ev.pointerId); } catch (_) {}
-      box.classList.remove('is-moving');
-    };
-    box.addEventListener('pointermove', move);
-    box.addEventListener('pointerup', done);
-    box.addEventListener('pointercancel', done);
-  }
-
-  /* Call once per redraw, on the container holding the freshly-rendered
-     pages. Any element carrying data-pos="<key>" gets drag-to-reframe
-     wired against posStore[key] (created on first touch if missing). */
-  function wirePhotoDrag(root, posStore) {
-    root.querySelectorAll('[data-pos]').forEach(box => {
-      const key = box.dataset.pos;
-      if (!posStore[key]) posStore[key] = { x: 50, y: 50 };
-      box.addEventListener('pointerdown', e => beginPhotoDrag(e, box, posStore[key]));
-    });
+  /* Where a photo currently sits, as the tray badge shows it. 'pinned' means
+     the agent put it there by hand; 'used' means the auto pass did, and it can
+     still be stolen by a later pin. Both decks have the same shape, so this is
+     shared rather than written twice. */
+  function placementOf(img, assign, roles) {
+    if (img.role === 'exclude') return { text: 'Unused', cls: '' };
+    var hit = Object.keys(assign).filter(function (k) {
+      return k !== '_spare' && assign[k] === img;
+    })[0];
+    if (!hit) return { text: 'Unused', cls: '' };
+    var row = roles.filter(function (r) { return r[0] === hit; })[0];
+    return { text: row ? row[1] : hit, cls: img.role === hit ? 'pinned' : 'used' };
   }
 
   /* ---------- comparable sales editor ----------
@@ -395,7 +312,6 @@
     esc, lines, money, moneyShort, num,
     page, cover, heading, foot, toc, agentCards, linkCols, linkIcon,
     checkOverflow, overflowing, wireDrop, wireRoster, agentsOf,
-    assignRoles, renderPhotoList, autoLabelFor, compsEditor, blankComp,
-    beginPhotoDrag, wirePhotoDrag
+    assignRoles, placementOf, compsEditor, blankComp
   };
 })(window);
