@@ -101,20 +101,41 @@
      and every detail that belongs to them — name, title, phone, email —
      rather than the box holding the photo and the details floating loose
      underneath it. Every deck's closing page calls this. */
+  /* The phone lines for one agent. With both an office and a mobile number
+     each is labelled o: / m:, because two bare numbers in a row say nothing
+     about which is which. With only one the label is noise, so the number
+     prints bare — which is every agent whose `mobile` is still blank in the
+     roster. */
+  function phoneLines(a) {
+    var o = a.phone && String(a.phone).trim();
+    var m = a.mobile && String(a.mobile).trim();
+    if (o && m) {
+      return '<span class="num"><b>o:</b> ' + esc(o) + '</span>' +
+             '<span class="num"><b>m:</b> ' + esc(m) + '</span>';
+    }
+    var one = o || m;
+    return one ? '<span class="num">' + esc(one) + '</span>' : '';
+  }
+
   function agentCards(list, headshotFor) {
     if (!list.length) {
       return '<div class="ag-row"><div class="ag-c"><div class="shot">' +
              '<div class="empty-note on-white">Pick an agent<br>in the Agents panel</div></div></div></div>';
     }
-    return '<div class="ag-row">' + list.map(a =>
-      '<div class="ag-c">' +
+    /* A lone agent gets the wide card: the cutout stands on the page at full
+       size and the panel overlaps its foot, so the page reads as being about
+       that person rather than as half of a missing pair. Two or more keep the
+       paired columns — the wide card twice over would not fit the width. */
+    var solo = list.length === 1 ? ' solo' : '';
+    return '<div class="ag-row' + solo + '">' + list.map(a =>
+      '<div class="ag-c' + solo + '">' +
         '<div class="shot"><img src="' + headshotFor(a) + '" alt=""></div>' +
         '<div class="ag-meta">' +
           '<div class="nm">' + esc(a.name) + '</div>' +
           (a.title ? '<div class="tt">' + esc(a.title) + '</div>' : '') +
           '<div class="ct">' +
-            (a.phone ? '<span>' + esc(a.phone) + '</span>' : '') +
-            (a.email ? '<span>' + esc(a.email) + '</span>' : '') +
+            '<div class="nums">' + phoneLines(a) + '</div>' +
+            (a.email ? '<span class="em">' + esc(a.email) + '</span>' : '') +
           '</div>' +
         '</div>' +
       '</div>').join('') + '</div>';

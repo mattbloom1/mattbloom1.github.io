@@ -15,7 +15,7 @@
      2. Add a row to the right market below. Keep `id`
         lowercase-hyphenated and matching the filename.
 
-   `phone` and `instagram` may be left empty — the tools skip blank fields
+   `phone`, `mobile` and `instagram` may be left empty — the tools skip blank fields
    rather than leaving a gap in the layout. That makes Instagram opt-in: a
    handle is printed only for the agents who have one filled in here, so
    nobody's account goes on a client-facing page by default.
@@ -29,25 +29,25 @@
      show and roughly the order sheets get built in. */
   var PEOPLE = [
     /* Founders */
-    {id:'john-gasdaska',     name:'John Gasdaska',     title:'Licensed Associate Real Estate Broker', phone:'646.345.7350', email:'john.gasdaska@elliman.com', instagram:''},
-    {id:'tj-verdiglione',    name:'TJ Verdiglione',    title:'Licensed Real Estate Salesperson',      phone:'732.425.7477', email:'thomas.verdiglione@elliman.com', instagram:''},
-    {id:'jonathan-conlon',   name:'Jonathan Conlon',   title:'Licensed Associate Real Estate Broker', phone:'347.564.2440', email:'jonathan.conlon@elliman.com', instagram:''},
+    {id:'john-gasdaska',     name:'John Gasdaska',     title:'Licensed Associate Real Estate Broker', phone:'646.345.7350', mobile:'',    email:'john.gasdaska@elliman.com', instagram:''},
+    {id:'tj-verdiglione',    name:'TJ Verdiglione',    title:'Licensed Real Estate Salesperson',      phone:'732.425.7477', mobile:'',    email:'thomas.verdiglione@elliman.com', instagram:''},
+    {id:'jonathan-conlon',   name:'Jonathan Conlon',   title:'Licensed Associate Real Estate Broker', phone:'347.564.2440', mobile:'',    email:'jonathan.conlon@elliman.com', instagram:''},
 
     /* New York */
-    {id:'katie-cook',        name:'Katie Cook',        title:'Licensed Real Estate Salesperson',      phone:'516.319.9732', email:'katie.cook@elliman.com', instagram:''},
-    {id:'jessica-wolf',      name:'Jessica Wolf',      title:'Licensed Real Estate Salesperson',      phone:'847.414.7841', email:'jessica.wolf@elliman.com', instagram:''},
-    {id:'nicole-sobol',      name:'Nicole Sobol',      title:'Licensed Real Estate Salesperson',      phone:'201.240.7544', email:'nicole.sobol@elliman.com', instagram:''},
-    {id:'gary-kasparov',     name:'Gary Kasparov',     title:'Licensed Real Estate Salesperson',      phone:'718.980.8777', email:'gary.kasparov@elliman.com', instagram:''},
-    {id:'ayuen-gai',         name:'Ayuen Gai',         title:'Licensed Real Estate Salesperson',      phone:'315.679.0088', email:'ayuen.gai@elliman.com', instagram:''},
+    {id:'katie-cook',        name:'Katie Cook',        title:'Licensed Real Estate Salesperson',      phone:'516.319.9732', mobile:'',    email:'katie.cook@elliman.com', instagram:''},
+    {id:'jessica-wolf',      name:'Jessica Wolf',      title:'Licensed Real Estate Salesperson',      phone:'847.414.7841', mobile:'',    email:'jessica.wolf@elliman.com', instagram:''},
+    {id:'nicole-sobol',      name:'Nicole Sobol',      title:'Licensed Real Estate Salesperson',      phone:'201.240.7544', mobile:'',    email:'nicole.sobol@elliman.com', instagram:''},
+    {id:'gary-kasparov',     name:'Gary Kasparov',     title:'Licensed Real Estate Salesperson',      phone:'718.980.8777', mobile:'',    email:'gary.kasparov@elliman.com', instagram:''},
+    {id:'ayuen-gai',         name:'Ayuen Gai',         title:'Licensed Real Estate Salesperson',      phone:'315.679.0088', mobile:'',    email:'ayuen.gai@elliman.com', instagram:''},
 
     /* New Jersey */
-    {id:'marli-silver',      name:'Marli Silver',      title:'Licensed Real Estate Salesperson',      phone:'732.387.3807', email:'marli.silver@elliman.com', instagram:'@marlisilverrealestate'},
-    {id:'george-putykewycz', name:'George Putykewycz', title:'Licensed Real Estate Salesperson',      phone:'732.546.7375', email:'george.putykewycz@elliman.com', instagram:''},
-    {id:'james-huber',       name:'James Huber',       title:'Licensed Real Estate Salesperson',      phone:'732.962.0683', email:'james.huber@elliman.com', instagram:''},
+    {id:'marli-silver',      name:'Marli Silver',      title:'Licensed Real Estate Salesperson',      phone:'732.387.3807', mobile:'732.403.1174', email:'marli.silver@elliman.com', instagram:'@marlisilverrealestate'},
+    {id:'george-putykewycz', name:'George Putykewycz', title:'Licensed Real Estate Salesperson',      phone:'732.546.7375', mobile:'',    email:'george.putykewycz@elliman.com', instagram:''},
+    {id:'james-huber',       name:'James Huber',       title:'Licensed Real Estate Salesperson',      phone:'732.962.0683', mobile:'',    email:'james.huber@elliman.com', instagram:''},
 
     /* Florida */
-    {id:'nicole-melveney',   name:'Nicole Melveney',   title:'Licensed Real Estate Sales Associate',  phone:'732.567.5375', email:'nicole.melveney@elliman.com', instagram:''},
-    {id:'karl-brisard',      name:'Karl Brisard',      title:'Licensed Real Estate Sales Associate',  phone:'561.291.8861', email:'karl.brisard@elliman.com', instagram:''}
+    {id:'nicole-melveney',   name:'Nicole Melveney',   title:'Licensed Real Estate Sales Associate',  phone:'732.567.5375', mobile:'',    email:'nicole.melveney@elliman.com', instagram:''},
+    {id:'karl-brisard',      name:'Karl Brisard',      title:'Licensed Real Estate Sales Associate',  phone:'561.291.8861', mobile:'',    email:'karl.brisard@elliman.com', instagram:''}
   ];
 
   /* Resolve headshots against this file's own location rather than the

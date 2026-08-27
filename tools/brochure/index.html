@@ -87,8 +87,12 @@
   background:
     linear-gradient(to bottom, rgba(0,39,58,1) 0%, rgba(0,39,58,0) var(--mask-top)),
     linear-gradient(to top,    rgba(0,39,58,1) 0%, rgba(0,39,58,0) var(--mask-bot));}
+/* The brochure's kicker is a phrase, not a document-type label — so it is set
+   in the house serif at reading size rather than as tracked sky caps. pitch.css
+   keeps the caps for the Seller Pitch & CMA and the Buyer Package, whose covers
+   name a document rather than introducing one. */
 .cv-kind{position:absolute;top:.7in;left:0;right:0;text-align:center;
-  font:800 9pt var(--sans);letter-spacing:.3em;text-transform:uppercase;color:var(--sky);}
+  font:400 19pt/1.15 var(--serif);letter-spacing:.005em;color:#fff;}
 .cv-head{position:absolute;left:var(--pad);right:var(--pad);bottom:1.5in;text-align:center;}
 .cv-ttl{font:700 33pt/1.07 var(--serif);color:#fff;text-wrap:balance;overflow-wrap:break-word;}
 .cv-sub{margin-top:.13in;font:800 10.5pt var(--sans);letter-spacing:.10em;text-transform:uppercase;color:var(--ow);}
@@ -103,6 +107,9 @@
 .cv-bar .cb-side.r{text-align:right;}
 .cv-bar .cb-nm{font:700 12pt var(--serif);color:#fff;line-height:1.2;}
 .cv-bar .cb-ct{font:300 8pt/1.45 var(--body);color:rgba(229,229,229,.8);}
+/* the lone-agent counterweight: licence title over brokerage, both in the
+   contact font so the block reads as a caption rather than a second agent */
+.cv-bar .cb-side.brok .cb-ct + .cb-ct{margin-top:.03in;color:rgba(229,229,229,.62);}
 .cv-bar .cb-mono{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
   height:.46in;width:auto;display:block;flex:none;}
 
@@ -187,9 +194,15 @@
 .info-block .pg-h{padding:.34in var(--pad) 0;}
 .info-mid{flex:1;min-height:0;padding:.26in var(--pad) .34in;display:flex;gap:.42in;}
 .info-col{min-width:0;display:flex;flex-direction:column;}
-.info-col.about{flex:1.15;}
-.info-col.features{flex:1.15;}
-.info-col.stats{flex:1;}
+/* Two columns, not three. The Overview gets a full-height column of its own so
+   a long blurb has somewhere to go, and Features stacks over The Details on the
+   right. Features takes the slack so The Details — whose height is fixed by the
+   2x2 grid and the QR — is pushed to the foot of the page. The blurb's type is
+   then auto-fitted by fitBlurb(), so it can no longer be cut off mid-sentence. */
+.info-col.about{flex:1;}
+.info-right{flex:1;min-width:0;display:flex;flex-direction:column;gap:.3in;}
+.info-col.features{flex:1;min-height:0;}
+.info-col.stats{flex:none;}
 .info-lbl{font:800 8pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--sky);margin-bottom:.14in;}
 .info-blurb{font:300 10.5pt/16pt var(--body);color:var(--ow);flex:1;min-height:0;overflow:hidden;}
 .info-feats{list-style:none;margin:0;padding:0;flex:1;min-height:0;overflow:hidden;}
@@ -233,7 +246,11 @@
    pans the enlarged plan around — that is the crop. The transform is
    written inline by the renderer from the plan's own zoom/tx/ty. */
 .fp-frame{flex:1;min-height:0;position:relative;display:flex;align-items:center;justify-content:center;
-  background:#F7F6F3;border:.75pt solid var(--rule);overflow:hidden;}
+  /* white, not paper grey: a floor plan saved with a transparent background
+     used to show this panel through it, which read as a grey box sitting on a
+     white page. The hairline border stays — it frames the plan without the
+     interior separating from the sheet. */
+  background:#fff;border:.75pt solid var(--rule);overflow:hidden;}
 .fp-frame img{max-width:100%;max-height:100%;object-fit:contain;display:block;transform-origin:50% 50%;}
 @media screen{
   .fp-frame.has-img{cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;}
@@ -285,6 +302,30 @@
   font:800 6.8pt/1.5 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--sky2);}
 .ag-meta .ct{margin-top:.06in;display:flex;flex-direction:column;align-items:center;gap:.01in;}
 .ag-meta .ct span{font:300 9pt/1.45 var(--body);color:rgba(0,39,58,.75);}
+/* ---- ONE AGENT — the wide card ----
+   The cutout stands straight on the page at full size and the panel overlaps
+   its foot, instead of the photo being boxed inside the card. Only the solo
+   case takes this; two of these side by side would not fit the page width.
+   Mirrored between assets/css/pitch.css and tools/brochure/index.html — if
+   you change one, change the other. */
+.ag-row.solo{display:block;}
+.ag-c.solo{flex:none;max-width:4.4in;margin:0 auto;background:none;
+  box-shadow:none;overflow:visible;}
+.ag-c.solo .shot{width:2.5in;margin:0 auto;}
+/* the panel carries the card's own background and shadow now that .ag-c.solo
+   has dropped both, and rides up over the foot of the cutout */
+.ag-c.solo .ag-meta{position:relative;margin-top:-.18in;padding:.2in .3in .22in;
+  background:linear-gradient(#F7F6F3,#E4E2DC);box-shadow:0 .14in .3in rgba(0,0,0,.4);}
+.ag-c.solo .ag-meta .nm{font-size:19pt;}
+.ag-c.solo .ag-meta .tt{font-size:8pt;}
+.ag-c.solo .ag-meta .ct{gap:.06in;}
+.ag-c.solo .ag-meta .ct span{font-size:10.5pt;}
+.ag-c.solo .ag-meta .nums b{font-size:10.5pt;}
+/* office and mobile sit on one line, each behind its own o: / m: mark. An
+   agent with only one number gets a single unlabelled span from phoneLines(),
+   which this centres just the same. */
+.ag-meta .nums{display:flex;justify-content:center;gap:.34in;}
+.ag-meta .nums b{font:700 9pt var(--serif);color:var(--navy);}
 
 /* The statement used to sit here, and it was the only flexible child of
    .ag-body — it absorbed whatever height the fixed blocks left. With it gone
@@ -951,6 +992,17 @@ function cbSide(a, side) {
   '</div>';
 }
 
+/* With two agents each side of the bar carries one. With one, the right side
+   would otherwise be an empty box facing a filled one, so it takes the agent's
+   licence title over the brokerage instead — the bar stays balanced without
+   repeating the contact details already sitting on the left. */
+function cbBrokerage(a) {
+  return '<div class="cb-side r brok">' +
+    (a.title ? '<div class="cb-ct">' + esc(a.title) + '</div>' : '') +
+    '<div class="cb-ct">Douglas Elliman Real Estate</div>' +
+  '</div>';
+}
+
 function renderCover(page) {
   const hero = assign.hero, city = cityLine();
   const [a1, a2] = agentObjs();
@@ -969,7 +1021,7 @@ function renderCover(page) {
       '<div class="cv-bar">' +
         cbSide(a1, 'l') +
         '<img class="cb-mono" src="' + MONO + '" alt="">' +
-        cbSide(a2, 'r') +
+        (a1 && !a2 ? cbBrokerage(a1) : cbSide(a2, 'r')) +
       '</div>' +
     '</div>';
   const cv = page.querySelector('.cv');
@@ -1221,6 +1273,7 @@ function renderInfo(page, n, of) {
           '<div class="info-col about"><div class="info-lbl">Overview</div>' +
             '<div class="info-blurb">' + esc(state.blurb) + '</div>' +
           '</div>' +
+          '<div class="info-right">' +
           '<div class="info-col features"><div class="info-lbl">Features</div>' +
             '<ul class="info-feats">' + feats.map(f => '<li>' + esc(f) + '</li>').join('') + '</ul>' +
           '</div>' +
@@ -1234,6 +1287,7 @@ function renderInfo(page, n, of) {
                     '<div class="cap"><b>Scan for<br>the full listing</b>' +
                       '<span class="url">' + esc(url) + '</span></div></div>'
                 : '') +
+          '</div>' +
           '</div>' +
         '</div>' +
         pageFoot(n, of, true) +
@@ -1398,7 +1452,29 @@ function flag(el, label) {
   page.appendChild(tag);
 }
 
+/* The Overview is the one field with no natural length limit, and its column is
+   a fixed box — so rather than guillotine the sentence, step the type down until
+   it fits. 10.5pt is the design size, and the size it keeps whenever the blurb
+   is short enough to hold it. 8pt is the floor: below that the page stops being
+   worth reading, so the "Blurb clipped" warning takes over instead. Line height
+   rides the size as a ratio, so the column stays evenly set at every step. */
+const BLURB_MAX = 10.5, BLURB_MIN = 8, BLURB_LH = 16 / 10.5;
+
+function fitBlurb() {
+  document.querySelectorAll('.info-blurb').forEach(el => {
+    el.style.lineHeight = BLURB_LH;
+    let pt = BLURB_MAX;
+    el.style.fontSize = pt + 'pt';
+    while (pt > BLURB_MIN && el.scrollHeight > el.clientHeight + 1) {
+      pt = Math.round((pt - 0.25) * 100) / 100;
+      el.style.fontSize = pt + 'pt';
+    }
+  });
+}
+
 function checkOverflow() {
+  // shrink to fit first, so the blurb is only ever flagged when even 8pt spills
+  fitBlurb();
   document.querySelectorAll('.over-flag').forEach(n => n.remove());
   document.querySelectorAll('.is-over').forEach(n => n.classList.remove('is-over'));
 

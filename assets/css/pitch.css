@@ -208,6 +208,30 @@ table.tbl .meta{display:block;font-size:7.5pt;color:rgba(0,39,58,.55);margin-top
   font:800 6.8pt/1.5 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--sky2);}
 .ag-meta .ct{margin-top:.06in;display:flex;flex-direction:column;align-items:center;gap:.01in;}
 .ag-meta .ct span{font:300 9pt/1.45 var(--body);color:rgba(0,39,58,.75);}
+/* ---- ONE AGENT — the wide card ----
+   The cutout stands straight on the page at full size and the panel overlaps
+   its foot, instead of the photo being boxed inside the card. Only the solo
+   case takes this; two of these side by side would not fit the page width.
+   Mirrored between assets/css/pitch.css and tools/brochure/index.html — if
+   you change one, change the other. */
+.ag-row.solo{display:block;}
+.ag-c.solo{flex:none;max-width:4.4in;margin:0 auto;background:none;
+  box-shadow:none;overflow:visible;}
+.ag-c.solo .shot{width:2.5in;margin:0 auto;}
+/* the panel carries the card's own background and shadow now that .ag-c.solo
+   has dropped both, and rides up over the foot of the cutout */
+.ag-c.solo .ag-meta{position:relative;margin-top:-.18in;padding:.2in .3in .22in;
+  background:linear-gradient(#F7F6F3,#E4E2DC);box-shadow:0 .14in .3in rgba(0,0,0,.4);}
+.ag-c.solo .ag-meta .nm{font-size:19pt;}
+.ag-c.solo .ag-meta .tt{font-size:8pt;}
+.ag-c.solo .ag-meta .ct{gap:.06in;}
+.ag-c.solo .ag-meta .ct span{font-size:10.5pt;}
+.ag-c.solo .ag-meta .nums b{font-size:10.5pt;}
+/* office and mobile sit on one line, each behind its own o: / m: mark. An
+   agent with only one number gets a single unlabelled span from phoneLines(),
+   which this centres just the same. */
+.ag-meta .nums{display:flex;justify-content:center;gap:.34in;}
+.ag-meta .nums b{font:700 9pt var(--serif);color:var(--navy);}
 
 /* ---- contact footer: two link columns ---- */
 .contact-foot{flex:none;padding-top:.26in;border-top:1pt solid var(--rule-rev);}
