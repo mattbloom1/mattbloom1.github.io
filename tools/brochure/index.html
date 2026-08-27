@@ -624,7 +624,7 @@ body.is-dragging-photo [data-drop].drop-on::after{content:'';position:absolute;i
 <script>
 'use strict';
 const $ = s => document.querySelector(s);
-const P = window.Pitch;
+const P = window.Pitch, esc = P.esc;
 const MONO = '../../assets/logos/monogram-white.svg';
 const MONO_NAVY = '../../assets/logos/monogram.svg';
 
@@ -794,9 +794,11 @@ let uid = 0, builder = null;
 let assign = { hero: null, infoTop: null, gallery: [] };
 
 /* ---------------- helpers ---------------- */
-const escapeHtml = s => String(s == null ? '' : s)
-  .replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
-const lines = s => String(s || '').split('\n').map(x => x.trim()).filter(Boolean);
+/* Escaping is Pitch's (esc, above) — the same one both decks use.
+   featureLines is deliberately not Pitch.lines: that escapes a textarea into
+   one <br>-joined run of HTML, this splits it into the separate strings
+   page 2 bullets and the saved core facts each need. */
+const featureLines = s => String(s || '').split('\n').map(x => x.trim()).filter(Boolean);
 /* QR as vector SVG so it stays crisp at any print size — one shared
    implementation for all four builders, in assets/js/qr.js. */
 const qrSvg = window.GVC_QR;
@@ -812,7 +814,7 @@ const agentObjs = () => state.agents.map(id => ROSTER.find(a => a.id === id)).fi
    navy monogram instead. */
 function pageFoot(n, of, dark) {
   return '<div class="pg-foot' + (dark ? ' rev' : '') + '">' +
-    '<span class="site">' + escapeHtml(SITE) + '</span>' +
+    '<span class="site">' + esc(SITE) + '</span>' +
     '<img class="pg-mono" src="' + (dark ? MONO : MONO_NAVY) + '" alt="">' +
     '<span class="pg-n">' + n + ' / ' + of + '</span>' +
   '</div>';
@@ -1025,8 +1027,8 @@ function pagePlan() {
 function cbSide(a, side) {
   if (!a) return '<div class="cb-side ' + side + '"></div>';
   return '<div class="cb-side ' + side + '">' +
-    '<div class="cb-nm">' + escapeHtml(a.name) + '</div>' +
-    '<div class="cb-ct">' + [a.phone, a.email].filter(Boolean).map(escapeHtml).join(' &nbsp;·&nbsp; ') + '</div>' +
+    '<div class="cb-nm">' + esc(a.name) + '</div>' +
+    '<div class="cb-ct">' + [a.phone, a.email].filter(Boolean).map(esc).join(' &nbsp;·&nbsp; ') + '</div>' +
   '</div>';
 }
 
@@ -1041,9 +1043,9 @@ function renderCover(page) {
       '<div class="cv-mask"></div>' +
       '<div class="cv-kind">Property Brochure</div>' +
       '<div class="cv-head">' +
-        '<div class="cv-ttl">' + (escapeHtml(state.address) || '&nbsp;') + '</div>' +
-        (city ? '<div class="cv-sub">' + escapeHtml(city) + '</div>' : '') +
-        '<div class="cv-for">' + escapeHtml(SITE) + '</div>' +
+        '<div class="cv-ttl">' + (esc(state.address) || '&nbsp;') + '</div>' +
+        (city ? '<div class="cv-sub">' + esc(city) + '</div>' : '') +
+        '<div class="cv-for">' + esc(SITE) + '</div>' +
       '</div>' +
       '<div class="cv-bar">' +
         cbSide(a1, 'l') +
@@ -1275,15 +1277,15 @@ function beginCrop(e, cellEl, c) {
 
 function renderInfo(page, n, of) {
   const topPhoto = assign.infoTop;
-  const feats = lines(state.features);
+  const feats = featureLines(state.features);
   const stats = [['Bedrooms', state.beds, 'bed'], ['Bathrooms', state.baths, 'bath'],
                  ['Parking', state.parking, 'car'], ['Sq Ft', state.sqft, 'ruler']];
   /* A typed number is formatted the way every other builder formats one —
      4275000 prints as $4,275,000, not as 4275000. Anything without a digit
      in it ("Price upon request") is a label, and prints as tracked caps. */
   const price = state.price
-    ? (/\d/.test(state.price) ? escapeHtml(P.money(state.price) || state.price)
-       : '<span class="po">' + escapeHtml(state.price) + '</span>')
+    ? (/\d/.test(state.price) ? esc(P.money(state.price) || state.price)
+       : '<span class="po">' + esc(state.price) + '</span>')
     : '';
   const np = price ? '' : ' no-price';
   /* the QR is drawn from whatever link is typed; a bare domain still has to
@@ -1304,20 +1306,20 @@ function renderInfo(page, n, of) {
         '<div class="pg-h rev"><h2>The Property</h2></div>' +
         '<div class="info-mid">' +
           '<div class="info-col about"><div class="info-lbl">Overview</div>' +
-            '<div class="info-blurb">' + escapeHtml(state.blurb) + '</div>' +
+            '<div class="info-blurb">' + esc(state.blurb) + '</div>' +
           '</div>' +
           '<div class="info-col features"><div class="info-lbl">Features</div>' +
-            '<ul class="info-feats">' + feats.map(f => '<li>' + escapeHtml(f) + '</li>').join('') + '</ul>' +
+            '<ul class="info-feats">' + feats.map(f => '<li>' + esc(f) + '</li>').join('') + '</ul>' +
           '</div>' +
           '<div class="info-col stats"><div class="info-lbl">The Details</div>' +
             '<div class="info-stats">' +
               stats.map(s => '<div class="stat">' + icon(s[2]) + '<div class="txt">' +
-                '<div class="v">' + (escapeHtml(s[1]) || '&mdash;') + '</div>' +
+                '<div class="v">' + (esc(s[1]) || '&mdash;') + '</div>' +
                 '<div class="k">' + s[0] + '</div></div></div>').join('') +
             '</div>' +
             (qr ? '<div class="info-qr"><div class="box">' + qr + '</div>' +
                     '<div class="cap"><b>Scan for<br>the full listing</b>' +
-                      '<span class="url">' + escapeHtml(url) + '</span></div></div>'
+                      '<span class="url">' + esc(url) + '</span></div></div>'
                 : '') +
           '</div>' +
         '</div>' +
@@ -1351,11 +1353,11 @@ function renderFloorplan(page, spec, n, of) {
               (fp ? '<img src="' + fp.url + '" alt="" style="' + fpTransform(fp) + '">'
                   : '<div class="empty-note on-white">Drop a floor plan<br>in the Floor plans panel</div>') +
             '</div>' +
-            (fp ? '<div class="fp-cap"><span>' + escapeHtml(fp.label || ('Level ' + (spec.from + i + 1))) +
-                  '</span>' + (state.sqft ? '<span class="sub">' + escapeHtml(state.sqft) + ' sq ft total</span>' : '') +
+            (fp ? '<div class="fp-cap"><span>' + esc(fp.label || ('Level ' + (spec.from + i + 1))) +
+                  '</span>' + (state.sqft ? '<span class="sub">' + esc(state.sqft) + ' sq ft total</span>' : '') +
                   '</div>' : '') +
           '</div>').join('') +
-        (state.fpNote ? '<div class="fp-note">' + escapeHtml(state.fpNote) + '</div>' : '') +
+        (state.fpNote ? '<div class="fp-note">' + esc(state.fpNote) + '</div>' : '') +
       '</div>' +
       pageFoot(n, of, false) +
     '</div>';
@@ -1399,12 +1401,12 @@ function renderAgent(page, n, of) {
                 '<div class="qcap">Our team site</div></div>' : '') +
         '</div>' +
         P.agentCards(list, headshotFor) +
-        '<div class="ag-bio">' + escapeHtml(state.agentBio) + '</div>' +
+        '<div class="ag-bio">' + esc(state.agentBio) + '</div>' +
         '<div class="contact-foot">' +
           P.linkCols([['Social', AG_SOCIAL], ['Links', AG_LINKS]]) +
         '</div>' +
         '<div class="states">' + STATES.map(([nm, art]) =>
-          '<div class="stc"><img src="' + art + '" alt=""><span>' + escapeHtml(nm) + '</span></div>').join('') + '</div>' +
+          '<div class="stc"><img src="' + art + '" alt=""><span>' + esc(nm) + '</span></div>').join('') + '</div>' +
         GVC_LEGAL.block('listing') +
       '</div>' +
       pageFoot(n, of, true) +
@@ -1500,7 +1502,7 @@ function checkOverflow() {
   $('#warnAddr').hidden = !addrOver;
 
   const gen = $('#warnGeneral');
-  gen.innerHTML = general.map(m => '<div class="warn-item">' + escapeHtml(m) + '</div>').join('');
+  gen.innerHTML = general.map(m => '<div class="warn-item">' + esc(m) + '</div>').join('');
   gen.hidden = !general.length;
 }
 
@@ -2515,7 +2517,7 @@ GVC_PROPBAR.mount({
     price: state.price, beds: state.beds, baths: state.baths,
     sqft: state.sqft, parking: state.parking,
     listingUrl: state.listingUrl, description: state.blurb,
-    features: lines(state.features), agentIds: state.agents.slice()
+    features: featureLines(state.features), agentIds: state.agents.slice()
   }),
 
   fromCore: core => {
