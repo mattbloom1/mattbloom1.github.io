@@ -1,0 +1,84 @@
+/* ============================================================
+   PHOTO DRAG & DROP — shared by all four listing builders.
+   Paired with assets/js/photo-dnd.js.
+
+   One gesture for every tool: pick a photo up from the tray and drop it on
+   the slot you want it in. Every slot on every page is a target, so there is
+   nothing to learn beyond "drag it where you want it".
+
+   Written against the tokens.css variable names rather than builder.css's,
+   because the Showsheet loads neither builder.css nor pitch.css and the
+   gesture has to look identical in all four.
+
+   Screen only — every control here is hidden when printing.
+   ============================================================ */
+
+/* ---------- the photo in flight ---------- */
+.drag-ghost{position:fixed;z-index:9999;pointer-events:none;width:120px;height:90px;
+  border-radius:8px;overflow:hidden;box-shadow:0 12px 34px rgba(0,39,58,.4);
+  border:2px solid var(--sky);transform:translate(-50%,-50%) rotate(-2deg);opacity:.94;}
+.drag-ghost img{width:100%;height:100%;object-fit:cover;display:block;}
+body.is-dragging-photo{cursor:grabbing !important;}
+body.is-dragging-photo *{cursor:grabbing !important;}
+
+/* ---------- targets ----------
+   Every drop zone gets a dashed hint while a photo is in the air, and fills
+   in when it is the one under the pointer. */
+body.is-dragging-photo [data-drop]{outline:2px dashed rgba(83,199,220,.65);outline-offset:-4px;}
+body.is-dragging-photo [data-drop].drop-on{outline:3px solid var(--sky);outline-offset:-4px;}
+body.is-dragging-photo [data-drop].drop-on::after{content:'';position:absolute;inset:0;
+  background:rgba(83,199,220,.3);pointer-events:none;z-index:3;}
+.drop-label{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:5;
+  font:800 9px var(--sans-display);letter-spacing:.14em;text-transform:uppercase;color:var(--bone);
+  background:var(--ink);padding:5px 9px;border-radius:5px;pointer-events:none;white-space:nowrap;}
+
+/* The tray itself is a drop zone: drag a photo off a page and onto the panel
+   to take it out of the document. */
+#imgList.drop-on{outline:3px solid var(--sky);outline-offset:2px;border-radius:8px;
+  background:rgba(83,199,220,.1);}
+
+/* ---------- controls on a placed photo ----------
+   Any slot marked .ph-slot shows its grip and remove button on hover. The
+   class is what couples a tool's own slot markup to these controls, so no
+   tool's class names appear here.
+
+   Dragging the photo itself pans its crop — the thing you do most — so
+   moving it somewhere else needs its own handle rather than a held key. */
+.ph-grip,.ph-kill{position:absolute;top:7px;z-index:6;width:24px;height:24px;border-radius:5px;
+  background:rgba(0,39,58,.72);color:var(--bone);display:none;align-items:center;
+  justify-content:center;font:700 12px var(--sans-display);line-height:1;border:0;padding:0;}
+.ph-grip{left:7px;cursor:grab;}
+.ph-kill{left:37px;cursor:pointer;}
+.ph-slot:hover .ph-grip,.ph-slot.is-sel .ph-grip,
+.ph-slot:hover .ph-kill,.ph-slot.is-sel .ph-kill{display:flex;}
+.ph-grip:hover{background:var(--sky);color:var(--ink);}
+.ph-kill:hover{background:var(--danger);color:#fff;}
+
+@media print{ .ph-grip,.ph-kill,.drop-label,.drag-ghost{display:none !important;} }
+
+/* ---------- the tray ---------- */
+.img-row.is-source{opacity:.35;}
+.img-grab{flex:none;width:44px;height:34px;border-radius:4px;overflow:hidden;
+  cursor:grab;position:relative;background:var(--paper-2);}
+.img-grab img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;}
+.img-grab:active{cursor:grabbing;}
+
+/* Where the photo currently sits. Also the click path — see .img-menu. */
+.img-badge{flex:none;font:800 8.5px var(--sans-display);letter-spacing:.08em;text-transform:uppercase;
+  padding:4px 7px;border-radius:5px;border:1px solid var(--rule);background:#fff;
+  color:var(--ink-soft);cursor:pointer;white-space:nowrap;max-width:96px;
+  overflow:hidden;text-overflow:ellipsis;}
+.img-badge:hover{border-color:var(--sky);color:var(--ink);}
+.img-badge.used{background:var(--ink);border-color:var(--ink);color:var(--bone);}
+.img-badge.pinned{background:var(--sky);border-color:var(--sky);color:var(--ink);}
+
+.img-menu{position:fixed;z-index:10000;background:#fff;border:1px solid var(--rule);
+  border-radius:8px;box-shadow:0 14px 40px rgba(0,39,58,.22);padding:5px;min-width:150px;}
+.img-menu button{display:block;width:100%;text-align:left;border:0;background:none;
+  font:500 11px var(--sans-body);color:var(--ink);padding:7px 9px;border-radius:5px;cursor:pointer;}
+.img-menu button:hover{background:var(--paper-2);}
+/* The current choice is marked by weight, not colour: --cyan on white is
+   about 3:1, which tokens.css rules out as text. */
+.img-menu button.on{font-weight:800;color:var(--ink);}
+
+.img-hint{font:400 9.5px/1.5 var(--sans-body);color:var(--ink-soft);margin-top:9px;}

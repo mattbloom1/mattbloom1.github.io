@@ -19,6 +19,7 @@
 <link rel="stylesheet" href="../../assets/css/tokens.css">
 <link rel="stylesheet" href="../../assets/css/base.css">
 <link rel="stylesheet" href="../../assets/css/builder.css">
+<link rel="stylesheet" href="../../assets/css/photo-dnd.css">
 <style>
 /* ============================================================
    BROCHURE — page styles
@@ -326,73 +327,6 @@
   text-transform:uppercase;color:rgba(229,229,229,.72);}
 
 
-/* ---------- PHOTO DRAG & DROP (screen only) ----------
-   One gesture for the whole tool: pick a photo up from the tray and drop it
-   on the slot you want it in. Every slot on every page is a target, so
-   there is nothing to learn beyond "drag it where you want it". */
-.drag-ghost{position:fixed;z-index:9999;pointer-events:none;width:120px;height:90px;
-  border-radius:8px;overflow:hidden;box-shadow:0 12px 34px rgba(0,39,58,.4);
-  border:2px solid var(--sky);transform:translate(-50%,-50%) rotate(-2deg);opacity:.94;}
-.drag-ghost img{width:100%;height:100%;object-fit:cover;display:block;}
-body.is-dragging-photo{cursor:grabbing !important;}
-body.is-dragging-photo *{cursor:grabbing !important;}
-
-/* Every drop zone gets a dashed hint while a photo is in the air, and fills
-   in when it is the one under the pointer. */
-body.is-dragging-photo [data-drop]{outline:2px dashed rgba(83,199,220,.65);outline-offset:-4px;}
-body.is-dragging-photo [data-drop].drop-on{outline:3px solid var(--sky);outline-offset:-4px;}
-body.is-dragging-photo [data-drop].drop-on::after{content:'';position:absolute;inset:0;
-  background:rgba(83,199,220,.3);pointer-events:none;z-index:3;}
-.drop-label{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:5;
-  font:800 9px var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--ow);
-  background:var(--navy);padding:5px 9px;border-radius:5px;pointer-events:none;white-space:nowrap;}
-
-/* The tray itself is a drop zone: drag a photo off a page and onto the panel
-   to take it out of the brochure. */
-#imgList.drop-on{outline:3px solid var(--sky);outline-offset:2px;border-radius:8px;
-  background:rgba(83,199,220,.1);}
-
-/* Move grip on a gallery cell. Dragging the photo pans its crop, so moving
-   the photo needs its own handle rather than a held-down modifier. */
-.gal-grip{position:absolute;top:7px;left:7px;z-index:6;width:24px;height:24px;border-radius:5px;
-  background:rgba(0,39,58,.72);color:var(--ow);display:none;align-items:center;
-  justify-content:center;cursor:grab;font:700 12px var(--sans);line-height:1;}
-.gal-cell:hover .gal-grip,.gal-cell.is-sel .gal-grip,.slot-host:hover .gal-grip{display:flex;}
-.gal-grip:hover{background:var(--sky);color:var(--navy);}
-/* The remove button sits beside the move grip on every photo in the deck —
-   the cover, page 3's banner and every gallery frame — so a photo can be
-   taken off a page without dragging it back to the tray. It takes the photo
-   out of the brochure's pages, not out of the tray: it turns up there as
-   Unused and can be dropped back anywhere. */
-.gal-kill{position:absolute;top:7px;left:37px;z-index:6;width:24px;height:24px;border-radius:5px;
-  background:rgba(0,39,58,.72);color:var(--ow);display:none;align-items:center;
-  justify-content:center;cursor:pointer;font:700 12px var(--sans);line-height:1;
-  border:0;padding:0;}
-.gal-cell:hover .gal-kill,.gal-cell.is-sel .gal-kill,.slot-host:hover .gal-kill{display:flex;}
-.gal-kill:hover{background:#B3261E;color:#fff;}
-@media print{ .gal-grip,.gal-kill,.drop-label{display:none !important;} }
-
-/* ---------- PHOTO TRAY ---------- */
-.img-row.is-source{opacity:.35;}
-.img-grab{flex:none;width:44px;height:34px;border-radius:4px;overflow:hidden;
-  cursor:grab;position:relative;background:var(--ui-paper-2);}
-.img-grab img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;}
-.img-grab:active{cursor:grabbing;}
-.img-badge{flex:none;font:800 8.5px var(--sans);letter-spacing:.08em;text-transform:uppercase;
-  padding:4px 7px;border-radius:5px;border:1px solid var(--ui-rule);background:#fff;
-  color:var(--ui-ink-soft);cursor:pointer;white-space:nowrap;max-width:96px;
-  overflow:hidden;text-overflow:ellipsis;}
-.img-badge:hover{border-color:var(--sky);color:var(--navy);}
-.img-badge.used{background:var(--navy);border-color:var(--navy);color:var(--ow);}
-.img-badge.pinned{background:var(--sky);border-color:var(--sky);color:var(--navy);}
-.img-menu{position:fixed;z-index:10000;background:#fff;border:1px solid var(--ui-rule);
-  border-radius:8px;box-shadow:0 14px 40px rgba(0,39,58,.22);padding:5px;min-width:150px;}
-.img-menu button{display:block;width:100%;text-align:left;border:0;background:none;
-  font:500 11px var(--body);color:var(--navy);padding:7px 9px;border-radius:5px;cursor:pointer;}
-.img-menu button:hover{background:var(--ui-paper-2);}
-.img-menu button.on{font-weight:800;color:var(--sky2);}
-.img-hint{font:400 9.5px/1.5 var(--body);color:var(--ui-ink-soft);margin-top:9px;}
-
 /* ---------- GALLERY EDITOR PANEL (screen only) ---------- */
 .gal-pages{display:flex;flex-wrap:wrap;gap:6px;}
 .gal-tab{font:800 9.5px var(--sans);letter-spacing:.05em;padding:6px 10px;border-radius:6px;
@@ -613,6 +547,7 @@ body.is-dragging-photo [data-drop].drop-on::after{content:'';position:absolute;i
 <!-- only for the shared closing-page builders (P.agentCards / P.linkCols);
      this deck draws every other page itself. pitch.css is deliberately not
      loaded alongside it — see the closing-page CSS above. -->
+<script src="../../assets/js/photo-dnd.js"></script>
 <script src="../../assets/js/pitch.js"></script>
 <script src="../../assets/js/icons.js"></script>
 <script src="../../assets/js/qr.js"></script>
@@ -625,6 +560,7 @@ body.is-dragging-photo [data-drop].drop-on::after{content:'';position:absolute;i
 'use strict';
 const $ = s => document.querySelector(s);
 const P = window.Pitch, esc = P.esc;
+const PD = window.GVC_PHOTODND;
 const MONO = '../../assets/logos/monogram-white.svg';
 const MONO_NAVY = '../../assets/logos/monogram.svg';
 
@@ -1056,7 +992,7 @@ function renderCover(page) {
   const cv = page.querySelector('.cv');
   if (hero) {
     cv.classList.add('has-img');
-    cv.addEventListener('pointerdown', e => beginPhotoDrag(e, cv, state.coverPos));
+    cv.addEventListener('pointerdown', e => PD.reframe(e, cv, state.coverPos, REFRAME));
   }
   addSlotGrip(cv, hero, 'Drag to move the cover photo');
 }
@@ -1129,17 +1065,11 @@ function renderGallery(page, gi) {
 
       /* Dragging the photo pans its crop, which is the thing you do most, so
          moving it lives on its own grip rather than behind a held key. */
-      const grip = document.createElement('div');
-      grip.className = 'gal-grip';
-      grip.textContent = '\u2725';
-      grip.title = 'Drag to move this photo somewhere else';
-      grip.addEventListener('pointerdown', ev => {
-        ev.stopPropagation();
-        state.galSel = c.id;
-        beginPhotoDnD(ev, c.id, 'page');
+      PD.grip(cell, {
+        onMove: ev => { state.galSel = c.id; beginPhotoDnD(ev, c.id, 'page'); },
+        onOff: () => unusePhoto(c.id),
+        offTitle: 'Take this photo off the page'
       });
-      cell.appendChild(grip);
-      cell.appendChild(killBtn(c.id, 'Take this photo off the page'));
 
       cell.addEventListener('pointerdown', ev => beginCellPointer(ev, cell, c, wrap));
 
@@ -1328,7 +1258,7 @@ function renderInfo(page, n, of) {
     '</div>';
 
   const tr = page.querySelector('.info-tr');
-  if (topPhoto) tr.addEventListener('pointerdown', e => beginPhotoDrag(e, tr, state.infoTopPos));
+  if (topPhoto) tr.addEventListener('pointerdown', e => PD.reframe(e, tr, state.infoTopPos, REFRAME));
   addSlotGrip(tr, topPhoto, 'Drag to move this photo somewhere else');
 }
 
@@ -1546,41 +1476,6 @@ function beginDrag(e, cell, slot, grid) {
   cell.addEventListener('pointermove', move);
   cell.addEventListener('pointerup', finish);
   cell.addEventListener('pointercancel', finish);
-}
-
-/* ---------------- drag: reframe a photo inside its crop ----------------
-   object-position p% puts the image's overflow at -(overflow * p/100), so
-   moving it by d px means changing p by -d/overflow*100. Pointer deltas are
-   in screen px, so they're divided by the preview's scale first. */
-function beginPhotoDrag(e, box, pos) {
-  const img = box.querySelector('img');
-  if (!img || !img.naturalWidth) return;
-  e.preventDefault();
-  const page = box.closest('.page');
-  const scale = page ? page.getBoundingClientRect().width / (8.5 * 96) : 1;
-  const bw = box.clientWidth, bh = box.clientHeight;
-  const cover = Math.max(bw / img.naturalWidth, bh / img.naturalHeight);
-  const overX = img.naturalWidth * cover - bw, overY = img.naturalHeight * cover - bh;
-  const start = { x: e.clientX, y: e.clientY, px: pos.x, py: pos.y };
-  box.classList.add('is-moving');
-  try { box.setPointerCapture(e.pointerId); } catch (_) {}
-
-  const move = ev => {
-    const dx = (ev.clientX - start.x) / scale, dy = (ev.clientY - start.y) / scale;
-    if (overX > 0.5) pos.x = Math.max(0, Math.min(100, start.px - (dx / overX) * 100));
-    if (overY > 0.5) pos.y = Math.max(0, Math.min(100, start.py - (dy / overY) * 100));
-    img.style.objectPosition = pos.x + '% ' + pos.y + '%';
-  };
-  const done = ev => {
-    box.removeEventListener('pointermove', move);
-    box.removeEventListener('pointerup', done);
-    box.removeEventListener('pointercancel', done);
-    try { box.releasePointerCapture(ev.pointerId); } catch (_) {}
-    box.classList.remove('is-moving');
-  };
-  box.addEventListener('pointermove', move);
-  box.addEventListener('pointerup', done);
-  box.addEventListener('pointercancel', done);
 }
 
 /* ---------------- drag: pan a zoomed floor plan ----------------
@@ -1845,6 +1740,11 @@ function roleLabelFor(img) {
    ============================================================ */
 let photoDrag = null;
 
+/* The brochure's design canvas is 8.5in wide and its pages are .page — the
+   two decks use .pg/.cv and the Showsheet is 11in, so the shared reframe
+   has to be told. */
+const REFRAME = { page: '.page', canvasIn: 8.5 };
+
 const DROP_LABEL = {
   'hero': 'Cover photo', 'info-top': 'Top banner',
   'cell': 'Swap in', 'gal-add': 'Add to this page'
@@ -1937,156 +1837,42 @@ function unusePhoto(id) {
 }
 
 /* Start dragging a photo. `from` is 'tray' or 'page' — a page drag that ends
-   on the tray means "take this out", which a tray drag cannot mean. */
+   on the tray means "take this out", which a tray drag cannot mean.
+
+   The gesture itself — the ghost, the live target, the auto-scroll — is in
+   assets/js/photo-dnd.js and shared with the other three builders. All this
+   adds is what the brochure's own data-drop values mean. */
 function beginPhotoDnD(e, id, from) {
-  if (e.pointerType === 'mouse' && e.button !== 0) return;
   id = Number(id);
   const img = state.images.filter(im => im.id === id)[0];
   if (!img) return;
-  e.preventDefault();
-
-  photoDrag = { id: id, from: from, x: e.clientX, y: e.clientY, active: false, ghost: null, over: null };
-
-  /* The deck is taller than the stage, so the page a photo is headed for is
-     usually off-screen when the drag starts — and a drop can only land on
-     something that is actually under the pointer. Holding the photo near the
-     top or bottom edge of the stage scrolls the deck, the way dragging to the
-     edge of any list does, which is what makes moving a photo from one page
-     to another possible at all. */
-  const stage = document.getElementById('stage');
-  const EDGE = 80, MAX_SPEED = 26;
-  let last = { x: e.clientX, y: e.clientY }, raf = 0;
-
-  /* what is under the pointer right now, highlighted as the live target */
-  const aim = () => {
-    const el = document.elementFromPoint(last.x, last.y);
-    let zone = el && el.closest ? el.closest('[data-drop]') : null;
-    if (!zone && el && el.closest && el.closest('#imgList') && from === 'page') {
-      zone = document.getElementById('imgList');
+  PD.drag(e, {
+    url: img.url,
+    from: from,
+    scroller: document.getElementById('stage'),
+    tray: document.getElementById('imgList'),
+    labels: DROP_LABEL,
+    onOut: () => unusePhoto(id),
+    onDrop: (kind, zone) => {
+      if (kind === 'cell')         dropOnCell(id, zone.dataset.id);
+      else if (kind === 'gal-add') dropOnGalleryPage(id, parseInt(zone.dataset.gi, 10) || 0);
+      else                         placeInSlot(id, kind);
     }
-    if (zone !== photoDrag.over) {
-      document.querySelectorAll('.drop-on').forEach(z => z.classList.remove('drop-on'));
-      if (zone) zone.classList.add('drop-on');
-      photoDrag.over = zone;
-    }
-  };
-
-  /* Speed for one axis: nothing until the pointer is inside the edge band,
-     then proportional to how far into it the pointer has gone. */
-  const speed = (pos, lo, hi) => {
-    if (pos < lo + EDGE) return -MAX_SPEED * Math.min(1, (lo + EDGE - pos) / EDGE);
-    if (pos > hi - EDGE) return  MAX_SPEED * Math.min(1, (pos - (hi - EDGE)) / EDGE);
-    return 0;
-  };
-
-  const scrollTick = () => {
-    if (!photoDrag || !photoDrag.active) { raf = 0; return; }
-    const r = stage.getBoundingClientRect();
-    // both axes: the deck is taller than the stage, and at some zooms wider too
-    const vy = speed(last.y, r.top, r.bottom), vx = speed(last.x, r.left, r.right);
-    if (vy || vx) {
-      const wasY = stage.scrollTop, wasX = stage.scrollLeft;
-      stage.scrollTop += vy; stage.scrollLeft += vx;
-      if (stage.scrollTop !== wasY || stage.scrollLeft !== wasX) aim();  // the target moved
-    }
-    raf = requestAnimationFrame(scrollTick);
-  };
-
-  const arm = () => {
-    document.body.classList.add('is-dragging-photo');
-    if (!raf) raf = requestAnimationFrame(scrollTick);
-    const g = document.createElement('div');
-    g.className = 'drag-ghost';
-    g.innerHTML = '<img src="' + img.url + '" alt="">';
-    document.body.appendChild(g);
-    photoDrag.ghost = g;
-    // label every live target so the drop is self-explanatory
-    document.querySelectorAll('[data-drop]').forEach(z => {
-      if (z.querySelector(':scope > .drop-label')) return;
-      const l = document.createElement('div');
-      l.className = 'drop-label';
-      l.textContent = DROP_LABEL[z.dataset.drop] || 'Drop here';
-      z.appendChild(l);
-    });
-  };
-
-  const clear = () => {
-    if (raf) { cancelAnimationFrame(raf); raf = 0; }
-    document.body.classList.remove('is-dragging-photo');
-    if (photoDrag && photoDrag.ghost) photoDrag.ghost.remove();
-    document.querySelectorAll('.drop-label').forEach(l => l.remove());
-    document.querySelectorAll('.drop-on').forEach(z => z.classList.remove('drop-on'));
-    document.querySelectorAll('.img-row.is-source').forEach(r => r.classList.remove('is-source'));
-  };
-
-  const move = ev => {
-    if (!photoDrag) return;
-    if (!photoDrag.active) {
-      if (Math.hypot(ev.clientX - photoDrag.x, ev.clientY - photoDrag.y) < DRAG_THRESHOLD) return;
-      photoDrag.active = true;
-      arm();
-    }
-    photoDrag.ghost.style.left = ev.clientX + 'px';
-    photoDrag.ghost.style.top = ev.clientY + 'px';
-    last = { x: ev.clientX, y: ev.clientY };
-    aim();
-  };
-
-  const finish = () => {
-    window.removeEventListener('pointermove', move);
-    window.removeEventListener('pointerup', finish);
-    window.removeEventListener('pointercancel', finish);
-    const d = photoDrag;
-    const zone = d && d.active ? d.over : null;
-    clear();
-    photoDrag = null;
-    if (!zone) return;
-    if (zone.id === 'imgList') { unusePhoto(d.id); return; }
-    const kind = zone.dataset.drop;
-    GVC_UNSAVED.touch();
-    if (kind === 'cell')          dropOnCell(d.id, zone.dataset.id);
-    else if (kind === 'gal-add')  dropOnGalleryPage(d.id, parseInt(zone.dataset.gi, 10) || 0);
-    else                          placeInSlot(d.id, kind);
-  };
-
-  window.addEventListener('pointermove', move);
-  window.addEventListener('pointerup', finish);
-  window.addEventListener('pointercancel', finish);
+  });
 }
 
-/* The ✕ that takes a photo off the page. Every photo in the deck carries one
-   — the same button on a gallery frame, the cover and page 3's banner — and
-   all of them do the one thing: hand the photo back to the tray. */
-function killBtn(id, title) {
-  const b = document.createElement('button');
-  b.type = 'button';
-  b.className = 'gal-kill';
-  b.innerHTML = '&#10005;';
-  b.title = title || 'Take this photo off the page';
-  // the pages are covered in drag handlers, so the click must not reach them
-  b.addEventListener('pointerdown', ev => ev.stopPropagation());
-  b.addEventListener('click', ev => { ev.stopPropagation(); unusePhoto(id); });
-  return b;
-}
-
-/* Single slots — the cover and page 3's banner — get the same move grip and
-   remove button the gallery frames have, so a photo can be moved or taken out
-   from any slot in the deck rather than only from the gallery. */
+/* Every photo in the deck carries a move grip and a ✕ — on a gallery frame,
+   on the cover and on page 3's banner — so it can be moved or taken out from
+   wherever it is sitting rather than only from the gallery. */
 function addSlotGrip(box, img, title) {
   if (!box || !img) return;
-  box.classList.add('slot-host');      // so the grip appears on hover, as in the gallery
-  const grip = document.createElement('div');
-  grip.className = 'gal-grip';
-  grip.textContent = '\u2725';
-  grip.title = title || 'Drag to move this photo';
-  grip.addEventListener('pointerdown', ev => {
-    ev.stopPropagation();
-    beginPhotoDnD(ev, img.id, 'page');
+  PD.grip(box, {
+    moveTitle: title,
+    onMove: ev => beginPhotoDnD(ev, img.id, 'page'),
+    onOff: () => unusePhoto(img.id),
+    offTitle: 'Take this photo off the page'
   });
-  box.appendChild(grip);
-  box.appendChild(killBtn(img.id, 'Take this photo off the page'));
 }
-
 /* ---------------- the photo tray ---------------- */
 /* Re-read every tray badge from the current placement, leaving the rest of
    the row alone. Called at the end of every redraw. */
@@ -2112,95 +1898,48 @@ function placementOf(img) {
   return { text: 'Unused', cls: '' };
 }
 
-function closeImgMenu() {
-  document.querySelectorAll('.img-menu').forEach(m => m.remove());
-}
+
 
 /* The badge opens the same choices the old dropdown had. Dragging covers the
-   common cases; this is the keyboard path and the way to say "auto". */
+   common cases; this is the keyboard path and the way to say "auto", which is
+   not a place and so cannot be dragged to. */
 function openImgMenu(img, anchor) {
-  closeImgMenu();
-  const box = anchor.getBoundingClientRect();
-  const menu = document.createElement('div');
-  menu.className = 'img-menu';
-  ROLES.forEach(([value, label]) => {
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.textContent = label;
-    if ((img.role || 'auto') === value) b.className = 'on';
-    b.addEventListener('click', () => {
-      closeImgMenu();
-      if (value === 'gallery' || value === 'auto' || value === 'exclude') {
-        if (value !== 'gallery') removeCell(img.id);
-        img.role = value;
-        redraw(); renderImgList(); renderGalleryPanel();
-      } else {
-        placeInSlot(img.id, value);
-      }
-    });
-    menu.appendChild(b);
-  });
-  document.body.appendChild(menu);
-  menu.style.left = Math.min(box.left, window.innerWidth - menu.offsetWidth - 10) + 'px';
-  menu.style.top = Math.min(box.bottom + 5, window.innerHeight - menu.offsetHeight - 10) + 'px';
-  setTimeout(() => document.addEventListener('pointerdown', function once(ev) {
-    if (!menu.contains(ev.target)) { closeImgMenu(); document.removeEventListener('pointerdown', once); }
-  }), 0);
+  PD.menu(anchor, ROLES, value => {
+    if (value === 'gallery' || value === 'auto' || value === 'exclude') {
+      if (value !== 'gallery') removeCell(img.id);
+      img.role = value;
+      redraw(); renderImgList(); renderGalleryPanel();
+    } else {
+      placeInSlot(img.id, value);
+    }
+  }, img.role || 'auto');
 }
 
 function renderImgList() {
-  const host = $('#imgList');
-  host.innerHTML = '';
-  state.images.forEach(img => {
-    const row = document.createElement('div');
-    row.className = 'img-row';
-
-    const grab = document.createElement('div');
-    grab.className = 'img-grab';
-    grab.title = 'Drag onto any photo slot in the preview';
-    grab.innerHTML = '<img src="' + img.url + '" alt="">';
-    grab.addEventListener('pointerdown', e => {
-      row.classList.add('is-source');
-      beginPhotoDnD(e, img.id, 'tray');
-    });
-
-    const mid = document.createElement('div');
-    mid.className = 'img-mid';
-    const name = document.createElement('div');
-    name.className = 'img-name'; name.textContent = img.name;
-    mid.appendChild(name);
-
-    row.dataset.id = img.id;
-    const place = placementOf(img);
-    const badge = document.createElement('button');
-    badge.type = 'button';
-    badge.className = 'img-badge ' + place.cls;
-    badge.textContent = place.text;
-    badge.title = (img.role && img.role !== 'auto')
-      ? 'Placed by hand — click to change'
-      : 'Placed automatically — click to pin it somewhere';
-    badge.addEventListener('click', () => openImgMenu(img, badge));
-
-    const del = document.createElement('button');
-    del.type = 'button'; del.className = 'img-x'; del.innerHTML = '&#10005;';
-    del.title = 'Remove this photo from the brochure';
-    del.addEventListener('click', () => {
+  PD.tray($('#imgList'), state.images, {
+    idOf: img => img.id,
+    onGrab: (e, img) => beginPhotoDnD(e, img.id, 'tray'),
+    badgeOf: img => {
+      const place = placementOf(img);
+      return {
+        text: place.text, cls: place.cls,
+        title: (img.role && img.role !== 'auto')
+          ? 'Placed by hand — click to change'
+          : 'Placed automatically — click to pin it somewhere'
+      };
+    },
+    onBadge: (img, badge) => openImgMenu(img, badge),
+    onRemove: img => {
       removeCell(img.id);
       state.images = state.images.filter(x => x.id !== img.id);
       redraw(); renderImgList(); renderGalleryPanel();
-    });
-
-    row.append(grab, mid, badge, del);
-    host.appendChild(row);
+    },
+    removeTitle: 'Remove this photo from the brochure',
+    note: $('#imgNote'),
+    hint: 'Drag a thumbnail onto any slot in the preview to place it. ' +
+          'Drag a photo off a page and onto this list to take it out.'
   });
-
-  $('#imgNote').innerHTML = state.images.length
-    ? state.images.length + (state.images.length === 1 ? ' photo' : ' photos') +
-      '<div class="img-hint">Drag a thumbnail onto any slot in the preview to place it. ' +
-      'Drag a photo off a page and onto this list to take it out.</div>'
-    : '';
 }
-
 
 /* The .ag-chip picker shared with the Showsheet and the packages — the
    implementation lives in roster.js, the styles in builder.css. */
