@@ -22,10 +22,21 @@
   function clear() { dirty = false; }
   function isDirty() { return dirty; }
 
+  /* An edit to the DOCUMENT. The property bar's own controls sit on the same
+     page but are not part of it: picking a property from its dropdown fires a
+     change event like any other select, and counting that as unsaved work made
+     the bar ask "unsaved changes here are lost" on a sheet nobody had touched
+     — including the very first load, and every swap between properties. */
+  function onEdit(e) {
+    var t = e && e.target;
+    if (t && t.closest && t.closest('.plib')) return;
+    touch();
+  }
+
   function watch() {
     // typing in the editor, and any select / checkbox / file input
-    document.addEventListener('input', touch, true);
-    document.addEventListener('change', touch, true);
+    document.addEventListener('input', onEdit, true);
+    document.addEventListener('change', onEdit, true);
 
     global.addEventListener('beforeunload', function (e) {
       if (!dirty) return;
