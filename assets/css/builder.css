@@ -83,7 +83,14 @@ details.ed-sec summary .hint{margin-left:auto;font:400 10px var(--ui-mono);lette
 .plib-line{display:flex;gap:8px;margin-top:9px;}
 .plib-pick{flex:1;min-width:0;}
 .plib-save{flex:none;white-space:nowrap;}
-.plib-status{margin-top:8px;width:auto;min-width:9.5em;}
+/* the status select and the way through to the Properties page share a row,
+   so the link costs the bar no extra height */
+.plib-foot{display:flex;align-items:center;gap:10px;margin-top:8px;}
+.plib-status{width:auto;min-width:9.5em;}
+.plib-more{margin-left:auto;flex:none;font:400 11px var(--ui-mono);color:var(--ui-ink-soft);
+  text-decoration:none;border-bottom:1px solid var(--ui-rule);padding-bottom:1px;white-space:nowrap;}
+.plib-more:hover{color:var(--navy);border-bottom-color:var(--navy);}
+.plib-more:focus-visible{outline:2px solid var(--sky);outline-offset:2px;}
 .plib-note{margin-top:8px;font:400 11px/1.5 var(--ui-mono);color:var(--ui-ink-soft);min-height:1em;}
 .plib-note.is-ok{color:#2F6E4F;}
 .plib-note.is-warn{color:var(--danger,#8C3A2B);}

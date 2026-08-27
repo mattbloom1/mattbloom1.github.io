@@ -154,18 +154,29 @@
   }
 
   /* The dropdown: active first, sold last, archived left out unless asked
-     for, and within a status the most recently touched at the top. */
+     for, and within a status the most recently touched at the top.
+
+     withPhotos adds each property's photo sizes, which only the Properties
+     page wants — asking for them here by default would pull every photo row
+     in the library on every builder load. */
   function list(opts) {
     opts = opts || {};
     var q = '/properties?select=id,slug,label,status,updated_at,documents(tool)' +
+            (opts.withPhotos ? ',photos(bytes)' : '') +
             '&order=updated_at.desc';
     if (!opts.includeArchived) q += '&status=neq.archived';
     return rest(q).then(function (rows) {
       return (rows || []).map(function (r) {
         var has = {};
         (r.documents || []).forEach(function (d) { has[d.tool] = true; });
-        return { id: r.id, slug: r.slug, label: r.label, status: r.status,
-                 updated: r.updated_at, has: has };
+        var row = { id: r.id, slug: r.slug, label: r.label, status: r.status,
+                    updated: r.updated_at, has: has };
+        if (opts.withPhotos) {
+          var ph = r.photos || [];
+          row.photoCount = ph.length;
+          row.photoBytes = ph.reduce(function (n, x) { return n + (x.bytes || 0); }, 0);
+        }
+        return row;
       }).sort(function (a, b) {
         return STATUSES.indexOf(a.status) - STATUSES.indexOf(b.status);
       });
@@ -226,7 +237,7 @@
       return rest('/properties?id=eq.' + id, {
         method: 'PATCH',
         prefer: 'return=representation',
-        body: JSON.stringify({ core: merged, label: labelOf(merged) })
+        body: JSON.stringify({ core: merged, label: merged.displayLabel || labelOf(merged) })
       }).then(function (out) { return out[0]; });
     });
   }
@@ -271,6 +282,27 @@
     return rest('/properties?id=eq.' + id, {
       method: 'PATCH', body: JSON.stringify({ status: status })
     });
+  }
+
+  /* A property's name is normally built from its address, and saveCore
+     rebuilds it every time a builder saves facts. A name typed on the
+     Properties page is therefore also kept in core.displayLabel, which
+     saveCore honours — otherwise the next save would undo the rename.
+
+     The slug is left alone on purpose: the address is the property's
+     identity, and duplicate detection matches on it. Renaming changes
+     what the library calls a property, never which property it is. */
+  function rename(id, name) {
+    var clean = String(name || '').trim();
+    if (!clean) return Promise.reject(new Error('A property needs a name.'));
+    return rest('/properties?id=eq.' + id + '&select=core').then(function (rows) {
+      var core = Object.assign({}, (rows[0] && rows[0].core) || {});
+      core.displayLabel = clean;
+      return rest('/properties?id=eq.' + id, {
+        method: 'PATCH', prefer: 'return=representation',
+        body: JSON.stringify({ core: core, label: clean })
+      });
+    }).then(function (out) { return out && out[0]; });
   }
 
   /* ---------------- documents ---------------- */
@@ -375,6 +407,32 @@
     });
   }
 
+  /* "Free up photos" on the Properties page. The shelf goes; the address,
+     the shared facts and all four saved documents stay exactly as they are.
+     Photos are essentially all of the storage a property uses, so this is
+     what reclaims room against the free tier's 1 GB.
+
+     The documents keep opening afterwards: hydrate() already resolves a
+     token whose photo has gone to an empty string, so a brochure comes back
+     with empty image slots rather than broken ones.
+
+     Files first, rows second. The other order can leave a file in the
+     bucket that nothing points at — space consumed with no way to find it
+     again — whereas a row whose file is already gone is harmless. */
+  function stripPhotos(id) {
+    return rest('/photos?property_id=eq.' + id + '&select=id,path')
+      .then(function (rows) {
+        rows = rows || [];
+        if (!rows.length) return { removed: 0 };
+        return call('/storage/v1/object/' + CFG.photoBucket, {
+          method: 'DELETE',
+          body: JSON.stringify({ prefixes: rows.map(function (r) { return r.path; }) })
+        })
+          .then(function () { return rest('/photos?property_id=eq.' + id, { method: 'DELETE' }); })
+          .then(function () { return { removed: rows.length }; });
+      });
+  }
+
   /* ---------------- photos inside a saved document ----------------
 
      Every tool keeps its photos as base64 data URLs somewhere inside its
@@ -469,8 +527,9 @@
     list: list, load: load, create: create, findByAddress: findByAddress,
     saveCore: saveCore, saveDoc: saveDoc, saveDocument: saveDocument,
     hydrate: hydrate, docSavedAt: docSavedAt,
-    setStatus: setStatus, changesAgainst: changesAgainst,
+    setStatus: setStatus, rename: rename, changesAgainst: changesAgainst,
     putPhoto: putPhoto, photoUrls: photoUrls, removePhoto: removePhoto,
+    stripPhotos: stripPhotos,
     slugOf: slugOf, labelOf: labelOf
   };
 })(window);

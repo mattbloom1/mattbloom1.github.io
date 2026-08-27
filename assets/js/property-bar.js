@@ -46,6 +46,12 @@
     var save = el('button', 'plib-save btn sm');
     var status = el('select', 'plib-status');
     var note = el('div', 'plib-note');
+    /* The bar can load and save; renaming, archived properties and the photo
+       storage read-out live on the Properties page. Same relative path from
+       all four builders. */
+    var more = el('a', 'plib-more', 'All properties');
+    more.href = '../properties/';
+    more.title = 'Rename, un-archive, and see how much photo storage is left';
 
     name.type = 'button';
     save.type = 'button';
@@ -58,9 +64,11 @@
     });
 
     var head = el('div', 'plib-head');
+    var foot = el('div', 'plib-foot');
     head.append(name, mark);
     line.append(pick, save);
-    bar.append(head, line, status, note);
+    foot.append(status, more);
+    bar.append(head, line, foot, note);
     host.append(bar);
 
     /* ---------------- saying what is going on ---------------- */
@@ -72,7 +80,7 @@
 
     function paint() {
       name.textContent = current ? current.label : 'No property loaded';
-      name.title = current ? 'Rename or check this property' : 'Nothing loaded — Save creates one';
+      name.title = current ? 'Show when this property was last saved' : 'Nothing loaded — Save creates one';
       name.classList.toggle('is-empty', !current);
       mark.textContent = global.GVC_UNSAVED && GVC_UNSAVED.isDirty() ? 'Unsaved changes' : '';
       save.textContent = current ? 'Save to this property' : 'Save as new property';
