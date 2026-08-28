@@ -18,6 +18,20 @@
   --ui-mono:'JetBrains Mono',ui-monospace,monospace;
   /* design canvas — US Letter portrait */
   --pw:8.5in; --ph:11in;
+  /* Brand artwork, shared by every builder.
+
+     These paths are root-relative on purpose. A custom property is substituted
+     as a literal token and its url() is resolved where the var() is USED, not
+     where it was declared — so a relative path here would resolve against each
+     tool's own folder and 404. The site is served from the root of its domain
+     (matthewgvc.github.io) and from the root of the local preview server, so a
+     leading slash is the one form that is correct in both, and in every tool
+     whatever its depth. Serving the site from a subpath would break these.
+
+     --grain is a 128px tile of luminance noise at a constant low alpha; random
+     noise has no low-frequency structure, so it repeats with no visible seam. */
+  --mesh:url(/assets/img/mesh-gradient.jpg);
+  --grain:url(/assets/img/grain.png);
 }
 *{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
 html,body{margin:0;padding:0;background:var(--page);}

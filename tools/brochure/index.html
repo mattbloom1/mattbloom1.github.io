@@ -38,15 +38,6 @@
   --mask-top:22%;          /* navy scrim down from the top edge */
   --mask-bot:52%;          /* navy scrim up from the bottom edge — carries the address */
   --bento-gap:.06in;       /* white gutter between bento cells */
-  /* The brand mesh gradient, referenced by every GRADIENT SPOT below. Kept in
-     one custom property so a spot can be dropped by deleting its rule, and all
-     of them by clearing this. */
-  --mesh:url(../../assets/img/mesh-gradient.jpg);
-  /* A 128px tile of luminance noise at a constant low alpha. Random noise has no
-     low-frequency structure, so it repeats with no visible seam. It is sized in
-     inches where it is used, so the grain stays a fixed physical size on paper
-     instead of a fixed number of pixels. */
-  --grain:url(../../assets/img/grain.png);
 }
 
 /* shared bits ------------------------------------------------ */
@@ -404,7 +395,7 @@
    window onto the artwork. builder.css sets print-color-adjust:exact globally,
    so the fill survives the PDF. */
 .states .stc .stc-art{display:block;margin:0 auto .08in;height:.5in;width:.8in;
-  background:url(../../assets/img/mesh-gradient.jpg) center/cover;
+  background:var(--mesh) center/cover;
   -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
   -webkit-mask-position:center;mask-position:center;
   -webkit-mask-size:contain;mask-size:contain;}

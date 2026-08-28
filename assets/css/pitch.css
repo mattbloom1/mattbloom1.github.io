@@ -59,6 +59,11 @@
 .cv-bar{position:absolute;left:0;right:0;bottom:0;height:1.02in;background:rgba(0,39,58,.92);
   border-top:1pt solid var(--rule-rev);display:flex;align-items:center;justify-content:space-between;
   gap:.24in;padding:0 var(--pad);}
+/* A gradient hairline along the top edge of the cover bar, over the flat rule
+   already there. .cv-bar is positioned, so this anchors to it. Mirrored in
+   tools/brochure/index.html, which cannot load this file. */
+.cv-bar::before{content:'';position:absolute;left:0;right:0;top:0;height:2.2pt;
+  background:var(--mesh) center/cover;}
 .cv-bar .cb-side{flex:1;min-width:0;}
 .cv-bar .cb-side.r{text-align:right;}
 .cv-bar .cb-nm{font:700 12pt var(--serif);color:#fff;line-height:1.2;}
@@ -279,7 +284,7 @@ table.tbl .meta{display:block;font-size:7.5pt;color:rgba(0,39,58,.55);margin-top
    window onto the artwork. builder.css sets print-color-adjust:exact globally,
    so the fill survives the PDF. */
 .states .stc .stc-art{display:block;margin:0 auto .08in;height:.5in;width:.8in;
-  background:url(../img/mesh-gradient.jpg) center/cover;
+  background:var(--mesh) center/cover;
   -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
   -webkit-mask-position:center;mask-position:center;
   -webkit-mask-size:contain;mask-size:contain;}
