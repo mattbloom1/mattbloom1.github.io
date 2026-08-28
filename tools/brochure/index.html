@@ -511,6 +511,20 @@
             <input type="text" data-field="address" placeholder="45 Crosby Street, Penthouse">
             <div class="warn" id="warnAddr" hidden><b>Too long.</b> The address has grown above the dark scrim on page 1, so the top of it may be unreadable.</div>
           </div>
+          <!-- AUDITION — cover kicker type. Temporary: here to try faces for
+               "The GVC Team Presents". To settle it, put the winner in the
+               .cv-kind rule and delete this block, the KICKER TYPE script
+               block, the two state keys and the two DOC_KEYS entries. -->
+          <div class="f-row" id="kickerTry">
+            <div class="field">
+              <label>Cover kicker face <span class="hint">trying options</span></label>
+              <select id="kickerFont"></select>
+            </div>
+            <div class="field">
+              <label>Case</label>
+              <label class="gal-check"><input type="checkbox" id="kickerCaps"> Full caps</label>
+            </div>
+          </div>
           <div class="f-row">
             <div class="field"><label>City</label><input type="text" data-field="city" placeholder="New York"></div>
             <div class="field"><label>State</label><input type="text" data-field="state" placeholder="NY"></div>
@@ -768,6 +782,9 @@ const state = {
   galSel: null,          // id of the selected cell, if any
   // page 1
   address: '', city: '', state: '', zip: '',
+  /* AUDITION — see the KICKER TYPE block. Index into KICKER_FONTS, plus the
+     caps toggle. Both go when a face is settled. */
+  kickerFont: 0, kickerCaps: false,
   // agents
   agents: [],
 
@@ -1046,6 +1063,33 @@ function cbBrokerage(a) {
   '</div>';
 }
 
+/* ---------------- AUDITION: KICKER TYPE ----------------
+   Every face below is already pulled in by this page's Google Fonts link, so
+   switching between them costs no extra request. The stacks are copied from
+   the tokens rather than read through var(), because --serif means Playfair on
+   a builder canvas and Fraunces in the site chrome — naming them outright is
+   what lets both appear in the same list. Delete this whole block when a face
+   is chosen. */
+const KICKER_FONTS = [
+  ['Playfair Display — current', "'Playfair Display',Georgia,serif"],
+  ['Fraunces — site chrome serif', "'Fraunces',Georgia,serif"],
+  ['Nunito Sans — display sans',   "'Nunito Sans','Segoe UI',sans-serif"],
+  ['Raleway — body sans',          "'Raleway','Segoe UI',sans-serif"],
+  ['JetBrains Mono',                    "'JetBrains Mono',ui-monospace,monospace"]
+];
+/* Caps get tracking of their own: set solid, capitals read as a block, and the
+   .3em the old tracked-caps kicker used is far too wide at this size. */
+function kickerStyle() {
+  const f = KICKER_FONTS[state.kickerFont] || KICKER_FONTS[0];
+  return ' style="font-family:' + f[1] +
+         (state.kickerCaps ? ';text-transform:uppercase;letter-spacing:.06em' : '') + '"';
+}
+function syncKicker() {
+  const sel = $('#kickerFont'), caps = $('#kickerCaps');
+  if (sel) sel.value = state.kickerFont;
+  if (caps) caps.checked = !!state.kickerCaps;
+}
+
 function renderCover(page) {
   const hero = assign.hero, city = cityLine();
   const [a1, a2] = agentObjs();
@@ -1055,7 +1099,7 @@ function renderCover(page) {
                 state.coverPos.x + '% ' + state.coverPos.y + '%">'
             : '<div class="empty-note">Drop a cover photo<br>in the Photos panel</div>') +
       '<div class="cv-mask"></div>' +
-      '<div class="cv-kind">The GVC Team Presents</div>' +
+      '<div class="cv-kind"' + kickerStyle() + '>The GVC Team Presents</div>' +
       '<div class="cv-head">' +
         '<div class="cv-ttl">' + (esc(state.address) || '&nbsp;') + '</div>' +
         (city ? '<div class="cv-sub">' + esc(city) + '</div>' : '') +
@@ -2256,6 +2300,20 @@ wireDrop('#fpDrop', '#fpFile', addFloorplans);
 document.querySelectorAll('[data-field]').forEach(el => {
   el.addEventListener('input', () => { state[el.dataset.field] = el.value; redraw(); });
 });
+/* AUDITION — cover kicker controls. Goes with the KICKER TYPE block. */
+(() => {
+  const sel = $('#kickerFont');
+  KICKER_FONTS.forEach((f, i) => {
+    const o = document.createElement('option');
+    o.value = i; o.textContent = f[0];
+    o.style.fontFamily = f[1];        // each option previews its own face
+    sel.appendChild(o);
+  });
+  sel.addEventListener('change', () => { state.kickerFont = +sel.value; redraw(); });
+  $('#kickerCaps').addEventListener('change', e => { state.kickerCaps = e.target.checked; redraw(); });
+  syncKicker();
+})();
+
 $('#strategy').addEventListener('change', e => {
   state.strategy = e.target.value;
   redraw(); renderImgList(); updateBentoNote();
@@ -2305,7 +2363,9 @@ GVC_UNSAVED.watch();
 
 /* the deck's own work — everything that is not a shared fact */
 const DOC_KEYS = ['images', 'gallery', 'galCaptions', 'galPage', 'strategy',
-                  'floorplans', 'fpNote', 'coverPos', 'infoTopPos'];
+                  'floorplans', 'fpNote', 'coverPos', 'infoTopPos',
+                  /* AUDITION — drop these two with the KICKER TYPE block */
+                  'kickerFont', 'kickerCaps'];
 
 GVC_PROPBAR.mount({
   host: $('#propBar'),
@@ -2348,6 +2408,7 @@ GVC_PROPBAR.mount({
       const k = el.dataset.field;
       if (k in state) el.value = state[k];
     });
+    syncKicker();   /* AUDITION — goes with the KICKER TYPE block */
     renderImgList(); renderFpList(); renderGalleryPanel(); redraw(); updateBentoNote();
   }
 });
