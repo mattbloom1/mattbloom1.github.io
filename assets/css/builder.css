@@ -16,8 +16,9 @@
   --serif:'Playfair Display',Georgia,serif;
   --ui-paper-2:#E7E4DC; --ui-rule:#D3D4D0; --ui-ink-soft:#33525F;
   --ui-mono:'JetBrains Mono',ui-monospace,monospace;
-  /* design canvas — US Letter portrait */
-  --pw:8.5in; --ph:11in;
+  /* design canvas — US Letter portrait. A builder with more than one output
+     size overrides --ph/--pw (and --print-scale, used only when printing). */
+  --pw:8.5in; --ph:11in; --print-scale:1;
   /* Brand artwork, shared by every builder.
 
      These paths are root-relative on purpose. A custom property is substituted
@@ -171,7 +172,15 @@ details.ed-sec summary .hint{margin-left:auto;font:400 10px var(--ui-mono);lette
   #stage{height:auto;overflow:visible;background:#fff;}
   #pages{padding:0 !important;display:block !important;gap:0 !important;}
   .pg-col{display:block;}
-  .page-wrap{overflow:visible;width:auto !important;height:auto !important;}
-  .page{transform:none !important;box-shadow:none !important;break-after:page;page-break-after:always;}
+  /* The design canvas prints 1:1 by default. A builder whose canvas is bigger
+     than its paper (tools/brochure/'s half-letter variant) sets --print-scale
+     and its own @page size; the wrap then clips to the scaled page so nothing
+     spills onto the next sheet. At the default scale of 1 this is exactly the
+     canvas size, i.e. unchanged for every 1:1 builder. */
+  .page-wrap{overflow:hidden;
+    width:calc(var(--pw) * var(--print-scale, 1)) !important;
+    height:calc(var(--ph) * var(--print-scale, 1)) !important;}
+  .page{transform:scale(var(--print-scale, 1)) !important;transform-origin:0 0 !important;
+    box-shadow:none !important;break-after:page;page-break-after:always;}
   .pg-col:last-child .page{break-after:auto;page-break-after:auto;}
 }

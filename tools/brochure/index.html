@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Brochure Builder — Matt Bloomfield</title>
-<meta name="description" content="Build a print-ready 8.5x11 property brochure for The GVC Team.">
+<meta name="description" content="Build a print-ready 8.5x11 or 5.5x8.5 property brochure for The GVC Team.">
 <meta property="og:title" content="Brochure Builder — Matt Bloomfield">
-<meta property="og:description" content="Build a print-ready 8.5x11 property brochure for The GVC Team.">
+<meta property="og:description" content="Build a print-ready 8.5x11 or 5.5x8.5 property brochure for The GVC Team.">
 <meta property="og:url" content="https://matthewgvc.github.io/tools/brochure/">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
@@ -446,11 +446,32 @@
   font:400 10.5px/1.6 var(--ui-mono);color:#6B4A12;}
 .warn b{font-weight:700;}
 
+/* ============================================================
+   PAPER SIZE — 8.5 x 11 (default) or half-letter 5.5 x 8.5
+
+   The design canvas is always 8.5in WIDE; its HEIGHT follows the chosen
+   paper's aspect, so the layout reflows to fill whichever sheet it prints on
+   (every page is a flex column with a flex:1 body). Keeping the width fixed
+   is deliberate: the page padding, banner heights and grid gaps are all set
+   in inches against an 8.5in measure, and nothing has to be re-tuned.
+
+     - Letter portrait (8.5 x 11in): canvas 8.5 x 11, printed 1:1.
+     - Half-letter portrait (5.5 x 8.5in): canvas 8.5 x 13.1364 (same 1 : 1.545
+       aspect), printed at scale .6470588 — so the sheet is 65% the linear size
+       and every point size and inch of geometry shrinks with it, which is what
+       keeps the small brochure a faithful reduction rather than a re-layout.
+
+   Set from state.paper by syncPaper(); the @page size lives in <style
+   id="pagesize"> and is rewritten there too. */
+body.paper-half{--ph:13.1364in;}
+@media print{ body.paper-half{--print-scale:.6470588;} }
+
 @media print{
   .empty-note,.over-flag{display:none !important;}
   .is-over{outline:none !important;}
 }
 </style>
+<style id="pagesize">@page{size:8.5in 11in;margin:0;}</style>
 </head>
 <body data-root="../../" data-nav="tools" data-foot="none">
 <main>
@@ -588,6 +609,11 @@
   </main>
 
   <div id="stageBar">
+    <span class="zlab">Paper</span>
+    <div class="seg" id="paperSeg" role="group" aria-label="Paper size">
+      <button type="button" data-v="letter" class="on">8.5 &times; 11</button>
+      <button type="button" data-v="half">5.5 &times; 8.5</button>
+    </div>
     <div class="sp"></div>
     <span class="zlab" id="zoomInfo"></span>
     <button class="btn sm ghost" id="btnZoom">Zoom 100%</button>
@@ -781,6 +807,9 @@ const state = {
   // floor plans
   floorplans: [],        // {id,name,url,label}
   fpNote: window.GVC_LEGAL.FLOORPLAN,
+  // output paper — 'letter' (8.5 x 11) or 'half' (5.5 x 8.5). See the
+  // PAPER SIZE block in the head styles.
+  paper: 'letter',
 };
 
 let uid = 0, builder = null;
@@ -2288,8 +2317,37 @@ function printName() {
   return [addr, where].filter(Boolean).join(', ') || 'Brochure';
 }
 
+/* ---------------- paper size ----------------
+   The canvas height and the print scale are pure CSS (see the PAPER SIZE
+   block above); this switches the class, rewrites the @page size so 'Save as
+   PDF' produces a real sheet of the right size, and re-renders so the reflowed
+   pages are re-measured for overflow. */
+const PAPER = {
+  letter: { w: 8.5, h: 11,  label: '8.5 × 11 in',  dialog: 'Letter' },
+  half:   { w: 5.5, h: 8.5, label: '5.5 × 8.5 in', dialog: 'Statement (5.5 × 8.5 in) — or "Half Letter"' }
+};
+
+function syncPaper() {
+  const p = PAPER[state.paper] || PAPER.letter;
+  document.body.classList.toggle('paper-half', state.paper === 'half');
+  document.querySelectorAll('#paperSeg button').forEach(b => b.classList.toggle('on', b.dataset.v === state.paper));
+  $('#pagesize').textContent = `@page{size:${p.w}in ${p.h}in;margin:0;}`;
+  const pn = $('#btnPrint');
+  if (pn) pn.title = `In the print dialog: Destination 'Save as PDF' · Paper '${p.dialog}' · Margins 'None' · enable 'Background graphics'.`;
+}
+
 builder = Builder.init({ pages: pagePlan().length, label: 'Page',
-                         render: renderPage, printName: printName });
+                         render: renderPage, printName: printName,
+                         sizeLabel: () => (PAPER[state.paper] || PAPER.letter).label });
+
+$('#paperSeg').addEventListener('click', e => {
+  const b = e.target.closest('button');
+  if (!b || b.dataset.v === state.paper) return;
+  state.paper = b.dataset.v;
+  syncPaper();
+  redraw();            // the canvas height changed — reflow and re-measure
+});
+syncPaper();
 renderRoster = GVC_PICKER($('#rosterPick'), state, { max: MAX_AGENTS, onChange: redraw });
 renderImgList(); renderFpList();
 redraw(); updateBentoNote();
@@ -2308,7 +2366,7 @@ GVC_UNSAVED.watch();
 
 /* the deck's own work — everything that is not a shared fact */
 const DOC_KEYS = ['images', 'gallery', 'galCaptions', 'galPage', 'strategy',
-                  'floorplans', 'fpNote', 'coverPos', 'infoTopPos'];
+                  'floorplans', 'fpNote', 'coverPos', 'infoTopPos', 'paper'];
 
 GVC_PROPBAR.mount({
   host: $('#propBar'),
@@ -2351,6 +2409,7 @@ GVC_PROPBAR.mount({
       const k = el.dataset.field;
       if (k in state) el.value = state[k];
     });
+    syncPaper();
     renderImgList(); renderFpList(); renderGalleryPanel(); redraw(); updateBentoNote();
   }
 });

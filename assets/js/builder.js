@@ -12,6 +12,19 @@
 
   const PAGE_W = 8.5, PAGE_H = 11;   // inches — US Letter portrait
 
+  /* The design canvas is US Letter portrait unless the builder says otherwise:
+     a tool with more than one output size overrides --pw / --ph on :root (or on
+     <body>), the way tools/brochure/ does for its half-letter variant, and the
+     preview reads the live values here rather than assuming 8.5 x 11. */
+  function canvasIn() {
+    const cs = getComputedStyle(document.documentElement);
+    const read = (name, fallback) => {
+      const v = parseFloat(cs.getPropertyValue(name));
+      return isFinite(v) && v > 0 ? v : fallback;
+    };
+    return { w: read('--pw', PAGE_W), h: read('--ph', PAGE_H) };
+  }
+
   function px(inches) {
     // browser CSS inch is a fixed 96px, but measure rather than assume
     const probe = document.createElement('div');
@@ -36,7 +49,11 @@
       pages: opts.pages || 1,
       zoom: 'fit',            // 'fit' | 'full'
       render: opts.render || null,
-      label: opts.label || 'Page'
+      label: opts.label || 'Page',
+      /* what the caption under each page should say the size is. Default is
+         the design canvas; a builder that prints its canvas scaled onto a
+         different sheet passes its own so the caption names the real paper. */
+      sizeLabel: opts.sizeLabel || null
     };
 
     function build() {
@@ -47,7 +64,10 @@
 
         const tag = document.createElement('div');
         tag.className = 'pg-tag';
-        tag.textContent = state.label + ' ' + (i + 1) + ' · 8.5 × 11 in';
+        const dim = canvasIn();
+        const size = state.sizeLabel ? state.sizeLabel()
+                   : dim.w + ' × ' + dim.h + ' in';
+        tag.textContent = state.label + ' ' + (i + 1) + ' · ' + size;
 
         const wrap = document.createElement('div');
         wrap.className = 'page-wrap';
@@ -66,7 +86,8 @@
     }
 
     function fit() {
-      const wIn = px(PAGE_W), hIn = px(PAGE_H);
+      const dim = canvasIn();
+      const wIn = px(dim.w), hIn = px(dim.h);
       let scale = 1;
       if (state.zoom === 'fit' && stage) {
         // room for one page plus the #pages padding and a scrollbar
@@ -128,5 +149,5 @@
     };
   }
 
-  global.Builder = { init, PAGE_W, PAGE_H };
+  global.Builder = { init, PAGE_W, PAGE_H, canvasIn };
 })(window);
