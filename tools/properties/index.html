@@ -75,7 +75,11 @@ table.props th{
   text-align:left;padding:0 14px 10px 0;border-bottom:1px solid var(--rule);
   font:800 10px var(--sans-display);letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);
 }
-table.props th.num,table.props td.num{text-align:right;padding-right:0;}
+table.props th.num,table.props td.num{text-align:right;}
+/* Only the last column runs flush to the table's right edge. Zeroing the
+   gutter on every .num cell ran the Photos column straight into Updated —
+   "0.6 MB18 hrs ago" — because Photos is right-aligned but not last. */
+table.props th.num:last-child,table.props td.num:last-child{padding-right:0;}
 table.props td{padding:16px 14px 16px 0;border-bottom:1px solid var(--rule);vertical-align:top;}
 table.props tr.is-archived td{opacity:.6;}
 table.props tr.is-busy{opacity:.45;pointer-events:none;}

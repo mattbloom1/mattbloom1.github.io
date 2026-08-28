@@ -285,7 +285,7 @@
 .ag-body{flex:1;min-height:0;padding:.5in var(--pad) .44in;
   display:flex;flex-direction:column;}
 
-.cx-top{position:relative;flex:none;text-align:center;margin-bottom:.34in;padding-bottom:.28in;
+.cx-top{position:relative;flex:none;text-align:center;margin-bottom:.26in;padding-bottom:.22in;
   border-bottom:1pt solid var(--rule-rev);}
 .cx-top .cx-kicker{font:800 8pt var(--sans);letter-spacing:.28em;text-transform:uppercase;color:var(--sky);}
 .cx-top .cx-thanks{margin-top:.1in;font:700 34pt/1.1 var(--serif);color:#fff;}
@@ -321,21 +321,21 @@
    Structure and class names stay in step with it — if you change those, change
    both — but the sizes are deliberately apart. */
 .ag-row.solo{display:block;}
-.ag-c.solo{flex:none;max-width:5in;margin:0 auto;background:none;
+.ag-c.solo{flex:none;max-width:5.7in;margin:0 auto;background:none;
   box-shadow:none;overflow:visible;}
-.ag-c.solo .shot{width:2.75in;margin:0 auto;}
+.ag-c.solo .shot{width:3.2in;margin:0 auto;}
 /* the panel carries the card's own background and shadow now that .ag-c.solo
    has dropped both, and rides up over the foot of the cutout */
-.ag-c.solo .ag-meta{position:relative;margin-top:-.26in;padding:.19in .32in .21in;
+.ag-c.solo .ag-meta{position:relative;margin-top:-.3in;padding:.22in .36in .24in;
   background:linear-gradient(#F7F6F3,#E4E2DC);box-shadow:0 .14in .3in rgba(0,0,0,.4);}
-.ag-c.solo .ag-meta .nm{font-size:23pt;}
-.ag-c.solo .ag-meta .tt{font-size:9pt;}
-.ag-c.solo .ag-meta .ct{gap:.08in;}
-.ag-c.solo .ag-meta .ct span{font-size:12pt;}
-.ag-c.solo .ag-meta .nums b{font-size:12pt;}
+.ag-c.solo .ag-meta .nm{font-size:27pt;}
+.ag-c.solo .ag-meta .tt{font-size:10pt;}
+.ag-c.solo .ag-meta .ct{gap:.09in;}
+.ag-c.solo .ag-meta .ct span{font-size:13.5pt;}
+.ag-c.solo .ag-meta .nums b{font-size:13.5pt;}
 /* the numbers carry further apart on the wide card than they can on the
    paired one, so the o: and m: pair does not read as a single run of digits */
-.ag-c.solo .ag-meta .nums{gap:.44in;}
+.ag-c.solo .ag-meta .nums{gap:.5in;}
 /* office and mobile sit on one line, each behind its own o: / m: mark. An
    agent with only one number gets a single unlabelled span from phoneLines(),
    which this centres just the same. */
@@ -348,12 +348,12 @@
    slack in the same place: below the agent cards, above the contact columns.
    Without it, .ag-body's space-between would spread the slack across every
    gap on the page and loosen the whole stack. */
-.contact-foot{flex:none;margin-top:auto;padding-top:.22in;border-top:1pt solid var(--rule-rev);}
+.contact-foot{flex:none;margin-top:auto;padding-top:.17in;border-top:1pt solid var(--rule-rev);}
 .lcols{display:grid;grid-template-columns:1fr 1fr;gap:.42in;}
 .lcol{min-width:0;}
 .lcol-t{font:800 7pt var(--sans);letter-spacing:.18em;text-transform:uppercase;
   color:var(--sky);padding-bottom:.08in;margin-bottom:.1in;border-bottom:.75pt solid var(--rule-rev);}
-.lrow{display:flex;align-items:center;gap:.11in;margin-bottom:.09in;min-width:0;}
+.lrow{display:flex;align-items:center;gap:.11in;margin-bottom:.065in;min-width:0;}
 /* the last row's bottom margin is wasted space at the foot of the column, and
    the closing page has none to spare once an agent's Instagram is added */
 .lrow:last-child{margin-bottom:0;}
@@ -373,13 +373,20 @@
 /* the brokerage disclaimer, at the foot of the closing page. Mirrors the
    Seller Pitch & CMA's .legal exactly; the words come from the shared
    assets/js/legal.js so no builder can drift from the others. */
-.legal{flex:none;margin-top:.14in;padding-top:.14in;border-top:.75pt solid var(--rule-rev);
+.legal{flex:none;margin-top:.1in;padding-top:.1in;border-top:.75pt solid var(--rule-rev);
   font:300 6.5pt/1.45 var(--body);color:rgba(229,229,229,.55);text-align:justify;}
-.states{flex:none;display:flex;justify-content:center;gap:.55in;margin-top:.2in;margin-bottom:.16in;
-  padding-top:.18in;border-top:1pt solid var(--rule-rev);}
+.states{flex:none;display:flex;justify-content:center;gap:.55in;margin-top:.14in;margin-bottom:.1in;
+  padding-top:.14in;border-top:1pt solid var(--rule-rev);}
 .states .stc{text-align:center;}
-.states .stc img{display:block;margin:0 auto .08in;height:.5in;width:auto;
-  filter:brightness(0) invert(1);opacity:.28;}
+/* Each state mark is cut out of the brand mesh gradient instead of printed as
+   flat white: the state's own SVG masks a gradient fill, so the silhouette is a
+   window onto the artwork. builder.css sets print-color-adjust:exact globally,
+   so the fill survives the PDF. */
+.states .stc .stc-art{display:block;margin:0 auto .06in;height:.44in;width:.8in;
+  background:url(../../assets/img/mesh-gradient.jpg) center/cover;
+  -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+  -webkit-mask-position:center;mask-position:center;
+  -webkit-mask-size:contain;mask-size:contain;}
 .states .stc span{font:800 7.5pt var(--sans);letter-spacing:.18em;
   text-transform:uppercase;color:rgba(229,229,229,.72);}
 
@@ -1419,7 +1426,8 @@ function renderAgent(page, n, of) {
           P.linkCols([['Social', socialRows(list)], ['Links', AG_LINKS]]) +
         '</div>' +
         '<div class="states">' + STATES.map(([nm, art]) =>
-          '<div class="stc"><img src="' + art + '" alt=""><span>' + esc(nm) + '</span></div>').join('') + '</div>' +
+          '<div class="stc"><i class="stc-art" style="-webkit-mask-image:url(' + art +
+             ');mask-image:url(' + art + ')"></i><span>' + esc(nm) + '</span></div>').join('') + '</div>' +
         GVC_LEGAL.block('listing') +
       '</div>' +
       pageFoot(n, of, true) +

@@ -987,7 +987,8 @@ function pgContact(n) {
       P.linkCols([['Social', pairs(DEFAULT_SOCIAL)], ['Links', pairs(DEFAULT_LINKS)]]) +
     '</div>' +
     '<div class="states">' + STATES.map(([nm, art]) =>
-      '<div class="stc"><img src="' + art + '" alt=""><span>' + esc(nm) + '</span></div>').join('') + '</div>' +
+      '<div class="stc"><i class="stc-art" style="-webkit-mask-image:url(' + art +
+             ');mask-image:url(' + art + ')"></i><span>' + esc(nm) + '</span></div>').join('') + '</div>' +
     GVC_LEGAL.block('listing');
   return P.page({ deck:DECK, n, of:OF, site:SITE, reversed:true, cls:'close',
     title:'Thank You', body });
