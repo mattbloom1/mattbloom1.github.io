@@ -313,21 +313,29 @@
    The cutout stands straight on the page at full size and the panel overlaps
    its foot, instead of the photo being boxed inside the card. Only the solo
    case takes this; two of these side by side would not fit the page width.
-   Mirrored between assets/css/pitch.css and tools/brochure/index.html — if
-   you change one, change the other. */
+
+   This is assets/css/pitch.css's block at a larger size. The brochure's closing
+   page carries less below the card than the Seller Pitch & CMA's does, so it has
+   room the other two decks do not — at these sizes that deck's page runs a
+   quarter inch past its foot, which is why pitch.css keeps the smaller set.
+   Structure and class names stay in step with it — if you change those, change
+   both — but the sizes are deliberately apart. */
 .ag-row.solo{display:block;}
-.ag-c.solo{flex:none;max-width:4.4in;margin:0 auto;background:none;
+.ag-c.solo{flex:none;max-width:5in;margin:0 auto;background:none;
   box-shadow:none;overflow:visible;}
-.ag-c.solo .shot{width:2.5in;margin:0 auto;}
+.ag-c.solo .shot{width:2.75in;margin:0 auto;}
 /* the panel carries the card's own background and shadow now that .ag-c.solo
    has dropped both, and rides up over the foot of the cutout */
-.ag-c.solo .ag-meta{position:relative;margin-top:-.18in;padding:.2in .3in .22in;
+.ag-c.solo .ag-meta{position:relative;margin-top:-.26in;padding:.19in .32in .21in;
   background:linear-gradient(#F7F6F3,#E4E2DC);box-shadow:0 .14in .3in rgba(0,0,0,.4);}
-.ag-c.solo .ag-meta .nm{font-size:19pt;}
-.ag-c.solo .ag-meta .tt{font-size:8pt;}
-.ag-c.solo .ag-meta .ct{gap:.06in;}
-.ag-c.solo .ag-meta .ct span{font-size:10.5pt;}
-.ag-c.solo .ag-meta .nums b{font-size:10.5pt;}
+.ag-c.solo .ag-meta .nm{font-size:23pt;}
+.ag-c.solo .ag-meta .tt{font-size:9pt;}
+.ag-c.solo .ag-meta .ct{gap:.08in;}
+.ag-c.solo .ag-meta .ct span{font-size:12pt;}
+.ag-c.solo .ag-meta .nums b{font-size:12pt;}
+/* the numbers carry further apart on the wide card than they can on the
+   paired one, so the o: and m: pair does not read as a single run of digits */
+.ag-c.solo .ag-meta .nums{gap:.44in;}
 /* office and mobile sit on one line, each behind its own o: / m: mark. An
    agent with only one number gets a single unlabelled span from phoneLines(),
    which this centres just the same. */
