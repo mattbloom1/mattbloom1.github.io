@@ -13,11 +13,15 @@
   const PAGE_W = 8.5, PAGE_H = 11;   // inches — US Letter portrait
 
   /* The design canvas is US Letter portrait unless the builder says otherwise:
-     a tool with more than one output size overrides --pw / --ph on :root (or on
-     <body>), the way tools/brochure/ does for its half-letter variant, and the
-     preview reads the live values here rather than assuming 8.5 x 11. */
+     a tool with more than one output size overrides --pw / --ph, the way
+     tools/brochure/ does for its half-letter variant, and the preview reads the
+     live values here rather than assuming 8.5 x 11.
+
+     Read off <body>, not :root — a size that is switched by a body class (as
+     the brochure's is) is only visible there, and .page inherits from body
+     anyway, so this is the value the pages actually get. */
   function canvasIn() {
-    const cs = getComputedStyle(document.documentElement);
+    const cs = getComputedStyle(document.body);
     const read = (name, fallback) => {
       const v = parseFloat(cs.getPropertyValue(name));
       return isFinite(v) && v > 0 ? v : fallback;

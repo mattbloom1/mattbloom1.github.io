@@ -18,7 +18,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=JetBrains+Mono&family=Nunito+Sans:opsz,wght@6..12,200..1000&family=Playfair+Display:ital,wght@0,400..800;1,400..800&family=Raleway:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/css/tokens.css">
 <link rel="stylesheet" href="../../assets/css/base.css">
-<link rel="stylesheet" href="../../assets/css/builder.css">
+<!-- ?v= on the two shared builder files: GitHub Pages serves them with a
+     10-minute cache, and a browser holding the old pair against this page's new
+     markup prints the brochure at the wrong size. Bump it whenever the paper
+     sizes here depend on a change in builder.css or builder.js. -->
+<link rel="stylesheet" href="../../assets/css/builder.css?v=2">
 <link rel="stylesheet" href="../../assets/css/photo-dnd.css">
 <link rel="stylesheet" href="../../assets/css/property-bar.css">
 <style>
@@ -179,9 +183,13 @@
    features and the details side by side, and a full-width photo at the
    foot. Every band spans edge to edge, so nothing has to wrap around a
    floated photo any more. */
-.info{position:absolute;inset:0;overflow:hidden;background:#fff;}
+/* --band is the banner's depth; the price band sits at it and the navy text
+   block starts one band-plus-price-band down, so the three move together and
+   only one number changes per paper size. --priceH is the band's own fixed
+   height (.13in padding top and bottom over a 22pt line). */
+.info{position:absolute;inset:0;overflow:hidden;background:#fff;--band:4.2in;--priceH:.57in;}
 /* the banner photo, full bleed across the top */
-.info-tr{position:absolute;top:0;left:0;right:0;height:4.2in;overflow:hidden;background:var(--navy);}
+.info-tr{position:absolute;top:0;left:0;right:0;height:var(--band);overflow:hidden;background:var(--navy);}
 .info-tr img{width:100%;height:100%;object-fit:cover;display:block;}
 /* the price band, full width, directly under the banner */
 /* The price band: grain over the brand gradient. Three layers, front to back —
@@ -189,7 +197,7 @@
    image degrades to the plain band this used to be rather than to nothing. The
    gradient's bright middle falls under the centred figure, which is what keeps
    the navy readable across it. */
-.info-price{position:absolute;top:4.2in;left:0;right:0;
+.info-price{position:absolute;top:var(--band);left:0;right:0;
   background:var(--grain) repeat 0 0 / .34in .34in,
              var(--mesh) center/cover,
              var(--sky);color:var(--navy);
@@ -198,9 +206,9 @@
 /* the navy text block. Its top is the banner plus the price band; when
    there is no price the band collapses and the block simply starts
    higher — .info-block.no-price carries that case. */
-.info-block{position:absolute;top:4.77in;left:0;right:0;bottom:0;background:var(--navy);color:var(--ow);
+.info-block{position:absolute;top:calc(var(--band) + var(--priceH));left:0;right:0;bottom:0;background:var(--navy);color:var(--ow);
   display:flex;flex-direction:column;overflow:hidden;}
-.info-block.no-price{top:4.2in;}
+.info-block.no-price{top:var(--band);}
 .info-block .pg-h{padding:.34in var(--pad) 0;}
 .info-mid{flex:1;min-height:0;padding:.26in var(--pad) .34in;display:flex;gap:.42in;}
 .info-col{min-width:0;display:flex;flex-direction:column;}
@@ -466,6 +474,25 @@
 body.paper-half{--ph:13.1364in;}
 @media print{ body.paper-half{--print-scale:.6470588;} }
 
+/* Where the taller sheet's extra 2.14in goes.
+
+   The cover photo, the gallery frames and the floor plans are all flex:1, so
+   they simply grow and the pages still read as composed. Two pages have to be
+   told, because their slack is pinned in one place by a margin-top:auto and
+   would otherwise open a single conspicuous void:
+
+     page 3   the navy photo band takes a bigger share of the page. A deeper
+              banner reads as a design choice; a taller white column under the
+              blurb reads as a mistake.
+     closing  the breather above the contact footer is split above and below
+              the agent cards, so the cards sit near the optical centre
+              instead of being pushed to the top of 3in of navy.
+
+   .info-tr's depth is a percentage rather than 4.2in for the same reason —
+   38.2% of 11in IS 4.2in, so Letter is unchanged. */
+body.paper-half .info{--band:5.9in;}   /* 45% of the taller sheet */
+body.paper-half .ag-row{margin-top:auto;}
+
 @media print{
   .empty-note,.over-flag{display:none !important;}
   .is-over{outline:none !important;}
@@ -630,7 +657,7 @@ body.paper-half{--ph:13.1364in;}
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js" integrity="sha384-lQXOAyZwHXE55JFyrOMB7nY2Wv+m5ZWNtJcHrd1rceRQXAYNLak8ukN5TjBTcIwz" crossorigin="anonymous"></script>
 <script src="../../assets/js/chrome.js"></script>
 <script src="../../assets/js/motion.js"></script>
-<script src="../../assets/js/builder.js"></script>
+<script src="../../assets/js/builder.js?v=2"></script>
 <script src="../../assets/js/roster.js"></script>
 <!-- only for the shared closing-page builders (P.agentCards / P.linkCols);
      this deck draws every other page itself. pitch.css is deliberately not
