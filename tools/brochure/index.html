@@ -196,12 +196,19 @@
 .info-col{min-width:0;display:flex;flex-direction:column;}
 /* Two columns, not three. The Overview gets a full-height column of its own so
    a long blurb has somewhere to go, and Features stacks over The Details on the
-   right. Features takes the slack so The Details — whose height is fixed by the
-   2x2 grid and the QR — is pushed to the foot of the page. The blurb's type is
-   then auto-fitted by fitBlurb(), so it can no longer be cut off mid-sentence. */
+   right. The blurb's type is auto-fitted by fitBlurb(), so it can no longer be
+   cut off mid-sentence.
+
+   Both right-hand blocks size to their own content and pack to the top, so The
+   Details sits just under Features and rides down as features are added — the
+   slack collects at the foot of the column instead of being wedged between the
+   two headings. Features keeps flex-shrink and min-height:0 so that when the
+   two together outgrow the column it is Features that gives, clipping its list
+   and raising the existing "Features clipped" warning rather than shunting The
+   Details off the bottom of the page. */
 .info-col.about{flex:1;}
-.info-right{flex:1;min-width:0;display:flex;flex-direction:column;gap:.3in;}
-.info-col.features{flex:1;min-height:0;}
+.info-right{flex:1;min-width:0;display:flex;flex-direction:column;gap:.26in;}
+.info-col.features{flex:0 1 auto;min-height:0;}
 .info-col.stats{flex:none;}
 .info-lbl{font:800 8pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--sky);margin-bottom:.14in;}
 .info-blurb{font:300 10.5pt/16pt var(--body);color:var(--ow);flex:1;min-height:0;overflow:hidden;}
@@ -984,11 +991,24 @@ function pagePlan() {
    and the Buyer Package, so all three covers are one design. One agent
    block per side; an absent agent still renders an empty flex:1 side so
    the centre monogram never drifts off centre. */
+/* The cover names each number rather than printing it bare. A reader looking
+   at a phone number on a front page has no other way to tell a desk line from
+   a mobile, and unlike the closing card there is no second number beside it to
+   imply which is which. Returns escaped, ready-to-join strings. */
+function cbNums(a) {
+  const o = a.phone && String(a.phone).trim();
+  const m = a.mobile && String(a.mobile).trim();
+  const out = [];
+  if (o) out.push('o: ' + esc(o));
+  if (m) out.push('m: ' + esc(m));
+  return out;
+}
+
 function cbSide(a, side) {
   if (!a) return '<div class="cb-side ' + side + '"></div>';
   return '<div class="cb-side ' + side + '">' +
     '<div class="cb-nm">' + esc(a.name) + '</div>' +
-    '<div class="cb-ct">' + [a.phone, a.email].filter(Boolean).map(esc).join(' &nbsp;·&nbsp; ') + '</div>' +
+    '<div class="cb-ct">' + cbNums(a).concat(a.email ? [esc(a.email)] : []).join(' &nbsp;·&nbsp; ') + '</div>' +
   '</div>';
 }
 
