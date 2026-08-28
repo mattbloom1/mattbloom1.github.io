@@ -42,6 +42,11 @@
      one custom property so a spot can be dropped by deleting its rule, and all
      of them by clearing this. */
   --mesh:url(../../assets/img/mesh-gradient.jpg);
+  /* A 128px tile of luminance noise at a constant low alpha. Random noise has no
+     low-frequency structure, so it repeats with no visible seam. It is sized in
+     inches where it is used, so the grain stays a fixed physical size on paper
+     instead of a fixed number of pixels. */
+  --grain:url(../../assets/img/grain.png);
 }
 
 /* shared bits ------------------------------------------------ */
@@ -56,10 +61,7 @@
 .pg-h{flex:none;padding:.5in var(--pad) 0;}
 .pg-h h2{margin:0;font:700 27pt/1.06 var(--serif);color:var(--navy);text-wrap:balance;}
 .pg-h.rev h2{color:#fff;}
-/* GRADIENT SPOT 2 — the short accent rule under each page heading. Appears on
-   The Property and Floor Plans, so it reads as a running motif. */
-.pg-h::after{content:'';display:block;height:1.4pt;width:.62in;margin-top:.16in;
-  background:var(--mesh) center/cover, var(--sky);}
+.pg-h::after{content:'';display:block;height:1.4pt;background:var(--sky);width:.62in;margin-top:.16in;}
 .pg-body{flex:1;min-height:0;padding:.26in var(--pad) .44in;display:flex;flex-direction:column;overflow:hidden;}
 .empty-note{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   font:800 8.5pt var(--sans);letter-spacing:.16em;text-transform:uppercase;
@@ -110,8 +112,8 @@
 .cv-bar{position:absolute;left:0;right:0;bottom:0;height:1.02in;background:rgba(0,39,58,.92);
   border-top:1pt solid var(--rule-rev);display:flex;align-items:center;justify-content:space-between;
   gap:.24in;padding:0 var(--pad);}
-/* GRADIENT SPOT 4 — a gradient hairline along the top edge of the cover bar,
-   over the flat rule already there. .cv-bar is positioned, so this anchors to it. */
+/* A gradient hairline along the top edge of the cover bar, over the flat rule
+   already there. .cv-bar is positioned, so this anchors to it. */
 .cv-bar::before{content:'';position:absolute;left:0;right:0;top:0;height:2.2pt;
   background:var(--mesh) center/cover;}
 .cv-bar .cb-side{flex:1;min-width:0;}
@@ -193,11 +195,15 @@
 .info-tr{position:absolute;top:0;left:0;right:0;height:4.2in;overflow:hidden;background:var(--navy);}
 .info-tr img{width:100%;height:100%;object-fit:cover;display:block;}
 /* the price band, full width, directly under the banner */
-/* GRADIENT SPOT 1 — the price band. The gradient's bright middle sits under
-   the centred figure, so the navy keeps its contrast; --sky stays underneath
-   as the fallback colour if the image is ever missing. */
+/* The price band: grain over the brand gradient. Three layers, front to back —
+   the noise tile, the gradient, then --sky as the flat fallback, so a missing
+   image degrades to the plain band this used to be rather than to nothing. The
+   gradient's bright middle falls under the centred figure, which is what keeps
+   the navy readable across it. */
 .info-price{position:absolute;top:4.2in;left:0;right:0;
-  background:var(--mesh) center/cover, var(--sky);color:var(--navy);
+  background:var(--grain) repeat 0 0 / .34in .34in,
+             var(--mesh) center/cover,
+             var(--sky);color:var(--navy);
   padding:.13in .1in;font:700 22pt/1 var(--serif);text-align:center;white-space:nowrap;}
 .info-price .po{font:800 10pt var(--sans);letter-spacing:.14em;text-transform:uppercase;}
 /* the navy text block. Its top is the banner plus the price band; when
@@ -229,9 +235,7 @@
 .info-blurb{font:300 10.5pt/16pt var(--body);color:var(--ow);flex:1;min-height:0;overflow:hidden;}
 .info-feats{list-style:none;margin:0;padding:0;flex:1;min-height:0;overflow:hidden;}
 .info-feats li{font:400 9.5pt/15pt var(--body);color:var(--ow);padding-left:.17in;position:relative;margin-bottom:.055in;}
-/* GRADIENT SPOT 5 — the square markers on the feature list. */
-.info-feats li::before{content:'';position:absolute;left:0;top:.072in;width:.055in;height:.055in;
-  background:var(--mesh) center/cover, var(--sky);}
+.info-feats li::before{content:'';position:absolute;left:0;top:.072in;width:.055in;height:.055in;background:var(--sky);}
 .info-stats{display:grid;grid-template-columns:1fr 1fr;gap:.26in .2in;}
 .stat{display:flex;gap:.12in;align-items:flex-start;}
 .stat .ico{flex:none;width:.21in;height:.21in;margin-top:.035in;color:var(--sky);}
@@ -376,12 +380,9 @@
 .lrow:last-child{margin-bottom:0;}
 /* every row carries a mark, links as well as social, so the two columns
    line up on the same left edge instead of one being indented */
-/* GRADIENT SPOT 3 — the social and link chips. The glyph turns navy: a sky
-   glyph on a sky gradient would have almost no contrast left. */
-.lrow .lb{flex:none;width:.26in;height:.26in;border-radius:50%;
-  background:var(--mesh) center/cover, rgba(83,199,220,.16);
-  border:.75pt solid rgba(83,199,220,.55);display:flex;align-items:center;justify-content:center;
-  color:var(--navy);}
+.lrow .lb{flex:none;width:.26in;height:.26in;border-radius:50%;background:rgba(83,199,220,.16);
+  border:.75pt solid rgba(83,199,220,.4);display:flex;align-items:center;justify-content:center;
+  color:var(--sky);}
 .lrow .lb .ico{width:.135in;height:.135in;}
 .lrow .lb .ico svg{stroke-width:2.2;}
 .lrow .ltxt{min-width:0;}
