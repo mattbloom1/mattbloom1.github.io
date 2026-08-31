@@ -352,11 +352,11 @@
    third of an inch in hand for the way Playfair renders on another platform.
    The italic needs the ital axis in the Google Fonts request at the top of
    this file. Re-measure both cases if you touch the rail or the size. */
+/* Still a two-column grid though only the second column carries anything:
+   the empty rail keeps the sign-off hung on the same line as the portraits
+   below it, which is the whole point of the composition. */
 .ag-hero{flex:none;display:grid;grid-template-columns:var(--ag-rail) 1fr;
   column-gap:var(--ag-gut);padding:.26in 0 .22in;}
-.ag-hero .lead{grid-column:1;align-self:end;}
-.ag-hero .lead .rulet{width:1.05in;height:1.5pt;background:var(--sky);margin-bottom:.15in;}
-.ag-hero .lead p{font:300 9.5pt/1.6 var(--body);color:rgba(229,229,229,.78);max-width:2.7in;}
 .ag-hero .say{grid-column:2;}
 .ag-hero .say h2{margin:0;font:400 56pt/.92 var(--serif);color:#fff;letter-spacing:-.022em;
   text-wrap:nowrap;}
@@ -1586,11 +1586,6 @@ function renderAgent(page, n, of) {
                 '<div class="qcap">Our properties</div></div>' : '') +
         '</div>' +
         '<div class="ag-hero">' +
-          '<div class="lead">' +
-            '<div class="rulet"></div>' +
-            '<p>Every question about this home, its building and its numbers is ' +
-            'welcome. We would rather you decided with all of it in front of you.</p>' +
-          '</div>' +
           '<div class="say">' +
             '<h2>Thank <em>you</em>.</h2>' +
             '<div class="sign">Gasdaska Verdiglione Conlon</div>' +
