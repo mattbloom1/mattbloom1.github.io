@@ -362,9 +362,12 @@
 .ag-hero .say h2{margin:0;font:400 56pt/.92 var(--serif);color:#fff;letter-spacing:-.022em;
   text-wrap:nowrap;}
 .ag-hero .say h2 em{font-style:italic;font-weight:400;color:var(--sky);}
+/* One line, always: the header already says The GVC Team, so this carries
+   the partners' names alone — with both, tracked at .22em, it wrapped in the
+   solo page's narrower column. */
 .ag-hero .say .sign{margin-top:.14in;padding-top:.1in;border-top:.75pt solid var(--ag-rule-soft);
-  font:800 7pt/1.5 var(--sans);letter-spacing:.22em;text-transform:uppercase;
-  color:rgba(229,229,229,.72);}
+  font:800 7pt/1.5 var(--sans);letter-spacing:.2em;text-transform:uppercase;
+  text-wrap:nowrap;color:rgba(229,229,229,.72);}
 
 /* ---------- agent rows: the cut-out bleeds off the left trim ---------- */
 .ag-people{flex:1;min-height:0;display:flex;flex-direction:column;}
@@ -1595,7 +1598,7 @@ function renderAgent(page, n, of) {
           '<div class="say">' +
             '<div class="lbl">In closing</div>' +
             '<h2>Thank <em>you</em>.</h2>' +
-            '<div class="sign">The GVC Team &middot; Gasdaska Verdiglione Conlon</div>' +
+            '<div class="sign">Gasdaska Verdiglione Conlon</div>' +
           '</div>' +
         '</div>' +
         '<div class="ag-people">' + people + '</div>' +
