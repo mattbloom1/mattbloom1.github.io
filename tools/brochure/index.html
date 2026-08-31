@@ -476,7 +476,12 @@
 /* the rest of the recovered slack goes round the sign-off, so the page reads
    as composed top to bottom rather than as a portrait with a hole under it */
 .ag.solo .ag-hero{padding:.58in 0 .40in;}
-.ag.solo .ag-who{padding-top:.1in;}
+/* The details hang from the bottom of the cut-out rather than its top: the
+   block is a good inch shorter than the portrait beside it, so aligned to the
+   top it left a hole under itself. The .14in is not a nudge — it is the row's
+   min-height (--ag-crop + .3in) less the window's own extent (.16in + crop),
+   i.e. exactly the slack under the window, so the two bottoms line up. */
+.ag.solo .ag-who{align-self:end;margin-bottom:calc(.3in - .16in);padding-top:.1in;}
 .ag.solo .ag-who .nm{font-size:27pt;}
 .ag.solo .ag-who .tt{font-size:7.6pt;}
 .ag.solo .ag-who .ct{gap:.09in;}
