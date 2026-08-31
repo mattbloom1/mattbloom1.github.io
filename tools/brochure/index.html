@@ -421,9 +421,18 @@
 /* Both figures stand on the same left edge. The inset that used to stagger
    the second one across the rail only made sense while they bled off the
    trim; inside the margin it just looked misaligned. */
-.ag-who{grid-column:2;min-width:0;padding-top:.06in;}
-.ag-who .idx{font:900 6.2pt var(--sans);letter-spacing:.28em;text-transform:uppercase;
-  color:rgba(83,199,220,.8);margin-bottom:.09in;}
+/* The details hang from the BOTTOM of the cut-out's window, not the top: the
+   block is shorter than the portrait beside it — much shorter on the solo
+   page — and aligned to the top it left a hole under itself.
+
+   The .14in is not a nudge. The window is absolutely positioned .16in into
+   the row's padding box, which is exactly where this block's box starts too,
+   so its bottom sits --ag-crop below both of them; the row is --ag-crop plus
+   .3in tall. The difference is what has to come off, and end-alignment means
+   a block that outgrows the window grows upward and keeps the two bottoms
+   together rather than sliding past. */
+.ag-who{grid-column:2;min-width:0;
+  align-self:end;margin-bottom:calc(.3in - .16in);}
 .ag-who .nm{font:700 21pt/1.03 var(--serif);color:#fff;letter-spacing:-.008em;}
 .ag-who .tt{margin-top:.11in;padding-top:.09in;border-top:.75pt solid var(--ag-rule-soft);
   font:800 6.8pt/1.5 var(--sans);letter-spacing:.15em;text-transform:uppercase;color:var(--sky);}
@@ -476,12 +485,6 @@
 /* the rest of the recovered slack goes round the sign-off, so the page reads
    as composed top to bottom rather than as a portrait with a hole under it */
 .ag.solo .ag-hero{padding:.58in 0 .40in;}
-/* The details hang from the bottom of the cut-out rather than its top: the
-   block is a good inch shorter than the portrait beside it, so aligned to the
-   top it left a hole under itself. The .14in is not a nudge — it is the row's
-   min-height (--ag-crop + .3in) less the window's own extent (.16in + crop),
-   i.e. exactly the slack under the window, so the two bottoms line up. */
-.ag.solo .ag-who{align-self:end;margin-bottom:calc(.3in - .16in);padding-top:.1in;}
 .ag.solo .ag-who .nm{font-size:27pt;}
 .ag.solo .ag-who .tt{font-size:7.6pt;}
 .ag.solo .ag-who .ct{gap:.09in;}
@@ -1638,7 +1641,6 @@ function agentRow(a) {
   return '<div class="ag-person">' +
     '<div class="ag-shot"><img src="' + esc(headshotFor(a)) + '" alt=""></div>' +
     '<div class="ag-who">' +
-      '<div class="idx">Contact</div>' +
       '<div class="nm">' + esc(a.name) + '</div>' +
       '<div class="tt">' + esc(a.title) + '</div>' +
       '<div class="ct">' + rows.map(([k, v, num]) =>
