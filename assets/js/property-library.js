@@ -480,9 +480,41 @@
     }).then(function (b) { return new File([b], name || 'photo.jpg', { type: b.type }); });
   }
 
+  /* The other half of hydrate: a signed URL back to the token it came from.
+
+     hydrate hands the tool a real URL, so by the time the agent saves, the
+     document holds signed URLs, not tokens — and a signed URL is somebody
+     else's server as far as isShelvable is concerned, so it used to be
+     written to the document verbatim. It expires in eight hours, and the
+     property came back with dead images.
+
+     The path inside the URL is the shelf's own key, so the token is
+     recoverable from the URL alone. That also repairs a document saved
+     before this existed: its URLs are expired, but they still name the
+     photos, which are all still on the shelf. */
+  function signedPrefix() {
+    return CFG.url + '/storage/v1/object/sign/' + CFG.photoBucket + '/';
+  }
+
+  function retokenize(state, photos) {
+    var byPath = {};
+    (photos || []).forEach(function (p) { byPath[p.path] = p.id; });
+    var pre = signedPrefix();
+    return walk(state, function (v) {
+      if (typeof v !== 'string' || v.indexOf(pre) !== 0) return v;
+      var path = v.slice(pre.length).split('?')[0];
+      return byPath[path] ? TOKEN + byPath[path] : v;
+    });
+  }
+
   /* Save a tool's document, shelving its photos on the way. The tool's own
      state is never touched — the walk builds a copy. */
   function saveDocument(id, tool, state, onProgress) {
+    return rest('/photos?property_id=eq.' + id + '&select=id,path')
+      .then(function (photos) { return shelveAndSave(id, tool, retokenize(state, photos), onProgress); });
+  }
+
+  function shelveAndSave(id, tool, state, onProgress) {
     var urls = [];
     walk(state, function (v) { if (isShelvable(v) && urls.indexOf(v) === -1) urls.push(v); return v; });
 
@@ -526,7 +558,7 @@
     signIn: signIn, signOut: signOut, signedIn: signedIn,
     list: list, load: load, create: create, findByAddress: findByAddress,
     saveCore: saveCore, saveDoc: saveDoc, saveDocument: saveDocument,
-    hydrate: hydrate, docSavedAt: docSavedAt,
+    hydrate: hydrate, retokenize: retokenize, docSavedAt: docSavedAt,
     setStatus: setStatus, rename: rename, changesAgainst: changesAgainst,
     putPhoto: putPhoto, photoUrls: photoUrls, removePhoto: removePhoto,
     stripPhotos: stripPhotos,
