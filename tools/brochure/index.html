@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="../../assets/logos/apple-touch-icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=JetBrains+Mono&family=Nunito+Sans:opsz,wght@6..12,200..1000&family=Playfair+Display:ital,wght@0,400..800;1,400..800&family=Raleway:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,700;1,9..144,400&family=JetBrains+Mono&family=Nunito+Sans:opsz,wght@6..12,200..1000&family=Playfair+Display:ital,wght@0,400..800;1,400..800&family=Raleway:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/css/tokens.css">
 <link rel="stylesheet" href="../../assets/css/base.css">
 <!-- ?v= on the two shared builder files: GitHub Pages serves them with a
@@ -290,123 +290,158 @@
 
 
 /* ---------- AGENT / CLOSING PAGE ----------
-   The last page in the deck. Everything below is a verbatim mirror of the
-   CLOSING PAGE section of assets/css/pitch.css, which the Seller Pitch &
-   CMA and the Buyer Package share. This file cannot load pitch.css (its
-   .stat / .ph / .band would collide with this deck's own), so the block is
-   duplicated on purpose — if you change one, change the other.
+   The last page in the deck.
 
-   .ag-body + a trailing .pg-foot is those decks' .pg-body + .pg-foot: same
-   padding, same space-between rhythm. */
+   This block USED to be a verbatim mirror of the CLOSING PAGE section of
+   assets/css/pitch.css, shared with the Seller Pitch & CMA and the Buyer
+   Package. It is not any more, and that is deliberate: this deck's closing
+   page is now an editorial composition — asymmetric, with the cut-out
+   bleeding off the left trim — while those two keep the centred cards. So do
+   NOT sync changes here back to pitch.css, and do not assume a class named
+   the same in both files means the same thing. Everything below is `ag-`
+   prefixed for that reason; the old .ag-c / .ag-meta / .lcols / .cx-top
+   names are gone from this file entirely.
+
+   Still shared with the other decks, on purpose: pageFoot()'s .pg-foot,
+   GVC_LEGAL's .legal paragraph, and the mesh-masked state marks.
+
+   --ag-fig is the cut-out's size. It is bigger than the row it sits in on
+   purpose — .ag-shot's overflow:hidden crops its foot, and that crop is what
+   makes it read as a bleed rather than a photo in a box. Keep it under
+   (--ag-rail + --ag-padL) or the figure escapes its box onto the type
+   column. */
 .ag{position:absolute;inset:0;background:var(--navy);color:var(--ow);
-  display:flex;flex-direction:column;overflow:hidden;}
-.ag-body{flex:1;min-height:0;padding:.5in var(--pad) .44in;
+  display:flex;flex-direction:column;overflow:hidden;
+  --ag-padL:.58in; --ag-padR:.92in;
+  --ag-rail:2.55in;      /* portrait rail, measured from the trimmed edge */
+  --ag-gut:.5in;
+  --ag-fig:2.62in;       /* cut-out size — keep under rail + padL (3.13in) */
+  --ag-rule:rgba(229,229,229,.26);
+  --ag-rule-soft:rgba(229,229,229,.14);}
+/* a whisper of brand light in the corner the portrait bleeds through */
+.ag::before{content:'';position:absolute;left:-1.7in;top:-1.7in;width:6.4in;height:6.4in;
+  background:radial-gradient(circle at 50% 50%,rgba(83,199,220,.17),rgba(83,199,220,0) 68%);}
+.ag-body{position:relative;flex:1;min-height:0;
+  padding:.5in var(--ag-padR) .42in var(--ag-padL);
   display:flex;flex-direction:column;}
 
-.cx-top{position:relative;flex:none;text-align:center;margin-bottom:.34in;padding-bottom:.28in;
-  border-bottom:1pt solid var(--rule-rev);}
-.cx-top .cx-kicker{font:800 8pt var(--sans);letter-spacing:.28em;text-transform:uppercase;color:var(--sky);}
-.cx-top .cx-thanks{margin-top:.1in;font:700 34pt/1.1 var(--serif);color:#fff;}
-.cx-qr{position:absolute;top:0;right:0;width:.85in;text-align:center;}
-.cx-qr .qbox{width:.85in;height:.85in;background:#fff;padding:.045in;}
-.cx-qr .qbox svg{width:100%;height:100%;display:block;}
-.cx-qr .qcap{margin-top:.06in;font:800 5.6pt var(--sans);letter-spacing:.1em;
-  text-transform:uppercase;color:rgba(229,229,229,.6);}
+/* ---------- header rule: micro-label far left, QR far right ---------- */
+.ag-hdr{flex:none;display:flex;align-items:flex-start;justify-content:space-between;gap:.4in;
+  padding-bottom:.14in;border-bottom:1pt solid var(--ag-rule);}
+.ag-hdr .l1{font:900 8pt var(--sans);letter-spacing:.3em;text-transform:uppercase;color:var(--sky);}
+.ag-hdr .l2{margin-top:.06in;font:400 6.2pt var(--sans);letter-spacing:.26em;
+  text-transform:uppercase;color:rgba(229,229,229,.5);}
+.ag-qr{flex:none;width:.86in;}
+.ag-qr .qbox{width:.86in;height:.86in;background:#fff;padding:.05in;}
+.ag-qr .qbox svg{display:block;width:100%;height:100%;}
+.ag-qr .qcap{margin-top:.05in;font:800 6.2pt var(--sans);letter-spacing:.12em;
+  text-transform:uppercase;color:rgba(229,229,229,.62);}
 
-/* One solid card per agent, holding the cutout AND the name, title and
-   contact details — the details used to float underneath on the navy,
-   which left the box looking like it only contained the photo. */
-.ag-row{flex:none;display:flex;gap:.55in;justify-content:center;}
-.ag-c{flex:0 1 2.2in;max-width:2.2in;text-align:center;overflow:hidden;
-  background:linear-gradient(#F7F6F3,#E4E2DC);box-shadow:0 .14in .3in rgba(0,0,0,.4);}
-.ag-c .shot{position:relative;width:100%;aspect-ratio:1/1;overflow:hidden;}
-.ag-c .shot img{width:100%;height:100%;display:block;object-fit:contain;object-position:50% 100%;}
-.ag-meta{padding:0 .16in .17in;}
-.ag-meta .nm{font:700 13pt/1.2 var(--serif);color:var(--navy);}
-.ag-meta .tt{margin-top:.07in;padding-top:.08in;border-top:.75pt solid rgba(0,39,58,.16);
-  font:800 6.8pt/1.5 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--sky2);}
-.ag-meta .ct{margin-top:.06in;display:flex;flex-direction:column;align-items:center;gap:.01in;}
-.ag-meta .ct span{font:300 9pt/1.45 var(--body);color:rgba(0,39,58,.75);}
-/* ---- ONE AGENT — the wide card ----
-   The cutout stands straight on the page at full size and the panel overlaps
-   its foot, instead of the photo being boxed inside the card. Only the solo
-   case takes this; two of these side by side would not fit the page width.
+/* ---------- the sign-off, hung in the right column ----------
+   One line, roman against a true Fraunces italic, with the sky accent on the
+   italic word so the colour break and the style break land together. 400
+   rather than a heavier weight: at this size that is what keeps it a piece of
+   typography rather than a headline.
 
-   This is assets/css/pitch.css's block at a larger size. The brochure's closing
-   page carries less below the card than the Seller Pitch & CMA's does, so it has
-   room the other two decks do not — at these sizes that deck's page runs a
-   quarter inch past its foot, which is why pitch.css keeps the smaller set.
-   Structure and class names stay in step with it — if you change those, change
-   both — but the sizes are deliberately apart. */
-.ag-row.solo{display:block;}
-.ag-c.solo{flex:none;max-width:5in;margin:0 auto;background:none;
-  box-shadow:none;overflow:visible;}
-.ag-c.solo .shot{width:2.75in;margin:0 auto;}
-/* the panel carries the card's own background and shadow now that .ag-c.solo
-   has dropped both, and rides up over the foot of the cutout */
-.ag-c.solo .ag-meta{position:relative;margin-top:-.26in;padding:.19in .32in .21in;
-  background:linear-gradient(#F7F6F3,#E4E2DC);box-shadow:0 .14in .3in rgba(0,0,0,.4);}
-.ag-c.solo .ag-meta .nm{font-size:23pt;}
-.ag-c.solo .ag-meta .tt{font-size:9pt;}
-.ag-c.solo .ag-meta .ct{gap:.08in;}
-.ag-c.solo .ag-meta .ct span{font-size:12pt;}
-.ag-c.solo .ag-meta .nums b{font-size:12pt;}
-/* the numbers carry further apart on the wide card than they can on the
-   paired one, so the o: and m: pair does not read as a single run of digits */
-.ag-c.solo .ag-meta .nums{gap:.44in;}
-/* office and mobile sit on one line, each behind its own o: / m: mark. An
-   agent with only one number gets a single unlabelled span from phoneLines(),
-   which this centres just the same. */
-.ag-meta .nums{display:flex;justify-content:center;gap:.34in;}
-.ag-meta .nums b{font:700 9pt var(--serif);color:var(--navy);}
+   The effect depends on the two words sitting side by side, so it is set
+   nowrap — which makes the size load-bearing, and --serif here is Playfair
+   Display (builder.css), a wider face than the proof was drawn in. Measured:
+   56pt puts 3.62in of ink in the 3.95in column, and the solo page, whose
+   wider rail leaves only 2.9in, takes 40pt for 2.59in. Both keep about a
+   third of an inch in hand for the way Playfair renders on another platform.
+   The italic needs the ital axis in the Google Fonts request at the top of
+   this file. Re-measure both cases if you touch the rail or the size. */
+.ag-hero{flex:none;display:grid;grid-template-columns:var(--ag-rail) 1fr;
+  column-gap:var(--ag-gut);padding:.26in 0 .22in;}
+.ag-hero .lead{grid-column:1;align-self:end;}
+.ag-hero .lead .rulet{width:1.05in;height:1.5pt;background:var(--sky);margin-bottom:.15in;}
+.ag-hero .lead p{font:300 9.5pt/1.6 var(--body);color:rgba(229,229,229,.78);max-width:2.7in;}
+.ag-hero .say{grid-column:2;}
+.ag-hero .say .lbl{font:900 6.2pt var(--sans);letter-spacing:.3em;text-transform:uppercase;
+  color:rgba(229,229,229,.55);margin-bottom:.13in;}
+.ag-hero .say h2{margin:0;font:400 56pt/.92 var(--serif);color:#fff;letter-spacing:-.022em;
+  text-wrap:nowrap;}
+.ag-hero .say h2 em{font-style:italic;font-weight:400;color:var(--sky);}
+.ag-hero .say .sign{margin-top:.14in;padding-top:.1in;border-top:.75pt solid var(--ag-rule-soft);
+  font:800 7pt/1.5 var(--sans);letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(229,229,229,.72);}
 
-/* The statement used to sit here, and it was the only flexible child of
-   .ag-body — it absorbed whatever height the fixed blocks left. With it gone
-   that job passes to the contact block's auto top margin, which keeps the
-   slack in the same place: below the agent cards, above the contact columns.
-   Without it, .ag-body's space-between would spread the slack across every
-   gap on the page and loosen the whole stack. */
-.contact-foot{flex:none;margin-top:auto;padding-top:.22in;border-top:1pt solid var(--rule-rev);}
-.lcols{display:grid;grid-template-columns:1fr 1fr;gap:.42in;}
-.lcol{min-width:0;}
-.lcol-t{font:800 7pt var(--sans);letter-spacing:.18em;text-transform:uppercase;
-  color:var(--sky);padding-bottom:.08in;margin-bottom:.1in;border-bottom:.75pt solid var(--rule-rev);}
-.lrow{display:flex;align-items:center;gap:.11in;margin-bottom:.09in;min-width:0;}
-/* the last row's bottom margin is wasted space at the foot of the column, and
-   the closing page has none to spare once an agent's Instagram is added */
-.lrow:last-child{margin-bottom:0;}
-/* every row carries a mark, links as well as social, so the two columns
-   line up on the same left edge instead of one being indented */
-.lrow .lb{flex:none;width:.26in;height:.26in;border-radius:50%;background:rgba(83,199,220,.16);
-  border:.75pt solid rgba(83,199,220,.4);display:flex;align-items:center;justify-content:center;
-  color:var(--sky);}
-.lrow .lb .ico{width:.135in;height:.135in;}
-.lrow .lb .ico svg{stroke-width:2.2;}
-.lrow .ltxt{min-width:0;}
-.lrow .lk{display:block;font:800 6.2pt var(--sans);letter-spacing:.14em;text-transform:uppercase;
-  color:rgba(229,229,229,.5);}
-.lrow .lv{display:block;font:300 9pt/1.4 var(--body);color:var(--ow);
+/* ---------- agent rows: the cut-out bleeds off the left trim ---------- */
+.ag-people{flex:1;min-height:0;display:flex;flex-direction:column;}
+.ag-person{position:relative;flex:1;min-height:0;
+  display:grid;grid-template-columns:var(--ag-rail) 1fr;column-gap:var(--ag-gut);
+  align-items:end;border-top:1pt solid var(--ag-rule);padding-top:.16in;}
+/* An uneven split, so the pair reads as a staggered editorial spread rather
+   than two equal bands. */
+.ag-person:first-child{flex:1.22;}
+.ag-person + .ag-person{margin-top:.14in;}
+.ag-shot{position:absolute;left:calc(var(--ag-padL) * -1);top:.16in;bottom:0;
+  width:calc(var(--ag-rail) + var(--ag-padL));overflow:hidden;}
+/* Height is stated outright rather than left to top:0 + bottom:0 + a fixed
+   width on a replaced element: that combination is an ambiguous corner of the
+   spec that browsers resolve differently, which a page destined for a PDF
+   must not depend on. */
+.ag-shot img{position:absolute;left:0;top:0;width:var(--ag-fig);height:var(--ag-fig);
+  display:block;object-fit:contain;object-position:0 100%;}
+/* the second cut-out is set in from the trim, so the pair staggers across the
+   rail instead of both figures hanging on the same edge */
+.ag-person + .ag-person .ag-shot img{left:.42in;}
+.ag-who{grid-column:2;min-width:0;padding-bottom:.07in;}
+.ag-who .idx{font:900 6.2pt var(--sans);letter-spacing:.28em;text-transform:uppercase;
+  color:rgba(83,199,220,.8);margin-bottom:.09in;}
+.ag-who .nm{font:700 21pt/1.03 var(--serif);color:#fff;letter-spacing:-.008em;}
+.ag-who .tt{margin-top:.11in;padding-top:.09in;border-top:.75pt solid var(--ag-rule-soft);
+  font:800 6.8pt/1.5 var(--sans);letter-spacing:.15em;text-transform:uppercase;color:var(--sky);}
+.ag-who .ct{margin-top:.14in;display:flex;flex-direction:column;gap:.055in;}
+.ag-who .ct > div{display:flex;align-items:baseline;gap:.13in;min-width:0;}
+.ag-who .ct .k{flex:none;width:.36in;font:800 6.2pt var(--sans);letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(229,229,229,.45);}
+.ag-who .ct .v{min-width:0;font:400 10pt/1.35 var(--body);color:var(--bone);
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ag-who .ct .v.num{font:700 10.5pt var(--serif);letter-spacing:.01em;}
 
-/* the brokerage disclaimer, at the foot of the closing page. Mirrors the
-   Seller Pitch & CMA's .legal exactly; the words come from the shared
-   assets/js/legal.js so no builder can drift from the others. */
-.legal{flex:none;margin-top:.14in;padding-top:.14in;border-top:.75pt solid var(--rule-rev);
-  font:300 6.5pt/1.45 var(--body);color:rgba(229,229,229,.55);text-align:justify;}
-.states{flex:none;display:flex;justify-content:center;gap:.55in;margin-top:.2in;margin-bottom:.16in;
-  padding-top:.18in;border-top:1pt solid var(--rule-rev);}
-.states .stc{text-align:center;}
+/* ---- one agent: a wider rail, a bigger portrait, a bigger name ----
+   With a single row there is no stagger to hold, so the rail can take the
+   extra width. The sign-off column loses that width, which is why the type
+   steps down with it — see the nowrap note above. */
+.ag.solo{--ag-rail:3.6in;--ag-fig:3.72in;}
+.ag.solo .ag-hero .say h2{font-size:40pt;}
+.ag.solo .ag-who{padding-bottom:.12in;}
+.ag.solo .ag-who .nm{font-size:27pt;}
+.ag.solo .ag-who .tt{font-size:7.6pt;}
+.ag.solo .ag-who .ct{gap:.09in;}
+.ag.solo .ag-who .ct .v{font-size:11pt;}
+.ag.solo .ag-who .ct .v.num{font-size:12pt;}
+
+/* ---------- footer matter: three uneven columns ---------- */
+.ag-foot{flex:none;margin-top:.2in;padding-top:.16in;border-top:1pt solid var(--ag-rule);
+  display:grid;grid-template-columns:1.5fr 1.7fr 1.45in;column-gap:.4in;}
+.ag-col{min-width:0;}
+.ag-col-t{font:900 6.6pt var(--sans);letter-spacing:.22em;text-transform:uppercase;color:var(--sky);
+  padding-bottom:.07in;margin-bottom:.09in;border-bottom:.75pt solid var(--ag-rule-soft);}
+.ag-lrow{display:block;margin-bottom:.06in;min-width:0;}
+.ag-lrow:last-child{margin-bottom:0;}
+.ag-lrow .lk{display:block;font:800 6.2pt var(--sans);letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(229,229,229,.45);}
+.ag-lrow .lv{display:block;font:300 9pt/1.35 var(--body);color:var(--bone);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 /* Each state mark is cut out of the brand mesh gradient instead of printed as
-   flat white: the state's own SVG masks a gradient fill, so the silhouette is a
-   window onto the artwork. builder.css sets print-color-adjust:exact globally,
-   so the fill survives the PDF. */
-.states .stc .stc-art{display:block;margin:0 auto .08in;height:.5in;width:.8in;
-  background:var(--mesh) center/cover;
+   flat white: the state's own SVG masks a gradient fill, so the silhouette is
+   a window onto the artwork. builder.css sets print-color-adjust:exact
+   globally, so the fill survives the PDF. */
+.ag-st{display:flex;align-items:center;gap:.13in;margin-bottom:.055in;}
+.ag-st:last-child{margin-bottom:0;}
+.ag-st i{flex:none;display:block;width:.6in;height:.33in;background:var(--mesh) center/cover;
   -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
   -webkit-mask-position:center;mask-position:center;
   -webkit-mask-size:contain;mask-size:contain;}
-.states .stc span{font:800 7.5pt var(--sans);letter-spacing:.18em;
-  text-transform:uppercase;color:rgba(229,229,229,.72);}
+.ag-st span{font:800 6.6pt var(--sans);letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(229,229,229,.72);}
+
+/* the shared legal paragraph, on this page's own rule */
+.ag .legal{flex:none;margin-top:.16in;padding-top:.11in;
+  border-top:.75pt solid var(--ag-rule-soft);
+  font:300 6.5pt/1.46 var(--body);color:rgba(229,229,229,.55);text-align:justify;}
 
 
 /* ---------- GALLERY EDITOR PANEL (screen only) ---------- */
@@ -492,9 +527,15 @@ body.paper-half{--ph:13.1364in;}
    .info-tr's depth is a percentage rather than 4.2in for the same reason —
    38.2% of 11in IS 4.2in, so Letter is unchanged. */
 body.paper-half .info{--band:5.9in;}   /* 45% of the taller sheet */
-/* a fixed .5in rather than a matching margin-top:auto, which split the
-   2.14in of extra height evenly and dropped the cards a full inch */
-body.paper-half .ag-row{margin-top:.5in;}
+/* The closing page again. All 2.14in used to land in one place; now it is
+   spread so nothing reads as a void: the sign-off gets air above and below
+   it, the footer gets a wider gap, and what is left goes to the agent rows,
+   whose cut-out grows a little to keep standing in its row rather than
+   floating in it. The figure stays under rail + padL (3.13in). */
+body.paper-half .ag{--ag-fig:2.95in;}
+body.paper-half .ag.solo{--ag-fig:4.1in;}
+body.paper-half .ag-hero{padding:.66in 0 .52in;}
+body.paper-half .ag-foot{margin-top:.5in;}
 
 @media print{
   .empty-note,.over-flag{display:none !important;}
@@ -662,9 +703,11 @@ body.paper-half .ag-row{margin-top:.5in;}
 <script src="../../assets/js/motion.js"></script>
 <script src="../../assets/js/builder.js?v=2"></script>
 <script src="../../assets/js/roster.js"></script>
-<!-- only for the shared closing-page builders (P.agentCards / P.linkCols);
-     this deck draws every other page itself. pitch.css is deliberately not
-     loaded alongside it — see the closing-page CSS above. -->
+<!-- pitch.js is here for its small shared helpers only — P.esc and P.money.
+     This deck used to take its closing page from P.agentCards() / P.linkCols()
+     as well; it now draws every page itself, so those two go unused here. And
+     pitch.css is deliberately not loaded alongside it — see the closing-page
+     CSS above. -->
 <script src="../../assets/js/photo-dnd.js"></script>
 <script src="../../assets/js/pitch.js"></script>
 <script src="../../assets/js/icons.js"></script>
@@ -1480,24 +1523,91 @@ const AG_LINKS = [
   ['Book a call',    'gvcrealestateteam.com/contact']
 ];
 
+/* The closing page. Its own markup rather than P.agentCards() / P.linkCols():
+   those emit the centred cards the Seller Pitch & CMA and the Buyer Package
+   use, and this deck's closing page is deliberately no longer that page. See
+   the AGENT / CLOSING PAGE note in the stylesheet above. */
+
+/* One editorial row per agent: the cut-out bleeds off the left trim, the
+   details hang in the column beside it. phoneLines() is not reused here
+   either — this row labels its fields Tel / Mobile / Email down a keyed
+   column instead of setting o: / m: inline. */
+function agentRow(a) {
+  const rows = [];
+  const office = String(a.phone || '').trim();
+  const mobile = String(a.mobile || '').trim();
+  if (office) rows.push(['Tel', office, true]);
+  if (mobile) rows.push(['Mobile', mobile, true]);
+  if (a.email) rows.push(['Email', String(a.email).trim(), false]);
+  return '<div class="ag-person">' +
+    '<div class="ag-shot"><img src="' + esc(headshotFor(a)) + '" alt=""></div>' +
+    '<div class="ag-who">' +
+      '<div class="idx">Contact</div>' +
+      '<div class="nm">' + esc(a.name) + '</div>' +
+      '<div class="tt">' + esc(a.title) + '</div>' +
+      '<div class="ct">' + rows.map(([k, v, num]) =>
+        '<div><span class="k">' + esc(k) + '</span>' +
+        '<span class="v' + (num ? ' num' : '') + '">' + esc(v) + '</span></div>').join('') +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+/* Social / Links / Licensed in. The first two come from the same data the
+   other decks' linkCols() is given, so nothing about WHICH links print has
+   changed — only how they are set. */
+function agentCol(title, rows) {
+  return '<div class="ag-col"><div class="ag-col-t">' + esc(title) + '</div>' +
+    rows.map(([k, v]) =>
+      '<div class="ag-lrow"><span class="lk">' + esc(k) + '</span>' +
+      '<span class="lv">' + esc(v) + '</span></div>').join('') +
+  '</div>';
+}
+
 function renderAgent(page, n, of) {
   const list = agentObjs();
   const qr = qrSvg(TEAM_QR_URL);
+  /* .solo widens the rail and steps the sign-off down to match — one class on
+     the page root so the geometry moves together. */
+  const solo = list.length === 1 ? ' solo' : '';
+  const people = list.length
+    ? list.map(agentRow).join('')
+    : '<div class="ag-person"><div class="ag-who">' +
+      '<div class="empty-note" style="position:static">Pick an agent in the Agents panel</div>' +
+      '</div></div>';
   page.innerHTML =
-    '<div class="ag">' +
+    '<div class="ag' + solo + '">' +
       '<div class="ag-body">' +
-        '<div class="cx-top">' +
-          '<div class="cx-kicker">The GVC Team</div><div class="cx-thanks">Thank You</div>' +
-          (qr ? '<div class="cx-qr"><div class="qbox">' + qr + '</div>' +
+        '<div class="ag-hdr">' +
+          '<div class="mark">' +
+            '<div class="l1">The GVC Team</div>' +
+            '<div class="l2">Douglas Elliman</div>' +
+          '</div>' +
+          (qr ? '<div class="ag-qr"><div class="qbox">' + qr + '</div>' +
                 '<div class="qcap">Our properties</div></div>' : '') +
         '</div>' +
-        P.agentCards(list, headshotFor) +
-        '<div class="contact-foot">' +
-          P.linkCols([['Social', socialRows(list)], ['Links', AG_LINKS]]) +
+        '<div class="ag-hero">' +
+          '<div class="lead">' +
+            '<div class="rulet"></div>' +
+            '<p>It was a pleasure to walk this home with you, and to answer for it. ' +
+            'Whatever you decide next, we would be glad to be useful.</p>' +
+          '</div>' +
+          '<div class="say">' +
+            '<div class="lbl">In closing</div>' +
+            '<h2>Thank <em>you</em>.</h2>' +
+            '<div class="sign">The GVC Team &middot; Gasdaska Verdiglione Conlon</div>' +
+          '</div>' +
         '</div>' +
-        '<div class="states">' + STATES.map(([nm, art]) =>
-          '<div class="stc"><i class="stc-art" style="-webkit-mask-image:url(' + art +
-             ');mask-image:url(' + art + ')"></i><span>' + esc(nm) + '</span></div>').join('') + '</div>' +
+        '<div class="ag-people">' + people + '</div>' +
+        '<div class="ag-foot">' +
+          agentCol('Social', socialRows(list)) +
+          agentCol('Links', AG_LINKS) +
+          '<div class="ag-col"><div class="ag-col-t">Licensed in</div>' +
+            STATES.map(([nm, art]) =>
+              '<div class="ag-st"><i style="-webkit-mask-image:url(' + art +
+                ');mask-image:url(' + art + ')"></i><span>' + esc(nm) + '</span></div>').join('') +
+          '</div>' +
+        '</div>' +
         GVC_LEGAL.block('listing') +
       '</div>' +
       pageFoot(n, of, true) +
