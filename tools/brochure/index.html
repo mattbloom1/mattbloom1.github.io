@@ -328,9 +328,10 @@
 /* ---------- header rule: micro-label far left, QR far right ---------- */
 .ag-hdr{flex:none;display:flex;align-items:flex-start;justify-content:space-between;gap:.4in;
   padding-bottom:.14in;border-bottom:1pt solid var(--ag-rule);}
-.ag-hdr .l1{font:900 8pt var(--sans);letter-spacing:.3em;text-transform:uppercase;color:var(--sky);}
-.ag-hdr .l2{margin-top:.06in;font:400 6.2pt var(--sans);letter-spacing:.26em;
-  text-transform:uppercase;color:rgba(229,229,229,.5);}
+/* The mark itself, not the team set in type. monogram-white.svg is
+   path-only, so it needs no font — unlike lockup.svg, whose wordmark is
+   <text> and would fall back to a default serif inside an <img>. */
+.ag-hdr .logo{height:.55in;width:auto;display:block;}
 .ag-qr{flex:none;width:.86in;}
 .ag-qr .qbox{width:.86in;height:.86in;background:#fff;padding:.05in;}
 .ag-qr .qbox svg{display:block;width:100%;height:100%;}
@@ -357,8 +358,6 @@
 .ag-hero .lead .rulet{width:1.05in;height:1.5pt;background:var(--sky);margin-bottom:.15in;}
 .ag-hero .lead p{font:300 9.5pt/1.6 var(--body);color:rgba(229,229,229,.78);max-width:2.7in;}
 .ag-hero .say{grid-column:2;}
-.ag-hero .say .lbl{font:900 6.2pt var(--sans);letter-spacing:.3em;text-transform:uppercase;
-  color:rgba(229,229,229,.55);margin-bottom:.13in;}
 .ag-hero .say h2{margin:0;font:400 56pt/.92 var(--serif);color:#fff;letter-spacing:-.022em;
   text-wrap:nowrap;}
 .ag-hero .say h2 em{font-style:italic;font-weight:400;color:var(--sky);}
@@ -1582,21 +1581,17 @@ function renderAgent(page, n, of) {
     '<div class="ag' + solo + '">' +
       '<div class="ag-body">' +
         '<div class="ag-hdr">' +
-          '<div class="mark">' +
-            '<div class="l1">The GVC Team</div>' +
-            '<div class="l2">Douglas Elliman</div>' +
-          '</div>' +
+          '<img class="logo" src="' + MONO + '" alt="The GVC Team">' +
           (qr ? '<div class="ag-qr"><div class="qbox">' + qr + '</div>' +
                 '<div class="qcap">Our properties</div></div>' : '') +
         '</div>' +
         '<div class="ag-hero">' +
           '<div class="lead">' +
             '<div class="rulet"></div>' +
-            '<p>It was a pleasure to walk this home with you, and to answer for it. ' +
-            'Whatever you decide next, we would be glad to be useful.</p>' +
+            '<p>Every question about this home, its building and its numbers is ' +
+            'welcome. We would rather you decided with all of it in front of you.</p>' +
           '</div>' +
           '<div class="say">' +
-            '<div class="lbl">In closing</div>' +
             '<h2>Thank <em>you</em>.</h2>' +
             '<div class="sign">Gasdaska Verdiglione Conlon</div>' +
           '</div>' +
