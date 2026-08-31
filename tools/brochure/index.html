@@ -305,40 +305,53 @@
    Still shared with the other decks, on purpose: pageFoot()'s .pg-foot,
    GVC_LEGAL's .legal paragraph, and the mesh-masked state marks.
 
-   --ag-fig is the cut-out's size; --ag-rail is the column it shows through,
-   and the column is deliberately NARROWER than the figure.
+   THE WINDOW ONTO A CUT-OUT — the one thing in this section to get right.
 
-   Sizing the column to the whole square reserved about half an inch of empty
-   air on each side of the person, and the details then read as though they
-   belonged to something else. So the column shows only the band the person
-   actually occupies, and .ag-shot's overflow:hidden crops the air away.
+   --ag-fig is the cut-out's size and the window is the WHOLE square: full
+   width, cut off at --ag-crop. Both pages work this way; the solo page only
+   changes the two numbers. --ag-rail is not the window, it is the grid
+   column the window is anchored to, and --ag-bleed is how far left of that
+   column the window is hung.
 
-   Which band is not a matter of taste — it was measured over all thirteen
-   headshots in the roster, every pixel, not a sample. Each one flares at the
-   shoulders below about .6 of its height, so the window is capped at .52 of
-   the figure (--ag-crop) to keep the flare out of frame. Inside that window
-   the union of all thirteen silhouettes spans x .147 to .871 — TJ reaches
-   furthest left, Jessica furthest right — so the column is the .75 band from
-   x .13, which clears every one of them with a little in hand.
+   This section used to show a narrow band of the square instead — .75 of it
+   from x .13, cut at .52 — on the reasoning that the column should not
+   reserve empty air either side of the person. Both of those numbers were
+   wrong, and measuring the roster row by row rather than eyeballing one
+   photo is what showed it:
 
-   Do not tighten these by eye against one photo. A .56 band looked right on
-   John and sliced both of Marli's arms off on the solo page; .67 still took a
-   slice out of Jessica. If the roster gains a headshot framed differently,
-   re-measure the union rather than nudging. Cap and band go together: widen the window and the
-   shoulders will be sliced down both sides, which is exactly what a .56 band
-   over a .71 window did to the solo page.
+   THE CROP. The thirteen cut-outs are not framed alike. Reading each one's
+   alpha for the neck (the narrowest row under the head) and the shoulder
+   line (where it first flares past the head's width) puts the neck anywhere
+   from .426 of the square (tj-verdiglione) to .592 (nicole-melveney), and
+   the shoulders from .483 to .698. A cut at .52 therefore took the shoulders
+   off ten of the thirteen — john-gasdaska came out as a head and a collar —
+   and went through the JAW of gary-kasparov, nicole-sobol and
+   nicole-melveney. .74 clears the lowest shoulder in the roster with a
+   little in hand. Do not raise it to buy a bigger head: the head grows with
+   --ag-fig, and this number is the only thing keeping everyone's shoulders
+   on the page.
 
-   The figure keeps its size throughout — the crop trims air, never the
-   person. Its foot is cropped by the window's bottom edge, which is the
-   horizontal cut the composition wants. Change --ag-fig alone; the column
-   and the window follow it. */
+   THE WIDTH. Once the crop is that deep the square is the only band that
+   clears everybody. Over the top .80 the union of the thirteen silhouettes
+   runs x .063 to 1.000 — tj-verdiglione one side, nicole-sobol the other —
+   and every narrower band slices somebody: .96 of the square leaves a .02
+   sliver outside it, and .92 and .88 are progressively worse. The empty air
+   that costs is bought back with --ag-bleed instead, by hanging the window
+   left of its column rather than by narrowing it.
+
+   Re-measure both if the roster gains a headshot framed differently. The
+   figure keeps its size throughout — the crop trims air, never the person.
+   Its foot is cropped by the window's bottom edge, which is the horizontal
+   cut the composition wants. Change --ag-fig alone; the column, the window
+   and the row's height follow it. */
 .ag{position:absolute;inset:0;background:var(--navy);color:var(--ow);
   display:flex;flex-direction:column;overflow:hidden;
   --ag-padL:.58in; --ag-padR:.92in;
-  --ag-fig:2.9in;                              /* the cut-out */
-  --ag-rail:calc(var(--ag-fig) * .75);         /* the band of it that shows */
-  --ag-crop:calc(var(--ag-fig) * .52);         /* how far down — above the flare */
+  --ag-fig:2.45in;                             /* the cut-out */
+  --ag-crop:calc(var(--ag-fig) * .74);         /* how far down — below every shoulder */
   --ag-bleed:0in;                              /* how far left of the margin the window sits */
+  --ag-rail:calc(var(--ag-fig) - var(--ag-bleed));   /* the grid column it is anchored to */
+  --ag-sill:.2in;                              /* the row's own slack under the window */
   --ag-gut:.24in;        /* silhouette to details — tight, so they read as one */
   --ag-rule:rgba(229,229,229,.26);
   --ag-rule-soft:rgba(229,229,229,.14);}
@@ -393,12 +406,12 @@
 .ag-person{position:relative;flex:none;
   display:grid;grid-template-columns:var(--ag-rail) 1fr;column-gap:var(--ag-gut);
   align-items:start;border-top:1pt solid var(--ag-rule);padding-top:.16in;
-  min-height:calc(var(--ag-crop) + .3in);}
+  min-height:calc(var(--ag-crop) + var(--ag-sill));}
 .ag-person + .ag-person{margin-top:.2in;}
 /* A stated height rather than bottom:0 — the window is the crop, so it must
    not follow the row's height around. */
-.ag-shot{position:absolute;left:0;top:.16in;height:var(--ag-crop);
-  width:var(--ag-rail);overflow:hidden;}
+.ag-shot{position:absolute;left:calc(var(--ag-bleed) * -1);top:.16in;
+  height:var(--ag-crop);width:var(--ag-fig);overflow:hidden;}
 /* Height is stated outright rather than left to top:0 + bottom:0 + a fixed
    width on a replaced element: that combination is an ambiguous corner of the
    spec that browsers resolve differently, which a page destined for a PDF
@@ -415,7 +428,7 @@
    box it shows through. Without it the cut-out is squeezed to the column,
    object-fit:contain then shrinks the whole figure to fit that width and
    anchors it to the bottom, and the row shows a sliver of scalp. */
-.ag-shot img{position:absolute;left:calc(var(--ag-fig) * -.13);top:0;
+.ag-shot img{position:absolute;left:0;top:0;
   width:var(--ag-fig);height:var(--ag-fig);max-width:none;max-height:none;
   display:block;object-fit:contain;object-position:50% 100%;}
 /* Both figures stand on the same left edge. The inset that used to stagger
@@ -432,7 +445,7 @@
    a block that outgrows the window grows upward and keeps the two bottoms
    together rather than sliding past. */
 .ag-who{grid-column:2;min-width:0;
-  align-self:end;margin-bottom:calc(.3in - .16in);}
+  align-self:end;margin-bottom:calc(var(--ag-sill) - .16in);}
 .ag-who .nm{font:700 21pt/1.03 var(--serif);color:#fff;letter-spacing:-.008em;}
 .ag-who .tt{margin-top:.11in;padding-top:.09in;border-top:.75pt solid var(--ag-rule-soft);
   font:800 6.8pt/1.5 var(--sans);letter-spacing:.15em;text-transform:uppercase;color:var(--sky);}
@@ -444,22 +457,12 @@
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .ag-who .ct .v.num{font:700 10.5pt var(--serif);letter-spacing:.01em;}
 
-/* ---- one agent: the whole width of the cut-out, cropped low ----
-   With one row there is a whole page of navy under the portrait, and the
-   head-and-shoulders band the two-up uses left about two inches of it empty.
-   So the solo page takes the cut-out at its FULL WIDTH and crops it low —
-   at the waist rather than across the chest.
+/* ---- one agent: the same window, bigger and cut lower ----
+   With one row there is a whole page of navy under the portrait, so the solo
+   page takes a bigger figure and crops it at the waist rather than just
+   under the shoulders.
 
-   Full width is not a preference, it is the measurement. Sampling all
-   thirteen cut-outs row by row, the union of the silhouettes over the top
-   .80 of the square runs x .063 to 1.000 — tj-verdiglione's shoulder at one
-   end, nicole-sobol's at the other — so ANY band narrower than the square
-   slices somebody at this depth. (At .96 of the square the worst case is a
-   .02-wide sliver; at .92 and .88 it is progressively worse. Only 1.00 is
-   clean.) Hence --ag-rail is no longer the window here: the window is
-   --ag-fig, and the rail is only the grid column it is anchored to.
-
-   .80 of the height, and not more, because karl-brisard is the one cut-out
+   .80 of the height rather than the two-up's .74, and not more, because karl-brisard is the one cut-out
    whose figure does not run to the bottom of its own PNG — his ink stops at
    .828 and every other one reaches 1.000. A deeper window would cut the
    other twelve at the window's edge and leave HIM floating above it, which
@@ -475,13 +478,7 @@
    ("George Putykewycz", 3.36in at 27pt) on one line and its longest address
    ("george.putykewycz@elliman.com", 2.37in at 11pt) without an ellipsis.
    Grow the figure and both of those break, in that order. */
-.ag.solo{--ag-fig:3.8in;
-  --ag-bleed:.45in;
-  --ag-rail:calc(var(--ag-fig) - var(--ag-bleed));
-  --ag-crop:calc(var(--ag-fig) * .80);}
-/* the window is the whole cut-out, hung left of the column it sits in */
-.ag.solo .ag-shot{left:calc(var(--ag-bleed) * -1);width:var(--ag-fig);}
-.ag.solo .ag-shot img{left:0;}
+.ag.solo{--ag-fig:3.8in; --ag-bleed:.45in; --ag-crop:calc(var(--ag-fig) * .80);}
 /* the rest of the recovered slack goes round the sign-off, so the page reads
    as composed top to bottom rather than as a portrait with a hole under it */
 .ag.solo .ag-hero{padding:.58in 0 .40in;}
