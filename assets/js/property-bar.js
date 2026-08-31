@@ -143,7 +143,9 @@
           return P.photoUrls(prop.photos).then(function (urls) {
             current = prop;
             opts.fromCore(prop.core || {});
-            opts.setDoc(prop.doc ? P.hydrate(prop.doc, urls) : null);
+            // retokenize first: a document saved before the token round trip was
+            // fixed holds expired signed URLs, and they still name their photos
+            opts.setDoc(prop.doc ? P.hydrate(P.retokenize(prop.doc, prop.photos), urls) : null);
             var built = prop.doc ? 'its saved ' + tool : 'no ' + tool + ' yet — the facts are filled in';
             say('Loaded ' + prop.label + ' · ' + built, 'ok');
             if (global.GVC_UNSAVED) GVC_UNSAVED.clear();
