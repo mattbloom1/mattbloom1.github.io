@@ -484,14 +484,17 @@ body.paper-half{--ph:13.1364in;}
      page 3   the navy photo band takes a bigger share of the page. A deeper
               banner reads as a design choice; a taller white column under the
               blurb reads as a mistake.
-     closing  the breather above the contact footer is split above and below
-              the agent cards, so the cards sit near the optical centre
-              instead of being pushed to the top of 3in of navy.
+     closing  a fixed share of the breather goes above the agent cards and
+              the rest below, so the cards lift clear of the top of 3in of
+              navy without drifting down into the contact columns and
+              competing with them for attention.
 
    .info-tr's depth is a percentage rather than 4.2in for the same reason —
    38.2% of 11in IS 4.2in, so Letter is unchanged. */
 body.paper-half .info{--band:5.9in;}   /* 45% of the taller sheet */
-body.paper-half .ag-row{margin-top:auto;}
+/* a fixed .5in rather than a matching margin-top:auto, which split the
+   2.14in of extra height evenly and dropped the cards a full inch */
+body.paper-half .ag-row{margin-top:.5in;}
 
 @media print{
   .empty-note,.over-flag{display:none !important;}
