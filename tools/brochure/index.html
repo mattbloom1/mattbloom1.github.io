@@ -305,17 +305,28 @@
    Still shared with the other decks, on purpose: pageFoot()'s .pg-foot,
    GVC_LEGAL's .legal paragraph, and the mesh-masked state marks.
 
-   --ag-fig is the cut-out's size. It is bigger than the row it sits in on
-   purpose — .ag-shot's overflow:hidden crops its foot, and that crop is what
-   makes it read as a bleed rather than a photo in a box. Keep it under
-   (--ag-rail + --ag-padL) or the figure escapes its box onto the type
-   column. */
+   --ag-fig is the cut-out's size; --ag-rail is the column it shows through,
+   and the column is deliberately NARROWER than the figure.
+
+   Measured across the roster's headshots, the head and shoulders occupy only
+   the middle ~56% of the square (x .26 to .82) — the full width is reached
+   only by the torso, which the row crops away anyway. Sizing the column to
+   the whole square therefore reserved about half an inch of empty air on each
+   side of the person, and the details ended up looking like they belonged to
+   something else. So the column is 56% of the figure and offset onto that
+   band: the figure keeps its size, its sides are cropped by .ag-shot's
+   overflow:hidden, and the details sit right beside the silhouette. Its foot
+   is cropped by the same rule against the row's bottom edge.
+
+   Both numbers come from the framing spec in assets/js/roster.js, so a
+   headshot dropped in to that spec lands correctly. Change --ag-fig alone;
+   the column follows it. */
 .ag{position:absolute;inset:0;background:var(--navy);color:var(--ow);
   display:flex;flex-direction:column;overflow:hidden;
   --ag-padL:.58in; --ag-padR:.92in;
-  --ag-rail:2.55in;      /* portrait rail, measured from the trimmed edge */
-  --ag-gut:.5in;
-  --ag-fig:2.62in;       /* cut-out size — keep under rail + padL (3.13in) */
+  --ag-fig:2.8in;                              /* the cut-out */
+  --ag-rail:calc(var(--ag-fig) * .56);         /* the band of it that shows */
+  --ag-gut:.24in;        /* silhouette to details — tight, so they read as one */
   --ag-rule:rgba(229,229,229,.26);
   --ag-rule-soft:rgba(229,229,229,.14);}
 /* a whisper of brand light in the corner the portrait bleeds through */
@@ -326,12 +337,12 @@
   display:flex;flex-direction:column;}
 
 /* ---------- header rule: micro-label far left, QR far right ---------- */
-.ag-hdr{flex:none;display:flex;align-items:flex-start;justify-content:space-between;gap:.4in;
-  padding-bottom:.14in;border-bottom:1pt solid var(--ag-rule);}
-/* The mark itself, not the team set in type. monogram-white.svg is
-   path-only, so it needs no font — unlike lockup.svg, whose wordmark is
-   <text> and would fall back to a default serif inside an <img>. */
-.ag-hdr .logo{height:.55in;width:auto;display:block;}
+/* The QR alone now. The mark used to sit up here with it; it has moved down
+   onto the sign-off's line, so this row carries no rule of its own. */
+.ag-hdr{flex:none;display:flex;justify-content:flex-end;}
+/* the inlined lockup — sized by width, since its viewBox is cropped to the
+   artwork; currentColor makes it white against the navy */
+.ag-hero .lk{display:block;flex:none;width:2.05in;height:auto;color:#fff;}
 .ag-qr{flex:none;width:.86in;}
 .ag-qr .qbox{width:.86in;height:.86in;background:#fff;padding:.05in;}
 .ag-qr .qbox svg{display:block;width:100%;height:100%;}
@@ -352,22 +363,17 @@
    third of an inch in hand for the way Playfair renders on another platform.
    The italic needs the ital axis in the Google Fonts request at the top of
    this file. Re-measure both cases if you touch the rail or the size. */
-/* Still a two-column grid though only the second column carries anything:
-   the empty rail keeps the sign-off hung on the same line as the portraits
-   below it, which is the whole point of the composition. */
-.ag-hero{flex:none;display:grid;grid-template-columns:var(--ag-rail) 1fr;
-  column-gap:var(--ag-gut);padding:.26in 0 .22in;}
-.ag-hero .say{grid-column:2;}
+/* The mark and the sign-off share one line, the mark at the left margin and
+   the words to its right — so the page opens on the logo and reads across
+   into Thank you. rather than stacking the two. Baseline alignment would hang
+   the wordmark off the cap line of 56pt type; centring the two blocks against
+   each other is what actually looks level. */
+.ag-hero{flex:none;display:flex;align-items:center;gap:.42in;
+  padding:.34in 0 .16in;border-bottom:1pt solid var(--ag-rule);}
+.ag-hero .say{min-width:0;}
 .ag-hero .say h2{margin:0;font:400 56pt/.92 var(--serif);color:#fff;letter-spacing:-.022em;
   text-wrap:nowrap;}
 .ag-hero .say h2 em{font-style:italic;font-weight:400;color:var(--sky);}
-/* One line, always: the header already says The GVC Team, so this carries
-   the partners' names alone — with both, tracked at .22em, it wrapped in the
-   solo page's narrower column. */
-.ag-hero .say .sign{margin-top:.14in;padding-top:.1in;border-top:.75pt solid var(--ag-rule-soft);
-  font:800 7pt/1.5 var(--sans);letter-spacing:.2em;text-transform:uppercase;
-  text-wrap:nowrap;color:rgba(229,229,229,.72);}
-
 /* ---------- agent rows: the cut-out bleeds off the left trim ---------- */
 .ag-people{flex:1;min-height:0;display:flex;flex-direction:column;}
 .ag-person{position:relative;flex:1;min-height:0;
@@ -377,17 +383,26 @@
    than two equal bands. */
 .ag-person:first-child{flex:1.22;}
 .ag-person + .ag-person{margin-top:.14in;}
-.ag-shot{position:absolute;left:calc(var(--ag-padL) * -1);top:.16in;bottom:0;
-  width:calc(var(--ag-rail) + var(--ag-padL));overflow:hidden;}
+.ag-shot{position:absolute;left:0;top:.14in;bottom:0;
+  width:var(--ag-rail);overflow:hidden;}
 /* Height is stated outright rather than left to top:0 + bottom:0 + a fixed
    width on a replaced element: that combination is an ambiguous corner of the
    spec that browsers resolve differently, which a page destined for a PDF
    must not depend on. */
-.ag-shot img{position:absolute;left:0;top:0;width:var(--ag-fig);height:var(--ag-fig);
-  display:block;object-fit:contain;object-position:0 100%;}
-/* the second cut-out is set in from the trim, so the pair staggers across the
-   rail instead of both figures hanging on the same edge */
-.ag-person + .ag-person .ag-shot img{left:.42in;}
+/* Pulled left onto the head-and-shoulders band, and up a touch so the crown
+   sits near the top of the row rather than floating below it.
+
+   max-width:none matters: base.css sets img{max-width:100%} for the editor
+   chrome, and this is the one image on the site deliberately WIDER than the
+   box it shows through. Without it the cut-out is squeezed to the column,
+   object-fit:contain then shrinks the whole figure to fit that width and
+   anchors it to the bottom, and the row shows a sliver of scalp. */
+.ag-shot img{position:absolute;left:calc(var(--ag-fig) * -.26);top:calc(var(--ag-fig) * -.07);
+  width:var(--ag-fig);height:var(--ag-fig);max-width:none;max-height:none;
+  display:block;object-fit:contain;object-position:50% 100%;}
+/* Both figures stand on the same left edge. The inset that used to stagger
+   the second one across the rail only made sense while they bled off the
+   trim; inside the margin it just looked misaligned. */
 .ag-who{grid-column:2;min-width:0;padding-bottom:.07in;}
 .ag-who .idx{font:900 6.2pt var(--sans);letter-spacing:.28em;text-transform:uppercase;
   color:rgba(83,199,220,.8);margin-bottom:.09in;}
@@ -406,8 +421,9 @@
    With a single row there is no stagger to hold, so the rail can take the
    extra width. The sign-off column loses that width, which is why the type
    steps down with it — see the nowrap note above. */
-.ag.solo{--ag-rail:3.6in;--ag-fig:3.72in;}
-.ag.solo .ag-hero .say h2{font-size:40pt;}
+/* The sign-off shares a line with the mark now, not a grid column with the
+   rail, so it keeps its size here — only the figure grows. */
+.ag.solo{--ag-fig:3.6in;}
 .ag.solo .ag-who{padding-bottom:.12in;}
 .ag.solo .ag-who .nm{font-size:27pt;}
 .ag.solo .ag-who .tt{font-size:7.6pt;}
@@ -534,8 +550,8 @@ body.paper-half .info{--band:5.9in;}   /* 45% of the taller sheet */
    it, the footer gets a wider gap, and what is left goes to the agent rows,
    whose cut-out grows a little to keep standing in its row rather than
    floating in it. The figure stays under rail + padL (3.13in). */
-body.paper-half .ag{--ag-fig:2.95in;}
-body.paper-half .ag.solo{--ag-fig:4.1in;}
+body.paper-half .ag{--ag-fig:3.1in;}
+body.paper-half .ag.solo{--ag-fig:4in;}
 body.paper-half .ag-hero{padding:.66in 0 .52in;}
 body.paper-half .ag-foot{margin-top:.5in;}
 
@@ -1525,6 +1541,20 @@ const AG_LINKS = [
   ['Book a call',    'gvcrealestateteam.com/contact']
 ];
 
+/* THE LOCKUP — the monogram and the wordmark, for the closing page header.
+
+   Inlined rather than referenced as <img src="lockup.svg">, because that
+   file draws its wordmark with <text> in Nunito Sans: inside an <img> no
+   webfont loads and the words fall back to a default serif. Inlined, the
+   page's own Nunito Sans applies. Its fills are currentColor, so CSS sets
+   the colour — white here, on navy.
+
+   The viewBox is cropped to the artwork's measured ink box (the source file
+   floats it inside a 2000x2000 square with a third of an inch of air on every
+   side), so the mark can be sized by width alone. Aspect is 3.25:1. */
+const LOCKUP = '<svg class="lk" viewBox="184.4 730.6 1675.8 514.7" ' +
+  'role="img" aria-label="The Gasdaska Verdiglione Conlon Team"><g> <g> <path fill="currentColor" d="M345.28,1004.67l-2.31-6.72c13.84-5.65,28.91-8.66,44.34-8.66,9.66,0,18.85.9,27.37,2.49,2.7.51,5.33,1.08,7.89,1.71,10.54,2.61,19.83,6.28,27.45,10.53l-8.83,47.99-4.13-.59c-3.06-18.97-10.25-33.02-20.23-42.36-2.06-1.93-4.23-3.65-6.51-5.18-8.99-6.03-19.65-8.98-31.26-8.98-12.27,0-23.76,3.34-33.79,9.78Z"/> <path fill="currentColor" d="M444.13,1150.64l3.24,1.18c-12.08,28.55-34.45,52.11-74.49,52.11-56.24,0-98.04-46.22-98.04-104.52,0-31.75,12.31-58.36,31.62-77.47l8.55,23.88c-4.43,12.86-6.9,28.04-6.9,45.35,0,58,30.91,92.45,74.78,92.45,28.85,0,50.35-15.31,61.24-32.98Z"/> </g> <path fill="currentColor" d="M400.45,1005.54l-44.16,119.22c-.18.49-.64.81-1.16.81h-3.58c-.52,0-.99-.33-1.17-.82l-62.22-173.17c-7.73-21.47-19.07-30.16-30.79-32-.61-.1-1.06-.61-1.06-1.22v-.34c0-.68.55-1.24,1.24-1.24h75.08c.68,0,1.24.55,1.24,1.24v.2c0,.68-.55,1.22-1.22,1.24-15.29.4-20.73,8.43-14.41,26.82l46.63,134.71c.38,1.1,1.94,1.11,2.34.02l28.04-77.44"/> <path fill="currentColor" d="M402.43,983.7l5.76-15.9c11-30.97.41-47.74-20.9-48.35-.67-.02-1.22-.56-1.22-1.23v-.2c0-.68.55-1.24,1.24-1.24h68.36v2.65c-17.1,1.47-30.37,18.87-40.7,46.89l-6.67,18.02"/> <path fill="currentColor" d="M398.1,879.53h-80.98c-.69,0-1.24.55-1.24,1.24h0c0,.64.47,1.17,1.09,1.24,11.61,1.4,30.16,6.93,30.16,24.65v33.04c0,12.28-5.27,21.77-14.82,27.37l2.53,7.35c15.59-3.51,29.56-9.26,39.66-14.62.41-.22.65-.63.65-1.09v-52.05c0-17.78,10.03-23.28,23.07-24.66.63-.07,1.11-.6,1.11-1.23,0-.69-.55-1.24-1.24-1.24ZM228.74,852.28c3.65-50.1,30.6-85.41,73.29-85.41,31.31,0,53.62,20.92,60.88,58.41.1.52.52.92,1.03.99l2.08.3c.66.09,1.27-.35,1.39-1.01l8.49-48.37c.09-.52-.15-1.06-.62-1.31-12.95-6.93-38.73-13.73-67.05-13.73-64.29,0-113.83,44.24-113.83,108.23,0,52.96,38.61,98.97,95.88,106.32l-2.49-6.96c-35.77-10.85-59.48-50.58-59.48-105.55,0-1.79.03-3.57.08-5.33.07-2.22.19-4.42.35-6.58Z"/> </g> <text fill="currentColor" style="font-family:NunitoSans-Black,\'Nunito Sans\';font-variation-settings:\'wght\' 900,\'wdth\' 100,\'opsz\' 12,\'YTLC\' 500;font-weight:800;font-size:172.4px;letter-spacing:.05em" transform="translate(510.09 1046.5)"><tspan x="0" y="0">VERDIGLIONE</tspan></text> <g> <text fill="currentColor" style="font-family:NunitoSans-Black,\'Nunito Sans\';font-variation-settings:\'wght\' 900,\'wdth\' 100,\'opsz\' 12,\'YTLC\' 500;font-weight:800;font-size:172.4px;letter-spacing:.05em" transform="translate(743.49 894.85)"><tspan x="0" y="0">GASDASKA</tspan></text> <text fill="currentColor" style="font-family:NunitoSans-Black,\'Nunito Sans\';font-variation-settings:\'wght\' 900,\'wdth\' 100,\'opsz\' 12,\'YTLC\' 500;font-weight:800;font-size:104.36px;letter-spacing:.05em" transform="translate(491.49 894.85)"><tspan x="0" y="0">THE</tspan></text> </g> <text fill="currentColor" style="font-family:NunitoSans-Black,\'Nunito Sans\';font-variation-settings:\'wght\' 900,\'wdth\' 100,\'opsz\' 12,\'YTLC\' 500;font-weight:800;font-size:172.4px;letter-spacing:.05em" transform="translate(585.91 1198.16)"><tspan x="0" y="0">CONLON</tspan></text> <text fill="currentColor" style="font-family:NunitoSans-Black,\'Nunito Sans\';font-variation-settings:\'wght\' 900,\'wdth\' 100,\'opsz\' 12,\'YTLC\' 500;font-weight:800;font-size:104.36px;letter-spacing:.05em" transform="translate(1400.29 1154.94)"><tspan x="0" y="0">TEAM</tspan></text></svg>';
+
 /* The closing page. Its own markup rather than P.agentCards() / P.linkCols():
    those emit the centred cards the Seller Pitch & CMA and the Buyer Package
    use, and this deck's closing page is deliberately no longer that page. See
@@ -1581,14 +1611,13 @@ function renderAgent(page, n, of) {
     '<div class="ag' + solo + '">' +
       '<div class="ag-body">' +
         '<div class="ag-hdr">' +
-          '<img class="logo" src="' + MONO + '" alt="The GVC Team">' +
           (qr ? '<div class="ag-qr"><div class="qbox">' + qr + '</div>' +
                 '<div class="qcap">Our properties</div></div>' : '') +
         '</div>' +
         '<div class="ag-hero">' +
+          LOCKUP +
           '<div class="say">' +
             '<h2>Thank <em>you</em>.</h2>' +
-            '<div class="sign">Gasdaska Verdiglione Conlon</div>' +
           '</div>' +
         '</div>' +
         '<div class="ag-people">' + people + '</div>' +
