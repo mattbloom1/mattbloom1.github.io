@@ -329,15 +329,17 @@
    over a .71 window did to the solo page.
 
    The figure keeps its size throughout — the crop trims air, never the
-   person. Its foot is cropped by the window's bottom edge, which is the
-   horizontal cut the composition wants. Change --ag-fig alone; the column
-   and the window follow it. */
+   person. Its foot is not cut off at the window's bottom edge but faded out
+   into the navy there; see --ag-fade on .ag-shot below. Change --ag-fig
+   alone; the column, the window and the fade follow it. */
 .ag{position:absolute;inset:0;background:var(--navy);color:var(--ow);
   display:flex;flex-direction:column;overflow:hidden;
   --ag-padL:.58in; --ag-padR:.92in;
   --ag-fig:2.9in;                              /* the cut-out */
   --ag-rail:calc(var(--ag-fig) * .75);         /* the band of it that shows */
   --ag-crop:calc(var(--ag-fig) * .52);         /* how far down — above the flare */
+  --ag-fade:55%;                               /* where the window starts dissolving */
+  --ag-bleed:0in;                              /* how far left of the margin the window sits */
   --ag-gut:.24in;        /* silhouette to details — tight, so they read as one */
   --ag-rule:rgba(229,229,229,.26);
   --ag-rule-soft:rgba(229,229,229,.14);}
@@ -395,9 +397,30 @@
   min-height:calc(var(--ag-crop) + .3in);}
 .ag-person + .ag-person{margin-top:.2in;}
 /* A stated height rather than bottom:0 — the window is the crop, so it must
-   not follow the row's height around. */
+   not follow the row's height around.
+
+   The window's bottom edge is a FADE, not a cut. The crop has to land
+   somewhere above the shoulder flare — that much is measured, see the note
+   at the top of this section — but a hard horizontal edge sliced across a
+   person's chest reads as a mistake, a photo that ran out of room, rather
+   than as a crop. Masking the foot of the window away lets the figure
+   dissolve into the navy instead: the composition keeps the horizontal edge
+   it wanted, without the guillotine.
+
+   --ag-fade is where the dissolve begins, as a share of the window. Above it
+   the figure is untouched; below it it falls away to nothing by the window's
+   bottom edge. It has to sit low enough that every face and the top of every
+   pair of shoulders is still fully opaque — at .55 that holds on the two-up
+   and on the solo page, whose figure is nearly half again as tall. Do not
+   raise it to show 'less crop': that fades the collar and then the jaw.
+
+   -webkit-mask-image is paired with mask-image for the print engine, the
+   same as the state marks in the footer, and builder.css's
+   print-color-adjust:exact carries the result into the PDF. */
 .ag-shot{position:absolute;left:0;top:.16in;height:var(--ag-crop);
-  width:var(--ag-rail);overflow:hidden;}
+  width:var(--ag-rail);overflow:hidden;
+  -webkit-mask-image:linear-gradient(to bottom,#000 var(--ag-fade),rgba(0,0,0,0) 100%);
+  mask-image:linear-gradient(to bottom,#000 var(--ag-fade),rgba(0,0,0,0) 100%);}
 /* Height is stated outright rather than left to top:0 + bottom:0 + a fixed
    width on a replaced element: that combination is an ambiguous corner of the
    spec that browsers resolve differently, which a page destined for a PDF
@@ -434,13 +457,47 @@
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .ag-who .ct .v.num{font:700 10.5pt var(--serif);letter-spacing:.01em;}
 
-/* ---- one agent: a wider rail, a bigger portrait, a bigger name ----
-   With a single row there is no stagger to hold, so the rail can take the
-   extra width. The sign-off column loses that width, which is why the type
-   steps down with it — see the nowrap note above. */
-/* The sign-off shares a line with the mark now, not a grid column with the
-   rail, so it keeps its size here — only the figure grows. */
-.ag.solo{--ag-fig:4.2in;}
+/* ---- one agent: the whole cut-out, not a band of it ----
+   With one row there is a whole page of navy under the portrait, and a
+   head-and-shoulders band left about two inches of it empty. So the solo
+   page shows the WHOLE square — full width and (near enough) full height —
+   and lets the fade carry the figure away into the page instead.
+
+   Full width is not a preference, it is the measurement. Sampling all
+   thirteen cut-outs row by row, the union of the silhouettes over the top
+   .80 of the square runs x .063 to 1.000 — tj-verdiglione's shoulder at one
+   end, nicole-sobol's at the other — so ANY band narrower than the square
+   slices somebody. (At .96 of the square the worst case is a .02-wide sliver
+   at 13% opacity; at .92, .17; at .88, .30. Only 1.00 is clean.) Hence
+   --ag-rail is no longer the window here: the window is --ag-fig, and the
+   rail is only the grid column it is anchored to.
+
+   .80 of the square, not all of it, because karl-brisard is the one cut-out
+   whose figure does not run to the bottom of its own PNG — his ink stops at
+   .828 and every other one reaches 1.000. A window that still carried any
+   opacity at .828 would print HIS source edge as a soft horizontal line
+   across the page. Cutting the window at .80 puts that edge safely outside
+   it. Re-measure if the roster gains a differently-trimmed cut-out.
+
+   The window is then 3.8in wide inside a 7in body, and most of its left-hand
+   side is empty air — the silhouette does not start until x .063. So it is
+   hung --ag-bleed to the left of the text margin, which buys the details
+   column back the width it would otherwise lose to transparent pixels. .45in
+   is as far as it can go: the leftmost ink then lands .37in inside the left
+   trim, and the column keeps 3.41in — enough for the roster's longest name
+   ("George Putykewycz", 3.36in at 27pt) on one line and its longest address
+   ("george.putykewycz@elliman.com", 2.37in at 11pt) without an ellipsis.
+   Grow the figure and both of those break, in that order. */
+.ag.solo{--ag-fig:3.8in;
+  --ag-bleed:.45in;
+  --ag-rail:calc(var(--ag-fig) - var(--ag-bleed));
+  --ag-crop:calc(var(--ag-fig) * .80);}
+/* the window is the whole cut-out, hung left of the column it sits in */
+.ag.solo .ag-shot{left:calc(var(--ag-bleed) * -1);width:var(--ag-fig);}
+.ag.solo .ag-shot img{left:0;}
+/* the rest of the recovered slack goes round the sign-off, so the page reads
+   as composed top to bottom rather than as a portrait with a hole under it */
+.ag.solo .ag-hero{padding:.58in 0 .40in;}
 .ag.solo .ag-who{padding-top:.1in;}
 .ag.solo .ag-who .nm{font-size:27pt;}
 .ag.solo .ag-who .tt{font-size:7.6pt;}
@@ -568,9 +625,16 @@ body.paper-half .info{--band:5.9in;}   /* 45% of the taller sheet */
    whose cut-out grows a little to keep standing in its row rather than
    floating in it. The figure stays under rail + padL (3.13in). */
 body.paper-half .ag{--ag-fig:3.2in;}
-body.paper-half .ag.solo{--ag-fig:4.6in;}
+/* The solo page's figure is capped by the details column, not by the sheet —
+   see the note on .ag.solo — so on the taller sheet it can only take a little
+   of the extra 2.14in. The rest goes where it went before: air around the
+   sign-off and a wider gap over the footer, in the proportions that keep the
+   navy under the portrait the same share of the page as on Letter. */
+body.paper-half .ag.solo{--ag-fig:3.95in; --ag-bleed:.6in;}
 body.paper-half .ag-hero{padding:.66in 0 .52in;}
+body.paper-half .ag.solo .ag-hero{padding:1.24in 0 .86in;}
 body.paper-half .ag-foot{margin-top:.5in;}
+body.paper-half .ag.solo .ag-foot{margin-top:.86in;}
 
 @media print{
   .empty-note,.over-flag{display:none !important;}
