@@ -308,24 +308,36 @@
    --ag-fig is the cut-out's size; --ag-rail is the column it shows through,
    and the column is deliberately NARROWER than the figure.
 
-   Measured across the roster's headshots, the head and shoulders occupy only
-   the middle ~56% of the square (x .26 to .82) — the full width is reached
-   only by the torso, which the row crops away anyway. Sizing the column to
-   the whole square therefore reserved about half an inch of empty air on each
-   side of the person, and the details ended up looking like they belonged to
-   something else. So the column is 56% of the figure and offset onto that
-   band: the figure keeps its size, its sides are cropped by .ag-shot's
-   overflow:hidden, and the details sit right beside the silhouette. Its foot
-   is cropped by the same rule against the row's bottom edge.
+   Sizing the column to the whole square reserved about half an inch of empty
+   air on each side of the person, and the details then read as though they
+   belonged to something else. So the column shows only the band the person
+   actually occupies, and .ag-shot's overflow:hidden crops the air away.
 
-   Both numbers come from the framing spec in assets/js/roster.js, so a
-   headshot dropped in to that spec lands correctly. Change --ag-fig alone;
-   the column follows it. */
+   Which band is not a matter of taste — it was measured over all thirteen
+   headshots in the roster, every pixel, not a sample. Each one flares at the
+   shoulders below about .6 of its height, so the window is capped at .52 of
+   the figure (--ag-crop) to keep the flare out of frame. Inside that window
+   the union of all thirteen silhouettes spans x .147 to .871 — TJ reaches
+   furthest left, Jessica furthest right — so the column is the .75 band from
+   x .13, which clears every one of them with a little in hand.
+
+   Do not tighten these by eye against one photo. A .56 band looked right on
+   John and sliced both of Marli's arms off on the solo page; .67 still took a
+   slice out of Jessica. If the roster gains a headshot framed differently,
+   re-measure the union rather than nudging. Cap and band go together: widen the window and the
+   shoulders will be sliced down both sides, which is exactly what a .56 band
+   over a .71 window did to the solo page.
+
+   The figure keeps its size throughout — the crop trims air, never the
+   person. Its foot is cropped by the window's bottom edge, which is the
+   horizontal cut the composition wants. Change --ag-fig alone; the column
+   and the window follow it. */
 .ag{position:absolute;inset:0;background:var(--navy);color:var(--ow);
   display:flex;flex-direction:column;overflow:hidden;
   --ag-padL:.58in; --ag-padR:.92in;
-  --ag-fig:2.8in;                              /* the cut-out */
-  --ag-rail:calc(var(--ag-fig) * .56);         /* the band of it that shows */
+  --ag-fig:2.9in;                              /* the cut-out */
+  --ag-rail:calc(var(--ag-fig) * .75);         /* the band of it that shows */
+  --ag-crop:calc(var(--ag-fig) * .52);         /* how far down — above the flare */
   --ag-gut:.24in;        /* silhouette to details — tight, so they read as one */
   --ag-rule:rgba(229,229,229,.26);
   --ag-rule-soft:rgba(229,229,229,.14);}
@@ -337,12 +349,12 @@
   display:flex;flex-direction:column;}
 
 /* ---------- header rule: micro-label far left, QR far right ---------- */
-/* The QR alone now. The mark used to sit up here with it; it has moved down
-   onto the sign-off's line, so this row carries no rule of its own. */
-.ag-hdr{flex:none;display:flex;justify-content:flex-end;}
+/* The mark at the top left, the QR at the top right, and the sign-off on its
+   own line underneath. No rule here — the hero below carries it. */
+.ag-hdr{flex:none;display:flex;align-items:flex-start;justify-content:space-between;gap:.4in;}
 /* the inlined lockup — sized by width, since its viewBox is cropped to the
    artwork; currentColor makes it white against the navy */
-.ag-hero .lk{display:block;flex:none;width:2.05in;height:auto;color:#fff;}
+.ag-hdr .lk{display:block;flex:none;width:2.2in;height:auto;color:#fff;}
 .ag-qr{flex:none;width:.86in;}
 .ag-qr .qbox{width:.86in;height:.86in;background:#fff;padding:.05in;}
 .ag-qr .qbox svg{display:block;width:100%;height:100%;}
@@ -363,47 +375,52 @@
    third of an inch in hand for the way Playfair renders on another platform.
    The italic needs the ital axis in the Google Fonts request at the top of
    this file. Re-measure both cases if you touch the rail or the size. */
-/* The mark and the sign-off share one line, the mark at the left margin and
-   the words to its right — so the page opens on the logo and reads across
-   into Thank you. rather than stacking the two. Baseline alignment would hang
-   the wordmark off the cap line of 56pt type; centring the two blocks against
-   each other is what actually looks level. */
-.ag-hero{flex:none;display:flex;align-items:center;gap:.42in;
-  padding:.34in 0 .16in;border-bottom:1pt solid var(--ag-rule);}
+/* The sign-off, on its own line under the mark. */
+.ag-hero{flex:none;padding:.3in 0 .16in;border-bottom:1pt solid var(--ag-rule);}
 .ag-hero .say{min-width:0;}
 .ag-hero .say h2{margin:0;font:400 56pt/.92 var(--serif);color:#fff;letter-spacing:-.022em;
   text-wrap:nowrap;}
 .ag-hero .say h2 em{font-style:italic;font-weight:400;color:var(--sky);}
 /* ---------- agent rows: the cut-out bleeds off the left trim ---------- */
-.ag-people{flex:1;min-height:0;display:flex;flex-direction:column;}
-.ag-person{position:relative;flex:1;min-height:0;
+/* The rows hug their content and the slack collects underneath them, rather
+   than the rows stretching: a stretched row is taller than the portrait's
+   window, which left the details stranded at the bottom of it with a hole
+   above. What is left over becomes breathing space above the contact
+   columns, which is also where the half-letter sheet's extra height goes. */
+.ag-people{flex:1;min-height:0;display:flex;flex-direction:column;
+  justify-content:flex-start;}
+.ag-person{position:relative;flex:none;
   display:grid;grid-template-columns:var(--ag-rail) 1fr;column-gap:var(--ag-gut);
-  align-items:end;border-top:1pt solid var(--ag-rule);padding-top:.16in;}
-/* An uneven split, so the pair reads as a staggered editorial spread rather
-   than two equal bands. */
-.ag-person:first-child{flex:1.22;}
-.ag-person + .ag-person{margin-top:.14in;}
-.ag-shot{position:absolute;left:0;top:.14in;bottom:0;
+  align-items:start;border-top:1pt solid var(--ag-rule);padding-top:.16in;
+  min-height:calc(var(--ag-crop) + .3in);}
+.ag-person + .ag-person{margin-top:.2in;}
+/* A stated height rather than bottom:0 — the window is the crop, so it must
+   not follow the row's height around. */
+.ag-shot{position:absolute;left:0;top:.16in;height:var(--ag-crop);
   width:var(--ag-rail);overflow:hidden;}
 /* Height is stated outright rather than left to top:0 + bottom:0 + a fixed
    width on a replaced element: that combination is an ambiguous corner of the
    spec that browsers resolve differently, which a page destined for a PDF
    must not depend on. */
-/* Pulled left onto the head-and-shoulders band, and up a touch so the crown
-   sits near the top of the row rather than floating below it.
+/* Pulled left onto the head-and-shoulders band. NOT pulled up: the roster is
+   not framed consistently at the top either — karl-brisard's hair starts .024
+   from the top of his square and nicole-melveney's at .040, so even a .05
+   nudge upward takes the crown off both of them. The figures with more air
+   above the head simply sit a little lower in their window; a cropped head is
+   the worse of the two.
 
    max-width:none matters: base.css sets img{max-width:100%} for the editor
    chrome, and this is the one image on the site deliberately WIDER than the
    box it shows through. Without it the cut-out is squeezed to the column,
    object-fit:contain then shrinks the whole figure to fit that width and
    anchors it to the bottom, and the row shows a sliver of scalp. */
-.ag-shot img{position:absolute;left:calc(var(--ag-fig) * -.26);top:calc(var(--ag-fig) * -.07);
+.ag-shot img{position:absolute;left:calc(var(--ag-fig) * -.13);top:0;
   width:var(--ag-fig);height:var(--ag-fig);max-width:none;max-height:none;
   display:block;object-fit:contain;object-position:50% 100%;}
 /* Both figures stand on the same left edge. The inset that used to stagger
    the second one across the rail only made sense while they bled off the
    trim; inside the margin it just looked misaligned. */
-.ag-who{grid-column:2;min-width:0;padding-bottom:.07in;}
+.ag-who{grid-column:2;min-width:0;padding-top:.06in;}
 .ag-who .idx{font:900 6.2pt var(--sans);letter-spacing:.28em;text-transform:uppercase;
   color:rgba(83,199,220,.8);margin-bottom:.09in;}
 .ag-who .nm{font:700 21pt/1.03 var(--serif);color:#fff;letter-spacing:-.008em;}
@@ -423,8 +440,8 @@
    steps down with it — see the nowrap note above. */
 /* The sign-off shares a line with the mark now, not a grid column with the
    rail, so it keeps its size here — only the figure grows. */
-.ag.solo{--ag-fig:3.6in;}
-.ag.solo .ag-who{padding-bottom:.12in;}
+.ag.solo{--ag-fig:4.2in;}
+.ag.solo .ag-who{padding-top:.1in;}
 .ag.solo .ag-who .nm{font-size:27pt;}
 .ag.solo .ag-who .tt{font-size:7.6pt;}
 .ag.solo .ag-who .ct{gap:.09in;}
@@ -550,8 +567,8 @@ body.paper-half .info{--band:5.9in;}   /* 45% of the taller sheet */
    it, the footer gets a wider gap, and what is left goes to the agent rows,
    whose cut-out grows a little to keep standing in its row rather than
    floating in it. The figure stays under rail + padL (3.13in). */
-body.paper-half .ag{--ag-fig:3.1in;}
-body.paper-half .ag.solo{--ag-fig:4in;}
+body.paper-half .ag{--ag-fig:3.2in;}
+body.paper-half .ag.solo{--ag-fig:4.6in;}
 body.paper-half .ag-hero{padding:.66in 0 .52in;}
 body.paper-half .ag-foot{margin-top:.5in;}
 
@@ -1611,11 +1628,11 @@ function renderAgent(page, n, of) {
     '<div class="ag' + solo + '">' +
       '<div class="ag-body">' +
         '<div class="ag-hdr">' +
+          LOCKUP +
           (qr ? '<div class="ag-qr"><div class="qbox">' + qr + '</div>' +
                 '<div class="qcap">Our properties</div></div>' : '') +
         '</div>' +
         '<div class="ag-hero">' +
-          LOCKUP +
           '<div class="say">' +
             '<h2>Thank <em>you</em>.</h2>' +
           '</div>' +
