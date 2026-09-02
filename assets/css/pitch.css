@@ -175,11 +175,29 @@ table.tbl .meta{display:block;font-size:7.5pt;color:rgba(0,39,58,.55);margin-top
 .band.mid .bv,.band.mid .bn{color:#fff;}
 .band.mid .bn{color:rgba(229,229,229,.82);}
 
-/* reviews */
+/* ---------- client testimonials ----------
+   A quote is framed by a pair of display marks, not by a rule down its
+   side: the opening mark hangs in the left padding, the closing one off
+   the end of the text and into the right padding.
+
+   Every measurement below is in em off .quote's OWN font-size, which is
+   why that font-size is set on .quote rather than on the p. Override the
+   one property and the marks, the indents and the text all rescale
+   together — that is how the same block serves a full page of reviews at
+   15pt and a single review in a half-width column at 10.5pt.
+
+   Watch the units on the pseudo-elements: em inside ::before/::after
+   position properties resolves against the MARK's own font-size, not the
+   quote's, so those offsets are fractions of a mark. */
 .quotes{display:flex;flex-direction:column;gap:.26in;}
-.quote{flex:none;border-left:1.6pt solid var(--sky);padding-left:.22in;}
-.quote p{margin:0;font:italic 300 11pt/16.5pt var(--body);color:var(--navy);}
-.quote .who{margin-top:.1in;font:800 7.5pt var(--sans);letter-spacing:.14em;text-transform:uppercase;color:rgba(0,39,58,.55);}
+.quote{flex:none;position:relative;font-size:15pt;padding-left:2.5em;padding-right:2.88em;}
+.quote::before{content:'\201C';position:absolute;left:0;top:-.157em;
+  font:700 3.07em/1 var(--serif);color:var(--sky);}
+.quote p{position:relative;margin:0;font:italic 400 1em/1.533 var(--body);color:var(--navy);}
+.quote p::after{content:'\201D';position:absolute;right:-.72em;bottom:-.334em;
+  font:700 3.73em/1 var(--serif);color:var(--sky);}
+.quote .who{margin-top:.12in;font:800 8pt var(--sans);letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(0,39,58,.55);}
 .pg.rev .quote p{color:var(--ow);}
 .pg.rev .quote .who{color:rgba(229,229,229,.65);}
 .stars{color:var(--sky2);letter-spacing:.06em;font-size:10pt;}

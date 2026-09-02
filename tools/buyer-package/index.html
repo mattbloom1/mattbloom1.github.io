@@ -42,8 +42,10 @@
    the numbers */
 .why .tag{margin:.3in 0 0;padding-top:.24in;border-top:.75pt solid var(--rule);
   font:300 16pt/1.28 var(--serif);color:var(--navy);}
-.why .quote{margin-top:auto;padding-top:.04in;}
-.why .quote p{font-size:10.5pt;line-height:16pt;}
+/* One review in a half-width column, so the shared quote block is set
+   down from its 15pt. font-size is the only knob it needs — the marks
+   and the indents are sized in em and come down with it. */
+.why .quote{margin-top:auto;font-size:10.5pt;}
 
 /* search-criteria worksheet — blank rules the buyer fills in by hand */
 .ws{display:grid;grid-template-columns:1fr 1fr;gap:.1in .42in;}

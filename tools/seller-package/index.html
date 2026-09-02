@@ -180,18 +180,12 @@
 .rev-badge .rb-l{font:800 7pt var(--sans);letter-spacing:.14em;text-transform:uppercase;
   color:rgba(229,229,229,.85);}
 
-.quotes{display:flex;flex-direction:column;justify-content:space-evenly;gap:.26in;flex:1;min-height:0;}
-/* border-left:0 overrides the shared rule in pitch.css — the quote is framed
-   by the pair of marks now, not by a rule down the side. The first quote
-   gets extra right padding so its lines wrap clear of the corner badge. */
-.quote{flex:none;position:relative;border-left:0;padding-left:.52in;padding-right:.6in;}
+/* The quote block itself — the marks, the indents, the italic — is shared
+   furniture in assets/css/pitch.css, so this page and the Buyer Package's
+   testimonial are one design. All that is page-specific is the column
+   filling the box and the first quote wrapping clear of the corner badge. */
+.quotes{justify-content:space-evenly;flex:1;min-height:0;}
 .quotes .quote:first-child{padding-right:1.7in;}
-.quote::before{content:'\201C';position:absolute;left:0;top:-.1in;font:700 46pt/1 var(--serif);color:var(--sky);}
-/* closing mark hangs off the end of the text block, into the right padding */
-.quote p{position:relative;margin:0;font:italic 400 15pt/23pt var(--body);color:var(--navy);}
-.quote p::after{content:'\201D';position:absolute;right:-.56in;bottom:-.26in;
-  font:700 56pt/1 var(--serif);color:var(--sky);}
-.quote .who{margin-top:.12in;font:800 8pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:rgba(0,39,58,.55);}
 
 /* p12 — professional videos: copy column beside three listing films.
    Named .vids, not .pv: p9's QR handles are .pv too (shared verbatim with
