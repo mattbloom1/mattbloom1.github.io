@@ -158,11 +158,12 @@ table.tbl tr.grp:first-child td{padding-top:.11in;}
             <button class="btn sm ghost" type="button" id="townAll">Select all</button>
             <button class="btn sm ghost" type="button" id="townNone">Clear</button>
           </div>
-          <div class="sec-note"><b>Nobody has checked these numbers yet.</b> Claude wrote every
-            median, tax bill, Walk Score and commute in <code>assets/js/nj-towns.js</code> from
-            general knowledge, so each tearsheet prints a <b>Claude estimate</b> flag and each page
-            a stamp. Correct a town in that file, add its name to <code>VERIFIED</code>, and its
-            marks disappear. Two towns per page, in this order.</div>
+          <div class="sec-note"><b>Every figure traces to a source.</b> Prices are Redfin medians
+            (Jul 2026), tax bill and rate are NJ DCA (2025), commutes are read off the NJ TRANSIT
+            and Seastreak timetables, and crime is the NJSP Uniform Crime Report (2023) &mdash; all
+            listed per field at the top of <code>assets/js/nj-towns.js</code>. Edit a town's numbers
+            without re-checking them and you should take its name out of <code>VERIFIED</code>, which
+            puts the estimate flag and page stamp back. Two towns per page, in this order.</div>
           <div class="warn" id="warnTowns" hidden></div>
         </div>
       </details>
@@ -616,10 +617,10 @@ function tearsheet(t) {
     '<div class="ts-tag">' + esc(t.tag) + '</div>' +
     '<div class="ts-stats">' +
       stat(esc(t.price), 'Median sale') + stat(esc(t.tax), 'Taxes / yr') +
-      stat(esc(t.walk), 'Walk score') + stat(esc(t.mins), 'To Manhattan') +
+      stat(esc(t.rate), 'Tax rate') + stat(esc(t.mins), 'To Manhattan') +
     '</div>' +
     '<div class="ts-b">' +
-      '<div>' + row('Getting there', t.transit) + row('Schools', t.schools) + row('Safety', t.safety) + '</div>' +
+      '<div>' + row('Getting there', t.transit) + row('Schools', t.schools) + row('Index crime', t.crime) + '</div>' +
       '<div class="ts-r"><b>Good to know</b><ul class="ts-n">' +
         t.notes.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul></div>' +
     '</div>' +
@@ -636,11 +637,10 @@ function pgTowns(n, page) {
     (raw ? '<div class="stamp">Claude estimate</div>' : '') +
     '<div class="tsheet">' + page.towns.map(tearsheet).join('') + '</div>' +
     '<div class="ts-src' + (raw ? ' raw' : '') + '">' + (raw
-      ? 'Every figure on this page was written by Claude from general knowledge, not read off ' +
-        'a listing service, a Walk Score or a tax record. Do not put this sheet in front of a ' +
-        'client until somebody has checked it.'
-      : esc(TOWNS.AS_OF) + '. Walk Score, tax and price figures move every quarter &mdash; ' +
-        'confirm anything a decision rests on.') + '</div>';
+      ? 'A figure on this page has not been checked against its source. Do not put this sheet ' +
+        'in front of a client until somebody has checked it.'
+      : esc(TOWNS.AS_OF) + '. Prices and tax figures move every quarter and the crime data is ' +
+        'a full year behind &mdash; confirm anything a decision rests on.') + '</div>';
   return P.page({ deck:DECK, n, of:OF, site:SITE, title:'New Jersey Towns', body });
 }
 

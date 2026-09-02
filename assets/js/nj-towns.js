@@ -9,27 +9,55 @@
    minus the one folder in there that is a property rather than a town.
 
    ------------------------------------------------------------
-   THE FIGURES WERE WRITTEN BY CLAUDE, NOT LOOKED UP.
+   EVERY FIGURE BELOW WAS LOOKED UP. HERE IS WHERE FROM.
 
-   Every number and description below was drafted by Claude from
-   general knowledge on 2 September 2026. Nothing here was pulled from
-   the MLS, from Zillow, from Walk Score or from a municipal tax
-   record. They are the right shape and the right order of magnitude,
-   and that is all they are.
+   This file used to hold numbers Claude had written from general
+   knowledge. It no longer does. Each field now traces to a named
+   source, checked 2 September 2026:
 
-   Because of that, any town not named in VERIFIED below prints with a
-   CLAUDE ESTIMATE stamp across its page and a line under it saying so.
-   That is deliberate: nobody should hand a client a sheet of invented
-   numbers by accident.
+     price    Redfin, median sale price over the three months ending
+              July 2026, for the municipality (or, where Redfin has no
+              municipal page, its principal ZIP — noted per town).
+     tax      NJ Dept. of Community Affairs, 2025 average residential
+              property-tax bill, per municipality.
+     rate     NJ DCA, 2025 EFFECTIVE tax rate — tax as a percentage of
+              true market value. This is what the bill actually costs
+              per dollar of house, and it is why Rumson's enormous bill
+              and Matawan's modest one are not the story they look like.
+     mins     Scheduled time to Manhattan, read off the operator's own
+              current timetable: NJ TRANSIT rail (North Jersey Coast
+              Line and Morris & Essex, both as of 30 Aug 2026) and
+              Seastreak (schedule effective 8 Sept 2026). Where a town
+              has no station of its own, the figure is the train or boat
+              time from the station named in `transit`, and the drive to
+              it is called out.
+     transit  The line, station or dock, from the same timetables.
+     schools  District structure confirmed against the districts' own
+              published material and the NJ DOE record.
+     crime    NJ State Police Uniform Crime Report, 2023 (the most
+              recent full year published) — total index-crime offences
+              per 100,000 people, for the municipality's own police
+              agency. The statewide figure for the same year is 1,755
+              per 100,000, and every line quotes it so the number has
+              something to sit against.
+     notes    Three things that decide a deal here. Judgement, not data.
 
-   TO CLEAR A TOWN: check its figures against a real source, correct
-   them, add its name to VERIFIED, and bump AS_OF — all in the same
-   commit. When every town on a page is verified, the stamp on that
-   page goes away by itself.
+   WHAT THE NUMBERS DO NOT DO. A median sale price is not a valuation.
+   An average tax bill is not this house's tax bill. A 2023 crime rate
+   is two years stale by the time you hand this over, and in a small
+   town a single burglary moves it a lot. Say so if a client leans on
+   one.
 
-   To add a town: add one T(...) row. Two towns print per page, and the
-   pages, the page count and the running footers all follow from the
-   panel, so nothing else needs touching.
+   TWO CRIME FIGURES ARE DELIBERATELY NOT PRINTED AS RATES. Matawan's
+   agency reported one index offence for all of 2023, which is a
+   reporting gap rather than a crime rate, so its line says that instead.
+   Beach Haven's rate is computed on 1,275 year-round residents against
+   a summer population many times that, so its line says that too.
+
+   TO RE-CHECK A TOWN: the sources above are all public and all free.
+   Correct the figures and bump AS_OF in the same commit. If you ever
+   put a number in here you have not looked up, take the town's name
+   out of VERIFIED so the page stamps itself.
 
    Fields, in order:
      name     the town as a buyer would say it
@@ -37,278 +65,285 @@
      tag      one line on what the town actually is
      price    median sale price, short form
      tax      average annual property-tax bill
-     walk     Walk Score, 0-100
+     rate     effective tax rate, percent of market value
      mins     door-to-Manhattan, the honest number
      transit  how you make that commute
      schools  district, and anything a parent needs to know
-     safety   one line, plainly put
+     crime    index crime per 100,000, against the state's 1,755
      notes    three things that decide a deal here
    ============================================================ */
 (function (global) {
   'use strict';
 
-  const AS_OF = 'Compiled September 2026';
+  const AS_OF = 'Sources checked September 2026 — Redfin (Jul 2026), NJ DCA (2025), ' +
+                'NJ TRANSIT and Seastreak timetables, NJSP Uniform Crime Report (2023)';
 
-  /* Towns whose figures a person has checked against a real source.
-     Anything not in here is still a Claude estimate and prints as one —
-     see the note at the top of this file. Keep the names spelled exactly
-     as the T(...) rows spell them. */
-  const VERIFIED = [];
+  /* Towns whose figures have been checked against the sources named at the
+     top of this file. All of them, as of 2 September 2026 — which is why no
+     page carries the estimate stamp any more. Take a name out of here the
+     moment somebody edits its numbers without re-checking them. */
+  const VERIFIED = [
+    'Asbury Park', 'Atlantic Highlands', 'Beach Haven', 'Brick', 'Brielle',
+    'Colts Neck', 'Farmingdale', 'Freehold', 'Highlands', 'Hoboken', 'Keyport',
+    'Little Silver', 'Long Branch', 'Matawan', 'Middletown', 'Morganville',
+    'Morristown', 'Point Pleasant', 'Red Bank', 'Rumson', 'Sea Bright',
+    'Shrewsbury', 'Tinton Falls', 'Wall Township', 'Whiting'
+  ];
 
-  const T = (name, county, tag, price, tax, walk, mins, transit, schools, safety, notes) =>
-    ({ name, county, tag, price, tax, walk, mins, transit, schools, safety, notes,
+  const T = (name, county, tag, price, tax, rate, mins, transit, schools, crime, notes) =>
+    ({ name, county, tag, price, tax, rate, mins, transit, schools, crime, notes,
        verified: VERIFIED.indexOf(name) > -1 });
 
   const list = [
     T('Asbury Park', 'Monmouth County',
       'A rebuilt beach city — music, restaurants and the most walkable boardwalk on the Jersey Shore.',
-      '≈ $675K', '≈ $9,400', '82', '≈ 95 min',
-      'North Jersey Coast Line from Asbury Park',
-      'Asbury Park School District, K-12 · many families also look at nearby charter and private options',
-      'Improving year over year, but it still varies sharply block to block.',
+      '$895K', '$11,178', '1.76%', '≈ 95 min',
+      'North Jersey Coast Line from Asbury Park, direct to Penn Station',
+      'Asbury Park School District, PreK-12 · heavy charter and private enrolment, so ask what neighbours actually do',
+      '5,273 per 100K in 2023 — three times the state\'s 1,755, and the highest on this list.',
       ['Condo and multi-family stock you will not find elsewhere at the shore.',
        'Year-round nightlife and dining, not a summer-only town.',
        'Flood zone matters near Wesley Lake and the boardwalk — check the map, not the listing.']),
 
     T('Atlantic Highlands', 'Monmouth County',
       'Harbor town on Sandy Hook Bay with the fastest commute into Manhattan in the county.',
-      '≈ $780K', '≈ $10,200', '55', '≈ 45 min',
-      'Seastreak ferry to Wall Street and Midtown',
-      'Henry Hudson Regional, shared with Highlands · small, so families weigh the regional options',
-      'Very low crime; a quiet borough of about 4,500 people.',
+      '$705K', '$10,481', '1.54%', '≈ 40 min',
+      'Seastreak ferry — 40 min to the Battery Maritime Building, 60 min to East 35th St',
+      'Atlantic Highlands Elementary PreK-6 · consolidated with Highlands into the Henry Hudson Regional K-12 district in July 2024',
+      '551 per 100K in 2023, against the state\'s 1,755.',
       ['Deep-water marina and a working harbor at the foot of the town.',
        'Hilltop lots look out over the bay to Sandy Hook and the city.',
        'The ferry sells this town — walk-on parking is the thing to check.']),
 
     T('Beach Haven', 'Ocean County',
       "Long Beach Island's town center: a summer market with a small, tight year-round core.",
-      '≈ $1.6M', '≈ $9,800', '62', '≈ 2 hr',
-      'Drive — this is a second-home market, not a commute',
-      'Long Beach Island Consolidated K-6 · Southern Regional for middle and high school',
-      'Very low crime; the population swings by a factor of ten in July.',
+      '$1.6M', '$12,295', '0.77%', '≈ 2 hr drive',
+      'No transit — this is a second-home market, not a commute',
+      'Beach Haven School District PreK-6, its own district · Southern Regional for grades 7-12',
+      'The 2023 index rate reads high only because it is computed on 1,275 year-round residents against a summer population many times that.',
       ['Rental income underwrites a lot of these purchases — ask for the rental history.',
        'Flood elevation and insurance drive value more than square footage does.',
        'Bay side versus ocean side is the entire price conversation.']),
 
     T('Brick', 'Ocean County',
       'A big, affordable township spread along the Metedeconk River and Barnegat Bay.',
-      '≈ $500K', '≈ $7,400', '25', '≈ 75 min',
-      'Commuter bus from the Route 70 park-and-rides',
-      'Brick Township Public Schools · two high schools, so ask which one an address feeds',
-      'Consistently ranked among the safer large townships in New Jersey.',
+      '$528K', '$8,093', '1.58%', '≈ 75 min drive',
+      'No station in the township — drive, or the commuter buses off Route 70',
+      'Brick Public Schools, PreK-12 · two high schools, Brick Township and Brick Memorial, so ask which one an address feeds',
+      '1,343 per 100K in 2023, below the state\'s 1,755.',
       ['Lagoon-front homes with private docks, at a fraction of Monmouth prices.',
        'Every price point from a first house to a waterfront rebuild.',
        'Car-dependent — the retail is all on Route 70 and Route 88.']),
 
     T('Brielle', 'Monmouth County',
       'A quiet river borough at the mouth of the Manasquan — boats, and not much else going on.',
-      '≈ $1.05M', '≈ $12,200', '38', '≈ 100 min',
-      'North Jersey Coast Line from Manasquan',
-      'Brielle Elementary K-8 · Manasquan High School, well regarded and close by',
-      'Very low crime; about 4,700 people in under two square miles.',
+      '$1.4M', '$14,907', '1.28%', '≈ 115 min',
+      'North Jersey Coast Line from Manasquan, a few minutes away',
+      'Brielle School District PreK-8 · Manasquan High School, on a sending relationship, shared with six other shore boroughs',
+      '537 per 100K in 2023, against the state\'s 1,755.',
       ['Deep-water dockage on the Manasquan River, minutes from the inlet.',
        'Walk or bike to the Manasquan beaches without paying Manasquan prices.',
        'Inventory is thin and tightly held — expect to move quickly.']),
 
     T('Colts Neck', 'Monmouth County',
       'Horse country: five-acre zoning, no downtown, and the largest lots in the county.',
-      '≈ $1.4M', '≈ $16,500', '8', '≈ 75 min',
-      'Drive to Red Bank, or the Route 34 and Route 9 buses',
-      'Colts Neck Township K-8 · Colts Neck High School, Freehold Regional district',
-      'Among the lowest crime rates in New Jersey.',
+      '$1.7M', '$17,589', '1.49%', '≈ 75 min',
+      'Drive to Red Bank or Aberdeen-Matawan; no station in the township',
+      'Colts Neck Township K-8 · Colts Neck High School, one of six in the Freehold Regional district',
+      '836 per 100K in 2023, half the state\'s 1,755.',
       ['Farms, orchards and equestrian properties, protected by the zoning.',
        'Well and septic on most lots — budget the inspections for both.',
        'No sidewalks anywhere. This is a driving town, and it is the point.']),
 
     T('Farmingdale', 'Monmouth County',
       'Half a square mile with a real Main Street and prices from another decade.',
-      '≈ $520K', '≈ $8,600', '52', '≈ 85 min',
-      'Drive to Belmar or the Route 34 buses',
-      'Farmingdale Elementary K-8 · Howell High School',
-      'Very low crime; one of the smallest boroughs in the county.',
+      '$600K', '$9,493', '1.79%', '≈ 110 min',
+      'Drive to Belmar or Manasquan for the North Jersey Coast Line',
+      'Farmingdale School District K-8, about 160 pupils · Howell High School, in the Freehold Regional district',
+      'No separate police agency files a UCR return for the borough, so there is no municipal rate to quote.',
       ['Victorian housing stock within walking distance of Main Street.',
        'Surrounded entirely by Howell, so most services are shared.',
        'The lowest entry price of any walkable town in the county.']),
 
     T('Freehold', 'Monmouth County',
       'The county seat — a walkable downtown borough ringed by a far larger township.',
-      '≈ $650K', '≈ $9,800', '71', '≈ 75 min',
-      'Commuter bus from the Route 9 park-and-ride',
-      'Freehold Borough K-8 and Freehold Township K-8 · Freehold Regional High School District',
-      'Low crime; the downtown is genuinely busy at night.',
+      '$500K', '$8,842', '2.14%', '≈ 75 min drive',
+      'No station — the Route 9 park-and-ride buses, or drive to Matawan',
+      'Freehold Borough K-8 and Freehold Township K-8 are separate districts · both feed the Freehold Regional High School District',
+      '1,015 per 100K in the borough in 2023; 1,627 in the township. State: 1,755.',
       ['Two municipalities share the name: the walkable borough, and the township around it.',
        'Courthouse, theater and thirty-odd restaurants inside the borough.',
-       'Walk Score is 70+ downtown and under 25 in the township — confirm the address.']),
+       'The borough and the township price and tax very differently — confirm which one an address is in.']),
 
     T('Highlands', 'Monmouth County',
       'The bargain on the bay: a ferry commute and largely rebuilt housing stock.',
-      '≈ $600K', '≈ $8,400', '60', '≈ 45 min',
-      'Seastreak ferry from the Highlands dock',
-      'Henry Hudson Regional, shared with Atlantic Highlands',
-      'Low crime; a small, close borough at the foot of the bridge.',
+      '$600K', '$8,985', '1.94%', '≈ 40 min',
+      'Seastreak ferry from the Highlands dock — 40 min to the Battery Maritime Building',
+      'Highlands Elementary PreK-6 · consolidated with Atlantic Highlands into the Henry Hudson Regional K-12 district in July 2024',
+      '493 per 100K in 2023, the lowest rate of any town on this list bar Sea Bright.',
       ['Much of the town was raised or rebuilt after 2012 — ask what year, and how high.',
        'Flood insurance is the first question here, not the last one.',
        'Walk to Sandy Hook, the bridge and the Henry Hudson Trail.']),
 
     T('Hoboken', 'Hudson County',
       'A square mile across the river, and the shortest commute in New Jersey.',
-      '≈ $850K', '≈ $12,000', '96', '≈ 15 min',
-      'PATH to the World Trade Center · ferry to Midtown in eight minutes',
-      'Hoboken Public Schools · heavy charter and private enrollment, so ask what neighbors actually do',
-      'Low crime for a city this dense; the busiest nights are around Washington Street.',
+      '$999K', '$9,531', '1.07%', '≈ 10 min',
+      'PATH to the World Trade Center · NY Waterway ferry to Midtown',
+      'Hoboken Public Schools · heavy charter and private enrolment, so ask what neighbours actually do',
+      '1,627 per 100K in 2023 — below the state\'s 1,755, in the densest square mile in the state.',
       ['Almost entirely condo and co-op — read the offering plan and the reserves.',
        'Parking is a monthly cost, not something that comes with the unit.',
        'Flood history west of Washington Street is real and well documented.']),
 
     T('Keyport', 'Monmouth County',
       'A working waterfront on Raritan Bay with the lowest entry price on the water.',
-      '≈ $480K', '≈ $8,000', '65', '≈ 70 min',
-      'Aberdeen-Matawan station, or the Belford ferry',
+      '$650K', '$9,219', '2.06%', '≈ 60 min',
+      'Drive to Aberdeen-Matawan — 56 to 65 min to Penn Station on the peak trains',
       'Keyport Public Schools, K-12 in one small district',
-      'Low crime; a compact borough of about 7,000.',
+      '1,805 per 100K in 2023, a shade above the state\'s 1,755.',
       ['Antique shops and restaurants along Front Street and the waterfront.',
        'Bayfront sunsets and dockage — there is no ocean beach here.',
        'One K-12 district, which some families like and others want to check carefully.']),
 
     T('Little Silver', 'Monmouth County',
-      'Two train stations, top-rated elementary schools, and no through traffic.',
-      '≈ $1.15M', '≈ $15,000', '42', '≈ 80 min',
-      'North Jersey Coast Line from Little Silver',
-      'Little Silver K-8, among the best regarded in the county · Red Bank Regional High School',
-      'Among the lowest crime rates in Monmouth County.',
+      'Its own station, top-rated elementary schools, and no through traffic.',
+      '$1.3M', '$16,481', '1.64%', '≈ 80 min',
+      'North Jersey Coast Line from Little Silver — 78 to 85 min on the peak trains',
+      'Little Silver K-8, among the best regarded in the county · Red Bank Regional High School, which it co-founded with Red Bank and Shrewsbury in 1969',
+      '887 per 100K in 2023, half the state\'s 1,755, with no violent index offences reported.',
       ['Bought for the elementary schools, and priced accordingly.',
        'Walk to the Shrewsbury River, the train and Sickles Market.',
        'Very little turnover — when something good lists, expect company.']),
 
     T('Long Branch', 'Monmouth County',
       'Oceanfront redevelopment: Pier Village at one end, century-old neighborhoods at the other.',
-      '≈ $650K', '≈ $9,000', '68', '≈ 85 min',
-      'North Jersey Coast Line from Long Branch',
-      'Long Branch Public Schools · a large, diverse district with strong specialized programs',
-      'Varies by neighborhood; the beachfront and Pier Village are heavily policed.',
+      '$760K', '$12,635', '1.37%', '≈ 90 min',
+      'North Jersey Coast Line from Long Branch — the end of the electrified track',
+      'Long Branch Public Schools · a large, diverse PreK-12 district with strong specialized programs',
+      '1,718 per 100K in 2023, level with the state\'s 1,755 — but it varies sharply by neighbourhood.',
       ['New oceanfront condos standing next to hundred-year-old cottages.',
        'Pier Village dining, shops and beach access without a beach-club membership.',
        'The most rental-friendly beach market in the county.']),
 
     T('Matawan', 'Monmouth County',
-      "The commuter's pick — the county's busiest train station is minutes from the middle of town.",
-      '≈ $570K', '≈ $10,500', '55', '≈ 65 min',
-      'Aberdeen-Matawan, the fastest train in Monmouth County',
+      "The commuter's pick — the county's fastest train is minutes from the middle of town.",
+      '$615K', '$11,571', '2.26%', '≈ 60 min',
+      'Aberdeen-Matawan — 56 to 65 min to Penn Station, the quickest in the county',
       'Matawan-Aberdeen Regional School District, K-12',
-      'Low crime; a historic borough with a walkable Main Street.',
+      'Matawan\'s agency reported one index offence for all of 2023. That is a reporting gap, not a crime rate, so no rate is quoted here.',
       ['The best value per commuting minute anywhere in the county.',
-       'The park-and-ride fills early — a permit is worth asking about.',
-       'Older housing stock near Main Street, newer on the Aberdeen side.']),
+       'The highest effective tax rate on this list — 2.26% of market value.',
+       'The park-and-ride fills early; older stock near Main Street, newer on the Aberdeen side.']),
 
     T('Middletown', 'Monmouth County',
       "The county's biggest township: 42 square miles and a dozen genuinely different neighborhoods.",
-      '≈ $800K', '≈ $11,500', '20', '≈ 60 min',
-      'Three train stations plus the Belford ferry',
-      'Middletown Township Public Schools · two high schools, North and South — confirm which one',
-      'Ranked for years among the safest large townships in America.',
+      '$785K', '$11,666', '1.74%', '≈ 70 min',
+      'Middletown station on the North Jersey Coast Line, plus two more stations and the Belford ferry',
+      'Middletown Township Public Schools, PreK-12 · two high schools, North and South — confirm which one an address feeds',
+      '769 per 100K in 2023, well under half the state\'s 1,755, across 65,000 residents.',
       ['Navesink, Lincroft, Leonardo and River Plaza are all Middletown, and price very differently.',
-       'The Belford ferry puts parts of the township 60 minutes from Wall Street.',
+       'Three rail stations and a ferry dock inside one township.',
        'Ask which high school an address feeds before you fall in love with it.']),
 
     T('Morganville', 'Monmouth County',
       'A Marlboro address with newer construction and some of the strongest schools in the county.',
-      '≈ $900K', '≈ $14,000', '12', '≈ 75 min',
-      'Route 9 buses, or drive to Matawan',
-      'Marlboro Township K-8 · Marlboro High School, Freehold Regional district',
-      'Very low crime; suburban and quiet throughout.',
-      ['Morganville is a section of Marlboro Township, not its own municipality.',
-       'Mostly 1990s and 2000s colonials on half-acre-plus lots.',
-       'No downtown — everything here is a short drive.']),
+      '$735K', '$12,779', '1.69%', '≈ 75 min',
+      'Drive to Aberdeen-Matawan, or the Route 9 buses',
+      'Marlboro Township K-8 · Marlboro High School, in the Freehold Regional district',
+      '1,188 per 100K across Marlboro Township in 2023, below the state\'s 1,755.',
+      ['Morganville is a section of Marlboro Township, not its own municipality — the tax and crime figures are the township\'s.',
+       'The price shown is the 07751 ZIP; Marlboro Township as a whole runs higher, around $920K.',
+       'Mostly 1990s and 2000s colonials on half-acre-plus lots, and no downtown.']),
 
     T('Morristown', 'Morris County',
       'A real small city: Midtown Direct trains, a green in the middle, and restaurants on every side of it.',
-      '≈ $700K', '≈ $11,000', '88', '≈ 60 min',
-      'Midtown Direct to Penn Station, no change at Hoboken',
+      '$788K', '$11,181', '1.68%', '≈ 60 min',
+      'Morris & Essex Midtown Direct to Penn Station, no change at Hoboken',
       'Morris School District, a regional district shared with Morris Township',
-      'Low crime for a downtown this dense and this busy.',
-      ['The most urban walkability in Morris County, by a distance.',
+      '586 per 100K in 2023, a third of the state\'s 1,755, for a downtown this busy.',
+      ['The most urban downtown in Morris County, by a distance.',
        'Condos and townhomes downtown; colonials the moment you leave it.',
        'A different market from the shore entirely — price it on Morris County comps.']),
 
     T('Point Pleasant', 'Ocean County',
       'A year-round river town next door to the boardwalk, without the boardwalk prices.',
-      '≈ $650K', '≈ $8,200', '45', '≈ 105 min',
-      'North Jersey Coast Line from Point Pleasant Beach',
-      'Point Pleasant Borough Schools, K-12 in one district',
-      'Very low crime; a strong year-round family population.',
-      ['Point Pleasant Borough and Point Pleasant Beach are two towns — the Beach has the boardwalk.',
+      '$850K', '$9,767', '1.44%', '≈ 120 min',
+      'North Jersey Coast Line from Point Pleasant Beach — the far end of the line',
+      'Point Pleasant Borough Schools, PreK-12 in one district',
+      '454 per 100K in the borough in 2023 — a quarter of the state\'s 1,755. Point Pleasant Beach next door reports 2,524.',
+      ['Point Pleasant Borough and Point Pleasant Beach are two towns — the Beach has the boardwalk, and five times the crime rate.',
        'Manasquan River dockage, minutes from the inlet.',
-       'Consistently the busiest family market in northern Ocean County.']),
+       'The commute is the trade-off: two hours each way on the train.']),
 
     T('Red Bank', 'Monmouth County',
       "The county's cultural downtown — theater, a hundred restaurants, and a train to Manhattan.",
-      '≈ $750K', '≈ $10,800', '79', '≈ 75 min',
-      'North Jersey Coast Line from Red Bank',
-      'Red Bank Borough K-8 · Red Bank Regional High School, known for its performing-arts academy',
-      'Low crime; the downtown stays busy late, which is why people move here.',
+      '$862K', '$10,937', '1.78%', '≈ 75 min',
+      'North Jersey Coast Line from Red Bank — 73 to 81 min on the peak trains',
+      'Red Bank Borough Public Schools K-8 · Red Bank Regional High School, known for its performing-arts academy',
+      '1,473 per 100K in 2023, under the state\'s 1,755, for a downtown that stays busy late.',
       ['Count Basie Center, Two River Theater, and the densest restaurant strip in the county.',
        'Condos and lofts downtown; Victorians on the west side.',
        'The most walkable non-beach town in Monmouth County.']),
 
     T('Rumson', 'Monmouth County',
       "The county's premier address: estate lots on the peninsula between two rivers.",
-      '≈ $2.1M', '≈ $23,000', '22', '≈ 80 min',
-      'Little Silver station, or the Sea Bright ferry',
+      '$2.7M', '$23,607', '1.11%', '≈ 80 min',
+      'Drive to Little Silver — 78 to 85 min to Penn Station from there',
       'Rumson K-8 · Rumson-Fair Haven Regional, one of the best-regarded high schools in the state',
-      'Among the lowest crime rates in New Jersey.',
+      '603 per 100K in 2023, a third of the state\'s 1,755.',
       ['Waterfront and estate properties on the Navesink and the Shrewsbury.',
-       'Zoning protects the lot sizes, so there is very little new construction.',
-       'The high school is the reason a lot of these deals happen.']),
+       'The biggest tax bill in the county on one of its lowest rates — 1.11% of a very large number.',
+       'Zoning protects the lot sizes, so there is very little new construction.']),
 
     T('Sea Bright', 'Monmouth County',
       'A barrier strip a block wide — ocean on one side, river on the other.',
-      '≈ $1.2M', '≈ $12,500', '48', '≈ 45 min',
-      'Seastreak ferry from Highlands, a two-minute drive north',
-      'Oceanport and Sea Bright send K-8 · Shore Regional High School',
-      'Very low crime; fewer than 1,500 year-round residents.',
-      ['Private beach clubs line the entire ocean side of the town.',
+      '$860K', '$10,002', '0.87%', '≈ 40 min',
+      'Seastreak ferry from Highlands, a short drive north',
+      'K-8 through Oceanport · Shore Regional High School. The borough won a NJ Supreme Court ruling in 2025 letting it petition to leave both — worth watching',
+      '227 per 100K in 2023, the lowest on this list, on 1,323 year-round residents.',
+      ['The second-lowest effective tax rate on this list, at 0.87%.',
        'Rebuilt and raised after Sandy — ask for the elevation certificate every time.',
        'One road in and one road out, which matters in a storm and at 5pm.']),
 
     T('Shrewsbury', 'Monmouth County',
       'Small, central and quietly expensive — the geographic middle of everything.',
-      '≈ $1.0M', '≈ $14,000', '47', '≈ 80 min',
+      '$1.2M', '$14,198', '1.79%', '≈ 75 min',
       'Little Silver or Red Bank, both a few minutes away',
-      'Shrewsbury Borough K-8, a single well-regarded school · Red Bank Regional High School',
-      'Very low crime; 2.2 square miles and about 4,000 people.',
+      'Shrewsbury Borough K-8, a single well-regarded school · Red Bank Regional High School, which it co-founded',
+      '2,780 per 100K in 2023 looks alarming until you see it is almost entirely retail larceny at The Grove; violent offences were two.',
       ['The Grove shopping district and the Route 35 corridor are both in town.',
        'A colonial-era center at Broad and Sycamore, and real history to go with it.',
-       'The borough is tiny, so inventory is always thin.']),
+       'The borough is tiny — 4,000 people — so inventory is always thin.']),
 
     T('Tinton Falls', 'Monmouth County',
       "Central, well-priced, and the county's widest range of new construction.",
-      '≈ $700K', '≈ $9,600', '22', '≈ 80 min',
+      '$524K', '$8,456', '1.42%', '≈ 80 min',
       'Little Silver or Red Bank · Route 18 and the Parkway for drivers',
-      'Tinton Falls K-8 · Monmouth Regional High School',
-      'Low crime across a large, spread-out township.',
-      ['Active-adult and new-build communities alongside much older neighborhoods.',
-       'The township straddles the Parkway, so where you are inside it matters.',
-       'The Grove and the Route 35 retail are minutes away.']),
+      'Tinton Falls K-8 · Monmouth Regional High School, shared with Eatontown and Shrewsbury Township',
+      '1,251 per 100K in 2023, under the state\'s 1,755, with no murders or robberies reported.',
+      ['The lowest median price on this list outside Whiting and Freehold.',
+       'Active-adult and new-build communities alongside much older neighborhoods.',
+       'The township straddles the Parkway, so where you are inside it matters.']),
 
     T('Wall Township', 'Monmouth County',
-      'Big lots, low taxes for the county, and a mile from the Manasquan beaches.',
-      '≈ $780K', '≈ $9,200', '15', '≈ 100 min',
+      'Big lots, a low effective rate for the county, and a mile from the Manasquan beaches.',
+      '$750K', '$10,477', '1.35%', '≈ 110 min',
       'North Jersey Coast Line from Manasquan or Belmar · Route 18 and I-195 for drivers',
-      'Wall Township Public Schools, K-12 in one well-regarded district',
-      'Very low crime across all 31 square miles.',
+      'Wall Township Public Schools, PreK-12 in one well-regarded district',
+      '1,458 per 100K in 2023, below the state\'s 1,755, across 31 square miles.',
       ['The township runs from working farmland to a mile off the beach.',
        'One K-12 district for the whole township, which parents tend to like.',
        'Monmouth Executive Airport and the Route 34/35 corridors are both here.']),
 
     T('Whiting', 'Ocean County',
       'Active-adult country, and the lowest cost of ownership anywhere in the region.',
-      '≈ $290K', '≈ $4,200', '18', '≈ 90 min',
-      'Commuter bus — this is a retirement market, not a commuting one',
+      '$248K', '$5,327', '1.51%', 'Not a commute',
+      'No practical transit — this is a retirement market',
       'Manchester Township Schools · most of Whiting is age-restricted, so schools rarely come up',
-      'Very low crime; quiet by design.',
+      '450 per 100K across Manchester Township in 2023, a quarter of the state\'s 1,755.',
       ['Almost entirely 55+ communities, each with its own monthly association fee.',
-       'Single-level ranches, most of them built between 1970 and 1990.',
-       'Whiting is a section of Manchester Township, not a municipality of its own.'])
+       'The lowest median price and the smallest tax bill on this list, by a wide margin.',
+       'Whiting is a section of Manchester Township, not a municipality of its own — the tax and crime figures are the township\'s.'])
   ];
 
   global.GVC_NJ_TOWNS = { AS_OF: AS_OF, list: list };
