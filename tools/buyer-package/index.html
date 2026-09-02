@@ -152,19 +152,21 @@ table.tbl tr.grp:first-child td{padding-top:.11in;}
       </details>
 
       <details class="ed-sec" open>
-        <summary>New Jersey towns <span class="hint" id="townHint"></span></summary>
+        <summary><span id="townLabel">New Jersey towns</span> <span class="hint" id="townHint"></span></summary>
         <div class="sec-in">
+          <div class="field">
+            <label for="marketPick">Market</label>
+            <select id="marketPick">
+              <option value="nj">New Jersey &mdash; towns we sell in</option>
+              <option value="nyc">New York City &mdash; boroughs and Manhattan</option>
+            </select>
+          </div>
           <div id="townPick"></div>
           <div class="tick-bar">
             <button class="btn sm ghost" type="button" id="townAll">Select all</button>
             <button class="btn sm ghost" type="button" id="townNone">Clear</button>
           </div>
-          <div class="sec-note"><b>Every figure traces to a source.</b> Prices are Redfin medians
-            (Jul 2026), tax bill and rate are NJ DCA (2025), commutes are read off the NJ TRANSIT
-            and Seastreak timetables, and crime is the NJSP Uniform Crime Report (2023) &mdash; all
-            listed per field at the top of <code>assets/js/nj-towns.js</code>. Edit a town's numbers
-            without re-checking them and you should take its name out of <code>VERIFIED</code>, which
-            puts the estimate flag and page stamp back. Two towns per page, in this order.</div>
+          <div class="sec-note" id="townNote"></div>
           <div class="warn" id="warnTowns" hidden></div>
         </div>
       </details>
@@ -217,12 +219,60 @@ table.tbl tr.grp:first-child td{padding-top:.11in;}
 <script src="../../assets/js/legal.js"></script>
 <script src="../../assets/js/unsaved.js"></script>
 <script src="../../assets/js/nj-towns.js"></script>
+<script src="../../assets/js/nyc-areas.js"></script>
 <script>
 'use strict';
 const P = window.Pitch, esc = P.esc;
 const PD = window.GVC_PHOTODND;
 const DECK = 'Buyer Package';
-const TOWNS = window.GVC_NJ_TOWNS;
+/* ============================================================
+   MARKETS — the packet prints New Jersey towns or New York City
+   areas, never both. The two datasets are the same record shape,
+   so one renderer draws either; a market only supplies its labels
+   and its data. Adding a third market is a row in here plus a
+   data file.
+
+   `stats` names the four figures in the tearsheet's stat row, as
+   [field, label] pairs; `eyebrow` is the field printed above the
+   name. Both differ because the sources do — see the header
+   comments in assets/js/nj-towns.js and assets/js/nyc-areas.js.
+   ============================================================ */
+const MARKETS = {
+  nj: {
+    id:'nj', data: window.GVC_NJ_TOWNS,
+    panel:'New Jersey towns', page:'New Jersey Towns', noun:'town',
+    eyebrow: t => t.county,
+    sub: t => t.county.replace(' County', '') + ' · ' + t.price,
+    stats: [['price','Median sale'], ['tax','Taxes / yr'],
+            ['rate','Tax rate'],    ['mins','To Manhattan']],
+    rows:  [['transit','Getting there'], ['schools','Schools'], ['crime','Index crime']],
+    src: 'Prices and tax figures move every quarter and the crime data is a full year behind ' +
+         '— confirm anything a decision rests on.',
+    note: '<b>Every figure traces to a source.</b> Prices are Redfin medians (Jul 2026), tax bill ' +
+          'and effective rate are NJ DCA (2025), commutes are read off the NJ TRANSIT and Seastreak ' +
+          'timetables, and crime is the NJSP Uniform Crime Report (2023) &mdash; all listed per ' +
+          'field at the top of <code>assets/js/nj-towns.js</code>. Two towns per page, in this order.'
+  },
+  nyc: {
+    id:'nyc', data: window.GVC_NYC_AREAS,
+    panel:'New York City areas', page:'New York City Areas', noun:'area',
+    eyebrow: t => t.county,
+    sub: t => (t.county === 'New York City' ? 'Borough' : t.county) + ' · ' + t.price,
+    stats: [['price','Median sale'], ['tax','Taxes / yr'],
+            ['days','Days on market'], ['mins','To Midtown']],
+    rows:  [['transit','Getting there'], ['schools','Schools'], ['crime','Major felonies']],
+    src: 'Prices and days on market move every month, the tax figure is a median condo unit ' +
+         'and excludes common charges, and the crime data is a year behind — confirm ' +
+         'anything a decision rests on.',
+    note: '<b>Every figure traces to a source.</b> Prices and days on market are StreetEasy ' +
+          '(Jul 2026), the tax figure is the median condo unit from the NYC DOF assessment roll ' +
+          '(FY2025/26), commutes are computed from the MTA’s own GTFS schedule feed, and crime is ' +
+          'NYPD seven major felonies (2025) &mdash; all listed per field at the top of ' +
+          '<code>assets/js/nyc-areas.js</code>. Two areas per page, in this order.'
+  }
+};
+let MARKET = MARKETS.nj;
+
 
 /* ============================================================
    STATE
@@ -234,7 +284,9 @@ const TOWNS = window.GVC_NJ_TOWNS;
 const state = {
   photos:[], pos:{},
   off:{},        // optional page key -> true when it is switched off
-  towns:[],      // town names, in the order nj-towns.js lists them
+  market:'nj',   // which market the packet prints — see MARKETS
+  picks:{nj:[], nyc:[]},  // chosen area names per market, kept apart so
+                          // switching market does not throw a selection away
   agents:[]
 };
 
@@ -438,7 +490,7 @@ const SPINE = [
   { key:'costs',     title:'What It Costs',       opt:'Every cost in the deal, with ranges' },
   { key:'criteria',  title:'Your Search Criteria',opt:'A worksheet you fill in together' },
   { key:'questions', title:'Questions to Ask',    opt:'A checklist for the buyer and for us' },
-  { key:'towns',     title:'New Jersey Towns',    towns:true },
+  { key:'towns',     title:'Area Tearsheets',     towns:true },
   { key:'offer',     title:'Offer & Negotiation', opt:'Winning the house on terms, not price' },
   { key:'next',      title:'Thank You' }
 ];
@@ -446,7 +498,7 @@ const OPTIONAL = SPINE.filter(p => p.opt);
 
 /* The picked towns, two to a page. */
 function townPages() {
-  const picked = TOWNS.list.filter(t => state.towns.indexOf(t.name) > -1);
+  const picked = MARKET.data.list.filter(t => state.picks[state.market].indexOf(t.name) > -1);
   const out = [];
   for (let i = 0; i < picked.length; i += 2) out.push(picked.slice(i, i + 2));
   return out;
@@ -456,7 +508,7 @@ function pageList() {
   const out = [];
   SPINE.forEach(p => {
     if (p.towns) {
-      townPages().forEach(pair => out.push({ key:'towns', title:p.title, towns:pair }));
+      townPages().forEach(pair => out.push({ key:'towns', title:MARKET.page, towns:pair }));
     } else if (!(p.opt && state.off[p.key])) {
       out.push(p);
     }
@@ -613,15 +665,14 @@ function tearsheet(t) {
   const row = (l, v) => '<div class="ts-r"><b>' + l + '</b><span>' + esc(v) + '</span></div>';
   return '<div class="ts">' +
     '<div class="ts-h"><h3>' + esc(t.name) + '</h3>' +
-      (t.verified ? '' : '<span class="ts-flag">Claude estimate</span>') +
-      '<span class="co">' + esc(t.county) + '</span></div>' +
+      (t.verified ? '' : '<span class="ts-flag">Unverified</span>') +
+      '<span class="co">' + esc(MARKET.eyebrow(t)) + '</span></div>' +
     '<div class="ts-tag">' + esc(t.tag) + '</div>' +
     '<div class="ts-stats">' +
-      stat(esc(t.price), 'Median sale') + stat(esc(t.tax), 'Taxes / yr') +
-      stat(esc(t.rate), 'Tax rate') + stat(esc(t.mins), 'To Manhattan') +
+      MARKET.stats.map(f => stat(esc(t[f[0]]), f[1])).join('') +
     '</div>' +
     '<div class="ts-b">' +
-      '<div>' + row('Getting there', t.transit) + row('Schools', t.schools) + row('Index crime', t.crime) + '</div>' +
+      '<div>' + MARKET.rows.map(f => row(f[1], t[f[0]])).join('') + '</div>' +
       '<div class="ts-r"><b>Good to know</b><ul class="ts-n">' +
         t.notes.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul></div>' +
     '</div>' +
@@ -640,9 +691,8 @@ function pgTowns(n, page) {
     '<div class="ts-src' + (raw ? ' raw' : '') + '">' + (raw
       ? 'A figure on this page has not been checked against its source. Do not put this sheet ' +
         'in front of a client until somebody has checked it.'
-      : esc(TOWNS.AS_OF) + '. Prices and tax figures move every quarter and the crime data is ' +
-        'a full year behind &mdash; confirm anything a decision rests on.') + '</div>';
-  return P.page({ deck:DECK, n, of:OF, site:SITE, title:'New Jersey Towns', body });
+      : esc(MARKET.data.AS_OF) + '. ' + MARKET.src) + '</div>';
+  return P.page({ deck:DECK, n, of:OF, site:SITE, title:MARKET.page, body });
 }
 
 function pgOffer(n) {
@@ -688,7 +738,7 @@ let builder = null;
    the fallback names the page. */
 const RULES = [
   { key:'towns', box:'warnTowns',
-    msg:'A town tearsheet runs past the page — shorten one of its notes in assets/js/nj-towns.js.' }
+    msg:'An area tearsheet runs past the page — shorten one of its notes in the market’s data file.' }
 ];
 function checkAll() { P.checkOverflow(document.getElementById('pages'), RULES, 'warnGeneral'); }
 
@@ -712,7 +762,7 @@ function paintHints() {
   document.getElementById('pagesHint').textContent =
     on + ' of ' + OPTIONAL.length + ' optional on';
   document.getElementById('townHint').textContent =
-    state.towns.length + ' of ' + TOWNS.list.length + ' · ' +
+    state.picks[state.market].length + ' of ' + MARKET.data.list.length + ' · ' +
     (pages ? pages + (pages > 1 ? ' pages' : ' page') : 'no pages');
 }
 
@@ -758,19 +808,41 @@ document.addEventListener('DOMContentLoaded', () => {
   /* Which town tearsheets print. The selection is rebuilt in the order
      nj-towns.js lists them rather than in click order, so the pages come out
      the same however the ticks were reached. */
-  const paintTowns = P.tickList(document.getElementById('townPick'),
-    TOWNS.list.map(t => [t.name, t.name,
-      t.county.replace(' County', '') + ' · ' + t.price + (t.verified ? '' : ' · unverified')]),
-    name => state.towns.indexOf(name) > -1,
-    (name, on) => {
-      state.towns = TOWNS.list
-        .filter(t => (t.name === name ? on : state.towns.indexOf(t.name) > -1))
-        .map(t => t.name);
-      redraw();
-    });
-  const setTowns = names => { state.towns = names; paintTowns(); redraw(); };
-  document.getElementById('townAll').addEventListener('click', () => setTowns(TOWNS.list.map(t => t.name)));
+  /* Repainted whenever the market changes, so the ticks always describe the
+     dataset now in play. The selection is rebuilt in the order the data file
+     lists them rather than in click order, so the pages come out the same
+     however the ticks were reached. */
+  let paintTowns = () => {};
+  const wireTowns = () => {
+    paintTowns = P.tickList(document.getElementById('townPick'),
+      MARKET.data.list.map(t => [t.name, t.name,
+        MARKET.sub(t) + (t.verified ? '' : ' · unverified')]),
+      name => state.picks[state.market].indexOf(name) > -1,
+      (name, on) => {
+        state.picks[state.market] = MARKET.data.list
+          .filter(t => (t.name === name ? on : state.picks[state.market].indexOf(t.name) > -1))
+          .map(t => t.name);
+        redraw();
+      });
+  };
+  wireTowns();
+  const setTowns = names => { state.picks[state.market] = names; wireTowns(); redraw(); };
+  document.getElementById('townAll').addEventListener('click',
+    () => setTowns(MARKET.data.list.map(t => t.name)));
   document.getElementById('townNone').addEventListener('click', () => setTowns([]));
+
+  /* The market switch. Changing it swaps the dataset, the stat labels, the
+     page title and the tick list in one go; each market keeps its own
+     selection, so switching back finds it as you left it. */
+  document.getElementById('marketPick').addEventListener('change', e => {
+    state.market = e.target.value;
+    MARKET = MARKETS[state.market];
+    document.getElementById('townLabel').textContent = MARKET.panel;
+    document.getElementById('townNote').innerHTML = MARKET.note;
+    wireTowns(); redraw();
+  });
+  document.getElementById('townLabel').textContent = MARKET.panel;
+  document.getElementById('townNote').innerHTML = MARKET.note;
 
   P.wireRoster(document.getElementById('rosterPick'), state, 2, redraw);
 
