@@ -478,10 +478,19 @@
    ("George Putykewycz", 3.36in at 27pt) on one line and its longest address
    ("george.putykewycz@elliman.com", 2.37in at 11pt) without an ellipsis.
    Grow the figure and both of those break, in that order. */
-.ag.solo{--ag-fig:3.8in; --ag-bleed:.45in; --ag-crop:calc(var(--ag-fig) * .80);}
-/* the rest of the recovered slack goes round the sign-off, so the page reads
-   as composed top to bottom rather than as a portrait with a hole under it */
-.ag.solo .ag-hero{padding:.58in 0 .40in;}
+.ag.solo{--ag-fig:3.8in; --ag-bleed:.45in; --ag-crop:var(--ag-fig);}
+/* The solo page shows the WHOLE cut-out: --ag-crop is the full figure and the
+   window drops its overflow:hidden, so nothing is cut off. The crop reasoning
+   above still governs the two-up rows, where two figures share the page and
+   the foot of each has to go somewhere.
+
+   Everything downstream is already expressed in --ag-crop — the row's height,
+   and the details block that hangs from the window's bottom edge — so both
+   follow the full figure without further arithmetic. What it costs is height:
+   the window grows .76in on Letter and .79in on the half sheet, which comes
+   off the air around the sign-off. */
+.ag.solo .ag-shot{overflow:visible;}
+.ag.solo .ag-hero{padding:.16in 0 .22in;}
 .ag.solo .ag-who .nm{font-size:27pt;}
 .ag.solo .ag-who .tt{font-size:7.6pt;}
 .ag.solo .ag-who .ct{gap:.09in;}
@@ -615,7 +624,7 @@ body.paper-half .ag{--ag-fig:3.2in;}
    navy under the portrait the same share of the page as on Letter. */
 body.paper-half .ag.solo{--ag-fig:3.95in; --ag-bleed:.6in;}
 body.paper-half .ag-hero{padding:.66in 0 .52in;}
-body.paper-half .ag.solo .ag-hero{padding:1.24in 0 .86in;}
+body.paper-half .ag.solo .ag-hero{padding:.62in 0 .5in;}
 body.paper-half .ag-foot{margin-top:.5in;}
 body.paper-half .ag.solo .ag-foot{margin-top:.86in;}
 
