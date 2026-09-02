@@ -483,7 +483,15 @@
    ("George Putykewycz", 3.36in at 27pt) on one line and its longest address
    ("george.putykewycz@elliman.com", 2.37in at 11pt) without an ellipsis.
    Grow the figure and both of those break, in that order. */
-.ag.solo{--ag-fig:3.8in; --ag-bleed:.45in; --ag-crop:var(--ag-fig); --ag-sill:.5in;}
+/* --ag-sill is the only thing between the cut-out's foot and the contact
+   columns' rule, and the gap it makes is sill - .16in (the window's own top
+   offset) + .06in (the columns' margin). .5in put .4in of empty navy in a
+   band the full width of the page, directly under the figure. .22in closes
+   it to .12in — enough that the rule is not touching her jacket, not enough
+   to read as a gap. It also sets the room under the details block, via
+   .ag-who's end-alignment: keep it above .16in or that margin goes negative
+   and the email row hangs past the rule. */
+.ag.solo{--ag-fig:3.8in; --ag-bleed:.45in; --ag-crop:var(--ag-fig); --ag-sill:.22in;}
 /* The solo page shows the WHOLE cut-out: --ag-crop is the full figure and the
    window drops its overflow:hidden, so nothing is cut off. The crop reasoning
    above still governs the two-up rows, where two figures share the page and
@@ -495,7 +503,12 @@
    the window grows .76in on Letter and .79in on the half sheet, which comes
    off the air around the sign-off. */
 .ag.solo .ag-shot{overflow:visible;}
-.ag.solo .ag-hero{padding:.16in 0 .22in;}
+/* The solo page's spare height is spent here, above and below the sign-off,
+   rather than at the .legal joint: air under Thank you. reads as composition,
+   the same air above the small print reads as a hole. What is left at the
+   joint is a quarter inch — enough to separate the small print from the
+   columns, not enough to look like a gap. */
+.ag.solo .ag-hero{padding:.3in 0 .78in;}
 .ag.solo .ag-who .nm{font-size:27pt;}
 .ag.solo .ag-who .tt{font-size:7.6pt;}
 .ag.solo .ag-who .ct{gap:.09in;}
@@ -631,7 +644,7 @@ body.paper-half .ag{--ag-fig:3.2in;}
    navy under the portrait the same share of the page as on Letter. */
 body.paper-half .ag.solo{--ag-fig:3.95in; --ag-bleed:.6in;}
 body.paper-half .ag-hero{padding:.66in 0 .52in;}
-body.paper-half .ag.solo .ag-hero{padding:1.06in 0 .78in;}
+body.paper-half .ag.solo .ag-hero{padding:1.2in 0 1.9in;}
 /* the extra 2.14in lands in the .legal joint now, so the footer keeps its
    own tight gap on both sheets */
 
