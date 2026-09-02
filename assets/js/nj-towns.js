@@ -9,14 +9,23 @@
    minus the one folder in there that is a property rather than a town.
 
    ------------------------------------------------------------
-   THE FIGURES ARE INDICATIVE, NOT QUOTED.
+   THE FIGURES WERE WRITTEN BY CLAUDE, NOT LOOKED UP.
 
-   They are the sort of thing a buyer would read off Zillow before a
-   showing — a median, an average tax bill, a Walk Score, a commute —
-   and they move every quarter. Each printed tearsheet says so at the
-   foot of the page, and AS_OF below is what it prints. When you
-   refresh a number, bump AS_OF in the same commit so a stale deck
-   cannot pretend to be current.
+   Every number and description below was drafted by Claude from
+   general knowledge on 2 September 2026. Nothing here was pulled from
+   the MLS, from Zillow, from Walk Score or from a municipal tax
+   record. They are the right shape and the right order of magnitude,
+   and that is all they are.
+
+   Because of that, any town not named in VERIFIED below prints with a
+   CLAUDE ESTIMATE stamp across its page and a line under it saying so.
+   That is deliberate: nobody should hand a client a sheet of invented
+   numbers by accident.
+
+   TO CLEAR A TOWN: check its figures against a real source, correct
+   them, add its name to VERIFIED, and bump AS_OF — all in the same
+   commit. When every town on a page is verified, the stamp on that
+   page goes away by itself.
 
    To add a town: add one T(...) row. Two towns print per page, and the
    pages, the page count and the running footers all follow from the
@@ -38,10 +47,17 @@
 (function (global) {
   'use strict';
 
-  const AS_OF = 'Indicative figures, compiled September 2026';
+  const AS_OF = 'Compiled September 2026';
+
+  /* Towns whose figures a person has checked against a real source.
+     Anything not in here is still a Claude estimate and prints as one —
+     see the note at the top of this file. Keep the names spelled exactly
+     as the T(...) rows spell them. */
+  const VERIFIED = [];
 
   const T = (name, county, tag, price, tax, walk, mins, transit, schools, safety, notes) =>
-    ({ name, county, tag, price, tax, walk, mins, transit, schools, safety, notes });
+    ({ name, county, tag, price, tax, walk, mins, transit, schools, safety, notes,
+       verified: VERIFIED.indexOf(name) > -1 });
 
   const list = [
     T('Asbury Park', 'Monmouth County',

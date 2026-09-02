@@ -29,13 +29,18 @@
    "verify" stamp (.stamp) and the whole closing page.
    ============================================================ */
 
-/* why us */
+/* why us — a photo down the left, one editorial column down the right:
+   an opening line in the serif, the copy, the numbers, then a client in
+   their own words. The column is the only text on the page, so it is set
+   larger than the deck's default .copy. */
 .why{display:flex;gap:.42in;flex:1;min-height:0;}
 .why .ph{width:2.85in;flex:none;align-self:stretch;}
 .why .txt{flex:1;min-width:0;display:flex;flex-direction:column;}
-/* copy on this page is a placeholder pending sign-off — strike it through
-   so it reads as "needs updating" rather than as finished text */
-.pg[data-key="why"] .copy{text-decoration:line-through;text-decoration-color:rgba(0,39,58,.4);}
+.why .open{margin:0 0 .24in;font:300 17pt/1.32 var(--serif);color:var(--navy);}
+.why .copy{font-size:10.5pt;line-height:16pt;}
+.why .copy p + p{margin-top:.15in;}
+.why .quote{margin-top:auto;padding-top:.04in;}
+.why .quote p{font-size:10.5pt;line-height:16pt;}
 
 /* search-criteria worksheet — blank rules the buyer fills in by hand */
 .ws{display:grid;grid-template-columns:1fr 1fr;gap:.1in .42in;}
@@ -50,8 +55,25 @@
 /* costs table — grouped by when the money leaves your hands */
 table.tbl tr.grp td{border-bottom:1pt solid var(--navy);padding:.2in .1in .06in 0;
   font:800 7pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--sky2);}
-table.tbl tr.grp:first-child td{padding-top:0;}
+/* The first group sits directly under the table head's own rule, so it
+   keeps a little air rather than the full .2in — zero pinched the label
+   between two lines. */
+table.tbl tr.grp:first-child td{padding-top:.11in;}
 .foot-note{margin-top:auto;padding-top:.2in;font:300 8.5pt/13pt var(--body);color:rgba(0,39,58,.62);}
+
+/* Each of these pages holds less than a page of content, and the shared
+   blocks are all natural-height, so without this the slack pooled in one
+   lump above the page's closing line. Giving the block the height instead
+   spreads it: the steps get air between them, the worksheet gets deeper
+   rules to write on, and the cards get taller. */
+.pg[data-key="process"] .steps{flex:1;min-height:0;justify-content:space-between;}
+.pg[data-key="criteria"] .ws{flex:1;min-height:0;align-content:space-between;}
+.pg[data-key="options"] .cards,
+.pg[data-key="offer"] .cards{flex:1;min-height:0;}
+/* ...and a stretched card sits its contents in the middle rather than
+   leaving the bottom half of its own box empty. */
+.pg[data-key="options"] .card,
+.pg[data-key="offer"] .card{display:flex;flex-direction:column;justify-content:center;}
 
 /* offer & negotiation: each card's contents centered rather than
    left-set, to match the rest of the deck's card treatment */
@@ -66,9 +88,15 @@ table.tbl tr.grp:first-child td{padding-top:0;}
 .tsheet{display:flex;flex-direction:column;flex:1;min-height:0;}
 .ts{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;}
 .ts + .ts{border-top:.75pt solid var(--rule);padding-top:.3in;}
-.ts-h{display:flex;align-items:baseline;justify-content:space-between;gap:.2in;}
+.ts-h{display:flex;align-items:baseline;gap:.16in;}
 .ts-h h3{margin:0;font:700 21pt/1.05 var(--serif);color:var(--navy);}
-.ts-h .co{flex:none;font:800 7pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--sky2);}
+.ts-h .co{flex:none;margin-left:auto;font:800 7pt var(--sans);letter-spacing:.16em;
+  text-transform:uppercase;color:var(--sky2);}
+/* Printed beside any town whose figures nobody has checked yet. Red, small
+   and unmissable — the page also carries the shared .stamp. Add the town to
+   VERIFIED in assets/js/nj-towns.js and this goes away. */
+.ts-h .ts-flag{flex:none;font:800 6.2pt var(--sans);letter-spacing:.14em;text-transform:uppercase;
+  color:#c63232;border:.75pt solid rgba(198,50,50,.5);padding:.03in .07in;white-space:nowrap;}
 .ts-tag{margin-top:.09in;font:300 10.5pt/15pt var(--body);color:rgba(0,39,58,.8);}
 .ts-stats{display:flex;gap:.3in;margin:.2in 0;}
 .ts-stats .s{flex:1;min-width:0;border-top:1.4pt solid var(--sky);padding-top:.09in;}
@@ -84,10 +112,13 @@ table.tbl tr.grp:first-child td{padding-top:0;}
 .ts-n{list-style:none;margin:0;padding:0;}
 .ts-n li{position:relative;padding:.045in 0 .045in .18in;font:300 9pt/13pt var(--body);color:var(--navy);}
 .ts-n li::before{content:'';position:absolute;left:0;top:.082in;width:.06in;height:.06in;background:var(--sky);}
-/* the figures move every quarter, so every tearsheet says when they were
-   compiled — see the header comment in assets/js/nj-towns.js */
+/* The foot of every town page. On a page whose figures nobody has checked
+   it is the warning that says so, in red; once its towns are in VERIFIED it
+   goes back to being the quiet "compiled when" line. See the header comment
+   in assets/js/nj-towns.js. */
 .ts-src{flex:none;margin-top:.2in;padding-top:.14in;border-top:.75pt solid var(--rule);
   font:300 7.5pt/11pt var(--body);color:rgba(0,39,58,.5);text-align:center;}
+.ts-src.raw{color:#c63232;border-top-color:rgba(198,50,50,.35);}
 </style>
 </head>
 <body data-root="../../" data-nav="tools" data-foot="none">
@@ -136,9 +167,11 @@ table.tbl tr.grp:first-child td{padding-top:0;}
             <button class="btn sm ghost" type="button" id="townAll">Select all</button>
             <button class="btn sm ghost" type="button" id="townNone">Clear</button>
           </div>
-          <div class="sec-note">Two towns per page, in this order. The figures live in
-            <code>assets/js/nj-towns.js</code> &mdash; refresh them there and every packet prints
-            the new ones.</div>
+          <div class="sec-note"><b>Nobody has checked these numbers yet.</b> Claude wrote every
+            median, tax bill, Walk Score and commute in <code>assets/js/nj-towns.js</code> from
+            general knowledge, so each tearsheet prints a <b>Claude estimate</b> flag and each page
+            a stamp. Correct a town in that file, add its name to <code>VERIFIED</code>, and its
+            marks disappear. Two towns per page, in this order.</div>
           <div class="warn" id="warnTowns" hidden></div>
         </div>
       </details>
@@ -336,6 +369,11 @@ const pairs = rows => rows.map(l => {
 });
 const ic = (name, cls) => (window.icon ? window.icon(name, cls) : '');
 
+/* The line a page ends on when its content stops short of the foot. The
+   furniture is shared — assets/css/pitch.css, .pq — so the Seller Pitch
+   can close a thin page the same way. */
+const pq = line => '<div class="pq"><i class="pq-m"></i><p>' + line + '</p></div>';
+
 /* Photo roles — 'auto' fills the slots below in order; a pinned photo stays
    where the agent put it. Mirrors the brochure's behaviour. */
 const ROLES = [
@@ -456,12 +494,30 @@ function pgCover() {
   return P.cover({
     kind:'Buyer Consultation',
     title:'Buying a Home',
-    subtitle:'New Jersey &middot; New York &middot; Florida',
+    /* esc()'d by P.cover, so the separator is the character, not the entity */
+    subtitle:'New Jersey · New York · Florida',
     image: slot('cover'),
     pos: posFor('cover'),
     agents: agents()
   });
 }
+
+/* WHY WORK WITH US.
+
+   The only page in the packet written in the team's own voice, so it says
+   what is actually true and checkable: when the team merged, what it has
+   sold, what a buyer's agent is for, and what we put in writing before we
+   show anything. The review at the foot is a real one, excerpted from the
+   team's Zillow reviews and never reworded — the same rule the Seller
+   Pitch's reviews page follows. Everything else about the team lives at
+   gvcrealestateteam.com, which is the one link this page points at. */
+const WHY_REVIEW = [
+  'She was incredibly attentive, always responsive, and extremely professional & helpful ' +
+  'throughout the entire process. She took the time to explain every step in detail, making what ' +
+  'could have been a stressful experience feel smooth and manageable. I always felt informed and ' +
+  'supported in every decision.',
+  'Andrya M., Buyer'
+];
 
 function pgWhy(n) {
   const a = agents()[0];
@@ -470,20 +526,34 @@ function pgWhy(n) {
       '<div class="ph" data-drop="portrait"' + (slot('portrait') ? ' data-pos="portrait"' : '') + '>' + (slot('portrait')
         ? '<img src="' + slot('portrait') + '" alt="" style="object-position:' + posFor('portrait').x + '% ' + posFor('portrait').y + '%">'
         : '<div class="empty-note on-white">Drag a photo here<br>from the Photos panel</div>') + '</div>' +
-      '<div class="txt"><div class="copy">' +
-        '<p style="margin:0 0 .16in">Buying is the side of the transaction where good representation is ' +
-        'hardest to see and matters most. Anyone can open a door. The value is in knowing which ' +
-        'homes are overpriced, which buildings have problems, and how hard to push when it counts.</p>' +
-        (a ? '<p style="margin:0 0 .16in"><strong>' + esc(a.name) + '</strong>, ' + esc(a.title) +
-             ', will handle your search personally.</p>' : '') +
-        '<p style="margin:0">We will tell you when a place is wrong for you, even when that costs ' +
-        'us a commission. That is the whole relationship.</p>' +
+      '<div class="txt">' +
+      '<p class="open">Anyone can unlock a door. The work is everything on either side of it.</p>' +
+      '<div class="copy">' +
+        '<p>Which houses are priced wrong. Which buildings have an assessment coming. What the ' +
+        'taxes will actually be after the next reassessment. When to stop bidding, and when the ' +
+        'other side is bluffing.</p>' +
+        /* No years-and-billions restatement here: the numbers are in the stat
+           row six lines down, and saying them twice is what made the old
+           draft read like filler. */
+        '<p>The GVC Team is The Gasdaska Conlon Team and The Verdiglione Group, merged in 2024 ' +
+        'and working out of Douglas Elliman. Between us we have sold more than $3 billion of ' +
+        'property in New York, New Jersey and Florida.</p>' +
+        (a ? '<p><strong>' + esc(a.name) + '</strong>, ' + esc(a.title) + ', will run your search ' +
+             'personally. You get their mobile number, and they are the one who opens the door.</p>'
+           : '') +
+        '<p>Before we show you anything we put our agreement in writing, including how we are ' +
+        'paid, so there is nothing left to work out once you have found the house. And we will ' +
+        'tell you when a house is wrong for you. Every listing we have, and every review, is at ' +
+        SITE + '.</p>' +
       '</div>' +
       '<div class="stat-row" style="margin-top:.3in">' +
-        '<div class="stat"><div class="v">$3B+</div><div class="l">Career sales</div></div>' +
-        '<div class="stat"><div class="v">3</div><div class="l">States served</div></div>' +
+        '<div class="stat"><div class="v">$3B+</div><div class="l">Sold to date</div></div>' +
+        '<div class="stat"><div class="v">3</div><div class="l">States licensed</div></div>' +
         '<div class="stat"><div class="v">50+</div><div class="l">Years combined experience</div></div>' +
-      '</div></div>' +
+      '</div>' +
+      '<div class="quote"><p>' + esc(WHY_REVIEW[0]) + '</p>' +
+        '<div class="who">' + esc(WHY_REVIEW[1]) + '</div></div>' +
+      '</div>' +
     '</div>';
   return P.page({ deck:DECK, n, of:OF, site:SITE, title:'Why Work With Us', body });
 }
@@ -493,7 +563,9 @@ function pgProcess(n) {
     '<div class="step"><div class="sn">' + (i + 1) + '</div><div>' +
       '<div class="st">' + esc(t) + '</div>' +
       (d ? '<div class="sd">' + esc(d) + '</div>' : '') +
-    '</div></div>').join('') + '</div>';
+    '</div></div>').join('') + '</div>' +
+    pq('Steps three and four can take months. Five and six happen in a week. ' +
+       'That is where deals are lost.');
   return P.page({ deck:DECK, n, of:OF, site:SITE, title:'The Buying Process', body });
 }
 
@@ -501,8 +573,6 @@ function pgProcess(n) {
    belong to the deal, the shapes belong here. */
 function pgOptions(n) {
   const body =
-    '<div class="lede">There is more than one way to pay for a house, and the right one is rarely ' +
-    'the first one a lender mentions. Here is the whole menu.</div>' +
     '<div class="cards c2">' + LOANS.map(([g, h, p]) =>
       '<div class="card">' + ic(g, 'ci') + '<h3>' + esc(h) + '</h3><p>' + esc(p) + '</p></div>').join('') +
     '</div>' +
@@ -524,7 +594,6 @@ function pgCosts(n) {
       '<td>' + esc(when) + '</td>' +
       '<td class="num">' + esc(range) + '</td></tr>').join('')).join('');
   const body =
-    '<div class="stamp">Verify figures</div>' +
     '<div class="stat-row">' +
       '<div class="stat"><div class="v">2 – 5%</div><div class="l">Closing costs &middot; share of price</div></div>' +
       '<div class="stat"><div class="v">20%</div><div class="l">Down payment that avoids PMI</div></div>' +
@@ -541,7 +610,6 @@ function pgCosts(n) {
 function pgCriteria(n) {
   const field = lab => '<div class="wf"><span>' + esc(lab) + '</span><i></i></div>';
   const body =
-    '<div class="lede">Fill this in together at our first meeting. It is the brief we search against.</div>' +
     '<div class="ws">' +
       '<div class="wl">The essentials</div>' +
       field('Budget') + field('Timeline') + field('Bedrooms') + field('Bathrooms') +
@@ -554,7 +622,9 @@ function pgCriteria(n) {
       field('1') + field('2') + field('3') + field('4') +
       '<div class="wl">Deal breakers</div>' +
       field('1') + field('2') +
-    '</div>';
+    '</div>' +
+    pq('We will not send you everything that matches this. We will send you the ' +
+       'four that do, and tell you which one we would buy.');
   return P.page({ deck:DECK, n, of:OF, site:SITE, title:'Your Search Criteria', body });
 }
 
@@ -563,8 +633,6 @@ function pgCriteria(n) {
    Pitch's prep checklist — assets/css/pitch.css, .chk. */
 function pgQuestions(n) {
   const body =
-    '<div class="lede" style="max-width:none">Take this to every showing. The questions in the last ' +
-    'two groups are the ones we will be asking you.</div>' +
     '<div class="chk tight">' + QUESTIONS.map(([name, glyph, items]) =>
       '<div class="cgrp"><div class="cgrp-h">' + ic(glyph, 'ci') +
         '<span>' + esc(name) + '</span></div><ul>' +
@@ -579,7 +647,9 @@ function tearsheet(t) {
   const stat = (v, l) => '<div class="s"><div class="v">' + v + '</div><div class="l">' + l + '</div></div>';
   const row = (l, v) => '<div class="ts-r"><b>' + l + '</b><span>' + esc(v) + '</span></div>';
   return '<div class="ts">' +
-    '<div class="ts-h"><h3>' + esc(t.name) + '</h3><span class="co">' + esc(t.county) + '</span></div>' +
+    '<div class="ts-h"><h3>' + esc(t.name) + '</h3>' +
+      (t.verified ? '' : '<span class="ts-flag">Claude estimate</span>') +
+      '<span class="co">' + esc(t.county) + '</span></div>' +
     '<div class="ts-tag">' + esc(t.tag) + '</div>' +
     '<div class="ts-stats">' +
       stat(esc(t.price), 'Median sale') + stat(esc(t.tax), 'Taxes / yr') +
@@ -593,20 +663,31 @@ function tearsheet(t) {
   '</div>';
 }
 
+/* A page carries the stamp if EITHER town on it is still unverified, and
+   the note under it changes with it. Verifying a town is one line in
+   assets/js/nj-towns.js — add its name to VERIFIED — and its flag, and
+   eventually its page's stamp, disappear on their own. */
 function pgTowns(n, page) {
-  const body = '<div class="tsheet">' + page.towns.map(tearsheet).join('') + '</div>' +
-    '<div class="ts-src">' + esc(TOWNS.AS_OF) + '. Walk Score, tax and price figures move every ' +
-    'quarter &mdash; confirm anything a decision rests on.</div>';
+  const raw = page.towns.filter(t => !t.verified).length;
+  const body =
+    (raw ? '<div class="stamp">Claude estimate</div>' : '') +
+    '<div class="tsheet">' + page.towns.map(tearsheet).join('') + '</div>' +
+    '<div class="ts-src' + (raw ? ' raw' : '') + '">' + (raw
+      ? 'Every figure on this page was written by Claude from general knowledge, not read off ' +
+        'a listing service, a Walk Score or a tax record. Do not put this sheet in front of a ' +
+        'client until somebody has checked it.'
+      : esc(TOWNS.AS_OF) + '. Walk Score, tax and price figures move every quarter &mdash; ' +
+        'confirm anything a decision rests on.') + '</div>';
   return P.page({ deck:DECK, n, of:OF, site:SITE, title:'New Jersey Towns', body });
 }
 
 function pgOffer(n) {
   const body =
-    '<div class="lede">Most buyers lose the home they wanted on terms, not on price. Here is what we ' +
-    'watch when the offer goes in.</div>' +
     '<div class="cards c2">' + OFFER.map(([g, h, p]) =>
       '<div class="card">' + ic(g, 'ci') + '<h3>' + esc(h) + '</h3><p>' + esc(p) + '</p></div>').join('') +
-    '</div>';
+    '</div>' +
+    pq('Sellers do not always take the highest number. They take the offer they ' +
+       'believe will actually close.');
   return P.page({ deck:DECK, n, of:OF, site:SITE, title:'Offer & Negotiation', body });
 }
 
@@ -725,7 +806,8 @@ document.addEventListener('DOMContentLoaded', () => {
      nj-towns.js lists them rather than in click order, so the pages come out
      the same however the ticks were reached. */
   const paintTowns = P.tickList(document.getElementById('townPick'),
-    TOWNS.list.map(t => [t.name, t.name, t.county.replace(' County', '') + ' · ' + t.price]),
+    TOWNS.list.map(t => [t.name, t.name,
+      t.county.replace(' County', '') + ' · ' + t.price + (t.verified ? '' : ' · unverified')]),
     name => state.towns.indexOf(name) > -1,
     (name, on) => {
       state.towns = TOWNS.list
