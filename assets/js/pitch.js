@@ -367,6 +367,134 @@
     return paint;
   }
 
+
+  /* ============================================================
+     THE EDITORIAL CLOSING PAGE
+
+     The last page of the Brochure and the Buyer Package: an asymmetric
+     composition — the lockup and the team QR on a header line, the sign-off
+     under it, then one row per agent whose cut-out stands in a rail down the
+     left with their details hung beside it, and three footer columns.
+
+     It lives here so the two decks cannot drift apart. Its styles are the
+     EDITORIAL CLOSING PAGE section of assets/css/pitch.css, mirrored in
+     tools/brochure/index.html because that deck cannot load pitch.css (its
+     own .stat/.ph/.band would collide). Change one, change the other.
+
+     The older centred-card close — agentCards() + linkCols() + .cx-top — is
+     still what the Seller Pitch & CMA prints, so both designs live in this
+     file. They share no class names.
+     ============================================================ */
+
+  const LOCKUP = '<svg class="lk" viewBox="184.4 730.6 1675.8 514.7" ' +
+    'role="img" aria-label="The Gasdaska Verdiglione Conlon Team"><g> <g> <path fill="currentColor" d="M345.28,1004.67l-2.31-6.72c13.84-5.65,28.91-8.66,44.34-8.66,9.66,0,18.85.9,27.37,2.49,2.7.51,5.33,1.08,7.89,1.71,10.54,2.61,19.83,6.28,27.45,10.53l-8.83,47.99-4.13-.59c-3.06-18.97-10.25-33.02-20.23-42.36-2.06-1.93-4.23-3.65-6.51-5.18-8.99-6.03-19.65-8.98-31.26-8.98-12.27,0-23.76,3.34-33.79,9.78Z"/> <path fill="currentColor" d="M444.13,1150.64l3.24,1.18c-12.08,28.55-34.45,52.11-74.49,52.11-56.24,0-98.04-46.22-98.04-104.52,0-31.75,12.31-58.36,31.62-77.47l8.55,23.88c-4.43,12.86-6.9,28.04-6.9,45.35,0,58,30.91,92.45,74.78,92.45,28.85,0,50.35-15.31,61.24-32.98Z"/> </g> <path fill="currentColor" d="M400.45,1005.54l-44.16,119.22c-.18.49-.64.81-1.16.81h-3.58c-.52,0-.99-.33-1.17-.82l-62.22-173.17c-7.73-21.47-19.07-30.16-30.79-32-.61-.1-1.06-.61-1.06-1.22v-.34c0-.68.55-1.24,1.24-1.24h75.08c.68,0,1.24.55,1.24,1.24v.2c0,.68-.55,1.22-1.22,1.24-15.29.4-20.73,8.43-14.41,26.82l46.63,134.71c.38,1.1,1.94,1.11,2.34.02l28.04-77.44"/> <path fill="currentColor" d="M402.43,983.7l5.76-15.9c11-30.97.41-47.74-20.9-48.35-.67-.02-1.22-.56-1.22-1.23v-.2c0-.68.55-1.24,1.24-1.24h68.36v2.65c-17.1,1.47-30.37,18.87-40.7,46.89l-6.67,18.02"/> <path fill="currentColor" d="M398.1,879.53h-80.98c-.69,0-1.24.55-1.24,1.24h0c0,.64.47,1.17,1.09,1.24,11.61,1.4,30.16,6.93,30.16,24.65v33.04c0,12.28-5.27,21.77-14.82,27.37l2.53,7.35c15.59-3.51,29.56-9.26,39.66-14.62.41-.22.65-.63.65-1.09v-52.05c0-17.78,10.03-23.28,23.07-24.66.63-.07,1.11-.6,1.11-1.23,0-.69-.55-1.24-1.24-1.24ZM228.74,852.28c3.65-50.1,30.6-85.41,73.29-85.41,31.31,0,53.62,20.92,60.88,58.41.1.52.52.92,1.03.99l2.08.3c.66.09,1.27-.35,1.39-1.01l8.49-48.37c.09-.52-.15-1.06-.62-1.31-12.95-6.93-38.73-13.73-67.05-13.73-64.29,0-113.83,44.24-113.83,108.23,0,52.96,38.61,98.97,95.88,106.32l-2.49-6.96c-35.77-10.85-59.48-50.58-59.48-105.55,0-1.79.03-3.57.08-5.33.07-2.22.19-4.42.35-6.58Z"/> </g> <text fill="currentColor" style="font-family:NunitoSans-Black,\'Nunito Sans\';font-variation-settings:\'wght\' 900,\'wdth\' 100,\'opsz\' 12,\'YTLC\' 500;font-weight:800;font-size:172.4px;letter-spacing:.05em" transform="translate(510.09 1046.5)"><tspan x="0" y="0">VERDIGLIONE</tspan></text> <g> <text fill="currentColor" style="font-family:NunitoSans-Black,\'Nunito Sans\';font-variation-settings:\'wght\' 900,\'wdth\' 100,\'opsz\' 12,\'YTLC\' 500;font-weight:800;font-size:172.4px;letter-spacing:.05em" transform="translate(743.49 894.85)"><tspan x="0" y="0">GASDASKA</tspan></text> <text fill="currentColor" style="font-family:NunitoSans-Black,\'Nunito Sans\';font-variation-settings:\'wght\' 900,\'wdth\' 100,\'opsz\' 12,\'YTLC\' 500;font-weight:800;font-size:104.36px;letter-spacing:.05em" transform="translate(491.49 894.85)"><tspan x="0" y="0">THE</tspan></text> </g> <text fill="currentColor" style="font-family:NunitoSans-Black,\'Nunito Sans\';font-variation-settings:\'wght\' 900,\'wdth\' 100,\'opsz\' 12,\'YTLC\' 500;font-weight:800;font-size:172.4px;letter-spacing:.05em" transform="translate(585.91 1198.16)"><tspan x="0" y="0">CONLON</tspan></text> <text fill="currentColor" style="font-family:NunitoSans-Black,\'Nunito Sans\';font-variation-settings:\'wght\' 900,\'wdth\' 100,\'opsz\' 12,\'YTLC\' 500;font-weight:800;font-size:104.36px;letter-spacing:.05em" transform="translate(1400.29 1154.94)"><tspan x="0" y="0">TEAM</tspan></text></svg>';
+
+  /* The states on every closing page, in the order they print. */
+  const STATES = [
+    ['New York',   '../../assets/img/states/new-york.svg'],
+    ['New Jersey', '../../assets/img/states/new-jersey.svg'],
+    ['Florida',    '../../assets/img/states/florida.svg']
+  ];
+
+  /* The team's own accounts. Not editable in any deck, so the handles can
+     never be typed wrong on a client's copy. */
+  const TEAM_SOCIAL = [
+    ['Instagram', '@gvcrealestateteam'],
+    ['YouTube',   '@gvcrealestateteam'],
+    ['LinkedIn',  'The GVC Real Estate Team']
+  ];
+  const TEAM_LINKS = [
+    ['Our listings',    'gvcrealestateteam.com/listings'],
+    ['Douglas Elliman', 'elliman.com'],
+    ['Book a call',     'gvcrealestateteam.com/contact']
+  ];
+
+  /* The Social column: the team's accounts, then one row per agent on this
+     page who has a handle. Labelled with the agent's name — a second row
+     just saying "Instagram" would not say whose it is — and marked with the
+     Instagram glyph via the row's third element.
+
+     An agent with no handle in the roster is skipped, so this is opt-in: no
+     account reaches a client-facing page unless it has been filled in. */
+  function socialRows(agents) {
+    return TEAM_SOCIAL.concat((agents || [])
+      .filter(a => a && String(a.instagram || '').trim())
+      .map(a => [a.name, String(a.instagram).trim(), 'instagram']));
+  }
+
+  /* One editorial row per agent: the cut-out bleeds off the left trim, the
+     details hang in the column beside it. phoneLines() is not reused here —
+     this row labels its fields Tel / Mobile / Email down a keyed column
+     instead of setting o: / m: inline. */
+  function agentRow(a, headshotFor) {
+    const rows = [];
+    const office = String(a.phone || '').trim();
+    const mobile = String(a.mobile || '').trim();
+    if (office) rows.push(['Tel', office, true]);
+    if (mobile) rows.push(['Mobile', mobile, true]);
+    if (a.email) rows.push(['Email', String(a.email).trim(), false]);
+    return '<div class="ag-person">' +
+      '<div class="ag-shot"><img src="' + esc(headshotFor(a)) + '" alt=""></div>' +
+      '<div class="ag-who">' +
+        '<div class="nm">' + esc(a.name) + '</div>' +
+        '<div class="tt">' + esc(a.title) + '</div>' +
+        '<div class="ct">' + rows.map(([k, v, n]) =>
+          '<div><span class="k">' + esc(k) + '</span>' +
+          '<span class="v' + (n ? ' num' : '') + '">' + esc(v) + '</span></div>').join('') +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  /* Social / Links / Licensed in. */
+  function agentCol(title, rows) {
+    return '<div class="ag-col"><div class="ag-col-t">' + esc(title) + '</div>' +
+      rows.map(([k, v]) =>
+        '<div class="ag-lrow"><span class="lk">' + esc(k) + '</span>' +
+        '<span class="lv">' + esc(v) + '</span></div>').join('') +
+    '</div>';
+  }
+
+  /* The whole page, footer included.
+       agents       roster entries on this page
+       headshotFor  how the deck resolves a cut-out
+       qr           QR markup for the header, already rendered
+       qrCap        its caption
+       legal        the GVC_LEGAL block for this deck
+       foot         the running page footer
+     `.solo` widens the rail and steps the sign-off down to match — one class
+     on the page root so the geometry moves together. */
+  function closingPage(o) {
+    const list = o.agents || [];
+    const people = list.length
+      ? list.map(a => agentRow(a, o.headshotFor)).join('')
+      : '<div class="ag-person"><div class="ag-who">' +
+        '<div class="empty-note" style="position:static">Pick an agent in the Agents panel</div>' +
+        '</div></div>';
+    return '<div class="ag' + (list.length === 1 ? ' solo' : '') + '">' +
+      '<div class="ag-body">' +
+        '<div class="ag-hdr">' +
+          LOCKUP +
+          (o.qr ? '<div class="ag-qr"><div class="qbox">' + o.qr + '</div>' +
+                  '<div class="qcap">' + esc(o.qrCap || '') + '</div></div>' : '') +
+        '</div>' +
+        '<div class="ag-hero"><div class="say"><h2>Thank <em>you</em>.</h2></div></div>' +
+        '<div class="ag-people">' + people + '</div>' +
+        '<div class="ag-foot">' +
+          agentCol('Social', socialRows(list)) +
+          agentCol('Links', TEAM_LINKS) +
+          '<div class="ag-col"><div class="ag-col-t">Licensed in</div>' +
+            STATES.map(([nm, art]) =>
+              '<div class="ag-st"><i style="-webkit-mask-image:url(' + art +
+                ');mask-image:url(' + art + ')"></i><span>' + esc(nm) + '</span></div>').join('') +
+          '</div>' +
+        '</div>' +
+        (o.legal || '') +
+      '</div>' +
+      (o.foot || '') +
+    '</div>';
+  }
+
   /* ---------- roster picker ----------
      One implementation for the whole site, in roster.js. This stays as a
      thin wrapper so the packages keep their existing call signature. */
@@ -383,6 +511,8 @@
     esc, lines, money, moneyShort, num,
     page, cover, heading, foot, toc, agentCards, linkCols, linkIcon,
     checkOverflow, overflowing, wireDrop, wireRoster, agentsOf,
+    LOCKUP, STATES, TEAM_SOCIAL, TEAM_LINKS,
+    socialRows, agentRow, agentCol, closingPage,
     assignRoles, placementOf, compsEditor, blankComp,
     segPick, tickList
   };

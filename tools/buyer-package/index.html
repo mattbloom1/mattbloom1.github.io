@@ -337,19 +337,9 @@ const OFFER = [
   ['mail','Everything in writing','Verbal agreements are not agreements. Every accepted term goes into the contract.']
 ];
 
-/* Identical content and order to the Seller Pitch & CMA's and the
-   Brochure's closing-page footer, and not editable in any of them, so
-   the team's own handles can never be typed wrong on a client's copy. */
-const DEFAULT_SOCIAL = [
-  ['Instagram', '@gvcrealestateteam'],
-  ['YouTube',   '@gvcrealestateteam'],
-  ['LinkedIn',  'The GVC Real Estate Team']
-];
-const DEFAULT_LINKS = [
-  ['Our listings',    'gvcrealestateteam.com/listings'],
-  ['Douglas Elliman', 'elliman.com'],
-  ['Book a call',     'gvcrealestateteam.com/contact']
-];
+/* Where the closing page's QR sends a reader: the team's property page
+   rather than the homepage, so a scan lands on the listings. */
+const TEAM_QR_URL = 'https://www.gvcrealestateteam.com/property';
 
 /* ---------- helpers ---------- */
 const headshotFor = a => a.photo;
@@ -662,35 +652,26 @@ function pgOffer(n) {
   return P.page({ deck:DECK, n, of:OF, site:SITE, title:'Offer & Negotiation', body });
 }
 
-/* Closing page — Team and Next Steps merged into one, styled like the
-   Seller Pitch & CMA's final page: a centered "Thank You" with the
-   team-site QR, then the team, links footer and licensed states. Every
-   block on it is built by the shared helpers, so this page and the Seller
-   Pitch's and the Brochure's are one design. */
-const STATES = [
-  ['New York',   '../../assets/img/states/new-york.svg'],
-  ['New Jersey', '../../assets/img/states/new-jersey.svg'],
-  ['Florida',    '../../assets/img/states/florida.svg']
-];
+/* Closing page — Team and Next Steps merged into one. It is the Brochure's
+   editorial close, not the Seller Pitch & CMA's centred cards: the lockup and
+   the team QR on a header line, the sign-off under it, then one row per agent
+   with their cut-out standing in a rail down the left and their office number,
+   mobile and email hung beside it. An agent with an Instagram in the roster
+   also gets a row of their own in the Social column.
 
+   Every part of it is built by Pitch.closingPage(), shared with the Brochure,
+   so the two pages are one design. Its markup carries the running footer
+   itself, so this page is assembled here rather than through P.page(). */
 function pgNext(n) {
-  const qr = qrSvg('https://' + SITE);
-  const body =
-    '<div class="cx-top">' +
-      '<div class="cx-kicker">The GVC Team</div><div class="cx-thanks">Thank You</div>' +
-      (qr ? '<div class="cx-qr"><div class="qbox">' + qr + '</div>' +
-            '<div class="qcap">Our team site</div></div>' : '') +
-    '</div>' +
-    P.agentCards(agents(), headshotFor) +
-    '<div class="contact-foot">' +
-      P.linkCols([['Social', DEFAULT_SOCIAL], ['Links', DEFAULT_LINKS]]) +
-    '</div>' +
-    '<div class="states">' + STATES.map(([nm, art]) =>
-      '<div class="stc"><i class="stc-art" style="-webkit-mask-image:url(' + art +
-             ');mask-image:url(' + art + ')"></i><span>' + esc(nm) + '</span></div>').join('') + '</div>' +
-    GVC_LEGAL.block('brokerage');
-  return P.page({ deck:DECK, n, of:OF, site:SITE, reversed:true, cls:'close',
-    title:'Thank You', body });
+  const qr = qrSvg(TEAM_QR_URL);
+  return '<div class="pg rev" data-key="next">' +
+    P.closingPage({
+      agents: agents(), headshotFor,
+      qr, qrCap: 'Our properties',
+      legal: GVC_LEGAL.block('brokerage'),
+      foot: P.foot(SITE, true, n, OF)
+    }) +
+  '</div>';
 }
 
 const RENDER = {

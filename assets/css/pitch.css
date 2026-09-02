@@ -211,12 +211,14 @@ table.tbl .meta{display:block;font-size:7.5pt;color:rgba(0,39,58,.55);margin-top
 
 /* ============================================================
    CLOSING PAGE
-   Every deck ends the same way: a centered "Thank You" in place of the
-   standard title, the team, a two-column contact footer and the states we
-   are licensed in. All of it lives here rather than in each builder, so
-   the three closing pages cannot drift apart. tools/brochure/ mirrors this
-   block verbatim — it cannot load this file (its own .stat/.ph/.band would
-   collide), so if you change anything below, change it there too.
+   The Seller Pitch & CMA's last page: a centered "Thank You" in place of
+   the standard title, the team on cards, a two-column contact footer and
+   the states we are licensed in.
+
+   This is no longer every deck's close. The Brochure and the Buyer Package
+   print the editorial composition at the foot of this file instead, and the
+   two designs share no class names — so do not sync changes between them,
+   and do not assume a class here means the same thing there.
    ============================================================ */
 /* the standard title bar is dropped in favour of the centered treatment
    below, so the page reads as a close, not one more numbered section */
@@ -375,3 +377,227 @@ table.tbl .meta{display:block;font-size:7.5pt;color:rgba(0,39,58,.55);margin-top
   .pg,.cv{position:absolute;}
   .empty-note{display:none !important;}
 }
+
+
+/* ============================================================
+   EDITORIAL CLOSING PAGE
+   The last page of the Buyer Package and the Brochure — an asymmetric
+   composition with the cut-out bleeding off the left trim, rather than the
+   centred cards the Seller Pitch & CMA still prints (those are the CLOSING
+   PAGE section above; the two designs share no class names).
+
+   tools/brochure/index.html carries a copy of everything below, because it
+   cannot load this file — its own .stat/.ph/.band would collide. The two
+   must stay in step. The brochure's copy adds the half-letter overrides,
+   which are its paper size and nothing to do with these decks.
+
+   The markup is built by Pitch.closingPage() in assets/js/pitch.js.
+
+   THE WINDOW ONTO A CUT-OUT — the one thing in this section to get right.
+   The reasoning behind --ag-crop, the window's width and the solo page's
+   numbers is written out in full in the brochure's copy; it is measured off
+   the thirteen roster cut-outs and it governs both decks. Read it there
+   before you change a number here.
+   ============================================================ */
+.ag{position:absolute;inset:0;background:var(--navy);color:var(--ow);
+  display:flex;flex-direction:column;overflow:hidden;
+  --ag-padL:.58in; --ag-padR:.92in;
+  --ag-fig:2.45in;                             /* the cut-out */
+  --ag-crop:calc(var(--ag-fig) * .74);         /* how far down — below every shoulder */
+  --ag-bleed:0in;                              /* how far left of the margin the window sits */
+  --ag-rail:calc(var(--ag-fig) - var(--ag-bleed));   /* the grid column it is anchored to */
+  --ag-sill:.3in;                              /* the row's own slack under the window */
+  --ag-gut:.24in;        /* silhouette to details — tight, so they read as one */
+  --ag-rule:rgba(229,229,229,.26);
+  --ag-rule-soft:rgba(229,229,229,.14);}
+/* a whisper of brand light in the corner the portrait bleeds through */
+.ag::before{content:'';position:absolute;left:-1.7in;top:-1.7in;width:6.4in;height:6.4in;
+  background:radial-gradient(circle at 50% 50%,rgba(83,199,220,.17),rgba(83,199,220,0) 68%);}
+.ag-body{position:relative;flex:1;min-height:0;
+  padding:.5in var(--ag-padR) .42in var(--ag-padL);
+  display:flex;flex-direction:column;}
+
+/* ---------- header rule: micro-label far left, QR far right ---------- */
+/* The mark at the top left, the QR at the top right, and the sign-off on its
+   own line underneath. No rule here — the hero below carries it. */
+.ag-hdr{flex:none;display:flex;align-items:flex-start;justify-content:space-between;gap:.4in;}
+/* the inlined lockup — sized by width, since its viewBox is cropped to the
+   artwork; currentColor makes it white against the navy */
+.ag-hdr .lk{display:block;flex:none;width:2.2in;height:auto;color:#fff;}
+.ag-qr{flex:none;width:.86in;}
+.ag-qr .qbox{width:.86in;height:.86in;background:#fff;padding:.05in;}
+.ag-qr .qbox svg{display:block;width:100%;height:100%;}
+.ag-qr .qcap{margin-top:.05in;font:800 6.2pt var(--sans);letter-spacing:.12em;
+  text-transform:uppercase;color:rgba(229,229,229,.62);}
+
+/* ---------- the sign-off, hung in the right column ----------
+   One line, roman against a true Fraunces italic, with the sky accent on the
+   italic word so the colour break and the style break land together. 400
+   rather than a heavier weight: at this size that is what keeps it a piece of
+   typography rather than a headline.
+
+   The effect depends on the two words sitting side by side, so it is set
+   nowrap — which makes the size load-bearing, and --serif here is Playfair
+   Display (builder.css), a wider face than the proof was drawn in. Measured:
+   56pt puts 3.62in of ink in the 3.95in column, and the solo page, whose
+   wider rail leaves only 2.9in, takes 40pt for 2.59in. Both keep about a
+   third of an inch in hand for the way Playfair renders on another platform.
+   The italic needs the ital axis in the Google Fonts request at the top of
+   this file. Re-measure both cases if you touch the rail or the size. */
+/* The sign-off, on its own line under the mark. */
+.ag-hero{flex:none;padding:.3in 0 .16in;border-bottom:1pt solid var(--ag-rule);}
+.ag-hero .say{min-width:0;}
+.ag-hero .say h2{margin:0;font:400 56pt/.92 var(--serif);color:#fff;letter-spacing:-.022em;
+  text-wrap:nowrap;}
+.ag-hero .say h2 em{font-style:italic;font-weight:400;color:var(--sky);}
+/* ---------- agent rows: the cut-out bleeds off the left trim ---------- */
+/* The rows hug their content and the slack collects underneath them, rather
+   than the rows stretching: a stretched row is taller than the portrait's
+   window, which left the details stranded at the bottom of it with a hole
+   above. What is left over becomes breathing space above the contact
+   columns, which is also where the half-letter sheet's extra height goes. */
+/* flex:none, not flex:1. As a flexible child this block swallowed every spare
+   inch on the page and parked it under the last portrait, which held the
+   contact columns an inch below the cut-out for no reason. The slack now
+   collects above the small print instead — see .ag .legal — so the columns sit
+   just under the figure and the legal matter stays bottom-aligned where it
+   belongs. */
+.ag-people{flex:none;display:flex;flex-direction:column;}
+.ag-person{position:relative;flex:none;
+  display:grid;grid-template-columns:var(--ag-rail) 1fr;column-gap:var(--ag-gut);
+  align-items:start;border-top:1pt solid var(--ag-rule);padding-top:.16in;
+  min-height:calc(var(--ag-crop) + var(--ag-sill));}
+.ag-person + .ag-person{margin-top:.2in;}
+/* A stated height rather than bottom:0 — the window is the crop, so it must
+   not follow the row's height around. */
+.ag-shot{position:absolute;left:calc(var(--ag-bleed) * -1);top:.16in;
+  height:var(--ag-crop);width:var(--ag-fig);overflow:hidden;}
+/* Height is stated outright rather than left to top:0 + bottom:0 + a fixed
+   width on a replaced element: that combination is an ambiguous corner of the
+   spec that browsers resolve differently, which a page destined for a PDF
+   must not depend on. */
+/* Pulled left onto the head-and-shoulders band. NOT pulled up: the roster is
+   not framed consistently at the top either — karl-brisard's hair starts .024
+   from the top of his square and nicole-melveney's at .040, so even a .05
+   nudge upward takes the crown off both of them. The figures with more air
+   above the head simply sit a little lower in their window; a cropped head is
+   the worse of the two.
+
+   max-width:none matters: base.css sets img{max-width:100%} for the editor
+   chrome, and this is the one image on the site deliberately WIDER than the
+   box it shows through. Without it the cut-out is squeezed to the column,
+   object-fit:contain then shrinks the whole figure to fit that width and
+   anchors it to the bottom, and the row shows a sliver of scalp. */
+.ag-shot img{position:absolute;left:0;top:0;
+  width:var(--ag-fig);height:var(--ag-fig);max-width:none;max-height:none;
+  display:block;object-fit:contain;object-position:50% 100%;}
+/* Both figures stand on the same left edge. The inset that used to stagger
+   the second one across the rail only made sense while they bled off the
+   trim; inside the margin it just looked misaligned. */
+/* The details hang from the BOTTOM of the cut-out's window, not the top: the
+   block is shorter than the portrait beside it — much shorter on the solo
+   page — and aligned to the top it left a hole under itself.
+
+   The .14in is not a nudge. The window is absolutely positioned .16in into
+   the row's padding box, which is exactly where this block's box starts too,
+   so its bottom sits --ag-crop below both of them; the row is --ag-crop plus
+   .3in tall. The difference is what has to come off, and end-alignment means
+   a block that outgrows the window grows upward and keeps the two bottoms
+   together rather than sliding past. */
+.ag-who{grid-column:2;min-width:0;
+  align-self:end;margin-bottom:calc(var(--ag-sill) - .16in);}
+.ag-who .nm{font:700 21pt/1.03 var(--serif);color:#fff;letter-spacing:-.008em;}
+.ag-who .tt{margin-top:.11in;padding-top:.09in;border-top:.75pt solid var(--ag-rule-soft);
+  font:800 6.8pt/1.5 var(--sans);letter-spacing:.15em;text-transform:uppercase;color:var(--sky);}
+.ag-who .ct{margin-top:.14in;display:flex;flex-direction:column;gap:.055in;}
+.ag-who .ct > div{display:flex;align-items:baseline;gap:.13in;min-width:0;}
+.ag-who .ct .k{flex:none;width:.36in;font:800 6.2pt var(--sans);letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(229,229,229,.45);}
+.ag-who .ct .v{min-width:0;font:400 10pt/1.35 var(--body);color:var(--bone);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ag-who .ct .v.num{font:700 10.5pt var(--serif);letter-spacing:.01em;}
+
+/* ---- one agent: the same window, bigger and cut lower ----
+   With one row there is a whole page of navy under the portrait, so the solo
+   page takes a bigger figure and crops it at the waist rather than just
+   under the shoulders.
+
+   .80 of the height rather than the two-up's .74, and not more, because karl-brisard is the one cut-out
+   whose figure does not run to the bottom of its own PNG — his ink stops at
+   .828 and every other one reaches 1.000. A deeper window would cut the
+   other twelve at the window's edge and leave HIM floating above it, which
+   reads as a mistake on his page only. Re-measure if the roster gains a
+   differently-trimmed cut-out.
+
+   The window is then 3.8in wide inside a 7in body, and most of its left-hand
+   side is empty air — the silhouette does not start until x .063. So it is
+   hung --ag-bleed to the left of the text margin, which buys the details
+   column back the width it would otherwise lose to transparent pixels. .45in
+   is as far as it can go: the leftmost ink then lands .37in inside the left
+   trim, and the column keeps 3.41in — enough for the roster's longest name
+   ("George Putykewycz", 3.36in at 27pt) on one line and its longest address
+   ("george.putykewycz@elliman.com", 2.37in at 11pt) without an ellipsis.
+   Grow the figure and both of those break, in that order. */
+/* --ag-sill is the only thing between the cut-out's foot and the contact
+   columns' rule, and the gap it makes is sill - .16in (the window's own top
+   offset) + .06in (the columns' margin). .5in put .4in of empty navy in a
+   band the full width of the page, directly under the figure. .22in closes
+   it to .12in — enough that the rule is not touching her jacket, not enough
+   to read as a gap. It also sets the room under the details block, via
+   .ag-who's end-alignment: keep it above .16in or that margin goes negative
+   and the email row hangs past the rule. */
+.ag.solo{--ag-fig:3.8in; --ag-bleed:.45in; --ag-crop:var(--ag-fig); --ag-sill:.22in;}
+/* The solo page shows the WHOLE cut-out: --ag-crop is the full figure and the
+   window drops its overflow:hidden, so nothing is cut off. The crop reasoning
+   above still governs the two-up rows, where two figures share the page and
+   the foot of each has to go somewhere.
+
+   Everything downstream is already expressed in --ag-crop — the row's height,
+   and the details block that hangs from the window's bottom edge — so both
+   follow the full figure without further arithmetic. What it costs is height:
+   the window grows .76in on Letter and .79in on the half sheet, which comes
+   off the air around the sign-off. */
+.ag.solo .ag-shot{overflow:visible;}
+/* The solo page's spare height is spent here, above and below the sign-off,
+   rather than at the .legal joint: air under Thank you. reads as composition,
+   the same air above the small print reads as a hole. What is left at the
+   joint is a quarter inch — enough to separate the small print from the
+   columns, not enough to look like a gap. */
+.ag.solo .ag-hero{padding:.3in 0 .78in;}
+.ag.solo .ag-who .nm{font-size:27pt;}
+.ag.solo .ag-who .tt{font-size:7.6pt;}
+.ag.solo .ag-who .ct{gap:.09in;}
+.ag.solo .ag-who .ct .v{font-size:11pt;}
+.ag.solo .ag-who .ct .v.num{font-size:12pt;}
+
+/* ---------- footer matter: three uneven columns ---------- */
+.ag-foot{flex:none;margin-top:.06in;padding-top:.16in;border-top:1pt solid var(--ag-rule);
+  display:grid;grid-template-columns:1.5fr 1.7fr 1.45in;column-gap:.4in;}
+.ag-col{min-width:0;}
+.ag-col-t{font:900 6.6pt var(--sans);letter-spacing:.22em;text-transform:uppercase;color:var(--sky);
+  padding-bottom:.07in;margin-bottom:.09in;border-bottom:.75pt solid var(--ag-rule-soft);}
+.ag-lrow{display:block;margin-bottom:.06in;min-width:0;}
+.ag-lrow:last-child{margin-bottom:0;}
+.ag-lrow .lk{display:block;font:800 6.2pt var(--sans);letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(229,229,229,.45);}
+.ag-lrow .lv{display:block;font:300 9pt/1.35 var(--body);color:var(--bone);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+/* Each state mark is cut out of the brand mesh gradient instead of printed as
+   flat white: the state's own SVG masks a gradient fill, so the silhouette is
+   a window onto the artwork. builder.css sets print-color-adjust:exact
+   globally, so the fill survives the PDF. */
+.ag-st{display:flex;align-items:center;gap:.13in;margin-bottom:.055in;}
+.ag-st:last-child{margin-bottom:0;}
+.ag-st i{flex:none;display:block;width:.6in;height:.33in;background:var(--mesh) center/cover;
+  -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+  -webkit-mask-position:center;mask-position:center;
+  -webkit-mask-size:contain;mask-size:contain;}
+.ag-st span{font:800 6.6pt var(--sans);letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(229,229,229,.72);}
+
+/* The shared legal paragraph, on this page's own rule. margin-top:auto makes
+   this the page's one flexible joint: whatever height the sheet has spare
+   opens up here, above the small print, rather than under the portrait. */
+.ag .legal{flex:none;margin-top:auto;padding-top:.11in;
+  border-top:.75pt solid var(--ag-rule-soft);
+  font:300 6.5pt/1.46 var(--body);color:rgba(229,229,229,.55);text-align:justify;}
