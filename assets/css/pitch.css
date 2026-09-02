@@ -88,6 +88,37 @@
 .pg.rev .copy{color:var(--ow);}
 .cols2{columns:2;column-gap:.42in;}
 
+/* A diagonal stamp across a page whose contents are illustrative or are
+   waiting on somebody: "verify figures", "swap these out". Deliberately
+   loud — the whole job of it is that it cannot be missed at the printer.
+   Positioned against .pg, which is the nearest positioned ancestor. */
+.stamp{position:absolute;top:38%;left:50%;transform:translate(-50%,-50%) rotate(-18deg);
+  font:800 46pt/1 var(--sans);letter-spacing:.06em;color:rgba(198,50,50,.16);
+  white-space:nowrap;pointer-events:none;z-index:5;text-transform:uppercase;}
+
+/* ---------- hand-ticked checklist ----------
+   Two columns of grouped items with an empty box beside each. Printed
+   empty on purpose: the client ticks them with a pen. The Seller Pitch's
+   "Preparing Your Home" and the Buyer Package's "Questions to Ask" are
+   the same page furniture, so it lives here rather than in either deck. */
+.chk{columns:2;column-gap:.55in;flex:1;min-height:0;}
+.chk .cgrp{break-inside:avoid;margin-bottom:.3in;}
+.chk .cgrp-h{display:flex;align-items:center;gap:.11in;margin-bottom:.13in;}
+.chk .cgrp-h .ci{width:.2in;height:.2in;flex:none;color:var(--navy);}
+.chk .cgrp-h span{font:800 9pt var(--sans);letter-spacing:.13em;text-transform:uppercase;color:var(--navy);}
+.chk ul{list-style:none;margin:0;padding:0;}
+.chk li{display:flex;align-items:flex-start;gap:.14in;padding:.072in 0;
+  font:300 10.5pt/15pt var(--body);color:var(--navy);}
+.chk li i{flex:none;width:.16in;height:.16in;border:.75pt solid rgba(0,39,58,.45);
+  display:block;margin-top:.028in;}
+.chk li em{font-style:normal;color:rgba(0,39,58,.55);}
+/* A denser variant, for a checklist with more groups than the page has room
+   for at the size above. 10pt is the ceiling for six groups of five in two
+   columns: half a point more and the items wrap enough to spill into a
+   third column, which .checkOverflow catches as a sideways overflow. */
+.chk.tight li{font-size:10pt;line-height:14pt;padding:.07in 0;}
+.chk.tight .cgrp{margin-bottom:.28in;}
+
 .stat-row{display:flex;gap:.3in;margin:.1in 0 .26in;}
 .stat{flex:1;min-width:0;border-top:1.4pt solid var(--sky);padding-top:.11in;}
 .stat .v{font:700 23pt/1 var(--serif);color:var(--navy);}

@@ -100,6 +100,19 @@ details.ed-sec summary .hint{margin-left:auto;font:400 10px var(--ui-mono);lette
 .seg button:focus-visible{outline:2px solid var(--sky);outline-offset:-2px;}
 .seg button.on{background:var(--navy);color:var(--ow);}
 
+/* ---------- tick list ----------
+   A column of on/off ticks, for picking which optional pages a package
+   prints and which town tearsheets go in it. Built by P.tickList(), so
+   every builder's list looks and behaves the same. */
+.ticks{margin-top:10px;}
+.tick{display:flex;align-items:flex-start;gap:9px;padding:6px 8px;border-radius:6px;cursor:pointer;}
+.tick:hover{background:#fff;}
+.tick input{flex:none;margin:2px 0 0;accent-color:var(--navy);cursor:pointer;}
+.tick input:focus-visible{outline:2px solid var(--sky);outline-offset:2px;}
+.tick b{display:block;font:800 10.5px var(--sans);letter-spacing:.03em;color:var(--navy);}
+.tick i{display:block;font:400 9.5px var(--ui-mono);font-style:normal;color:var(--ui-ink-soft);line-height:1.55;margin-top:1px;}
+.tick-bar{display:flex;gap:7px;margin-top:10px;}
+
 .drop{margin-top:10px;border:1.5px dashed var(--ui-rule);background:#fff;border-radius:8px;padding:16px 12px;text-align:center;cursor:pointer;transition:.15s;}
 .drop:hover,.drop.over{border-color:var(--sky);background:rgba(83,199,220,.08);}
 .drop:focus-visible{outline:2px solid var(--sky);outline-offset:2px;}

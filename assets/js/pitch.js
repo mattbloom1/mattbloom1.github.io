@@ -322,6 +322,51 @@
 
   function blankComp() { return { address:'', price:'', sqft:'', bb:'', date:'' }; }
 
+  /* ---------- editor: segmented pick ----------
+     The <div class="seg pick"> markup with one button per choice, each
+     carrying a data-<attr>. `get` returns the current value as a string,
+     `set` is handed the clicked one. Returns a repaint function, so a
+     builder can re-sync the buttons after loading a saved property rather
+     than leaving them showing the last document's answer. */
+  function segPick(host, attr, get, set) {
+    if (!host) return function () {};
+    const btns = [].slice.call(host.querySelectorAll('button'));
+    const paint = () => btns.forEach(b => b.classList.toggle('on', b.dataset[attr] === String(get())));
+    btns.forEach(b => b.addEventListener('click', () => { set(b.dataset[attr]); paint(); }));
+    paint();
+    return paint;
+  }
+
+  /* ---------- editor: tick list ----------
+     A column of checkboxes for choosing what a package prints — which
+     optional pages, and which town tearsheets. `items` is [[value, label,
+     sub]]; `isOn` reads and `toggle` writes wherever the builder keeps the
+     answer, so this holds no state of its own. Returns a repaint function.
+
+     The label is set as text, not markup: a town name or a page title is
+     data, and this is the one place a stray '<' would end up in the DOM. */
+  function tickList(host, items, isOn, toggle) {
+    if (!host) return function () {};
+    host.className = 'ticks';
+    host.replaceChildren();
+    const boxes = items.map(it => {
+      const lab = document.createElement('label');
+      lab.className = 'tick';
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      const txt = document.createElement('span');
+      const b = document.createElement('b'); b.textContent = it[1]; txt.appendChild(b);
+      if (it[2]) { const i = document.createElement('i'); i.textContent = it[2]; txt.appendChild(i); }
+      lab.append(cb, txt);
+      cb.addEventListener('change', () => toggle(it[0], cb.checked));
+      host.appendChild(lab);
+      return [it[0], cb];
+    });
+    const paint = () => boxes.forEach(([value, cb]) => { cb.checked = !!isOn(value); });
+    paint();
+    return paint;
+  }
+
   /* ---------- roster picker ----------
      One implementation for the whole site, in roster.js. This stays as a
      thin wrapper so the packages keep their existing call signature. */
@@ -338,6 +383,7 @@
     esc, lines, money, moneyShort, num,
     page, cover, heading, foot, toc, agentCards, linkCols, linkIcon,
     checkOverflow, overflowing, wireDrop, wireRoster, agentsOf,
-    assignRoles, placementOf, compsEditor, blankComp
+    assignRoles, placementOf, compsEditor, blankComp,
+    segPick, tickList
   };
 })(window);
