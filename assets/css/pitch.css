@@ -403,10 +403,10 @@ table.tbl .meta{display:block;font-size:7.5pt;color:rgba(0,39,58,.55);margin-top
   display:flex;flex-direction:column;overflow:hidden;
   --ag-padL:.58in; --ag-padR:.92in;
   --ag-fig:2.45in;                             /* the cut-out */
-  --ag-crop:calc(var(--ag-fig) * .74);         /* how far down — below every shoulder */
+  --ag-crop:calc(var(--ag-fig) * .84);         /* how far down — chest, not collar */
   --ag-bleed:0in;                              /* how far left of the margin the window sits */
   --ag-rail:calc(var(--ag-fig) - var(--ag-bleed));   /* the grid column it is anchored to */
-  --ag-sill:.3in;                              /* the row's own slack under the window */
+  --ag-sill:.26in;                             /* the row's own slack under the window */
   --ag-gut:.24in;        /* silhouette to details — tight, so they read as one */
   --ag-rule:rgba(229,229,229,.26);
   --ag-rule-soft:rgba(229,229,229,.14);}

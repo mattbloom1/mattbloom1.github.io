@@ -452,16 +452,9 @@ const DEFAULT_REVIEWS = [
   'John and his associates at Gasdaska Conlon are top notch professionals. It was a very smooth, easy and overall enjoyable experience working with them to buy and sell our apartment in NYC. | Conor Hagen, Buyer & Seller'
 ].join('\n');
 
-const DEFAULT_LINKS = [
-  'Our listings | gvcrealestateteam.com/listings',
-  'Douglas Elliman | elliman.com',
-  'Book a call | gvcrealestateteam.com/contact'
-].join('\n');
-const DEFAULT_SOCIAL = [
-  'Instagram | @gvcrealestateteam',
-  'YouTube | @gvcrealestateteam',
-  'LinkedIn | The GVC Real Estate Team'
-].join('\n');
+/* Where the closing page's QR sends a reader: the team's property page
+   rather than the homepage, so a scan lands on the listings. */
+const TEAM_QR_URL = 'https://www.gvcrealestateteam.com/property';
 
 /* p9 footer — one QR per channel, drawn as vector art so it stays sharp at
    any print size. label/handle are what's printed under the code. */
@@ -1011,33 +1004,24 @@ function pgVideos(n) {
    headshots are transparent cutouts, so each sits on its own light panel —
    that is what carries the drop shadow and the name banner. A shadow on the
    bare cutout draws an empty rectangle. */
-const STATES = [
-  ['New York',   '../../assets/img/states/new-york.svg'],
-  ['New Jersey', '../../assets/img/states/new-jersey.svg'],
-  ['Florida',    '../../assets/img/states/florida.svg']
-];
+/* Closing page — the editorial close shared with the Buyer Package and the
+   Brochure: the lockup and the team QR on a header line, the sign-off under
+   it, then one row per agent with their cut-out standing in a rail down the
+   left and their office number, mobile and email hung beside it. An agent
+   with an Instagram in the roster also gets a row of their own in Social.
 
-/* Closing page. Every block on it is built by the shared helpers, so this
-   page and the Buyer Package's and the Brochure's are one design. */
+   All of it is built by Pitch.closingPage(), so the three closes are one
+   design. Its markup carries the running footer itself, so the page is
+   assembled here rather than through P.page(). */
 function pgContact(n) {
-  const site = 'https://' + SITE;
-  const qr = qrSvg(site);
-  const body =
-    '<div class="cx-top">' +
-      '<div class="cx-kicker">The GVC Team</div><div class="cx-thanks">Thank You</div>' +
-      (qr ? '<div class="cx-qr"><div class="qbox">' + qr + '</div>' +
-            '<div class="qcap">Our team site</div></div>' : '') +
-    '</div>' +
-    P.agentCards(agents(), headshotFor) +
-    '<div class="contact-foot">' +
-      P.linkCols([['Social', pairs(DEFAULT_SOCIAL)], ['Links', pairs(DEFAULT_LINKS)]]) +
-    '</div>' +
-    '<div class="states">' + STATES.map(([nm, art]) =>
-      '<div class="stc"><i class="stc-art" style="-webkit-mask-image:url(' + art +
-             ');mask-image:url(' + art + ')"></i><span>' + esc(nm) + '</span></div>').join('') + '</div>' +
-    GVC_LEGAL.block('listing');
-  return P.page({ deck:DECK, n, of:OF, site:SITE, reversed:true, cls:'close',
-    title:'Thank You', body });
+  return '<div class="pg rev">' +
+    P.closingPage({
+      agents: agents(), headshotFor,
+      qr: qrSvg(TEAM_QR_URL), qrCap: 'Our properties',
+      legal: GVC_LEGAL.block('listing'),
+      foot: P.foot(SITE, true, n, OF)
+    }) +
+  '</div>';
 }
 
 const RENDER = {

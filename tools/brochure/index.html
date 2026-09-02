@@ -323,13 +323,20 @@
    alpha for the neck (the narrowest row under the head) and the shoulder
    line (where it first flares past the head's width) puts the neck anywhere
    from .426 of the square (tj-verdiglione) to .592 (nicole-melveney), and
-   the shoulders from .483 to .698. A cut at .52 therefore took the shoulders
-   off ten of the thirteen — john-gasdaska came out as a head and a collar —
-   and went through the JAW of gary-kasparov, nicole-sobol and
-   nicole-melveney. .74 clears the lowest shoulder in the roster with a
-   little in hand. Do not raise it to buy a bigger head: the head grows with
-   --ag-fig, and this number is the only thing keeping everyone's shoulders
-   on the page.
+   the shoulders from .483 to .698. So .74 is the FLOOR — below it the cut
+   takes somebody's shoulders off, and it went through the JAW of
+   gary-kasparov, nicole-sobol and nicole-melveney at .52.
+
+   It is not the number the page uses, because a cut a hair under the lowest
+   shoulder reads as a collar with nobody in it. .84 takes the figure to the
+   chest, which is where a two-up row wants to be cut, and it is about as
+   deep as the sheet allows: each row grows with the crop, and the page's one
+   flexible joint (the margin over the small print, see .ag .legal) closes up
+   to pay for it. The Seller Pitch & CMA is the binding case, its closing page
+   carrying the longer of the two legal paragraphs — there the joint is shut
+   at .84 and the page starts overflowing at about .90. So measure THAT deck,
+   with two agents, if you raise this. The solo page is separate: it shows the
+   whole figure and is capped by the details column instead.
 
    THE WIDTH. Once the crop is that deep the square is the only band that
    clears everybody. Over the top .80 the union of the thirteen silhouettes
@@ -348,10 +355,10 @@
   display:flex;flex-direction:column;overflow:hidden;
   --ag-padL:.58in; --ag-padR:.92in;
   --ag-fig:2.45in;                             /* the cut-out */
-  --ag-crop:calc(var(--ag-fig) * .74);         /* how far down — below every shoulder */
+  --ag-crop:calc(var(--ag-fig) * .84);         /* how far down — chest, not collar */
   --ag-bleed:0in;                              /* how far left of the margin the window sits */
   --ag-rail:calc(var(--ag-fig) - var(--ag-bleed));   /* the grid column it is anchored to */
-  --ag-sill:.3in;                              /* the row's own slack under the window */
+  --ag-sill:.26in;                             /* the row's own slack under the window */
   --ag-gut:.24in;        /* silhouette to details — tight, so they read as one */
   --ag-rule:rgba(229,229,229,.26);
   --ag-rule-soft:rgba(229,229,229,.14);}
