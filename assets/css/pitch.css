@@ -88,23 +88,6 @@
 .pg.rev .copy{color:var(--ow);}
 .cols2{columns:2;column-gap:.42in;}
 
-/* An editorial pull quote to end a page on. margin-top:auto pins it to the
-   foot of the body, so a page whose content stops short closes on a line
-   worth reading rather than on white space. The mark is the team monogram
-   cut out of the brand sky; the url resolves against THIS file, so every
-   builder gets it without knowing where it sits. No attribution slot on
-   purpose — this is the deck's own voice, and a name under it would be a
-   quote somebody never said. Client reviews use .quote instead. */
-.pq{flex:none;margin-top:auto;padding-top:.3in;border-top:.75pt solid var(--rule);
-  display:flex;gap:.28in;align-items:flex-start;}
-.pq .pq-m{flex:none;width:.3in;height:.5in;background:var(--sky);
-  -webkit-mask:url(../logos/monogram.svg) no-repeat center/contain;
-  mask:url(../logos/monogram.svg) no-repeat center/contain;}
-.pq p{margin:0;font:300 15pt/1.45 var(--serif);color:var(--navy);}
-.pg.rev .pq{border-top-color:var(--rule-rev);}
-.pg.rev .pq p{color:var(--ow);}
-.pg.rev .pq .pq-m{background:var(--sky);}
-
 /* A diagonal stamp across a page whose contents are illustrative or are
    waiting on somebody: "verify figures", "swap these out". Deliberately
    loud — the whole job of it is that it cannot be missed at the printer.

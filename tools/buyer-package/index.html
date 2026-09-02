@@ -36,9 +36,12 @@
 .why{display:flex;gap:.42in;flex:1;min-height:0;}
 .why .ph{width:2.85in;flex:none;align-self:stretch;}
 .why .txt{flex:1;min-width:0;display:flex;flex-direction:column;}
-.why .open{margin:0 0 .24in;font:300 17pt/1.32 var(--serif);color:var(--navy);}
-.why .copy{font-size:10.5pt;line-height:16pt;}
-.why .copy p + p{margin-top:.15in;}
+.why .copy{font-size:11.5pt;line-height:17.5pt;}
+.why .copy p + p{margin-top:.17in;}
+/* the team's standing line, set as a display rule between the blurb and
+   the numbers */
+.why .tag{margin:.3in 0 0;padding-top:.24in;border-top:.75pt solid var(--rule);
+  font:300 16pt/1.28 var(--serif);color:var(--navy);}
 .why .quote{margin-top:auto;padding-top:.04in;}
 .why .quote p{font-size:10.5pt;line-height:16pt;}
 
@@ -60,20 +63,6 @@ table.tbl tr.grp td{border-bottom:1pt solid var(--navy);padding:.2in .1in .06in 
    between two lines. */
 table.tbl tr.grp:first-child td{padding-top:.11in;}
 .foot-note{margin-top:auto;padding-top:.2in;font:300 8.5pt/13pt var(--body);color:rgba(0,39,58,.62);}
-
-/* Each of these pages holds less than a page of content, and the shared
-   blocks are all natural-height, so without this the slack pooled in one
-   lump above the page's closing line. Giving the block the height instead
-   spreads it: the steps get air between them, the worksheet gets deeper
-   rules to write on, and the cards get taller. */
-.pg[data-key="process"] .steps{flex:1;min-height:0;justify-content:space-between;}
-.pg[data-key="criteria"] .ws{flex:1;min-height:0;align-content:space-between;}
-.pg[data-key="options"] .cards,
-.pg[data-key="offer"] .cards{flex:1;min-height:0;}
-/* ...and a stretched card sits its contents in the middle rather than
-   leaving the bottom half of its own box empty. */
-.pg[data-key="options"] .card,
-.pg[data-key="offer"] .card{display:flex;flex-direction:column;justify-content:center;}
 
 /* offer & negotiation: each card's contents centered rather than
    left-set, to match the rest of the deck's card treatment */
@@ -369,11 +358,6 @@ const pairs = rows => rows.map(l => {
 });
 const ic = (name, cls) => (window.icon ? window.icon(name, cls) : '');
 
-/* The line a page ends on when its content stops short of the foot. The
-   furniture is shared — assets/css/pitch.css, .pq — so the Seller Pitch
-   can close a thin page the same way. */
-const pq = line => '<div class="pq"><i class="pq-m"></i><p>' + line + '</p></div>';
-
 /* Photo roles — 'auto' fills the slots below in order; a pinned photo stays
    where the agent put it. Mirrors the brochure's behaviour. */
 const ROLES = [
@@ -504,13 +488,22 @@ function pgCover() {
 
 /* WHY WORK WITH US.
 
-   The only page in the packet written in the team's own voice, so it says
-   what is actually true and checkable: when the team merged, what it has
-   sold, what a buyer's agent is for, and what we put in writing before we
-   show anything. The review at the foot is a real one, excerpted from the
-   team's Zillow reviews and never reworded — the same rule the Seller
-   Pitch's reviews page follows. Everything else about the team lives at
-   gvcrealestateteam.com, which is the one link this page points at. */
+   The blurb and the standing line under it are the team's own words, given
+   to us for this page. Do not paraphrase them — if the team's boilerplate
+   changes, replace these strings with the new boilerplate.
+
+   The review at the foot is a real client review, excerpted and never
+   reworded, the same rule the Seller Pitch's reviews page follows. */
+const WHY_COPY = [
+  'The Gasdaska Verdiglione Conlon (GVC) Team is built on a foundation of excellence, integrity, ' +
+  'innovation, and collaboration. Specializing in luxury residential, commercial, and new ' +
+  'development transactions, the team serves high-net-worth clients across New York, New Jersey, ' +
+  'and Florida.',
+  'The GVC Team is strengthened by a diverse group of talented professionals, and collaborates ' +
+  'with a wide network of skilled agents across NYC, New Jersey, and Florida, all of whom share ' +
+  'the team’s core values and client-focused approach.'
+];
+const WHY_TAG = 'The Premier Luxury Real Estate Team Across NY, NJ, & FL';
 const WHY_REVIEW = [
   'She was incredibly attentive, always responsive, and extremely professional & helpful ' +
   'throughout the entire process. She took the time to explain every step in detail, making what ' +
@@ -520,32 +513,14 @@ const WHY_REVIEW = [
 ];
 
 function pgWhy(n) {
-  const a = agents()[0];
   const body =
     '<div class="why">' +
       '<div class="ph" data-drop="portrait"' + (slot('portrait') ? ' data-pos="portrait"' : '') + '>' + (slot('portrait')
         ? '<img src="' + slot('portrait') + '" alt="" style="object-position:' + posFor('portrait').x + '% ' + posFor('portrait').y + '%">'
         : '<div class="empty-note on-white">Drag a photo here<br>from the Photos panel</div>') + '</div>' +
       '<div class="txt">' +
-      '<p class="open">Anyone can unlock a door. The work is everything on either side of it.</p>' +
-      '<div class="copy">' +
-        '<p>Which houses are priced wrong. Which buildings have an assessment coming. What the ' +
-        'taxes will actually be after the next reassessment. When to stop bidding, and when the ' +
-        'other side is bluffing.</p>' +
-        /* No years-and-billions restatement here: the numbers are in the stat
-           row six lines down, and saying them twice is what made the old
-           draft read like filler. */
-        '<p>The GVC Team is The Gasdaska Conlon Team and The Verdiglione Group, merged in 2024 ' +
-        'and working out of Douglas Elliman. Between us we have sold more than $3 billion of ' +
-        'property in New York, New Jersey and Florida.</p>' +
-        (a ? '<p><strong>' + esc(a.name) + '</strong>, ' + esc(a.title) + ', will run your search ' +
-             'personally. You get their mobile number, and they are the one who opens the door.</p>'
-           : '') +
-        '<p>Before we show you anything we put our agreement in writing, including how we are ' +
-        'paid, so there is nothing left to work out once you have found the house. And we will ' +
-        'tell you when a house is wrong for you. Every listing we have, and every review, is at ' +
-        SITE + '.</p>' +
-      '</div>' +
+      '<div class="copy">' + WHY_COPY.map(t => '<p>' + esc(t) + '</p>').join('') + '</div>' +
+      '<div class="tag">' + esc(WHY_TAG) + '</div>' +
       '<div class="stat-row" style="margin-top:.3in">' +
         '<div class="stat"><div class="v">$3B+</div><div class="l">Sold to date</div></div>' +
         '<div class="stat"><div class="v">3</div><div class="l">States licensed</div></div>' +
@@ -563,9 +538,7 @@ function pgProcess(n) {
     '<div class="step"><div class="sn">' + (i + 1) + '</div><div>' +
       '<div class="st">' + esc(t) + '</div>' +
       (d ? '<div class="sd">' + esc(d) + '</div>' : '') +
-    '</div></div>').join('') + '</div>' +
-    pq('Steps three and four can take months. Five and six happen in a week. ' +
-       'That is where deals are lost.');
+    '</div></div>').join('') + '</div>';
   return P.page({ deck:DECK, n, of:OF, site:SITE, title:'The Buying Process', body });
 }
 
@@ -622,9 +595,7 @@ function pgCriteria(n) {
       field('1') + field('2') + field('3') + field('4') +
       '<div class="wl">Deal breakers</div>' +
       field('1') + field('2') +
-    '</div>' +
-    pq('We will not send you everything that matches this. We will send you the ' +
-       'four that do, and tell you which one we would buy.');
+    '</div>';
   return P.page({ deck:DECK, n, of:OF, site:SITE, title:'Your Search Criteria', body });
 }
 
@@ -685,9 +656,7 @@ function pgOffer(n) {
   const body =
     '<div class="cards c2">' + OFFER.map(([g, h, p]) =>
       '<div class="card">' + ic(g, 'ci') + '<h3>' + esc(h) + '</h3><p>' + esc(p) + '</p></div>').join('') +
-    '</div>' +
-    pq('Sellers do not always take the highest number. They take the offer they ' +
-       'believe will actually close.');
+    '</div>';
   return P.page({ deck:DECK, n, of:OF, site:SITE, title:'Offer & Negotiation', body });
 }
 
