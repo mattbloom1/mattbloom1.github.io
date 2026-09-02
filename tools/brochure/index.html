@@ -351,7 +351,7 @@
   --ag-crop:calc(var(--ag-fig) * .74);         /* how far down — below every shoulder */
   --ag-bleed:0in;                              /* how far left of the margin the window sits */
   --ag-rail:calc(var(--ag-fig) - var(--ag-bleed));   /* the grid column it is anchored to */
-  --ag-sill:.2in;                              /* the row's own slack under the window */
+  --ag-sill:.3in;                              /* the row's own slack under the window */
   --ag-gut:.24in;        /* silhouette to details — tight, so they read as one */
   --ag-rule:rgba(229,229,229,.26);
   --ag-rule-soft:rgba(229,229,229,.14);}
@@ -401,8 +401,13 @@
    window, which left the details stranded at the bottom of it with a hole
    above. What is left over becomes breathing space above the contact
    columns, which is also where the half-letter sheet's extra height goes. */
-.ag-people{flex:1;min-height:0;display:flex;flex-direction:column;
-  justify-content:flex-start;}
+/* flex:none, not flex:1. As a flexible child this block swallowed every spare
+   inch on the page and parked it under the last portrait, which held the
+   contact columns an inch below the cut-out for no reason. The slack now
+   collects above the small print instead — see .ag .legal — so the columns sit
+   just under the figure and the legal matter stays bottom-aligned where it
+   belongs. */
+.ag-people{flex:none;display:flex;flex-direction:column;}
 .ag-person{position:relative;flex:none;
   display:grid;grid-template-columns:var(--ag-rail) 1fr;column-gap:var(--ag-gut);
   align-items:start;border-top:1pt solid var(--ag-rule);padding-top:.16in;
@@ -478,7 +483,7 @@
    ("George Putykewycz", 3.36in at 27pt) on one line and its longest address
    ("george.putykewycz@elliman.com", 2.37in at 11pt) without an ellipsis.
    Grow the figure and both of those break, in that order. */
-.ag.solo{--ag-fig:3.8in; --ag-bleed:.45in; --ag-crop:var(--ag-fig);}
+.ag.solo{--ag-fig:3.8in; --ag-bleed:.45in; --ag-crop:var(--ag-fig); --ag-sill:.5in;}
 /* The solo page shows the WHOLE cut-out: --ag-crop is the full figure and the
    window drops its overflow:hidden, so nothing is cut off. The crop reasoning
    above still governs the two-up rows, where two figures share the page and
@@ -498,7 +503,7 @@
 .ag.solo .ag-who .ct .v.num{font-size:12pt;}
 
 /* ---------- footer matter: three uneven columns ---------- */
-.ag-foot{flex:none;margin-top:.2in;padding-top:.16in;border-top:1pt solid var(--ag-rule);
+.ag-foot{flex:none;margin-top:.06in;padding-top:.16in;border-top:1pt solid var(--ag-rule);
   display:grid;grid-template-columns:1.5fr 1.7fr 1.45in;column-gap:.4in;}
 .ag-col{min-width:0;}
 .ag-col-t{font:900 6.6pt var(--sans);letter-spacing:.22em;text-transform:uppercase;color:var(--sky);
@@ -522,8 +527,10 @@
 .ag-st span{font:800 6.6pt var(--sans);letter-spacing:.16em;text-transform:uppercase;
   color:rgba(229,229,229,.72);}
 
-/* the shared legal paragraph, on this page's own rule */
-.ag .legal{flex:none;margin-top:.16in;padding-top:.11in;
+/* The shared legal paragraph, on this page's own rule. margin-top:auto makes
+   this the page's one flexible joint: whatever height the sheet has spare
+   opens up here, above the small print, rather than under the portrait. */
+.ag .legal{flex:none;margin-top:auto;padding-top:.11in;
   border-top:.75pt solid var(--ag-rule-soft);
   font:300 6.5pt/1.46 var(--body);color:rgba(229,229,229,.55);text-align:justify;}
 
@@ -624,9 +631,9 @@ body.paper-half .ag{--ag-fig:3.2in;}
    navy under the portrait the same share of the page as on Letter. */
 body.paper-half .ag.solo{--ag-fig:3.95in; --ag-bleed:.6in;}
 body.paper-half .ag-hero{padding:.66in 0 .52in;}
-body.paper-half .ag.solo .ag-hero{padding:.62in 0 .5in;}
-body.paper-half .ag-foot{margin-top:.5in;}
-body.paper-half .ag.solo .ag-foot{margin-top:.86in;}
+body.paper-half .ag.solo .ag-hero{padding:1.06in 0 .78in;}
+/* the extra 2.14in lands in the .legal joint now, so the footer keeps its
+   own tight gap on both sheets */
 
 @media print{
   .empty-note,.over-flag{display:none !important;}
