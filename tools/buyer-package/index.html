@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Buyer Package Builder — Matt Bloomfield</title>
-<meta name="description" content="Build a print-ready 8.5x11 buyer consultation package for The GVC Team.">
+<meta name="description" content="Build the print-ready 8.5x11 buyer packet for The GVC Team — the process, the costs, the questions to ask, and New Jersey town tearsheets.">
 <meta property="og:title" content="Buyer Package Builder — Matt Bloomfield">
-<meta property="og:description" content="Build a print-ready 8.5x11 buyer consultation package for The GVC Team.">
+<meta property="og:description" content="Build the print-ready 8.5x11 buyer packet for The GVC Team — the process, the costs, the questions to ask, and New Jersey town tearsheets.">
 <meta property="og:url" content="https://matthewgvc.github.io/tools/buyer-package/">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
@@ -21,14 +21,15 @@
 <link rel="stylesheet" href="../../assets/css/builder.css">
 <link rel="stylesheet" href="../../assets/css/pitch.css">
 <link rel="stylesheet" href="../../assets/css/photo-dnd.css">
-<link rel="stylesheet" href="../../assets/css/property-bar.css">
 <style>
 /* ============================================================
    BUYER PACKAGE — deck-specific page styles
-   Shared furniture lives in assets/css/pitch.css.
+   Shared furniture lives in assets/css/pitch.css: the page frame, the
+   cover, the cards, the tables, the hand-ticked checklist (.chk), the
+   "verify" stamp (.stamp) and the whole closing page.
    ============================================================ */
 
-/* p3 — why us */
+/* why us */
 .why{display:flex;gap:.42in;flex:1;min-height:0;}
 .why .ph{width:2.85in;flex:none;align-self:stretch;}
 .why .txt{flex:1;min-width:0;display:flex;flex-direction:column;}
@@ -36,7 +37,7 @@
    so it reads as "needs updating" rather than as finished text */
 .pg[data-key="why"] .copy{text-decoration:line-through;text-decoration-color:rgba(0,39,58,.4);}
 
-/* worksheet — blank rules the buyer fills in by hand */
+/* search-criteria worksheet — blank rules the buyer fills in by hand */
 .ws{display:grid;grid-template-columns:1fr 1fr;gap:.1in .42in;}
 .ws .wl{grid-column:1 / -1;font:800 7.5pt var(--sans);letter-spacing:.15em;text-transform:uppercase;
   color:var(--sky2);margin-top:.16in;padding-bottom:.05in;border-bottom:.75pt solid var(--rule);}
@@ -46,25 +47,11 @@
   color:rgba(0,39,58,.55);width:1.15in;}
 .ws .wf i{flex:1;border-bottom:.75pt solid rgba(0,39,58,.35);height:.16in;display:block;}
 
-/* Pages whose figures are illustrative until somebody signs off on them
-   carry a diagonal stamp, so that never gets missed in print: the
-   financing estimate (until a lender confirms it), and the search criteria
-   worksheet (which is filled in by hand and quoted back later). */
-.check-stamp{position:absolute;top:38%;left:50%;transform:translate(-50%,-50%) rotate(-18deg);
-  font:800 46pt/1 var(--sans);letter-spacing:.06em;color:rgba(198,50,50,.16);
-  white-space:nowrap;pointer-events:none;z-index:5;}
-
-/* costs table gets a total row */
-table.tbl tr.total td{border-top:1.2pt solid var(--navy);border-bottom:0;
-  font-weight:700;padding-top:.11in;}
-.cost-note{margin-top:auto;padding-top:.2in;font:300 8.5pt/13pt var(--body);color:rgba(0,39,58,.62);}
-
-/* comps table — same treatment as the Seller Pitch & CMA's page 7, so a
-   buyer looking at comparables sees the table their seller counterpart
-   would. Small glyphs in the numeric heads, roomier rows. */
-#compTable th .hi{width:9pt;height:9pt;display:inline-block;vertical-align:-1.5pt;margin-right:.04in;color:rgba(0,39,58,.5);}
-#compTable td{padding-top:.16in;padding-bottom:.16in;}
-.comps-note{margin-top:auto;padding-top:.2in;font:300 8.5pt/13pt var(--body);color:rgba(0,39,58,.62);}
+/* costs table — grouped by when the money leaves your hands */
+table.tbl tr.grp td{border-bottom:1pt solid var(--navy);padding:.2in .1in .06in 0;
+  font:800 7pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--sky2);}
+table.tbl tr.grp:first-child td{padding-top:0;}
+.foot-note{margin-top:auto;padding-top:.2in;font:300 8.5pt/13pt var(--body);color:rgba(0,39,58,.62);}
 
 /* offer & negotiation: each card's contents centered rather than
    left-set, to match the rest of the deck's card treatment */
@@ -72,14 +59,35 @@ table.tbl tr.total td{border-top:1.2pt solid var(--navy);border-bottom:0;
 .pg[data-key="offer"] .card .ci{margin:0 auto .1in;}
 
 /* ============================================================
-   p9 — closing page (Team + Next Steps merged)
-   Every block on it — the "Thank You" header, the agent cards, the two
-   contact columns, the licensed states — is shared furniture; see the
-   CLOSING PAGE section of assets/css/pitch.css. Nothing deck-specific is
-   left here, which is the point: it can no longer drift from the Seller
-   Pitch & CMA's closing page.
+   TOWN TEARSHEETS — two towns per page, each taking half the body.
+   The data is assets/js/nj-towns.js; nothing about the layout is
+   per-town, so adding a town adds a half-page and nothing else.
    ============================================================ */
-
+.tsheet{display:flex;flex-direction:column;flex:1;min-height:0;}
+.ts{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;}
+.ts + .ts{border-top:.75pt solid var(--rule);padding-top:.3in;}
+.ts-h{display:flex;align-items:baseline;justify-content:space-between;gap:.2in;}
+.ts-h h3{margin:0;font:700 21pt/1.05 var(--serif);color:var(--navy);}
+.ts-h .co{flex:none;font:800 7pt var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--sky2);}
+.ts-tag{margin-top:.09in;font:300 10.5pt/15pt var(--body);color:rgba(0,39,58,.8);}
+.ts-stats{display:flex;gap:.3in;margin:.2in 0;}
+.ts-stats .s{flex:1;min-width:0;border-top:1.4pt solid var(--sky);padding-top:.09in;}
+.ts-stats .s .v{font:700 15pt/1 var(--serif);color:var(--navy);font-variant-numeric:tabular-nums;}
+.ts-stats .s .l{margin-top:.05in;font:800 6.2pt var(--sans);letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(0,39,58,.55);}
+.ts-b{display:flex;gap:.42in;}
+.ts-b > div{flex:1;min-width:0;}
+.ts-r{padding:.05in 0;}
+.ts-r b{display:block;font:800 6.4pt var(--sans);letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(0,39,58,.5);margin-bottom:.02in;}
+.ts-r span{font:300 9pt/13pt var(--body);color:var(--navy);}
+.ts-n{list-style:none;margin:0;padding:0;}
+.ts-n li{position:relative;padding:.045in 0 .045in .18in;font:300 9pt/13pt var(--body);color:var(--navy);}
+.ts-n li::before{content:'';position:absolute;left:0;top:.082in;width:.06in;height:.06in;background:var(--sky);}
+/* the figures move every quarter, so every tearsheet says when they were
+   compiled — see the header comment in assets/js/nj-towns.js */
+.ts-src{flex:none;margin-top:.2in;padding-top:.14in;border-top:.75pt solid var(--rule);
+  font:300 7.5pt/11pt var(--body);color:rgba(0,39,58,.5);text-align:center;}
 </style>
 </head>
 <body data-root="../../" data-nav="tools" data-foot="none">
@@ -88,14 +96,18 @@ table.tbl tr.total td{border-top:1.2pt solid var(--navy);border-bottom:0;
 
 <div id="app">
 
-  <!-- ======================= EDITOR ======================= -->
+  <!-- ======================= EDITOR =======================
+       The packet is not about one buyer or one property, so there is no
+       property library here and nothing to type: the copy is GVC
+       boilerplate that lives in this file, the way the Seller Pitch's
+       marketing plan and prep checklist do. What is left to choose is
+       the photos, which pages go in, which towns go in, and who is
+       presenting it. -->
   <aside id="editor">
-    <!-- the property library mounts here, identically in all four builders -->
-    <div id="propBar"></div>
     <div class="ed-body">
 
-      <details class="ed-sec">
-        <summary>Photos <span class="hint">cover + page 3</span></summary>
+      <details class="ed-sec" open>
+        <summary>Photos <span class="hint">cover + why us</span></summary>
         <div class="sec-in">
           <div class="drop" id="dropPhotos" tabindex="0" role="button">
             <div class="d-big">Drop photos</div>
@@ -107,70 +119,32 @@ table.tbl tr.total td{border-top:1.2pt solid var(--navy);border-bottom:0;
         </div>
       </details>
 
-      <details class="ed-sec">
-        <summary>Client &amp; cover <span class="hint">cover</span></summary>
+      <details class="ed-sec" open>
+        <summary>Pages <span class="hint" id="pagesHint"></span></summary>
         <div class="sec-in">
-          <div class="field"><label>Prepared for</label><input type="text" data-f="client" placeholder="Priya &amp; Daniel Rao"></div>
-          <div class="field"><label>Date</label><input type="text" data-f="date" placeholder="August 2026"></div>
-          <div class="field"><label>Market / area</label><input type="text" data-f="area" placeholder="SoHo &amp; Tribeca, Manhattan"></div>
+          <div id="pagePick"></div>
+          <div class="sec-note">Anything switched off drops out of the packet and the deck renumbers
+            itself, running footers included.</div>
         </div>
       </details>
 
-      <details class="ed-sec">
-        <summary>The buying process <span class="hint">page 4</span></summary>
+      <details class="ed-sec" open>
+        <summary>New Jersey towns <span class="hint" id="townHint"></span></summary>
         <div class="sec-in">
-          <div class="field"><label>Steps <span style="text-transform:none;letter-spacing:0">(one per line: Title | detail)</span></label>
-            <textarea data-f="steps" rows="9"></textarea></div>
-          <div class="warn" id="warnSteps" hidden></div>
-        </div>
-      </details>
-
-      <details class="ed-sec">
-        <summary>Financing <span class="hint">pages 5 &amp; 8</span></summary>
-        <div class="sec-in">
-          <div class="f-row">
-            <div class="field"><label>Target price</label><input type="text" data-f="price" placeholder="1,850,000"></div>
-            <div class="field"><label>Down payment %</label><input type="text" data-f="downPct" placeholder="20"></div>
+          <div id="townPick"></div>
+          <div class="tick-bar">
+            <button class="btn sm ghost" type="button" id="townAll">Select all</button>
+            <button class="btn sm ghost" type="button" id="townNone">Clear</button>
           </div>
-          <div class="f-row">
-            <div class="field"><label>Rate %</label><input type="text" data-f="rate" placeholder="6.25"></div>
-            <div class="field"><label>Term (years)</label><input type="text" data-f="term" placeholder="30"></div>
-          </div>
-          <div class="field"><label>Lender notes</label>
-            <textarea data-f="lender" rows="3" placeholder="Who to call, and what they will ask for."></textarea></div>
-          <div class="warn" id="warnFinance" hidden></div>
+          <div class="sec-note">Two towns per page, in this order. The figures live in
+            <code>assets/js/nj-towns.js</code> &mdash; refresh them there and every packet prints
+            the new ones.</div>
+          <div class="warn" id="warnTowns" hidden></div>
         </div>
       </details>
 
       <details class="ed-sec">
-        <summary>Comparable sales <span class="hint">optional page</span></summary>
-        <div class="sec-in">
-          <div class="field"><label>Include this page</label>
-            <div class="seg pick" id="compsPick" role="group" aria-label="Include the comparable sales page">
-              <button type="button" data-comps="1">Include</button>
-              <button type="button" data-comps="0">Leave out</button>
-            </div>
-          </div>
-          <div class="rowlist" id="compList"></div>
-          <button class="btn sm ghost" id="addComp" style="margin-top:10px">Add comparable</button>
-          <div class="sec-note">What the buyer is bidding against. Leave the page out and the deck
-            renumbers itself, contents page included.</div>
-          <div class="warn" id="warnComps" hidden></div>
-        </div>
-      </details>
-
-      <details class="ed-sec">
-        <summary>Closing costs <span class="hint">closing costs page</span></summary>
-        <div class="sec-in">
-          <div class="field"><label>Line items <span style="text-transform:none;letter-spacing:0">(one per line: Item | amount or %)</span></label>
-            <textarea data-f="costs" rows="8"></textarea></div>
-          <div class="sec-note">A trailing % bills against the purchase price; &ldquo;1.925% loan&rdquo; bills against the mortgage.</div>
-          <div class="warn" id="warnCosts" hidden></div>
-        </div>
-      </details>
-
-      <details class="ed-sec">
-        <summary>Agents <span class="hint">max 2 &middot; pages 1 &amp; 9</span></summary>
+        <summary>Agents <span class="hint">max 2 &middot; cover + closing</span></summary>
         <div class="sec-in">
           <div id="rosterPick"></div>
         </div>
@@ -216,30 +190,44 @@ table.tbl tr.total td{border-top:1.2pt solid var(--navy);border-bottom:0;
 <script src="../../assets/js/qr.js"></script>
 <script src="../../assets/js/legal.js"></script>
 <script src="../../assets/js/unsaved.js"></script>
-<script src="../../assets/js/supabase-config.js"></script>
-<script src="../../assets/js/property-library.js"></script>
-<script src="../../assets/js/property-bar.js"></script>
+<script src="../../assets/js/nj-towns.js"></script>
 <script>
 'use strict';
 const P = window.Pitch, esc = P.esc;
 const PD = window.GVC_PHOTODND;
 const DECK = 'Buyer Package';
+const TOWNS = window.GVC_NJ_TOWNS;
 
+/* ============================================================
+   STATE
+
+   Deliberately small. This packet is handed to any buyer, so there is no
+   client, no address and no target price in it — the only decisions are
+   which photos, which pages, which towns and which agents.
+   ============================================================ */
 const state = {
-  client:'', date:'', area:'',
-  photos:[],
-  steps:'', price:'', downPct:'20', rate:'', term:'30', lender:'',
-  costs:'', comps:[], showComps:true, agents:[],
-  pos:{}
+  photos:[], pos:{},
+  off:{},        // optional page key -> true when it is switched off
+  towns:[],      // town names, in the order nj-towns.js lists them
+  agents:[]
 };
 
 /* The website printed in every footer. Not editable — the footer, the
-   social handles and the links are all fixed team boilerplate in all three
+   social handles and the links are all fixed team boilerplate in all four
    builders, so none of them can print a wrong one. */
 const SITE = 'gvcrealestateteam.com';
 function posFor(key) { return state.pos[key] || (state.pos[key] = { x: 50, y: 50 }); }
 
-const DEFAULT_STEPS = [
+/* ============================================================
+   THE COPY — GVC boilerplate, not per-buyer.
+
+   Everything a buyer reads in this packet is here rather than in the
+   panel, the same way the Seller Pitch's marketing plan and prep
+   checklist are. Edit it here and every printed packet changes together.
+   ============================================================ */
+
+/* Title | detail, one step per line. */
+const STEPS = [
   'Consultation | We sit down, agree on what you are looking for, and set a realistic budget and timeline.',
   'Pre-approval | You speak to a lender and get a written pre-approval. Nothing else happens until this does.',
   'The search | Curated listings, private showings, and honest opinions about the ones that are wrong for you.',
@@ -247,20 +235,86 @@ const DEFAULT_STEPS = [
   'Negotiation | Counter-offers, contingencies and repairs. This is where having done it a thousand times pays.',
   'Contract & diligence | Attorney review, inspection, board package if applicable, and the appraisal.',
   'Closing | Final walkthrough, wire, signatures, keys.'
-].join('\n');
+];
 
-const DEFAULT_COSTS = [
-  'Attorney fee | 3500',
-  'Title insurance | 0.45%',
-  'Mansion tax | 1%',
-  'Mortgage recording tax | 1.925% loan',
-  'Appraisal | 850',
-  'Inspection | 1200',
-  'Managing agent / board fees | 1500'
-].join('\n');
+/* icon | heading | what it means for the buyer */
+const LOANS = [
+  ['home','Conventional','Three to twenty percent down, and the best rates on offer if your credit is strong. Under twenty percent you carry mortgage insurance until you have the equity to drop it.'],
+  ['building','FHA','As little as 3.5% down and far more forgiving on credit. The trade is mortgage insurance that stays for the life of most FHA loans.'],
+  ['check','VA','Nothing down and no mortgage insurance for eligible service members, veterans and surviving spouses. The strongest terms in the market, and badly under-used.'],
+  ['chart','Jumbo','Anything above the county conforming limit. Tighter underwriting, larger reserves, and worth using a lender who writes them every week.'],
+  ['ruler','Fixed or adjustable','A fixed rate buys thirty years of certainty. An adjustable one only makes sense if you genuinely know you are gone before it resets.'],
+  ['box','All cash','The fastest and strongest offer on the table. You can still put a mortgage on the house afterwards and take the money back out.']
+];
+
+/* Group, then Item | when it is due or what it is | typical range.
+   Ranges, not quotes: this packet is not written against a price, and the
+   real numbers come from the attorney and the lender on the actual deal. */
+const COSTS = [
+  ['Before you close', [
+    ['Home inspection', 'Booked the day attorney review starts', '$500 – $900'],
+    ['Specialty inspections', 'Radon, oil tank, sewer, termite — each', '$100 – $500'],
+    ['Appraisal', 'Ordered by your lender, paid by you', '$600 – $1,000'],
+    ['Deposit', 'At contract — credited back to you at closing', '5 – 10% of price']
+  ]],
+  ['At the closing table', [
+    ['Attorney', 'Contract through closing, flat fee', '$1,500 – $3,500'],
+    ['Title search & insurance', 'One-time, and it protects your title, not the lender’s', '0.4 – 0.6% of price'],
+    ['Lender fees & points', 'Origination, underwriting, any rate buy-down', '0.5 – 1.5% of loan'],
+    ['Survey', 'Usually required in New Jersey', '$600 – $1,200'],
+    ['Recording & transfer fees', 'County and municipal', '$300 – $1,200'],
+    ['Mansion tax', 'On sales of $1M and above', '1% of price'],
+    ['Escrow set-up', 'Prepaid property taxes and insurance', '2 – 6 months'],
+    ['First year of insurance', 'Homeowner’s, due at closing', '$900 – $2,500']
+  ]],
+  ['Optional, but budget for it', [
+    ['Staging', 'Only if you are selling a home to buy this one', '$1,500 – $5,000'],
+    ['Movers', 'A local move, two bedrooms or so', '$1,200 – $4,000'],
+    ['Repairs and paint', 'What you want done before you move in', 'Varies'],
+    ['Reserves', 'What lenders like to see left over afterwards', '2 – 6 months of payments']
+  ]]
+];
+
+/* Group | icon | items, semicolon-separated. Printed with empty boxes —
+   this page is meant to be taken to showings and ticked with a pen. */
+const QUESTIONS = [
+  ['At every showing', 'home',
+   'Why are they selling, and how soon?;How long has it been listed, and at what prices?;' +
+   'What are the taxes, insurance and monthly fees?;How old are the roof, furnace and water heater?;' +
+   'What is not staying with the house?;Has there ever been water in the basement?'],
+  ['About the building or HOA', 'building',
+   'What does the monthly fee actually cover?;Is an assessment planned or being discussed?;' +
+   'How healthy are the reserves?;What are the rules on pets, rentals and renovations?;' +
+   'What share of the units are owner-occupied?'],
+  ['About the town', 'pin',
+   'What is the tax rate, and when was the last reassessment?;Is any part of the lot in a flood zone?;' +
+   'Which schools does this address actually feed?;What is the commute at 7am, not at noon?;' +
+   'What is approved to be built nearby?'],
+  ['Ask your lender', 'chart',
+   'What is the rate, and what would it take to lock it?;What do the fees add up to, all in?;' +
+   'Which loan types do I qualify for?;What could change my approval before closing?;' +
+   'How long do you need once we are under contract?'],
+  ['What we will ask you', 'users',
+   'What has to be true on day one?;What would you trade, and what will you not?;' +
+   'Where is the down payment coming from?;Who else has a say in the decision?;' +
+   'What would make you walk away?'],
+  ['Before you sign', 'pen',
+   'Have I read the inspection report myself?;Is my deposit in escrow, and with whom?;' +
+   'When does attorney review end?;What happens if the appraisal comes in low?']
+];
+
+/* icon | heading | body — offer & negotiation */
+const OFFER = [
+  ['check','Price is only one term','Closing date, contingencies and financing type routinely matter more to a seller than the last $10,000.'],
+  ['home','Know the competition','We check what else is in contract on the block before we name a number, not after.'],
+  ['box','Contingencies protect you','Inspection, financing and appraisal contingencies are your exits. We waive them deliberately, never casually.'],
+  ['phone','Move fast, decide slowly','We will see it the day it lists. That does not mean you have to decide the same day.'],
+  ['users','Escalation, carefully','Escalation clauses can win a bidding war or reveal your ceiling. We use them situationally.'],
+  ['mail','Everything in writing','Verbal agreements are not agreements. Every accepted term goes into the contract.']
+];
 
 /* Identical content and order to the Seller Pitch & CMA's and the
-   Brochure's closing-page footer, and not editable in any of the three, so
+   Brochure's closing-page footer, and not editable in any of them, so
    the team's own handles can never be typed wrong on a client's copy. */
 const DEFAULT_SOCIAL = [
   ['Instagram', '@gvcrealestateteam'],
@@ -276,9 +330,12 @@ const DEFAULT_LINKS = [
 /* ---------- helpers ---------- */
 const headshotFor = a => a.photo;
 const agents = () => P.agentsOf(state);
-const pairs = txt => String(txt || '').split('\n')
-  .map(l => l.trim()).filter(Boolean)
-  .map(l => { const i = l.indexOf('|'); return i < 0 ? [l, ''] : [l.slice(0, i).trim(), l.slice(i + 1).trim()]; });
+const pairs = rows => rows.map(l => {
+  const i = l.indexOf('|');
+  return i < 0 ? [l, ''] : [l.slice(0, i).trim(), l.slice(i + 1).trim()];
+});
+const ic = (name, cls) => (window.icon ? window.icon(name, cls) : '');
+
 /* Photo roles — 'auto' fills the slots below in order; a pinned photo stays
    where the agent put it. Mirrors the brochure's behaviour. */
 const ROLES = [
@@ -299,9 +356,6 @@ function slot(name) { return assign[name] ? assign[name].url : null; }
    assets/js/photo-dnd.js. All this says is what the two data-drop values
    mean, which is one line each: a photo's role IS its placement, so
    dropping it somewhere is nothing more than setting that role.
-
-   That is why no saved buyer package needed migrating: the drag writes the
-   same field the old dropdown wrote.
    ============================================================ */
 const REFRAME = { page: '.pg, .cv', canvasIn: 8.5 };
 const DROP_LABEL = { 'cover': 'Cover photo', 'portrait': 'Why us' };
@@ -346,59 +400,63 @@ function paintSlotGrips() {
   });
 }
 
-function loanAmount() { return P.num(state.price) * (1 - P.num(state.downPct) / 100); }
-
 /* QR as vector SVG — shared by all four builders, assets/js/qr.js */
 const qrSvg = window.GVC_QR;
 
-/* "1.925% loan" is taken against the mortgage, "0.45%" against the price,
-   anything else is a flat figure. The distinction is not cosmetic: in New
-   York the mortgage recording tax is charged on the loan, so billing it
-   against the purchase price overstates it by the down payment. */
-function costAmount(raw) {
-  const s = String(raw || '').trim();
-  if (/%\s*loan$/i.test(s)) return loanAmount() * (P.num(s) / 100);
-  if (/%$/.test(s)) return P.num(state.price) * (P.num(s) / 100);
-  return P.num(s);
-}
-function monthly() {
-  const principal = loanAmount();
-  const r = P.num(state.rate) / 100 / 12, n = P.num(state.term) * 12;
-  if (!principal || !n) return 0;
-  if (!r) return principal / n;
-  return principal * r / (1 - Math.pow(1 + r, -n));
+/* ============================================================
+   PAGE LIST
+
+   The spine is fixed; what varies is which optional pages are on and how
+   many town tearsheets have been picked. Two towns print per page, so the
+   deck is assembled per render and every page number, running footer and
+   page count follows from it.
+
+   `opt` marks a page the panel can switch off, and doubles as the one-line
+   description shown beside its tick.
+   ============================================================ */
+const SPINE = [
+  { key:'cover',     title:'Cover' },
+  { key:'why',       title:'Why Work With Us' },
+  { key:'process',   title:'The Buying Process',  opt:'The seven steps, start to keys' },
+  { key:'options',   title:'Financing Options',   opt:'Conventional, FHA, VA, jumbo, cash' },
+  { key:'costs',     title:'What It Costs',       opt:'Every cost in the deal, with ranges' },
+  { key:'criteria',  title:'Your Search Criteria',opt:'A worksheet you fill in together' },
+  { key:'questions', title:'Questions to Ask',    opt:'A checklist for the buyer and for us' },
+  { key:'towns',     title:'New Jersey Towns',    towns:true },
+  { key:'offer',     title:'Offer & Negotiation', opt:'Winning the house on terms, not price' },
+  { key:'next',      title:'Thank You' }
+];
+const OPTIONAL = SPINE.filter(p => p.opt);
+
+/* The picked towns, two to a page. */
+function townPages() {
+  const picked = TOWNS.list.filter(t => state.towns.indexOf(t.name) > -1);
+  const out = [];
+  for (let i = 0; i < picked.length; i += 2) out.push(picked.slice(i, i + 2));
+  return out;
 }
 
-/* ---------- page list ---------- */
-/* The deck is assembled per render rather than fixed, because the
-   comparables page is optional — dropping it has to renumber every page
-   after it, the running footers and the contents page all at once. */
 function pageList() {
-  const pages = [
-    { key:'cover',   title:'Cover' },
-    { key:'why',     title:'Why Work With Us' },
-    { key:'process', title:'The Buying Process' },
-    { key:'finance', title:'Financing' },
-    { key:'criteria',title:'Your Search Criteria' }
-  ];
-  if (state.showComps) pages.push({ key:'comps', title:'Comparable Sales' });
-  pages.push(
-    { key:'offer', title:'Offer & Negotiation' },
-    { key:'costs', title:'Closing Costs' },
-    { key:'next',  title:'Thank You' }
-  );
-  return pages;
+  const out = [];
+  SPINE.forEach(p => {
+    if (p.towns) {
+      townPages().forEach(pair => out.push({ key:'towns', title:p.title, towns:pair }));
+    } else if (!(p.opt && state.off[p.key])) {
+      out.push(p);
+    }
+  });
+  return out;
 }
 let PAGES = pageList(), OF = PAGES.length;
 
 /* ---------- renderers ---------- */
+/* The cover names no buyer and no property: this packet is meant to be sat
+   down and gone through with anyone. */
 function pgCover() {
   return P.cover({
     kind:'Buyer Consultation',
     title:'Buying a Home',
-    subtitle: state.area,
-    preparedFor: state.client,
-    date: state.date,
+    subtitle:'New Jersey &middot; New York &middot; Florida',
     image: slot('cover'),
     pos: posFor('cover'),
     agents: agents()
@@ -427,58 +485,69 @@ function pgWhy(n) {
         '<div class="stat"><div class="v">50+</div><div class="l">Years combined experience</div></div>' +
       '</div></div>' +
     '</div>';
-  return P.page({ deck:DECK, n, of:OF, site:SITE,
-    title:'Why Work With Us', body });
+  return P.page({ deck:DECK, n, of:OF, site:SITE, title:'Why Work With Us', body });
 }
 
 function pgProcess(n) {
-  const steps = pairs(state.steps);
-  const body = '<div class="steps">' + steps.map(([t, d], i) =>
+  const body = '<div class="steps">' + pairs(STEPS).map(([t, d], i) =>
     '<div class="step"><div class="sn">' + (i + 1) + '</div><div>' +
       '<div class="st">' + esc(t) + '</div>' +
       (d ? '<div class="sd">' + esc(d) + '</div>' : '') +
     '</div></div>').join('') + '</div>';
-  return P.page({ deck:DECK, n, of:OF, site:SITE,
-    title:'The Buying Process', body });
+  return P.page({ deck:DECK, n, of:OF, site:SITE, title:'The Buying Process', body });
 }
 
-function pgFinance(n) {
-  const price = P.num(state.price);
-  const down = price * (P.num(state.downPct) / 100);
+/* What a buyer can borrow and how, without naming a price — the amounts
+   belong to the deal, the shapes belong here. */
+function pgOptions(n) {
   const body =
-    '<div class="check-stamp">CHECK ACCURACY</div>' +
+    '<div class="lede">There is more than one way to pay for a house, and the right one is rarely ' +
+    'the first one a lender mentions. Here is the whole menu.</div>' +
+    '<div class="cards c2">' + LOANS.map(([g, h, p]) =>
+      '<div class="card">' + ic(g, 'ci') + '<h3>' + esc(h) + '</h3><p>' + esc(p) + '</p></div>').join('') +
+    '</div>' +
+    '<div class="foot-note"><strong>What every lender will ask you for:</strong> two years of tax ' +
+    'returns, recent pay stubs, two months of bank statements, and a list of your debts. Gather it ' +
+    'once and a written pre-approval takes days rather than weeks &mdash; and nothing else in this ' +
+    'packet happens before that pre-approval exists.</div>';
+  return P.page({ deck:DECK, n, of:OF, site:SITE, title:'Financing Options', body });
+}
+
+/* One page for the whole cost of buying: the money before closing, the
+   money at closing, and the money people forget. Financing and closing
+   costs used to be two pages and there was never enough between them. */
+function pgCosts(n) {
+  const rows = COSTS.map(([group, items]) =>
+    '<tr class="grp"><td colspan="3">' + esc(group) + '</td></tr>' +
+    items.map(([item, when, range]) =>
+      '<tr><td class="adr">' + esc(item) + '</td>' +
+      '<td>' + esc(when) + '</td>' +
+      '<td class="num">' + esc(range) + '</td></tr>').join('')).join('');
+  const body =
+    '<div class="stamp">Verify figures</div>' +
     '<div class="stat-row">' +
-      '<div class="stat"><div class="v">' + (price ? P.moneyShort(price) : '—') + '</div><div class="l">Target price</div></div>' +
-      '<div class="stat"><div class="v">' + (down ? P.moneyShort(down) : '—') + '</div><div class="l">Down payment · ' + esc(state.downPct || '0') + '%</div></div>' +
-      '<div class="stat"><div class="v">' + (monthly() ? P.money(monthly()) : '—') + '</div><div class="l">Est. monthly · P&amp;I</div></div>' +
-      '<div class="stat"><div class="v">' + esc(state.rate ? state.rate + '%' : '—') + '</div><div class="l">Rate · ' + esc(state.term || '30') + ' yr</div></div>' +
+      '<div class="stat"><div class="v">2 – 5%</div><div class="l">Closing costs &middot; share of price</div></div>' +
+      '<div class="stat"><div class="v">20%</div><div class="l">Down payment that avoids PMI</div></div>' +
+      '<div class="stat"><div class="v">$2K – $4K</div><div class="l">Spent before you own anything</div></div>' +
     '</div>' +
-    '<div class="cards c2" style="margin-bottom:.26in">' +
-      '<div class="card">' + (window.icon ? window.icon('check', 'ci') : '') +
-        '<h3>Get pre-approved first</h3><p>A written pre-approval is what separates a serious offer from a wish. ' +
-        'Sellers in this market will not look at anything else, and it costs you nothing to get one.</p></div>' +
-      '<div class="card">' + (window.icon ? window.icon('box', 'ci') : '') +
-        '<h3>What the lender will want</h3><p>Two years of tax returns, recent pay stubs, two months of bank ' +
-        'statements, and a list of your debts. Gather it once and the rest is quick.</p></div>' +
-    '</div>' +
-    (state.lender ? '<div class="copy">' + P.lines(state.lender) + '</div>' : '') +
-    '<div class="cost-note">Estimates only: principal and interest, excluding taxes, insurance and ' +
-    'common charges. Your lender&rsquo;s figures govern.</div>';
-  return P.page({ deck:DECK, n, of:OF, site:SITE,
-    title:'Financing', body });
+    '<table class="tbl"><thead><tr><th>Item</th><th>When, and what it is</th>' +
+      '<th class="num">Typical range</th></tr></thead><tbody>' + rows + '</tbody></table>' +
+    '<div class="foot-note">Ranges for budgeting, not quotes. Percentages bill against the purchase ' +
+    'price unless the line says otherwise, and the real figures come from your attorney and your ' +
+    'lender once there is an actual house and an actual loan.</div>';
+  return P.page({ deck:DECK, n, of:OF, site:SITE, title:'What It Costs', body });
 }
 
 function pgCriteria(n) {
   const field = lab => '<div class="wf"><span>' + esc(lab) + '</span><i></i></div>';
   const body =
-    '<div class="check-stamp">CHECK ACCURACY</div>' +
     '<div class="lede">Fill this in together at our first meeting. It is the brief we search against.</div>' +
     '<div class="ws">' +
       '<div class="wl">The essentials</div>' +
       field('Budget') + field('Timeline') + field('Bedrooms') + field('Bathrooms') +
       field('Min. sq ft') + field('Property type') +
       '<div class="wl">Location</div>' +
-      field('Neighborhoods') + field('Commute to') + field('Schools') + field('Must be near') +
+      field('Towns') + field('Commute to') + field('Schools') + field('Must be near') +
       '<div class="wl">Non-negotiable</div>' +
       field('1') + field('2') + field('3') + field('4') +
       '<div class="wl">Nice to have</div>' +
@@ -486,96 +555,72 @@ function pgCriteria(n) {
       '<div class="wl">Deal breakers</div>' +
       field('1') + field('2') +
     '</div>';
-  return P.page({ deck:DECK, n, of:OF, site:SITE,
-    title:'Your Search Criteria', body });
+  return P.page({ deck:DECK, n, of:OF, site:SITE, title:'Your Search Criteria', body });
 }
 
-/* The Seller Pitch & CMA's comparables table, read from the other side of
-   the transaction: the subject row is the target price rather than a
-   listing, because the buyer has not bought anything yet. */
-function pgComps(n) {
-  const rows = state.comps.filter(c => c.address);
-  const sub = { address: state.area ? ('Target — ' + state.area) : 'Your target', price: state.price,
-                sqft:'', bb:'', date:'Subject' };
-  const tr = (c, isSub) =>
-    '<tr' + (isSub ? ' class="subject"' : '') + '>' +
-      '<td class="adr">' + esc(c.address) + (c.note ? '<span class="meta">' + esc(c.note) + '</span>' : '') + '</td>' +
-      '<td class="num">' + (c.price ? P.money(c.price) : '—') + '</td>' +
-      '<td class="num">' + (c.sqft ? esc(c.sqft) : '—') + '</td>' +
-      '<td class="num">' + (c.price && P.num(c.sqft) ? P.money(P.num(c.price) / P.num(c.sqft)) : '—') + '</td>' +
-      '<td class="num">' + (c.bb || '—') + '</td>' +
-      '<td class="num">' + esc(c.date || '—') + '</td>' +
-    '</tr>';
+/* The checklist both sides of the table need: what the buyer asks at a
+   showing, and what we will ask them. Same page furniture as the Seller
+   Pitch's prep checklist — assets/css/pitch.css, .chk. */
+function pgQuestions(n) {
   const body =
-    '<div class="lede">What the market has actually paid nearby. An offer is defended with these, ' +
-    'not with an asking price.</div>' +
-    '<table class="tbl" id="compTable"><thead><tr>' +
-      '<th>Address</th><th class="num">Sold</th><th class="num">' + (window.icon ? window.icon('ruler','hi') : '') + 'Sq ft</th>' +
-      '<th class="num">$ / sq ft</th><th class="num">' + (window.icon ? window.icon('bed','hi') : '') + 'Bed / Bath</th><th class="num">Date</th>' +
-    '</tr></thead><tbody>' + tr(sub, true) + rows.map(c => tr(c, false)).join('') + '</tbody></table>' +
-    (rows.length ? '' : '<div class="empty-note on-white" style="position:relative;margin-top:.6in">Add comparables in the panel</div>') +
-    '<div class="comps-note">Closed sales only. Active listings tell you what sellers hope for; ' +
-    'closed sales tell you what buyers agreed to.</div>';
-  return P.page({ deck:DECK, n, of:OF, site:SITE,
-    title:'Comparable Sales', body });
+    '<div class="lede" style="max-width:none">Take this to every showing. The questions in the last ' +
+    'two groups are the ones we will be asking you.</div>' +
+    '<div class="chk tight">' + QUESTIONS.map(([name, glyph, items]) =>
+      '<div class="cgrp"><div class="cgrp-h">' + ic(glyph, 'ci') +
+        '<span>' + esc(name) + '</span></div><ul>' +
+        items.split(';').map(t => '<li><i></i><span>' + esc(t) + '</span></li>').join('') +
+      '</ul></div>').join('') + '</div>';
+  return P.page({ deck:DECK, n, of:OF, site:SITE, title:'Questions to Ask', body });
+}
+
+/* Two town tearsheets to a page. Everything printed here comes from the
+   town's own record in assets/js/nj-towns.js. */
+function tearsheet(t) {
+  const stat = (v, l) => '<div class="s"><div class="v">' + v + '</div><div class="l">' + l + '</div></div>';
+  const row = (l, v) => '<div class="ts-r"><b>' + l + '</b><span>' + esc(v) + '</span></div>';
+  return '<div class="ts">' +
+    '<div class="ts-h"><h3>' + esc(t.name) + '</h3><span class="co">' + esc(t.county) + '</span></div>' +
+    '<div class="ts-tag">' + esc(t.tag) + '</div>' +
+    '<div class="ts-stats">' +
+      stat(esc(t.price), 'Median sale') + stat(esc(t.tax), 'Taxes / yr') +
+      stat(esc(t.walk), 'Walk score') + stat(esc(t.mins), 'To Manhattan') +
+    '</div>' +
+    '<div class="ts-b">' +
+      '<div>' + row('Getting there', t.transit) + row('Schools', t.schools) + row('Safety', t.safety) + '</div>' +
+      '<div class="ts-r"><b>Good to know</b><ul class="ts-n">' +
+        t.notes.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul></div>' +
+    '</div>' +
+  '</div>';
+}
+
+function pgTowns(n, page) {
+  const body = '<div class="tsheet">' + page.towns.map(tearsheet).join('') + '</div>' +
+    '<div class="ts-src">' + esc(TOWNS.AS_OF) + '. Walk Score, tax and price figures move every ' +
+    'quarter &mdash; confirm anything a decision rests on.</div>';
+  return P.page({ deck:DECK, n, of:OF, site:SITE, title:'New Jersey Towns', body });
 }
 
 function pgOffer(n) {
-  const items = [
-    ['check','Price is only one term','Closing date, contingencies and financing type routinely matter more to a seller than the last $10,000.'],
-    ['home','Know the competition','We check what else is in contract on the block before we name a number, not after.'],
-    ['box','Contingencies protect you','Inspection, financing and appraisal contingencies are your exits. We waive them deliberately, never casually.'],
-    ['phone','Move fast, decide slowly','We will see it the day it lists. That does not mean you have to decide the same day.'],
-    ['users','Escalation, carefully','Escalation clauses can win a bidding war or reveal your ceiling. We use them situationally.'],
-    ['mail','Everything in writing','Verbal agreements are not agreements. Every accepted term goes into the contract.']
-  ];
   const body =
     '<div class="lede">Most buyers lose the home they wanted on terms, not on price. Here is what we ' +
     'watch when the offer goes in.</div>' +
-    '<div class="cards c2">' + items.map(([ic, h, p]) =>
-      '<div class="card">' + (window.icon ? window.icon(ic, 'ci') : '') +
-      '<h3>' + esc(h) + '</h3><p>' + esc(p) + '</p></div>').join('') + '</div>';
-  return P.page({ deck:DECK, n, of:OF, site:SITE,
-    title:'Offer & Negotiation', body });
+    '<div class="cards c2">' + OFFER.map(([g, h, p]) =>
+      '<div class="card">' + ic(g, 'ci') + '<h3>' + esc(h) + '</h3><p>' + esc(p) + '</p></div>').join('') +
+    '</div>';
+  return P.page({ deck:DECK, n, of:OF, site:SITE, title:'Offer & Negotiation', body });
 }
-
-function pgCosts(n) {
-  const rows = pairs(state.costs);
-  let total = 0;
-  const body =
-    '<table class="tbl"><thead><tr><th>Item</th><th class="num">Basis</th><th class="num">Estimate</th></tr></thead><tbody>' +
-    rows.map(([item, raw]) => {
-      const amt = costAmount(raw); total += amt;
-      return '<tr><td class="adr">' + esc(item) + '</td>' +
-             '<td class="num">' + esc(raw || '—') + '</td>' +
-             '<td class="num">' + (amt ? P.money(amt) : '—') + '</td></tr>';
-    }).join('') +
-    '<tr class="total"><td>Estimated closing costs</td><td class="num"></td>' +
-      '<td class="num">' + (total ? P.money(total) : '—') + '</td></tr>' +
-    (P.num(state.price) ? '<tr class="total"><td>Cash to close · with ' + esc(state.downPct || '0') + '% down</td>' +
-      '<td class="num"></td><td class="num">' +
-      P.money(total + P.num(state.price) * (P.num(state.downPct) / 100)) + '</td></tr>' : '') +
-    '</tbody></table>' +
-    '<div class="cost-note">Estimates for budgeting only. Actual figures come from your attorney and ' +
-    'lender, and vary by building, loan type and municipality.</div>';
-  return P.page({ deck:DECK, n, of:OF, site:SITE,
-    title:'Closing Costs', body });
-}
-
 
 /* Closing page — Team and Next Steps merged into one, styled like the
    Seller Pitch & CMA's final page: a centered "Thank You" with the
-   team-site QR, then the team, links footer and licensed states. */
+   team-site QR, then the team, links footer and licensed states. Every
+   block on it is built by the shared helpers, so this page and the Seller
+   Pitch's and the Brochure's are one design. */
 const STATES = [
   ['New York',   '../../assets/img/states/new-york.svg'],
   ['New Jersey', '../../assets/img/states/new-jersey.svg'],
   ['Florida',    '../../assets/img/states/florida.svg']
 ];
 
-/* Closing page. Every block on it is built by the shared helpers, so this
-   page and the Seller Pitch & CMA's and the Brochure's are one design.
-   The one editable links field is split into the same Social/Links columns
-   the seller deck uses. */
 function pgNext(n) {
   const qr = qrSvg('https://' + SITE);
   const body =
@@ -597,18 +642,19 @@ function pgNext(n) {
 }
 
 const RENDER = {
-  cover:pgCover, why:pgWhy, process:pgProcess, finance:pgFinance,
-  criteria:pgCriteria, comps:pgComps, offer:pgOffer, costs:pgCosts, next:pgNext
+  cover:pgCover, why:pgWhy, process:pgProcess, options:pgOptions, costs:pgCosts,
+  criteria:pgCriteria, questions:pgQuestions, towns:pgTowns, offer:pgOffer, next:pgNext
 };
 
 /* ---------- wiring ---------- */
-let builder = null, paintRoster = () => {};
+let builder = null;
 
+/* Only the towns are the agent's own doing, so they get the specific
+   warning; anything else that overflows is a copy edit in this file, and
+   the fallback names the page. */
 const RULES = [
-  { key:'process', box:'warnSteps',   msg:'The buying-process page is over-full: trim a step or shorten the detail lines.' },
-  { key:'finance', box:'warnFinance', msg:'The financing page is over-full: shorten the lender notes.' },
-  { key:'costs',   box:'warnCosts',   msg:'Closing costs run past the page: remove a line item.' },
-  { key:'comps',   box:'warnComps',   msg:'Comparable sales run past the page: remove one, or shorten the longest address.' }
+  { key:'towns', box:'warnTowns',
+    msg:'A town tearsheet runs past the page — shorten one of its notes in assets/js/nj-towns.js.' }
 ];
 function checkAll() { P.checkOverflow(document.getElementById('pages'), RULES, 'warnGeneral'); }
 
@@ -621,8 +667,19 @@ function redraw() {
   paintPhotos();
   PD.wireReframe(document.getElementById('pages'), state.pos, REFRAME);
   paintSlotGrips();
+  paintHints();
   // setTimeout, not rAF: rAF is suspended while the tab is not rendering.
   setTimeout(checkAll, 0);
+}
+
+function paintHints() {
+  const on = OPTIONAL.filter(p => !state.off[p.key]).length;
+  const pages = townPages().length;
+  document.getElementById('pagesHint').textContent =
+    on + ' of ' + OPTIONAL.length + ' optional on';
+  document.getElementById('townHint').textContent =
+    state.towns.length + ' of ' + TOWNS.list.length + ' · ' +
+    (pages ? pages + (pages > 1 ? ' pages' : ' page') : 'no pages');
 }
 
 function paintPhotos() {
@@ -650,29 +707,7 @@ function paintPhotos() {
   });
 }
 
-/* comps are a repeating row, so they get their own tiny list editor —
-   identical to the Seller Pitch & CMA's */
-function renderComps() {
-  // the editor itself is shared with the other package — pitch.js
-  P.compsEditor(document.getElementById('compList'), state.comps, redraw);
-}
-
-function paintCompsToggle() {
-  document.querySelectorAll('#compsPick button').forEach(b => {
-    b.classList.toggle('on', (b.dataset.comps === '1') === !!state.showComps);
-  });
-}
-
 document.addEventListener('DOMContentLoaded', () => {
-  state.steps = DEFAULT_STEPS;
-  state.costs = DEFAULT_COSTS;
-
-  document.querySelectorAll('[data-f]').forEach(el => {
-    const k = el.dataset.f;
-    el.value = state[k] || '';
-    el.addEventListener('input', () => { state[k] = el.value; redraw(); });
-  });
-
   P.wireDrop(document.getElementById('dropPhotos'), document.getElementById('filePhotos'), files => {
     files.forEach(f => state.photos.push({ id: ++uid, name: f.name, url: f.url, role: 'auto' }));
     redraw(); GVC_UNSAVED.touch();
@@ -680,70 +715,43 @@ document.addEventListener('DOMContentLoaded', () => {
   /* the browser asks before a reload throws unsaved work away */
   GVC_UNSAVED.watch();
 
-  /* ============================================================
-     THE PROPERTY LIBRARY
+  /* which optional pages print — the shared tick list, same as the towns */
+  P.tickList(document.getElementById('pagePick'),
+    OPTIONAL.map(p => [p.key, p.title, p.opt]),
+    key => !state.off[key],
+    (key, on) => { if (on) delete state.off[key]; else state.off[key] = true; redraw(); });
 
-     The thinnest adapter of the four: a buyer package belongs to a client
-     rather than to a listing, so almost everything in it is document, not
-     shared fact. It borrows a target price and the comps.
-     ============================================================ */
-  const DOC_ONLY = ['client','date','area','steps','downPct','rate','term','lender',
-                    'costs','showComps','photos','pos','agents'];
-
-  GVC_PROPBAR.mount({
-    host: document.getElementById('propBar'),
-    tool: 'buyer',
-
-    toCore: () => ({ price: state.price, comps: state.comps }),
-
-    fromCore: core => {
-      state.price = core.price || '';       // never inherit the last listing's
-      if (core.comps && core.comps.length) state.comps = core.comps;
-      if (!state.area && core.city) state.area = [core.city, core.state].filter(Boolean).join(', ');
-      document.querySelectorAll('[data-f]').forEach(el => { el.value = state[el.dataset.f] || ''; });
-      renderComps(); redraw();
-    },
-
-    getDoc: () => DOC_ONLY.reduce((doc, k) => { doc[k] = state[k]; return doc; }, {}),
-
-    setDoc: doc => {
-      if (doc) DOC_ONLY.forEach(k => { if (k in doc) state[k] = doc[k]; });
-      else { state.photos = []; state.pos = {}; }
-      uid = Math.max(uid, ...state.photos.map(p => p.id || 0), 0);
-      document.querySelectorAll('[data-f]').forEach(el => { el.value = state[el.dataset.f] || ''; });
-      paintPhotos(); paintCompsToggle(); renderComps(); paintRoster(); redraw();
-    }
-  });
-
-  paintRoster = P.wireRoster(document.getElementById('rosterPick'), state, 2, redraw);
-
-  document.getElementById('addComp').addEventListener('click', () => {
-    state.comps.push(P.blankComp());
-    if (!state.showComps) { state.showComps = true; paintCompsToggle(); }
-    renderComps(); redraw();
-  });
-  document.querySelectorAll('#compsPick button').forEach(b => {
-    b.addEventListener('click', () => {
-      state.showComps = b.dataset.comps === '1';
-      paintCompsToggle(); redraw();
+  /* Which town tearsheets print. The selection is rebuilt in the order
+     nj-towns.js lists them rather than in click order, so the pages come out
+     the same however the ticks were reached. */
+  const paintTowns = P.tickList(document.getElementById('townPick'),
+    TOWNS.list.map(t => [t.name, t.name, t.county.replace(' County', '') + ' · ' + t.price]),
+    name => state.towns.indexOf(name) > -1,
+    (name, on) => {
+      state.towns = TOWNS.list
+        .filter(t => (t.name === name ? on : state.towns.indexOf(t.name) > -1))
+        .map(t => t.name);
+      redraw();
     });
-  });
-  paintCompsToggle(); renderComps();
+  const setTowns = names => { state.towns = names; paintTowns(); redraw(); };
+  document.getElementById('townAll').addEventListener('click', () => setTowns(TOWNS.list.map(t => t.name)));
+  document.getElementById('townNone').addEventListener('click', () => setTowns([]));
+
+  P.wireRoster(document.getElementById('rosterPick'), state, 2, redraw);
 
   builder = Builder.init({
-    pages: pageList().length,
+    pages: PAGES.length,
     label: 'Page',
-    /* a buyer package belongs to a client, not a listing */
-    printName: () => {
-      const who = String(state.client || '').trim();
-      return who ? 'Buyer Package - ' + who : 'Buyer Package';
-    },
+    /* the packet belongs to nobody in particular, which is the point of it */
+    printName: () => 'Buyer Package',
     render: (page, i) => {
-      page.innerHTML = RENDER[PAGES[i].key](i + 1);
+      const p = PAGES[i];
+      page.innerHTML = RENDER[p.key](i + 1, p);
       const pg = page.querySelector('.pg');
-      if (pg) { pg.dataset.key = PAGES[i].key; pg.dataset.n = String(i + 1); }
+      if (pg) { pg.dataset.key = p.key; pg.dataset.n = String(i + 1); }
     }
   });
+  paintPhotos(); paintHints();
   document.fonts && document.fonts.ready.then(() => setTimeout(checkAll, 0));
   setTimeout(checkAll, 0);
 });

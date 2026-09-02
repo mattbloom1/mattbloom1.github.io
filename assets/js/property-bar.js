@@ -1,11 +1,13 @@
 /* ============================================================
-   PROPERTY BAR — load and save a property, identically in all four tools.
+   PROPERTY BAR — load and save a property, identically in all three tools
+   that bind a document to one: the Showsheet, the Brochure and the Seller
+   Pitch & CMA. The Buyer Package has no property to bind to.
 
    A tool mounts it at the top of its editor panel and hands over four small
    functions: how to read its facts, how to fill its form from them, how to
    read its own document, and how to restore one. Everything else — the
    dropdown, the password, the dirty marker, the offline notice, the
-   conflict list — lives here so all four behave the same way.
+   conflict list — lives here so all three behave the same way.
 
      GVC_PROPBAR.mount({
        host, tool,
@@ -49,7 +51,7 @@
     var note = el('div', 'plib-note');
     /* The bar can load and save; renaming, archived properties and the photo
        storage read-out live on the Properties page. Same relative path from
-       all four builders. */
+       every builder. */
     var more = el('a', 'plib-more', 'All properties');
     more.href = '../properties/';
     more.title = 'Rename, un-archive, and see how much photo storage is left';

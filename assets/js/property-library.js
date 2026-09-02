@@ -1,5 +1,5 @@
 /* ============================================================
-   PROPERTY LIBRARY — one saved property, shared by the four builders.
+   PROPERTY LIBRARY — one saved property, shared by the listing builders.
 
    A property is three things:
      core       the facts every builder wants — address, price, beds, baths…
@@ -21,7 +21,12 @@
 
   var CFG = global.GVC_SUPABASE;
   var SESSION_KEY = 'gvc.props.session';
-  var TOOLS = ['showsheet', 'brochure', 'seller', 'buyer'];
+  /* The tools that bind a document to a property. The Buyer Package is
+     not one of them: it is a packet handed to any buyer, with no address,
+     no price and no comps in it, so it has nothing to save against a
+     listing. Any buyer document already in the table is simply left
+     alone — put 'buyer' back here and it reappears. */
+  var TOOLS = ['showsheet', 'brochure', 'seller'];
   var STATUSES = ['active', 'coming-soon', 'sold', 'archived'];
 
   var session = null;      // { access_token, refresh_token, expires_at }
@@ -408,7 +413,7 @@
   }
 
   /* "Free up photos" on the Properties page. The shelf goes; the address,
-     the shared facts and all four saved documents stay exactly as they are.
+     the shared facts and every saved document stay exactly as they are.
      Photos are essentially all of the storage a property uses, so this is
      what reclaims room against the free tier's 1 GB.
 
@@ -443,7 +448,7 @@
      So the document is walked on the way out: every data URL is shelved as
      a real file and replaced with a token, and on the way back in the token
      becomes a signed URL. Neither function knows anything about a
-     particular tool's shape, which is why this works for all four. */
+     particular tool's shape, which is why this works for every tool. */
 
   var TOKEN = 'gvc:photo:';
 
