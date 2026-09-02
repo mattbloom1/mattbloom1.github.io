@@ -160,21 +160,11 @@
   text-transform:uppercase;color:rgba(0,39,58,.6);}
 .plan-social .ps .pv{margin-top:.02in;font:300 7.6pt var(--body);color:rgba(0,39,58,.5);}
 
-/* p10 — preparing your home: the seller checklist, two icon-headed columns.
-   Boxes are printed empty on purpose — the seller ticks them by hand. */
-.prep{columns:2;column-gap:.55in;flex:1;min-height:0;}
-.prep .pgrp{break-inside:avoid;margin-bottom:.3in;}
-.prep .pgrp-h{display:flex;align-items:center;gap:.11in;margin-bottom:.13in;}
-.prep .pgrp-h .ci{width:.2in;height:.2in;flex:none;color:var(--navy);}
-.prep .pgrp-h span{font:800 9pt var(--sans);letter-spacing:.13em;text-transform:uppercase;color:var(--navy);}
-.prep ul{list-style:none;margin:0;padding:0;}
-.prep li{display:flex;align-items:flex-start;gap:.14in;padding:.072in 0;
-  font:300 10.5pt/15pt var(--body);color:var(--navy);}
-.prep li i{flex:none;width:.16in;height:.16in;border:.75pt solid rgba(0,39,58,.45);
-  display:block;margin-top:.028in;}
-.prep li em{font-style:normal;color:rgba(0,39,58,.55);}
+/* "Preparing Your Home" is the shared hand-ticked checklist — .chk in
+   assets/css/pitch.css, the same page furniture as the Buyer Package's
+   "Questions to Ask". Nothing deck-specific is left here. */
 
-/* p11 — testimonials, editorial block quotes. space-evenly, not
+/* testimonials, editorial block quotes. space-evenly, not
    space-between: between pins the first and last quote hard against the top
    and bottom edges of the text block. */
 /* the review-count badge sits as a corner accent — same corner-inset
@@ -249,7 +239,7 @@
     <div class="ed-body">
 
       <details class="ed-sec">
-        <summary>Photos <span class="hint">cover + pages 5, 8 &amp; 12</span></summary>
+        <summary>Photos <span class="hint">cover &middot; property &middot; strategy &middot; videos</span></summary>
         <div class="sec-in">
           <div class="drop" id="dropPhotos" tabindex="0" role="button">
             <div class="d-big">Drop photos</div>
@@ -268,8 +258,16 @@
       </details>
 
       <details class="ed-sec">
-        <summary>Property <span class="hint">cover + pages 5 &amp; 7</span></summary>
+        <summary>Property <span class="hint">cover &middot; property &middot; comps</span></summary>
         <div class="sec-in">
+          <div class="field"><label>Include the property page</label>
+            <div class="seg pick" id="propPick" role="group" aria-label="Include the property page">
+              <button type="button" data-on="1">Include</button>
+              <button type="button" data-on="0">Leave out</button>
+            </div>
+            <div class="note">The address still sets the cover and the comps table&rsquo;s subject row.
+              Leave the page out and the deck renumbers itself.</div>
+          </div>
           <div class="field"><label>Address</label><input type="text" data-f="address" placeholder="45 Crosby Street, Penthouse"></div>
           <div class="f-row">
             <div class="field"><label>City</label><input type="text" data-f="city" placeholder="New York"></div>
@@ -306,7 +304,7 @@
       </details>
 
       <details class="ed-sec">
-        <summary>Comparable sales <span class="hint">page 7</span></summary>
+        <summary>Comparable sales <span class="hint">comps page</span></summary>
         <div class="sec-in">
           <div class="rowlist" id="compList"></div>
           <button class="btn sm ghost" id="addComp" style="margin-top:10px">Add comparable</button>
@@ -315,7 +313,7 @@
       </details>
 
       <details class="ed-sec">
-        <summary>Listing strategy <span class="hint">page 8</span></summary>
+        <summary>Listing strategy <span class="hint">strategy page</span></summary>
         <div class="sec-in">
           <div class="f-row">
             <div class="field"><label>Low range</label><input type="text" data-f="priceLow" placeholder="3,450,000"></div>
@@ -334,7 +332,7 @@
       </details>
 
       <details class="ed-sec">
-        <summary>Agents <span class="hint">max 2 &middot; pages 1 &amp; 13</span></summary>
+        <summary>Agents <span class="hint">max 2 &middot; cover + closing</span></summary>
         <div class="sec-in">
           <div id="rosterPick"></div>
         </div>
@@ -405,6 +403,7 @@ const state = {
   photos:[], map:null,
   comps:[],
   priceLow:'', priceMid:'', priceHigh:'', recBand:'mid',
+  showProperty:true,
   agents:[],
   pos:{}
 };
@@ -434,11 +433,18 @@ const DEFAULT_PLAN = [
   'On-Going | Ongoing Marketing | Continued print &amp; web ads | As needed through the life of the listing.'
 ].join('\n');
 
+/* Client testimonials — static GVC boilerplate, not editor-driven.
+
+   Three of the four are Marli's, excerpted from the full reviews on the
+   team site: this is a listing presentation, so the two seller reviews
+   lead on the things a seller is actually deciding between — pricing and
+   whether anyone will look after the sale. The quotes are trimmed to fit
+   the page, never reworded. */
 const DEFAULT_REVIEWS = [
-  'John and his associates at Gasdaska Conlon are top notch professionals. It was a very smooth, easy and overall enjoyable experience working with them to buy and sell our apartment in NYC. | Conor Hagen',
-  'The whole team is a pleasure to work with. Super responsive, knowledgeable and helpful. They helped us with both buying and selling and did a fantastic job. Highly recommend!! | Jenny Sharfstein Kane',
-  'Working with the Gasdaska Conlon team wasn’t about selling our apartment — it was about peace of mind, working with consummate professionals through every challenge that came our way. | Joe Bachana',
-  'John Gasdaska and Jonathan Conlon are truly outstanding. They listened carefully, found us the perfect match, and later achieved an excellent outcome in a very short time, despite a challenging market. | Gary Watson'
+  'This is my third closing with Marli and she is the best realtor I have ever worked with — and trust me, I have worked with quite a few. She makes finding and buying a home very easy, and her real estate expertise is outstanding. | Melinda B., Buyer',
+  'Marli was absolutely fantastic. We were selling a property in New Jersey while living in Florida, and she was instrumental in reducing the stress of a long-distance sale — incredibly responsive, and very open and honest about our expectations. | Lenny Z., Seller',
+  'Marli has great knowledge of the area and is skilled in determining a strategic asking price. She is incredibly responsive in helping to work through any challenge that comes up along the way. The process was smooth and quick. | Jeff B., Seller',
+  'John and his associates at Gasdaska Conlon are top notch professionals. It was a very smooth, easy and overall enjoyable experience working with them to buy and sell our apartment in NYC. | Conor Hagen, Buyer & Seller'
 ].join('\n');
 
 const DEFAULT_LINKS = [
@@ -503,6 +509,21 @@ const PREP = [
 
    With neither `qr` nor `url`, the card prints a "video link needed"
    placeholder rather than a dead code.
+
+   ------------------------------------------------------------
+   THESE THREE ARE PLACEHOLDERS AND THE PAGE SAYS SO.
+
+   The page carries a "SWAP THESE OUT" stamp until the three films below
+   are the ones the team actually wants leading a listing presentation.
+   Replace a card by editing its row: drop the new still into
+   assets/videos/ alongside the others and point `photo` at it, and put
+   the video link in `url`. Delete the stamp line in pgVideos() once all
+   three are the real thing.
+
+   Picking the three from a longer list is the next step, not this one:
+   with only three films on hand a picker would be three ticks that can
+   never be anything but all on. Add a fourth row here and the panel
+   section becomes worth building.
    ============================================================ */
 /* Paths must be repo-relative, not G:\ paths — the published site is served
    from GitHub Pages, where nobody has the shared drive mounted, and a browser
@@ -578,7 +599,12 @@ const ROLES = [
 ];
 const SLOTS = ['cover','hero','strategy','video1','video2','video3'];
 let assign = {}, uid = 0;
-function reassign() { assign = P.assignRoles(state.photos, SLOTS); }
+/* The property page owns the 'hero' slot, so with that page switched off
+   the slot is not offered a photo — otherwise the auto pass would quietly
+   swallow one into a page that is not being printed. The role stays in the
+   menu either way: a photo pinned to it simply waits for the page. */
+function liveSlots() { return SLOTS.filter(s => s !== 'hero' || state.showProperty); }
+function reassign() { assign = P.assignRoles(state.photos, liveSlots()); }
 function slot(name) { return assign[name] ? assign[name].url : null; }
 
 /* ============================================================
@@ -643,23 +669,35 @@ function paintSlotGrips() {
 }
 
 /* ============================================================
-   PAGE LIST — order here drives the deck and the contents page
+   PAGE LIST — order here drives the deck and its page numbers
+
+   "Where We Have Sold" comes before the property page: the track record
+   is the argument, and the seller's own home reads better once it has
+   been made. The property page itself is optional — a first meeting is
+   often about the team and the strategy, with the home to come — so the
+   deck is assembled per render and every page number, running footer and
+   page count follows from it.
    ============================================================ */
-const PAGES = [
-  { key:'cover',   title:'Cover' },
-  { key:'about',   title:'About The GVC Team' },
-  { key:'studio',  title:'In-House Marketing & Design' },
-  { key:'property',title:'Your Property' },
-  { key:'map',     title:'Where We Have Sold' },
-  { key:'comps',   title:'Comparable Sales' },
-  { key:'strategy',title:'The Listing Strategy' },
-  { key:'plan',    title:'Marketing Plan' },
-  { key:'prep',    title:'Preparing Your Home' },
-  { key:'reviews', title:'What Our Clients Say' },
-  { key:'videos',  title:'Professional Videos' },
-  { key:'contact', title:'Thank You' }
-];
-const OF = PAGES.length;
+function pageList() {
+  const pages = [
+    { key:'cover',   title:'Cover' },
+    { key:'about',   title:'About The GVC Team' },
+    { key:'studio',  title:'In-House Marketing & Design' },
+    { key:'map',     title:'Where We Have Sold' }
+  ];
+  if (state.showProperty) pages.push({ key:'property', title:'Your Property' });
+  pages.push(
+    { key:'comps',   title:'Comparable Sales' },
+    { key:'strategy',title:'The Listing Strategy' },
+    { key:'plan',    title:'Marketing Plan' },
+    { key:'prep',    title:'Preparing Your Home' },
+    { key:'reviews', title:'What Our Clients Say' },
+    { key:'videos',  title:'Professional Videos' },
+    { key:'contact', title:'Thank You' }
+  );
+  return pages;
+}
+let PAGES = pageList(), OF = PAGES.length;
 
 /* ============================================================
    PAGE RENDERERS
@@ -692,7 +730,7 @@ function pgAbout(n) {
     '</div>';
   const body =
     duo +
-    '<div class="dline"><b>Over $2 Billion</b> Sold</div>' +
+    '<div class="dline"><b>Over $3 Billion</b> Sold</div>' +
     '<div class="about-copy">Driven by their shared commitment to <b>excellence</b>, <b>integrity</b>, ' +
     '<b>innovation</b>, and <b>collaboration</b>, TJ, John, and Jonathan merged The Gasdaska Conlon Team ' +
     'and The Verdiglione Group in 2024 to form The Gasdaska Verdiglione Conlon Team. Their diverse ' +
@@ -906,8 +944,8 @@ function pgPlan(n) {
    be handed over and ticked off, so nothing here is editor-driven. */
 function pgPrep(n) {
   const body =
-    '<div class="prep">' + PREP.map(([name, ic, items]) =>
-      '<div class="pgrp"><div class="pgrp-h">' + (window.icon ? window.icon(ic, 'ci') : '') +
+    '<div class="chk">' + PREP.map(([name, ic, items]) =>
+      '<div class="cgrp"><div class="cgrp-h">' + (window.icon ? window.icon(ic, 'ci') : '') +
         '<span>' + name + '</span></div><ul>' +
         items.split(';').map(t => '<li><i></i><span>' + t + '</span></li>').join('') +
       '</ul></div>').join('') + '</div>';
@@ -941,6 +979,7 @@ function pgReviews(n) {
    from the url, else prints a placeholder rather than a dead code. */
 function pgVideos(n) {
   const body =
+    '<div class="stamp">Swap these out</div>' +
     '<div class="vids">' +
       '<div class="vids-copy">' + VIDEO_COPY.map(p => '<p>' + p + '</p>').join('') + '</div>' +
       '<div class="vids-list">' + VIDEOS.slice(0, 3).map((v, i) => {
@@ -1008,7 +1047,11 @@ let builder = null;
 function redraw() {
   if (!builder) return;
   reassign();
-  builder.rebuild();
+  /* the property page is optional, so dropping it has to renumber every
+     page after it and the running footers along with them */
+  PAGES = pageList(); OF = PAGES.length;
+  if (builder.state.pages !== PAGES.length) builder.setPages(PAGES.length);
+  else builder.rebuild();
   paintPhotos();
   PD.wireReframe(document.getElementById('pages'), state.pos, REFRAME);
   paintSlotGrips();
@@ -1053,21 +1096,12 @@ function renderThumbs(hostId, arr, onRemove) {
   });
 }
 
-let paintRoster = () => {}, paintRec = () => {};
-
-/* Which of the three ranges carries the star. Returns a repaint function so
-   the buttons can be re-synced with state after a property is loaded. */
-function wireRecPick() {
-  const host = document.getElementById('recPick');
-  const btns = [...host.querySelectorAll('button')];
-  const paint = () => btns.forEach(b => b.classList.toggle('on', b.dataset.rec === state.recBand));
-  btns.forEach(b => b.addEventListener('click', () => {
-    state.recBand = b.dataset.rec;
-    paint(); redraw();
-  }));
-  paint();
-  return paint;
-}
+/* The two segmented picks in the panel — which of the three ranges carries
+   the star, and whether the property page prints at all. Both are the
+   shared P.segPick(), which hands back a repaint function so the buttons
+   can be re-synced with state after a property is loaded rather than being
+   left showing the last document's answer. */
+let paintRoster = () => {}, paintRec = () => {}, paintProp = () => {};
 
 document.addEventListener('DOMContentLoaded', () => {
   bindFields();
@@ -1088,7 +1122,12 @@ document.addEventListener('DOMContentLoaded', () => {
     state.comps.push(P.blankComp());
     renderComps(); redraw();
   });
-  paintRec = wireRecPick();
+  paintRec = P.segPick(document.getElementById('recPick'), 'rec',
+    () => state.recBand,
+    v => { state.recBand = v; redraw(); });
+  paintProp = P.segPick(document.getElementById('propPick'), 'on',
+    () => (state.showProperty ? '1' : '0'),
+    v => { state.showProperty = v === '1'; redraw(); });
 
   builder = Builder.init({
     pages: PAGES.length,
@@ -1117,7 +1156,7 @@ document.addEventListener('DOMContentLoaded', () => {
      in this document and never becomes the property's asking price.
      ============================================================ */
   const DOC_ONLY = ['client','date','photos','map','priceLow','priceMid','priceHigh',
-                    'recBand','pos','agents'];
+                    'recBand','showProperty','pos','agents'];
 
   /* the features box is one per line; P.lines() renders them, it does not
      split them */
@@ -1154,11 +1193,16 @@ document.addEventListener('DOMContentLoaded', () => {
     getDoc: () => DOC_ONLY.reduce((doc, k) => { doc[k] = state[k]; return doc; }, {}),
 
     setDoc: doc => {
+      /* A deck saved before the property page became optional has no
+         answer for it, and neither does a property with no deck yet. Both
+         should start with the page in rather than inheriting whatever the
+         last document loaded said. */
+      state.showProperty = true;
       if (doc) DOC_ONLY.forEach(k => { if (k in doc) state[k] = doc[k]; });
       else { state.photos = []; state.map = null; state.pos = {}; }
       uid = Math.max(uid, ...state.photos.map(p => p.id || 0), 0);
       document.querySelectorAll('[data-f]').forEach(el => { el.value = state[el.dataset.f] || ''; });
-      paintPhotos(); paintMap(); renderComps(); paintRoster(); redraw();
+      paintPhotos(); paintMap(); renderComps(); paintRoster(); paintRec(); paintProp(); redraw();
     }
   });
 });
