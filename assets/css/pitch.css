@@ -37,35 +37,6 @@
 .pg.rev .pg-foot .site{color:rgba(229,229,229,.6);}
 .pg.rev .pg-foot .pg-n{color:rgba(229,229,229,.5);}
 
-/* ---------- cover ---------- */
-.cv{position:absolute;inset:0;overflow:hidden;background:var(--navy);}
-.cv-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
-/* Two scrims, each a clean 100% -> 0 fade over its own band. Stop order
-   matters: a later stop with a smaller percentage is clamped up to the
-   previous one, which turns the fade into a hard cut. */
-.cv-mask{position:absolute;inset:0;pointer-events:none;
-  background:
-    linear-gradient(to bottom, rgba(0,39,58,1) 0%, rgba(0,39,58,0) 22%),
-    linear-gradient(to top,    rgba(0,39,58,1) 0%, rgba(0,39,58,0) 52%);}
-.cv-kind{position:absolute;top:.7in;left:0;right:0;text-align:center;
-  font:800 9pt var(--sans);letter-spacing:.3em;text-transform:uppercase;color:var(--sky);}
-.cv-head{position:absolute;left:var(--pad);right:var(--pad);bottom:1.5in;text-align:center;}
-.cv-ttl{font:700 33pt/1.07 var(--serif);color:#fff;text-wrap:balance;overflow-wrap:break-word;}
-.cv-sub{margin-top:.13in;font:800 10.5pt var(--sans);letter-spacing:.10em;text-transform:uppercase;color:var(--ow);}
-.cv-for{margin-top:.22in;font:300 10.5pt/1.5 var(--body);color:rgba(229,229,229,.82);}
-/* two agent blocks, one per side, monogram fixed dead-center against the
-   bar itself — not flexed between the side blocks, so it does not drift
-   if one side is empty or the two blocks are different lengths. */
-.cv-bar{position:absolute;left:0;right:0;bottom:0;height:1.02in;background:rgba(0,39,58,.92);
-  border-top:1pt solid var(--rule-rev);display:flex;align-items:center;justify-content:space-between;
-  gap:.24in;padding:0 var(--pad);}
-.cv-bar .cb-side{flex:1;min-width:0;}
-.cv-bar .cb-side.r{text-align:right;}
-.cv-bar .cb-nm{font:700 12pt var(--serif);color:#fff;line-height:1.2;}
-.cv-bar .cb-ct{font:300 8pt/1.45 var(--body);color:rgba(229,229,229,.8);}
-.cv-bar .cb-mono{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-  height:.46in;width:auto;display:block;flex:none;}
-
 /* ---------- framed cover ----------
    A rebuild of the hand-drawn Illustrator page 1 that fronts the Buyer
    Package, and the front page of the Seller Pitch & CMA as well.
@@ -83,10 +54,11 @@
    the two caps runs and the title come from the deck and the photo is the
    usual drop slot.
 
-   This is a different design from the .cv cover above — a framed photo
-   with the type outside it, rather than a full bleed with the type over
-   it — and the two share no class names. Both are in use; neither
-   replaces the other. Built by Pitch.frameCover().
+   It replaced a full-bleed cover — a photo to the trim with the type laid
+   over it — that both decks used to front with; those .cv rules are gone
+   from this file. tools/brochure/ still fronts that way, but off its own
+   inline copy, so nothing here is shared with it. Built by
+   Pitch.frameCover().
    ---------- */
 .fcv{position:absolute;inset:0;overflow:hidden;background:var(--navy);}
 
@@ -434,7 +406,7 @@ table.tbl .meta{display:block;font-size:7.5pt;color:rgba(0,39,58,.55);margin-top
 
 /* ---------- print ---------- */
 @media print{
-  .pg,.cv,.fcv{position:absolute;}
+  .pg,.fcv{position:absolute;}
   .empty-note{display:none !important;}
 }
 

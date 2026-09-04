@@ -79,10 +79,13 @@
 .pg-foot.rev .pg-n{color:rgba(229,229,229,.5);}
 
 /* ---------- PAGE 1 — COVER ----------
-   Identical to the Seller Pitch & CMA and Buyer Package covers: same
-   class names, same markup, same values as assets/css/pitch.css. The
-   scrim stops stay in custom properties because the overflow check reads
-   --mask-bot to tell whether the address has climbed out of the scrim. */
+   A full-bleed photo with the type laid over it. The two packages used to
+   front the same way off assets/css/pitch.css, but they moved to the framed
+   cover (.fcv) and those .cv rules were deleted from that file — so this is
+   now the only copy of this design and nothing below is mirrored from
+   anywhere. The scrim stops stay in custom properties because the overflow
+   check reads --mask-bot to tell whether the address has climbed out of the
+   scrim. */
 .cv{position:absolute;inset:0;overflow:hidden;background:var(--navy);}
 .cv-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
 /* Two scrims, each a clean 100% -> 0 opacity fade over its own band.
@@ -93,10 +96,10 @@
     linear-gradient(to bottom, rgba(0,39,58,1) 0%, rgba(0,39,58,0) var(--mask-top)),
     linear-gradient(to top,    rgba(0,39,58,1) 0%, rgba(0,39,58,0) var(--mask-bot));}
 /* The brochure's kicker is a phrase introducing the document, not a label
-   naming it, so it is set large and white rather than as the small tracked sky
-   caps pitch.css still gives the two packages.
+   naming it, so it is set large and white rather than as small tracked sky
+   caps.
    Raleway at 19pt with .06em of tracking. Capitals set solid read as a block,
-   and the .3em the small version uses is far too wide at this size. */
+   and the .3em a small tracked label would use is far too wide at this size. */
 .cv-kind{position:absolute;top:.7in;left:0;right:0;text-align:center;
   font:400 19pt/1.15 var(--body);letter-spacing:.06em;
   text-transform:uppercase;color:#fff;}
@@ -1234,8 +1237,8 @@ function pagePlan() {
 }
 
 /* ---------------- renderers ---------------- */
-/* Cover — the same markup Pitch.cover() emits for the Seller Pitch & CMA
-   and the Buyer Package, so all three covers are one design. One agent
+/* Cover — a full-bleed photo with the type over it, this deck's own design
+   now that the two packages front with the framed cover instead. One agent
    block per side; an absent agent still renders an empty flex:1 side so
    the centre monogram never drifts off centre. */
 /* The cover names each number rather than printing it bare. A reader looking

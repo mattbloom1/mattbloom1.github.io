@@ -65,47 +65,12 @@
     '</div>';
   }
 
-  /* One or two agents, one on each side of the bar, monogram fixed dead-
-     center regardless of which (or how many) sides have content — it is
-     positioned against the bar itself, not flexed between the agent blocks. */
-  function agentBlock(a, align) {
-    if (!a) return '<div class="cb-side ' + align + '"></div>';
-    return '<div class="cb-side ' + align + '">' +
-      '<div class="cb-nm">' + esc(a.name) + '</div>' +
-      '<div class="cb-ct">' + [a.phone, a.email].filter(Boolean).map(esc).join(' &nbsp;·&nbsp; ') + '</div>' +
-    '</div>';
-  }
-  function cover(o) {
-    const a1 = o.agents && o.agents[0], a2 = o.agents && o.agents[1];
-    return '<div class="cv" data-drop="cover"' + (o.image ? ' data-pos="cover"' : '') + '>' +
-      (o.image ? '<img class="cv-img" src="' + o.image + '" alt="" style="object-position:' +
-                   (o.pos ? o.pos.x : 50) + '% ' + (o.pos ? o.pos.y : 50) + '%">'
-               : '<div class="empty-note">Drag a photo here<br>from the Photos panel</div>') +
-      '<div class="cv-mask"></div>' +
-      '<div class="cv-kind">' + esc(o.kind) + '</div>' +
-      '<div class="cv-head">' +
-        '<div class="cv-ttl">' + esc(o.title) + '</div>' +
-        (o.subtitle ? '<div class="cv-sub">' + esc(o.subtitle) + '</div>' : '') +
-        (o.preparedFor ? '<div class="cv-for">Prepared for ' + esc(o.preparedFor) +
-            (o.date ? '<br>' + esc(o.date) : '') + '</div>' : '') +
-      '</div>' +
-      '<div class="cv-bar">' +
-        agentBlock(a1, 'l') +
-        '<img class="cb-mono" src="' + MONO + '" alt="">' +
-        agentBlock(a2, 'r') +
-      '</div>' +
-    '</div>';
-  }
-
   /* ---------- the framed cover ----------
-     The other cover design, described in full in pitch.css under "framed
-     cover": a tracked caps line, a title set to fill the measure, a framed
-     photo, a second caps line and the lifted band underneath. A deck
-     supplies the three text runs and the photo; nothing else about it
-     varies, which is why the band is a constant here.
-
-     Not a variant of cover() above — that one is the full-bleed photo with
-     the type laid over it. Both are in use. */
+     The cover both packages front with, described in full in pitch.css
+     under "framed cover": a tracked caps line, a title set to fill the
+     measure, a framed photo, a second caps line and the lifted band
+     underneath. A deck supplies the three text runs and the photo; nothing
+     else about it varies, which is why the band is a constant here. */
   const COVER_BAND = '../../assets/img/cover-band.png';
 
   function frameCover(o) {
@@ -580,7 +545,7 @@
   global.Pitch = {
     MONO, MONO_NAVY,
     esc, lines, money, moneyShort, num,
-    page, cover, frameCover, fitCover, heading, foot, toc, agentCards,
+    page, frameCover, fitCover, heading, foot, toc, agentCards,
     linkCols, linkIcon,
     checkOverflow, overflowing, wireDrop, wireRoster, agentsOf,
     LOCKUP, STATES, TEAM_SOCIAL, TEAM_LINKS,
