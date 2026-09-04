@@ -162,6 +162,18 @@ table.tbl tr.grp:first-child td{padding-top:.11in;}
   justify-content:center;text-align:center;
   font:300 10pt/1.5 var(--body);color:rgba(229,229,229,.55);}
 
+/* ---------- the seven drawn pages, as previewed ---------- */
+/* A flat picture of the artwork with the live page number over it. The
+   number sits where the printed one sat: right edge flush to the 567pt
+   margin, baseline on 764.5pt, both measured off the artwork at 600dpi. */
+.stpg{position:absolute;inset:0;background:#fff;overflow:hidden;}
+.stpg img{width:100%;height:100%;display:block;}
+/* right is 45pt less the trailing letter-space CSS adds after the last
+   glyph, so the number stays flush to the margin */
+.stpg-n{position:absolute;right:44.28pt;bottom:27.5pt;line-height:0;
+  font:200 7.2pt 'Nunito Sans',system-ui,sans-serif;color:#4c6774;
+  letter-spacing:.1em;font-variant-numeric:tabular-nums;}
+
 /* The lifted strip: glow, lockup, QR and the site line, all in one. */
 .bcv-band{position:absolute;left:0;right:0;top:718pt;height:74pt;
   display:block;width:100%;}
@@ -267,9 +279,10 @@ table.tbl tr.grp:first-child td{padding-top:.11in;}
     <div class="sp"></div>
     <span class="zlab" id="zoomInfo"></span>
     <button class="btn sm ghost" id="btnZoom">Zoom 100%</button>
-    <button class="btn lg" id="btnPrint" title="In the print dialog: Destination 'Save as PDF' &middot; Paper 'Letter' &middot; Margins 'None' &middot; enable 'Background graphics'.">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="7"/></svg>
-      Print / Save PDF
+    <span class="zlab" id="dlNote"></span>
+    <button class="btn lg" id="btnPdf" title="Builds the finished packet: Matt's drawn pages exactly as they are, with the cover, the tearsheets and the closing page around them.">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+      Download PDF
     </button>
   </div>
 
@@ -377,92 +390,10 @@ function posFor(key) { return state.pos[key] || (state.pos[key] = { x: 50, y: 50
    checklist are. Edit it here and every printed packet changes together.
    ============================================================ */
 
-/* Title | detail, one step per line. */
-const STEPS = [
-  'Consultation | We sit down, agree on what you are looking for, and set a realistic budget and timeline.',
-  'Pre-approval | You speak to a lender and get a written pre-approval. Nothing else happens until this does.',
-  'The search | Curated listings, private showings, and honest opinions about the ones that are wrong for you.',
-  'The offer | We price the offer against real comparables and structure the terms to make it competitive.',
-  'Negotiation | Counter-offers, contingencies and repairs. This is where having done it a thousand times pays.',
-  'Contract & diligence | Attorney review, inspection, board package if applicable, and the appraisal.',
-  'Closing | Final walkthrough, wire, signatures, keys.'
-];
 
-/* icon | heading | what it means for the buyer */
-const LOANS = [
-  ['home','Conventional','Three to twenty percent down, and the best rates on offer if your credit is strong. Under twenty percent you carry mortgage insurance until you have the equity to drop it.'],
-  ['building','FHA','As little as 3.5% down and far more forgiving on credit. The trade is mortgage insurance that stays for the life of most FHA loans.'],
-  ['check','VA','Nothing down and no mortgage insurance for eligible service members, veterans and surviving spouses. The strongest terms in the market, and badly under-used.'],
-  ['chart','Jumbo','Anything above the county conforming limit. Tighter underwriting, larger reserves, and worth using a lender who writes them every week.'],
-  ['ruler','Fixed or adjustable','A fixed rate buys thirty years of certainty. An adjustable one only makes sense if you genuinely know you are gone before it resets.'],
-  ['box','All cash','The fastest and strongest offer on the table. You can still put a mortgage on the house afterwards and take the money back out.']
-];
 
-/* Group, then Item | when it is due or what it is | typical range.
-   Ranges, not quotes: this packet is not written against a price, and the
-   real numbers come from the attorney and the lender on the actual deal. */
-const COSTS = [
-  ['Before you close', [
-    ['Home inspection', 'Booked the day attorney review starts', '$500 – $900'],
-    ['Specialty inspections', 'Radon, oil tank, sewer, termite — each', '$100 – $500'],
-    ['Appraisal', 'Ordered by your lender, paid by you', '$600 – $1,000'],
-    ['Deposit', 'At contract — credited back to you at closing', '5 – 10% of price']
-  ]],
-  ['At the closing table', [
-    ['Attorney', 'Contract through closing, flat fee', '$1,500 – $3,500'],
-    ['Title search & insurance', 'One-time, and it protects your title, not the lender’s', '0.4 – 0.6% of price'],
-    ['Lender fees & points', 'Origination, underwriting, any rate buy-down', '0.5 – 1.5% of loan'],
-    ['Survey', 'Usually required in New Jersey', '$600 – $1,200'],
-    ['Recording & transfer fees', 'County and municipal', '$300 – $1,200'],
-    ['Mansion tax', 'On sales of $1M and above', '1% of price'],
-    ['Escrow set-up', 'Prepaid property taxes and insurance', '2 – 6 months'],
-    ['First year of insurance', 'Homeowner’s, due at closing', '$900 – $2,500']
-  ]],
-  ['Optional, but budget for it', [
-    ['Staging', 'Only if you are selling a home to buy this one', '$1,500 – $5,000'],
-    ['Movers', 'A local move, two bedrooms or so', '$1,200 – $4,000'],
-    ['Repairs and paint', 'What you want done before you move in', 'Varies'],
-    ['Reserves', 'What lenders like to see left over afterwards', '2 – 6 months of payments']
-  ]]
-];
 
-/* Group | icon | items, semicolon-separated. Printed with empty boxes —
-   this page is meant to be taken to showings and ticked with a pen. */
-const QUESTIONS = [
-  ['At every showing', 'home',
-   'Why are they selling, and how soon?;How long has it been listed, and at what prices?;' +
-   'What are the taxes, insurance and monthly fees?;How old are the roof, furnace and water heater?;' +
-   'What is not staying with the house?;Has there ever been water in the basement?'],
-  ['About the building or HOA', 'building',
-   'What does the monthly fee actually cover?;Is an assessment planned or being discussed?;' +
-   'How healthy are the reserves?;What are the rules on pets, rentals and renovations?;' +
-   'What share of the units are owner-occupied?'],
-  ['About the town', 'pin',
-   'What is the tax rate, and when was the last reassessment?;Is any part of the lot in a flood zone?;' +
-   'Which schools does this address actually feed?;What is the commute at 7am, not at noon?;' +
-   'What is approved to be built nearby?'],
-  ['Ask your lender', 'chart',
-   'What is the rate, and what would it take to lock it?;What do the fees add up to, all in?;' +
-   'Which loan types do I qualify for?;What could change my approval before closing?;' +
-   'How long do you need once we are under contract?'],
-  ['What we will ask you', 'users',
-   'What has to be true on day one?;What would you trade, and what will you not?;' +
-   'Where is the down payment coming from?;Who else has a say in the decision?;' +
-   'What would make you walk away?'],
-  ['Before you sign', 'pen',
-   'Have I read the inspection report myself?;Is my deposit in escrow, and with whom?;' +
-   'When does attorney review end?;What happens if the appraisal comes in low?']
-];
 
-/* icon | heading | body — offer & negotiation */
-const OFFER = [
-  ['check','Price is only one term','Closing date, contingencies and financing type routinely matter more to a seller than the last $10,000.'],
-  ['home','Know the competition','We check what else is in contract on the block before we name a number, not after.'],
-  ['box','Contingencies protect you','Inspection, financing and appraisal contingencies are your exits. We waive them deliberately, never casually.'],
-  ['phone','Move fast, decide slowly','We will see it the day it lists. That does not mean you have to decide the same day.'],
-  ['users','Escalation, carefully','Escalation clauses can win a bidding war or reveal your ceiling. We use them situationally.'],
-  ['mail','Everything in writing','Verbal agreements are not agreements. Every accepted term goes into the contract.']
-];
 
 /* Where the closing page's QR sends a reader: the team's property page
    rather than the homepage, so a scan lands on the listings. */
@@ -555,16 +486,24 @@ const qrSvg = window.GVC_QR;
    `opt` marks a page the panel can switch off, and doubles as the one-line
    description shown beside its tick.
    ============================================================ */
+/* `st` is the page's index inside static/buyer-pages-2-8.pdf — the seven
+   pages Matt drew in Illustrator. They are not rebuilt here: the preview
+   shows a flat picture of each one and the export copies the real PDF page
+   through untouched. Only their page number is ours, drawn back on at
+   export because the printed one was stripped out of the artwork.
+
+   The tearsheets follow Offer & Negotiation because that is where the drawn
+   deck ends before its closing page. */
 const SPINE = [
   { key:'cover',     title:'Cover' },
-  { key:'why',       title:'Why Work With Us' },
-  { key:'process',   title:'The Buying Process',  opt:'The seven steps, start to keys' },
-  { key:'options',   title:'Financing Options',   opt:'Conventional, FHA, VA, jumbo, cash' },
-  { key:'costs',     title:'What It Costs',       opt:'Every cost in the deal, with ranges' },
-  { key:'criteria',  title:'Your Search Criteria',opt:'A worksheet you fill in together' },
-  { key:'questions', title:'Questions to Ask',    opt:'A checklist for the buyer and for us' },
+  { key:'why',       title:'Why Work With Us',    st:0 },
+  { key:'process',   title:'The Buying Process',  st:1, opt:'The seven steps, start to keys' },
+  { key:'options',   title:'Financing Options',   st:2, opt:'Conventional, FHA, VA, jumbo, cash' },
+  { key:'costs',     title:'What It Costs',       st:3, opt:'Every cost in the deal, with ranges' },
+  { key:'criteria',  title:'Your Search Criteria',st:4, opt:'A worksheet you fill in together' },
+  { key:'questions', title:'Questions to Ask',    st:5, opt:'A checklist for the buyer and for us' },
+  { key:'offer',     title:'Offer & Negotiation', st:6, opt:'Winning the house on terms, not price' },
   { key:'towns',     title:'Area Tearsheets',     towns:true },
-  { key:'offer',     title:'Offer & Negotiation', opt:'Winning the house on terms, not price' },
   { key:'next',      title:'Thank You' }
 ];
 const OPTIONAL = SPINE.filter(p => p.opt);
@@ -628,131 +567,12 @@ function pgCover() {
   '</div>';
 }
 
-/* WHY WORK WITH US.
 
-   The blurb and the standing line under it are the team's own words, given
-   to us for this page. Do not paraphrase them — if the team's boilerplate
-   changes, replace these strings with the new boilerplate.
 
-   The review at the foot is a real client review, excerpted and never
-   reworded, the same rule the Seller Pitch's reviews page follows. */
-const WHY_COPY = [
-  'The Gasdaska Verdiglione Conlon (GVC) Team is built on a foundation of excellence, integrity, ' +
-  'innovation, and collaboration. Specializing in luxury residential, commercial, and new ' +
-  'development transactions, the team serves high-net-worth clients across New York, New Jersey, ' +
-  'and Florida.',
-  'The GVC Team is strengthened by a diverse group of talented professionals, and collaborates ' +
-  'with a wide network of skilled agents across NYC, New Jersey, and Florida, all of whom share ' +
-  'the team’s core values and client-focused approach.'
-];
-const WHY_TAG = 'The Premier Luxury Real Estate Team Across NY, NJ, & FL';
-const WHY_REVIEW = [
-  'She was incredibly attentive, always responsive, and extremely professional & helpful ' +
-  'throughout the entire process. She took the time to explain every step in detail, making what ' +
-  'could have been a stressful experience feel smooth and manageable. I always felt informed and ' +
-  'supported in every decision.',
-  'Andrya M., Buyer'
-];
 
-function pgWhy(n) {
-  const body =
-    '<div class="why">' +
-      '<div class="ph" data-drop="portrait"' + (slot('portrait') ? ' data-pos="portrait"' : '') + '>' + (slot('portrait')
-        ? '<img src="' + slot('portrait') + '" alt="" style="object-position:' + posFor('portrait').x + '% ' + posFor('portrait').y + '%">'
-        : '<div class="empty-note on-white">Drag a photo here<br>from the Photos panel</div>') + '</div>' +
-      '<div class="txt">' +
-      '<div class="copy">' + WHY_COPY.map(t => '<p>' + esc(t) + '</p>').join('') + '</div>' +
-      '<div class="tag">' + esc(WHY_TAG) + '</div>' +
-      '<div class="stat-row" style="margin-top:.3in">' +
-        '<div class="stat"><div class="v">$3B+</div><div class="l">Sold to date</div></div>' +
-        '<div class="stat"><div class="v">3</div><div class="l">States licensed</div></div>' +
-        '<div class="stat"><div class="v">50+</div><div class="l">Years combined experience</div></div>' +
-      '</div>' +
-      '<div class="quote"><p>' + esc(WHY_REVIEW[0]) + '</p>' +
-        '<div class="who">' + esc(WHY_REVIEW[1]) + '</div></div>' +
-      '</div>' +
-    '</div>';
-  return P.page({ deck:DECK, n, of:OF, site:SITE, title:'Why Work With Us', body });
-}
 
-function pgProcess(n) {
-  const body = '<div class="steps">' + pairs(STEPS).map(([t, d], i) =>
-    '<div class="step"><div class="sn">' + (i + 1) + '</div><div>' +
-      '<div class="st">' + esc(t) + '</div>' +
-      (d ? '<div class="sd">' + esc(d) + '</div>' : '') +
-    '</div></div>').join('') + '</div>';
-  return P.page({ deck:DECK, n, of:OF, site:SITE, title:'The Buying Process', body });
-}
 
-/* What a buyer can borrow and how, without naming a price — the amounts
-   belong to the deal, the shapes belong here. */
-function pgOptions(n) {
-  const body =
-    '<div class="cards c2">' + LOANS.map(([g, h, p]) =>
-      '<div class="card">' + ic(g, 'ci') + '<h3>' + esc(h) + '</h3><p>' + esc(p) + '</p></div>').join('') +
-    '</div>' +
-    '<div class="foot-note"><strong>What every lender will ask you for:</strong> two years of tax ' +
-    'returns, recent pay stubs, two months of bank statements, and a list of your debts. Gather it ' +
-    'once and a written pre-approval takes days rather than weeks &mdash; and nothing else in this ' +
-    'packet happens before that pre-approval exists.</div>';
-  return P.page({ deck:DECK, n, of:OF, site:SITE, title:'Financing Options', body });
-}
 
-/* One page for the whole cost of buying: the money before closing, the
-   money at closing, and the money people forget. Financing and closing
-   costs used to be two pages and there was never enough between them. */
-function pgCosts(n) {
-  const rows = COSTS.map(([group, items]) =>
-    '<tr class="grp"><td colspan="3">' + esc(group) + '</td></tr>' +
-    items.map(([item, when, range]) =>
-      '<tr><td class="adr">' + esc(item) + '</td>' +
-      '<td>' + esc(when) + '</td>' +
-      '<td class="num">' + esc(range) + '</td></tr>').join('')).join('');
-  const body =
-    '<div class="stat-row">' +
-      '<div class="stat"><div class="v">2 – 5%</div><div class="l">Closing costs &middot; share of price</div></div>' +
-      '<div class="stat"><div class="v">20%</div><div class="l">Down payment that avoids PMI</div></div>' +
-      '<div class="stat"><div class="v">$2K – $4K</div><div class="l">Spent before you own anything</div></div>' +
-    '</div>' +
-    '<table class="tbl"><thead><tr><th>Item</th><th>When, and what it is</th>' +
-      '<th class="num">Typical range</th></tr></thead><tbody>' + rows + '</tbody></table>' +
-    '<div class="foot-note">Ranges for budgeting, not quotes. Percentages bill against the purchase ' +
-    'price unless the line says otherwise, and the real figures come from your attorney and your ' +
-    'lender once there is an actual house and an actual loan.</div>';
-  return P.page({ deck:DECK, n, of:OF, site:SITE, title:'What It Costs', body });
-}
-
-function pgCriteria(n) {
-  const field = lab => '<div class="wf"><span>' + esc(lab) + '</span><i></i></div>';
-  const body =
-    '<div class="ws">' +
-      '<div class="wl">The essentials</div>' +
-      field('Budget') + field('Timeline') + field('Bedrooms') + field('Bathrooms') +
-      field('Min. sq ft') + field('Property type') +
-      '<div class="wl">Location</div>' +
-      field('Towns') + field('Commute to') + field('Schools') + field('Must be near') +
-      '<div class="wl">Non-negotiable</div>' +
-      field('1') + field('2') + field('3') + field('4') +
-      '<div class="wl">Nice to have</div>' +
-      field('1') + field('2') + field('3') + field('4') +
-      '<div class="wl">Deal breakers</div>' +
-      field('1') + field('2') +
-    '</div>';
-  return P.page({ deck:DECK, n, of:OF, site:SITE, title:'Your Search Criteria', body });
-}
-
-/* The checklist both sides of the table need: what the buyer asks at a
-   showing, and what we will ask them. Same page furniture as the Seller
-   Pitch's prep checklist — assets/css/pitch.css, .chk. */
-function pgQuestions(n) {
-  const body =
-    '<div class="chk tight">' + QUESTIONS.map(([name, glyph, items]) =>
-      '<div class="cgrp"><div class="cgrp-h">' + ic(glyph, 'ci') +
-        '<span>' + esc(name) + '</span></div><ul>' +
-        items.split(';').map(t => '<li><i></i><span>' + esc(t) + '</span></li>').join('') +
-      '</ul></div>').join('') + '</div>';
-  return P.page({ deck:DECK, n, of:OF, site:SITE, title:'Questions to Ask', body });
-}
 
 /* Two town tearsheets to a page. Everything printed here comes from the
    town's own record in assets/js/nj-towns.js. */
@@ -791,13 +611,6 @@ function pgTowns(n, page) {
   return P.page({ deck:DECK, n, of:OF, site:SITE, title:MARKET.page, body });
 }
 
-function pgOffer(n) {
-  const body =
-    '<div class="cards c2">' + OFFER.map(([g, h, p]) =>
-      '<div class="card">' + ic(g, 'ci') + '<h3>' + esc(h) + '</h3><p>' + esc(p) + '</p></div>').join('') +
-    '</div>';
-  return P.page({ deck:DECK, n, of:OF, site:SITE, title:'Offer & Negotiation', body });
-}
 
 /* Closing page — Team and Next Steps merged into one. It is the Brochure's
    editorial close, not the Seller Pitch & CMA's centred cards: the lockup and
@@ -821,9 +634,25 @@ function pgNext(n) {
   '</div>';
 }
 
+/* One of the seven drawn pages. Nothing here is a rebuild of it — the
+   preview is a flat 150dpi picture of the page and the export copies the
+   real PDF page through, so what prints is Matt's artwork and not a
+   reconstruction of it.
+
+   The page number is the one exception. It was stripped out of the
+   artwork so the deck can renumber when a page is switched off or
+   tearsheets are added, so it is drawn back on: here for the preview, and
+   again in the export at the baseline it was measured off. */
+function pgStatic(n, p) {
+  return '<div class="stpg" data-key="' + p.key + '">' +
+    '<img src="static/p' + (p.st + 2) + '.jpg" alt="">' +
+    '<div class="stpg-n">' + n + ' / ' + OF + '</div>' +
+  '</div>';
+}
+
 const RENDER = {
-  cover:pgCover, why:pgWhy, process:pgProcess, options:pgOptions, costs:pgCosts,
-  criteria:pgCriteria, questions:pgQuestions, towns:pgTowns, offer:pgOffer, next:pgNext
+  cover:pgCover, why:pgStatic, process:pgStatic, options:pgStatic, costs:pgStatic,
+  criteria:pgStatic, questions:pgStatic, offer:pgStatic, towns:pgTowns, next:pgNext
 };
 
 /* ---------- wiring ---------- */
@@ -894,6 +723,163 @@ function paintPhotos() {
   });
 }
 
+/* ============================================================
+   EXPORT — building the finished PDF
+
+   The packet is two different kinds of page and they are made two
+   different ways.
+
+   The seven pages Matt drew in Illustrator are copied straight out of
+   static/buyer-pages-2-8.pdf into the finished file. Nothing is
+   re-rendered: the type stays type, the vectors stay vectors, and what
+   the client is handed is the artwork itself. All we add is the page
+   number, drawn at the baseline it was measured off so it lands where the
+   printed one used to.
+
+   The cover, the tearsheets and the closing page are ours, and they only
+   exist as HTML. A browser will not hand its own print output back to a
+   script, so there is no way to fold Chrome's rendering of them into this
+   file — they are photographed off the page at 300dpi instead and placed
+   as full-bleed images. That is the one quality cost of assembling the
+   packet here rather than through the print dialog, and it falls on the
+   three pages that can afford it rather than on the seven that cannot.
+
+   The libraries are ~700KB and only this button needs them, so they are
+   fetched on the first click and kept for the rest of the session.
+   ============================================================ */
+const EXPORT_DPI = 300;
+const PAGE_PT = { w: 612, h: 792 };
+/* The page number, every value measured off the artwork rather than read
+   out of it. Two of them are not what the file says they are: the fill is
+   recorded as #00273a but prints at 70% over white, which is the #4c6774
+   actually on the paper, and the type carries 0.1em of tracking that no
+   drawText call applies on its own. So it is set glyph by glyph, flush
+   right to the 567pt margin, sitting on the 764.52pt baseline. */
+const NUM = { right: 567, baseline: 764.52, size: 7.2, track: 0.1,
+              ink: [0x4c / 255, 0x67 / 255, 0x74 / 255] };
+
+/* Flush right, one glyph at a time so the tracking lands between them and
+   not after the last one. */
+function drawPageNumber(page, font, label, rgb) {
+  const track = NUM.size * NUM.track;
+  const widths = [...label].map(ch => font.widthOfTextAtSize(ch, NUM.size));
+  const total = widths.reduce((a, b) => a + b, 0) + track * (label.length - 1);
+  let x = NUM.right - total;
+  [...label].forEach((ch, i) => {
+    page.drawText(ch, { x, y: PAGE_PT.h - NUM.baseline, size: NUM.size, font,
+                        color: rgb(NUM.ink[0], NUM.ink[1], NUM.ink[2]) });
+    x += widths[i] + track;
+  });
+}
+
+let libsReady = null;
+function loadScript(src) {
+  return new Promise((ok, fail) => {
+    const el = document.createElement('script');
+    el.src = src; el.onload = ok; el.onerror = () => fail(new Error('could not load ' + src));
+    document.head.appendChild(el);
+  });
+}
+function needLibs() {
+  if (!libsReady) {
+    libsReady = Promise.all([
+      loadScript('../../assets/js/vendor/pdf-lib.min.js'),
+      loadScript('../../assets/js/vendor/fontkit.umd.min.js'),
+      loadScript('../../assets/js/vendor/html2canvas.min.js')
+    ]);
+  }
+  return libsReady;
+}
+
+/* Photograph one of our own pages. The page is cloned out to its true
+   8.5x11in size first: on the stage it is sitting under a CSS scale, and
+   photographing it there would capture it at whatever zoom the agent had
+   left it on. */
+async function shootPage(el) {
+  const host = document.createElement('div');
+  host.style.cssText = 'position:fixed;left:0;top:0;width:816px;height:1056px;' +
+                       'overflow:hidden;opacity:0;pointer-events:none;z-index:-1;';
+  const clone = el.cloneNode(true);
+  clone.style.transform = 'none';
+  clone.style.margin = '0';
+  clone.style.boxShadow = 'none';
+  host.appendChild(clone);
+  document.body.appendChild(host);
+  try {
+    const canvas = await html2canvas(clone, {
+      scale: EXPORT_DPI / 96, backgroundColor: '#ffffff',
+      useCORS: true, logging: false, width: 816, height: 1056
+    });
+    return canvas.toDataURL('image/jpeg', 0.92);
+  } finally { host.remove(); }
+}
+
+async function buildPdf(say) {
+  await needLibs();
+  const { PDFDocument, rgb } = PDFLib;
+
+  say('Reading the drawn pages…');
+  const [staticBytes, numBytes] = await Promise.all([
+    fetch('static/buyer-pages-2-8.pdf').then(r => r.arrayBuffer()),
+    fetch('static/pagenum.ttf').then(r => r.arrayBuffer())
+  ]);
+
+  const out = await PDFDocument.create();
+  out.registerFontkit(fontkit);
+  const numFont = await out.embedFont(numBytes);
+  const drawn = await PDFDocument.load(staticBytes);
+
+  const els = document.querySelectorAll('#pages .page');
+  const of = PAGES.length;
+
+  for (let i = 0; i < PAGES.length; i++) {
+    const p = PAGES[i];
+    say('Page ' + (i + 1) + ' of ' + of + '…');
+    let page;
+    if (p.st != null) {
+      const [copied] = await out.copyPages(drawn, [p.st]);
+      page = out.addPage(copied);
+    } else {
+      const jpeg = await out.embedJpg(await shootPage(els[i]));
+      page = out.addPage([PAGE_PT.w, PAGE_PT.h]);
+      page.drawImage(jpeg, { x: 0, y: 0, width: PAGE_PT.w, height: PAGE_PT.h });
+    }
+    /* Only the drawn pages need a number put back. Ours print their own,
+       through the same running footer every other builder uses. */
+    if (p.st != null) {
+      drawPageNumber(page, numFont, (i + 1) + ' / ' + of, rgb);
+    }
+  }
+
+  say('Saving…');
+  return out.save();
+}
+
+function wireExport() {
+  const btn = document.getElementById('btnPdf');
+  const note = document.getElementById('dlNote');
+  const say = msg => { if (note) note.textContent = msg; };
+  btn.addEventListener('click', async () => {
+    btn.disabled = true;
+    try {
+      const bytes = await buildPdf(say);
+      const url = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
+      const a = document.createElement('a');
+      a.href = url; a.download = 'Buyer Package.pdf';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 30000);
+      say('Downloaded.');
+      setTimeout(() => say(''), 6000);
+    } catch (e) {
+      say('');
+      /* Loud rather than silent: a packet that half-built is worse than
+         one that plainly did not. */
+      alert('The PDF could not be built.\n\n' + (e && e.message ? e.message : e) +
+            '\n\nNothing has been saved. Try again, and tell Matt if it keeps happening.');
+    } finally { btn.disabled = false; }
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   P.wireDrop(document.getElementById('dropPhotos'), document.getElementById('filePhotos'), files => {
     files.forEach(f => state.photos.push({ id: ++uid, name: f.name, url: f.url, role: 'auto' }));
@@ -956,6 +942,8 @@ document.addEventListener('DOMContentLoaded', () => {
       state.cover[key] = el.value; redraw(); GVC_UNSAVED.touch();
     });
   });
+
+  wireExport();
 
   P.wireRoster(document.getElementById('rosterPick'), state, 2, redraw);
 
