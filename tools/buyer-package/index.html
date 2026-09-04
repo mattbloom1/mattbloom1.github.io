@@ -168,9 +168,12 @@ table.tbl tr.grp:first-child td{padding-top:.11in;}
    margin, baseline on 764.5pt, both measured off the artwork at 600dpi. */
 .stpg{position:absolute;inset:0;background:#fff;overflow:hidden;}
 .stpg img{width:100%;height:100%;display:block;}
-/* right is 45pt less the trailing letter-space CSS adds after the last
-   glyph, so the number stays flush to the margin */
-.stpg-n{position:absolute;right:44.28pt;bottom:27.5pt;line-height:0;
+/* Flush right and on the artwork's baseline. `right` is 45pt less the
+   trailing letter-space CSS adds after the last glyph; `bottom` is the
+   27.48pt to the baseline less the 2.28pt a zero line-height puts between
+   the box edge and where the glyphs actually sit — both measured off a
+   print of this page against the artwork, not derived. */
+.stpg-n{position:absolute;right:44.28pt;bottom:25.2pt;line-height:0;
   font:200 7.2pt 'Nunito Sans',system-ui,sans-serif;color:#4c6774;
   letter-spacing:.1em;font-variant-numeric:tabular-nums;}
 
@@ -279,10 +282,9 @@ table.tbl tr.grp:first-child td{padding-top:.11in;}
     <div class="sp"></div>
     <span class="zlab" id="zoomInfo"></span>
     <button class="btn sm ghost" id="btnZoom">Zoom 100%</button>
-    <span class="zlab" id="dlNote"></span>
-    <button class="btn lg" id="btnPdf" title="Builds the finished packet: Matt's drawn pages exactly as they are, with the cover, the tearsheets and the closing page around them.">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
-      Download PDF
+    <button class="btn lg" id="btnPrint" title="In the print dialog: Destination 'Save as PDF' &middot; Paper 'Letter' &middot; Margins 'None' &middot; enable 'Background graphics'.">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="7"/></svg>
+      Print / Save PDF
     </button>
   </div>
 
@@ -634,10 +636,19 @@ function pgNext(n) {
   '</div>';
 }
 
-/* One of the seven drawn pages. Nothing here is a rebuild of it — the
-   preview is a flat 150dpi picture of the page and the export copies the
-   real PDF page through, so what prints is Matt's artwork and not a
-   reconstruction of it.
+/* One of the seven drawn pages. Nothing here is a rebuild of it: the page
+   is a 400dpi picture of Matt's artwork, rendered from his PDF, and it is
+   the same picture on screen and on paper.
+
+   It is a picture rather than the PDF page itself because everything that
+   would have kept it vector turned out to damage something else. Copying
+   the real page in meant photographing OUR pages to sit around it, and
+   html2canvas draws text below its own box — it slid the cover photo over
+   the title and sheared the descenders off the closing page. Converting
+   the pages to SVG kept them vector but MuPDF's SVG writer mishandles the
+   custom colour space on the photographs and threw a blue cast over them.
+   A 400dpi picture is the one option where nothing is misdrawn, and it
+   leaves the browser's own printer to render the pages that are ours.
 
    The page number is the one exception. It was stripped out of the
    artwork so the deck can renumber when a page is switched off or
@@ -723,163 +734,6 @@ function paintPhotos() {
   });
 }
 
-/* ============================================================
-   EXPORT — building the finished PDF
-
-   The packet is two different kinds of page and they are made two
-   different ways.
-
-   The seven pages Matt drew in Illustrator are copied straight out of
-   static/buyer-pages-2-8.pdf into the finished file. Nothing is
-   re-rendered: the type stays type, the vectors stay vectors, and what
-   the client is handed is the artwork itself. All we add is the page
-   number, drawn at the baseline it was measured off so it lands where the
-   printed one used to.
-
-   The cover, the tearsheets and the closing page are ours, and they only
-   exist as HTML. A browser will not hand its own print output back to a
-   script, so there is no way to fold Chrome's rendering of them into this
-   file — they are photographed off the page at 300dpi instead and placed
-   as full-bleed images. That is the one quality cost of assembling the
-   packet here rather than through the print dialog, and it falls on the
-   three pages that can afford it rather than on the seven that cannot.
-
-   The libraries are ~700KB and only this button needs them, so they are
-   fetched on the first click and kept for the rest of the session.
-   ============================================================ */
-const EXPORT_DPI = 300;
-const PAGE_PT = { w: 612, h: 792 };
-/* The page number, every value measured off the artwork rather than read
-   out of it. Two of them are not what the file says they are: the fill is
-   recorded as #00273a but prints at 70% over white, which is the #4c6774
-   actually on the paper, and the type carries 0.1em of tracking that no
-   drawText call applies on its own. So it is set glyph by glyph, flush
-   right to the 567pt margin, sitting on the 764.52pt baseline. */
-const NUM = { right: 567, baseline: 764.52, size: 7.2, track: 0.1,
-              ink: [0x4c / 255, 0x67 / 255, 0x74 / 255] };
-
-/* Flush right, one glyph at a time so the tracking lands between them and
-   not after the last one. */
-function drawPageNumber(page, font, label, rgb) {
-  const track = NUM.size * NUM.track;
-  const widths = [...label].map(ch => font.widthOfTextAtSize(ch, NUM.size));
-  const total = widths.reduce((a, b) => a + b, 0) + track * (label.length - 1);
-  let x = NUM.right - total;
-  [...label].forEach((ch, i) => {
-    page.drawText(ch, { x, y: PAGE_PT.h - NUM.baseline, size: NUM.size, font,
-                        color: rgb(NUM.ink[0], NUM.ink[1], NUM.ink[2]) });
-    x += widths[i] + track;
-  });
-}
-
-let libsReady = null;
-function loadScript(src) {
-  return new Promise((ok, fail) => {
-    const el = document.createElement('script');
-    el.src = src; el.onload = ok; el.onerror = () => fail(new Error('could not load ' + src));
-    document.head.appendChild(el);
-  });
-}
-function needLibs() {
-  if (!libsReady) {
-    libsReady = Promise.all([
-      loadScript('../../assets/js/vendor/pdf-lib.min.js'),
-      loadScript('../../assets/js/vendor/fontkit.umd.min.js'),
-      loadScript('../../assets/js/vendor/html2canvas.min.js')
-    ]);
-  }
-  return libsReady;
-}
-
-/* Photograph one of our own pages. The page is cloned out to its true
-   8.5x11in size first: on the stage it is sitting under a CSS scale, and
-   photographing it there would capture it at whatever zoom the agent had
-   left it on. */
-async function shootPage(el) {
-  const host = document.createElement('div');
-  host.style.cssText = 'position:fixed;left:0;top:0;width:816px;height:1056px;' +
-                       'overflow:hidden;opacity:0;pointer-events:none;z-index:-1;';
-  const clone = el.cloneNode(true);
-  clone.style.transform = 'none';
-  clone.style.margin = '0';
-  clone.style.boxShadow = 'none';
-  host.appendChild(clone);
-  document.body.appendChild(host);
-  try {
-    const canvas = await html2canvas(clone, {
-      scale: EXPORT_DPI / 96, backgroundColor: '#ffffff',
-      useCORS: true, logging: false, width: 816, height: 1056
-    });
-    return canvas.toDataURL('image/jpeg', 0.92);
-  } finally { host.remove(); }
-}
-
-async function buildPdf(say) {
-  await needLibs();
-  const { PDFDocument, rgb } = PDFLib;
-
-  say('Reading the drawn pages…');
-  const [staticBytes, numBytes] = await Promise.all([
-    fetch('static/buyer-pages-2-8.pdf').then(r => r.arrayBuffer()),
-    fetch('static/pagenum.ttf').then(r => r.arrayBuffer())
-  ]);
-
-  const out = await PDFDocument.create();
-  out.registerFontkit(fontkit);
-  const numFont = await out.embedFont(numBytes);
-  const drawn = await PDFDocument.load(staticBytes);
-
-  const els = document.querySelectorAll('#pages .page');
-  const of = PAGES.length;
-
-  for (let i = 0; i < PAGES.length; i++) {
-    const p = PAGES[i];
-    say('Page ' + (i + 1) + ' of ' + of + '…');
-    let page;
-    if (p.st != null) {
-      const [copied] = await out.copyPages(drawn, [p.st]);
-      page = out.addPage(copied);
-    } else {
-      const jpeg = await out.embedJpg(await shootPage(els[i]));
-      page = out.addPage([PAGE_PT.w, PAGE_PT.h]);
-      page.drawImage(jpeg, { x: 0, y: 0, width: PAGE_PT.w, height: PAGE_PT.h });
-    }
-    /* Only the drawn pages need a number put back. Ours print their own,
-       through the same running footer every other builder uses. */
-    if (p.st != null) {
-      drawPageNumber(page, numFont, (i + 1) + ' / ' + of, rgb);
-    }
-  }
-
-  say('Saving…');
-  return out.save();
-}
-
-function wireExport() {
-  const btn = document.getElementById('btnPdf');
-  const note = document.getElementById('dlNote');
-  const say = msg => { if (note) note.textContent = msg; };
-  btn.addEventListener('click', async () => {
-    btn.disabled = true;
-    try {
-      const bytes = await buildPdf(say);
-      const url = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
-      const a = document.createElement('a');
-      a.href = url; a.download = 'Buyer Package.pdf';
-      document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 30000);
-      say('Downloaded.');
-      setTimeout(() => say(''), 6000);
-    } catch (e) {
-      say('');
-      /* Loud rather than silent: a packet that half-built is worse than
-         one that plainly did not. */
-      alert('The PDF could not be built.\n\n' + (e && e.message ? e.message : e) +
-            '\n\nNothing has been saved. Try again, and tell Matt if it keeps happening.');
-    } finally { btn.disabled = false; }
-  });
-}
-
 document.addEventListener('DOMContentLoaded', () => {
   P.wireDrop(document.getElementById('dropPhotos'), document.getElementById('filePhotos'), files => {
     files.forEach(f => state.photos.push({ id: ++uid, name: f.name, url: f.url, role: 'auto' }));
@@ -942,8 +796,6 @@ document.addEventListener('DOMContentLoaded', () => {
       state.cover[key] = el.value; redraw(); GVC_UNSAVED.touch();
     });
   });
-
-  wireExport();
 
   P.wireRoster(document.getElementById('rosterPick'), state, 2, redraw);
 
