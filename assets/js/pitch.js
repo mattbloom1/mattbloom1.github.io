@@ -97,6 +97,77 @@
     '</div>';
   }
 
+  /* ---------- the framed cover ----------
+     The other cover design, described in full in pitch.css under "framed
+     cover": a tracked caps line, a title set to fill the measure, a framed
+     photo, a second caps line and the lifted band underneath. A deck
+     supplies the three text runs and the photo; nothing else about it
+     varies, which is why the band is a constant here.
+
+     Not a variant of cover() above — that one is the full-bleed photo with
+     the type laid over it. Both are in use. */
+  const COVER_BAND = '../../assets/img/cover-band.png';
+
+  function frameCover(o) {
+    return '<div class="fcv">' +
+      '<div class="fcv-kick">' + esc(o.kicker) + '</div>' +
+      '<div class="fcv-ttl">' + esc(o.title) + '</div>' +
+      '<div class="fcv-ph" data-drop="cover"' + (o.image ? ' data-pos="cover"' : '') + '>' +
+        (o.image ? '<img src="' + o.image + '" alt="" style="object-position:' +
+                     (o.pos ? o.pos.x : 50) + '% ' + (o.pos ? o.pos.y : 50) + '%">'
+                 : '<div class="empty-note">Drag a photo here<br>from the Photos panel</div>') +
+      '</div>' +
+      '<div class="fcv-foot">' + esc(o.foot) + '</div>' +
+      '<img class="fcv-band" src="' + COVER_BAND + '" alt="">' +
+    '</div>';
+  }
+
+  /* All three runs on the framed cover are set to the width of the measure
+     the way they are in the artwork, where BUYER'S GUIDE runs margin to
+     margin. Rather than pick a size and hope, each one is measured after it
+     renders and scaled to fit: the artwork's own size is the ceiling, so
+     text no longer than the drawn text never grows past it, and longer text
+     — a street address for the title, a long client name on the bottom line
+     — steps down in size instead of wrapping. None of them can wrap: the
+     title would run into the photo and the bottom line into the band.
+
+     The title's measure is the printed INK width of the drawn title,
+     523.2pt from the B to the E, not the 523pt gap between the margins:
+     Chrome and Illustrator disagree slightly on Playfair's side bearings,
+     so matching the advance width leaves the letters a hair narrow.
+     Measured off the artwork at 150dpi. The two caps runs are plain
+     Nunito Sans and sit on the margins, so theirs is the 523pt gap.
+
+     Every deck calls this from its own post-render check, and again once
+     document.fonts has settled: measured before layout the type reads zero
+     wide, and measured before the webfont has loaded it measures the
+     fallback face instead. */
+  const COV_MAX = 69.26, COV_MEASURE = 527.3;   /* the title */
+  const CAPS_MAX = 16,   CAPS_MEASURE = 523;    /* the kicker and the foot */
+
+  /* The rendered width of the text itself, in pt. A Range over the contents
+     rather than scrollWidth, which reports the width of the BOX whenever
+     the text is narrower than it — that would read every short run as a
+     full measure and shrink type that already fits. */
+  function inkWidth(el) {
+    const r = document.createRange();
+    r.selectNodeContents(el);
+    /* px on a canvas where 1in = 96px, so pt = px * 72/96 */
+    return r.getBoundingClientRect().width * 0.75;
+  }
+  function fitRun(sel, max, measure) {
+    const el = document.querySelector(sel);
+    if (!el) return;
+    el.style.fontSize = max + 'pt';
+    const w = inkWidth(el);
+    if (w > measure) el.style.fontSize = (max * measure / w) + 'pt';
+  }
+  function fitCover() {
+    fitRun('.fcv-ttl',  COV_MAX,  COV_MEASURE);
+    fitRun('.fcv-kick', CAPS_MAX, CAPS_MEASURE);
+    fitRun('.fcv-foot', CAPS_MAX, CAPS_MEASURE);
+  }
+
   /* Closing-page agent cards. One solid box per agent holding the cutout
      and every detail that belongs to them — name, title, phone, email —
      rather than the box holding the photo and the details floating loose
@@ -509,7 +580,8 @@
   global.Pitch = {
     MONO, MONO_NAVY,
     esc, lines, money, moneyShort, num,
-    page, cover, heading, foot, toc, agentCards, linkCols, linkIcon,
+    page, cover, frameCover, fitCover, heading, foot, toc, agentCards,
+    linkCols, linkIcon,
     checkOverflow, overflowing, wireDrop, wireRoster, agentsOf,
     LOCKUP, STATES, TEAM_SOCIAL, TEAM_LINKS,
     socialRows, agentRow, agentCol, closingPage,

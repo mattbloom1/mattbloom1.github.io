@@ -306,6 +306,8 @@
         <div class="sec-in">
           <div class="field"><label>Prepared for</label><input type="text" data-f="client" placeholder="Mr. &amp; Mrs. Harrington"></div>
           <div class="field"><label>Date</label><input type="text" data-f="date" placeholder="August 2026"></div>
+          <div class="sec-note">These two set the caps line under the cover photo, and print there
+            in caps. Leave both empty and it prints the markets instead.</div>
         </div>
       </details>
 
@@ -580,6 +582,11 @@ function posFor(key) { return state.pos[key] || (state.pos[key] = { x: 50, y: 50
 /* QR as vector SVG — shared by all four builders, assets/js/qr.js */
 const qrSvg = window.GVC_QR;
 
+/* Nothing prints this any more: the cover carried the city under the
+   address and the framed front page has no room for it. City, state and ZIP
+   are still typed, and still saved onto the property record — they just do
+   not appear in the deck. Kept here because putting the line back is a
+   one-line change if it turns out to be wanted. */
 function cityLine() {
   const t = [state.city, state.state].filter(Boolean).join(', ');
   return [t, state.zip].filter(Boolean).join(' ');
@@ -617,7 +624,7 @@ function slot(name) { return assign[name] ? assign[name].url : null; }
    the same field the old dropdown wrote, which is why no saved deck needed
    migrating.
    ============================================================ */
-const REFRAME = { page: '.pg, .cv', canvasIn: 8.5 };
+const REFRAME = { page: '.pg, .fcv', canvasIn: 8.5 };
 const DROP_LABEL = {
   'cover': 'Cover photo', 'hero': 'Property hero', 'strategy': 'Strategy page',
   'video1': 'Video 1 still', 'video2': 'Video 2 still', 'video3': 'Video 3 still'
@@ -701,17 +708,28 @@ let PAGES = pageList(), OF = PAGES.length;
 /* ============================================================
    PAGE RENDERERS
    ============================================================ */
+/* The front page is Pitch.frameCover(), the design measured off the drawn
+   page 1 — the same one the Buyer Package fronts with. Its three text runs
+   take what this deck knows: what the packet is, the address as the title,
+   and who it was put together for. The agents are not on it; their cards
+   are on the closing page. */
 function pgCover() {
-  return P.cover({
-    kind:'Listing Presentation & Market Analysis',
+  return P.frameCover({
+    kicker: 'Listing Presentation & Market Analysis',
     title: state.address || 'Property Address',
-    subtitle: cityLine(),
-    preparedFor: state.client,
-    date: state.date,
+    foot: coverFoot(),
     image: slot('cover'),
-    pos: posFor('cover'),
-    agents: agents()
+    pos: posFor('cover')
   });
+}
+
+/* The caps line under the photo. Both halves are optional, and a deck with
+   neither yet falls back to the markets line the Buyer Package prints — an
+   unfinished cover should still look like a finished one. */
+function coverFoot() {
+  const who = state.client && 'Prepared for ' + state.client;
+  const line = [who, state.date].filter(Boolean).join(' · ');
+  return line || 'New York · New Jersey · Florida';
 }
 
 /* Company page — entirely static, including the photo. The three co-founders
@@ -1057,7 +1075,10 @@ const RULES = [
   { key:'property', box:'warnProperty',msg:'The property page is over-full — shorten the description or cut a feature.' },
   { key:'strategy', box:'warnStrategy',msg:'The strategy page is over-full — a price is running onto a second line.' }
 ];
+/* Runs after the pages are in the DOM and again once the webfonts have
+   landed. Both matter to the cover — see Pitch.fitCover() for why. */
 function checkAll() {
+  P.fitCover();
   P.checkOverflow(document.getElementById('pages'), RULES, 'warnGeneral');
 }
 
