@@ -111,6 +111,60 @@ table.tbl tr.grp:first-child td{padding-top:.11in;}
 .ts-src{flex:none;margin-top:.2in;padding-top:.14in;border-top:.75pt solid var(--rule);
   font:300 7.5pt/11pt var(--body);color:rgba(0,39,58,.5);text-align:center;}
 .ts-src.raw{color:#c63232;border-top-color:rgba(198,50,50,.35);}
+
+/* ============================================================
+   COVER — a rebuild of the hand-drawn Illustrator page 1.
+
+   Every number here is measured off that artwork rather than chosen, so
+   the positions are given in pt against the 612x792pt page: 44pt left
+   margin, 45pt right, photo frame 523x529pt at y138.6, and the bottom
+   band starting at the teal hairline on y718.
+
+   The band itself — the dithered gradient glow, the lockup and the QR —
+   is a 600dpi lift of that same page (static/cover-band.png) rather than a
+   CSS reconstruction. The glow is a noise-dithered mask that no gradient
+   reproduces honestly, and the three of them never change, so they travel
+   together as one strip. Everything above the band is live: the two text
+   runs are editable and the photo is the usual drop slot.
+
+   This cover is local to the buyer package on purpose. The shared
+   P.cover() in assets/js/pitch.js is a full-bleed photo with the type
+   overlaid on it, which is a different design and is still what the other
+   decks use — do not fold this one back into it.
+   ============================================================ */
+.bcv{position:absolute;inset:0;overflow:hidden;background:var(--navy);}
+
+/* The two caps lines. Nunito Sans ExtraLight, tracked, dead white —
+   16pt in the artwork for both, which is why they share a rule. */
+.bcv-kick,.bcv-mkt{position:absolute;left:44pt;right:45pt;text-align:center;
+  font:200 16pt/1 'Nunito Sans',system-ui,sans-serif;color:#fff;
+  text-transform:uppercase;letter-spacing:.020em;}
+.bcv-kick{top:50.3pt;}
+.bcv-mkt{top:687.5pt;letter-spacing:.108em;}
+
+/* BUYER'S GUIDE. Playfair Bold, optically flush to both margins in the
+   artwork, so it is set to fill the measure: the JS picks the size that
+   fits and this only says how it sits. */
+.bcv-ttl{position:absolute;left:44pt;right:45pt;top:74.2pt;
+  font-family:'Playfair Display',Georgia,serif;font-weight:700;
+  line-height:.72;color:#fff;text-align:center;white-space:nowrap;
+  text-transform:uppercase;
+  /* Centred on the measure the title lands 2.4pt right of the artwork:
+     CSS adds the trailing letter-space of the last glyph to the centring
+     sum. Measured off the two renders, not guessed. */
+  transform:translateX(-2.4pt);}
+
+/* The photo frame — a hard-edged rectangle, not a bleed. */
+.bcv-ph{position:absolute;left:44pt;top:138.6pt;width:523pt;height:529.4pt;
+  overflow:hidden;background:rgba(255,255,255,.05);}
+.bcv-ph img{width:100%;height:100%;object-fit:cover;display:block;}
+.bcv-ph .empty-note{position:absolute;inset:0;display:flex;align-items:center;
+  justify-content:center;text-align:center;
+  font:300 10pt/1.5 var(--body);color:rgba(229,229,229,.55);}
+
+/* The lifted strip: glow, lockup, QR and the site line, all in one. */
+.bcv-band{position:absolute;left:0;right:0;top:718pt;height:74pt;
+  display:block;width:100%;}
 </style>
 </head>
 <body data-root="../../" data-nav="tools" data-foot="none">
@@ -128,6 +182,22 @@ table.tbl tr.grp:first-child td{padding-top:.11in;}
        presenting it. -->
   <aside id="editor">
     <div class="ed-body">
+
+      <details class="ed-sec" open>
+        <summary>Cover <span class="hint">title + subtitle</span></summary>
+        <div class="sec-in">
+          <div class="field">
+            <label for="covKicker">Line above the title</label>
+            <input type="text" id="covKicker" value="Comprehensive Guide for the Home Buying Process">
+          </div>
+          <div class="field">
+            <label for="covTitle">Title</label>
+            <input type="text" id="covTitle" value="Buyer&rsquo;s Guide">
+          </div>
+          <div class="sec-note">Both print in caps. The title is set to fill the width between the
+            margins &mdash; a longer one steps down in size rather than wrapping.</div>
+        </div>
+      </details>
 
       <details class="ed-sec" open>
         <summary>Photos <span class="hint">cover + why us</span></summary>
@@ -287,7 +357,10 @@ const state = {
   market:'nj',   // which market the packet prints — see MARKETS
   picks:{nj:[], nyc:[]},  // chosen area names per market, kept apart so
                           // switching market does not throw a selection away
-  agents:[]
+  agents:[],
+  /* the two editable runs on the cover — both print in caps */
+  cover:{ kicker:'Comprehensive Guide for the Home Buying Process',
+          title:'Buyer’s Guide' }
 };
 
 /* The website printed in every footer. Not editable — the footer, the
@@ -425,7 +498,7 @@ function slot(name) { return assign[name] ? assign[name].url : null; }
    mean, which is one line each: a photo's role IS its placement, so
    dropping it somewhere is nothing more than setting that role.
    ============================================================ */
-const REFRAME = { page: '.pg, .cv', canvasIn: 8.5 };
+const REFRAME = { page: '.pg, .bcv', canvasIn: 8.5 };
 const DROP_LABEL = { 'cover': 'Cover photo', 'portrait': 'Why us' };
 
 /* Pin a photo to a slot, turning whoever was pinned there loose. The
@@ -520,16 +593,39 @@ let PAGES = pageList(), OF = PAGES.length;
 /* ---------- renderers ---------- */
 /* The cover names no buyer and no property: this packet is meant to be sat
    down and gone through with anyone. */
+/* The title is set to the width of the measure the way it is in the
+   artwork, where BUYER'S GUIDE runs margin to margin. Rather than pick a
+   size and hope, the page is measured after it renders and the type scaled
+   to fit — 69.26pt is what the drawn title happens to come out at, and it
+   is the ceiling, so a shorter title never grows past the original. */
+/* The measure is the printed INK width of the drawn title, 523.2pt from
+   the B to the E, not the 523pt gap between the margins: Chrome and
+   Illustrator disagree slightly on Playfair's side bearings, so matching
+   the advance width leaves the letters a hair narrow. Measured off the
+   artwork at 150dpi. */
+const COV_MAX = 69.26, COV_MEASURE = 527.3;
+function fitCoverTitle() {
+  const el = document.querySelector('.bcv-ttl');
+  if (!el) return;
+  el.style.fontSize = COV_MAX + 'pt';
+  /* scrollWidth is in px on a canvas where 1in = 96px, so pt = px * 72/96 */
+  const w = el.scrollWidth * 0.75;
+  if (w > COV_MEASURE) el.style.fontSize = (COV_MAX * COV_MEASURE / w) + 'pt';
+}
+
 function pgCover() {
-  return P.cover({
-    kind:'Buyer Consultation',
-    title:'Buying a Home',
-    /* esc()'d by P.cover, so the separator is the character, not the entity */
-    subtitle:'New Jersey · New York · Florida',
-    image: slot('cover'),
-    pos: posFor('cover'),
-    agents: agents()
-  });
+  const img = slot('cover'), pos = posFor('cover');
+  return '<div class="bcv">' +
+    '<div class="bcv-kick">' + P.esc(state.cover.kicker) + '</div>' +
+    '<div class="bcv-ttl">' + P.esc(state.cover.title) + '</div>' +
+    '<div class="bcv-ph" data-drop="cover"' + (img ? ' data-pos="cover"' : '') + '>' +
+      (img ? '<img src="' + img + '" alt="" style="object-position:' +
+               pos.x + '% ' + pos.y + '%">'
+           : '<div class="empty-note">Drag a photo here<br>from the Photos panel</div>') +
+    '</div>' +
+    '<div class="bcv-mkt">New York &middot; New Jersey &middot; Florida</div>' +
+    '<img class="bcv-band" src="static/cover-band.png" alt="">' +
+  '</div>';
 }
 
 /* WHY WORK WITH US.
@@ -740,7 +836,14 @@ const RULES = [
   { key:'towns', box:'warnTowns',
     msg:'An area tearsheet runs past the page — shorten one of its notes in the market’s data file.' }
 ];
-function checkAll() { P.checkOverflow(document.getElementById('pages'), RULES, 'warnGeneral'); }
+/* Runs after the pages are in the DOM and again once the webfonts have
+   landed. Both matter to the cover: measuring the title before layout
+   reads a width of zero, and measuring it before Playfair has loaded
+   measures the fallback face instead. */
+function checkAll() {
+  fitCoverTitle();
+  P.checkOverflow(document.getElementById('pages'), RULES, 'warnGeneral');
+}
 
 function redraw() {
   if (!builder) return;
@@ -843,6 +946,16 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.getElementById('townLabel').textContent = MARKET.panel;
   document.getElementById('townNote').innerHTML = MARKET.note;
+
+  /* The cover's two text runs. Typed live, capitalised by CSS, and the
+     title refits itself to the measure on every keystroke. */
+  [['covKicker','kicker'],['covTitle','title']].forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    el.value = state.cover[key];
+    el.addEventListener('input', () => {
+      state.cover[key] = el.value; redraw(); GVC_UNSAVED.touch();
+    });
+  });
 
   P.wireRoster(document.getElementById('rosterPick'), state, 2, redraw);
 

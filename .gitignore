@@ -5,3 +5,4 @@ docs/
 .tmp-pw/
 __pycache__/
 *.pyc
+exports/
